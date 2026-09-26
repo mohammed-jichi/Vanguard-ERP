@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import DatePickerInput from './DatePickerInput';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 export interface PurchaseItemLine {
   id: string;
@@ -108,6 +110,7 @@ const PREDEFINED_CATALOG_ITEMS = [
 
 export default function PurchasesView() {
   const { t, dir } = useLanguage();
+  const { currentTenant } = useTenant();
   // Current screen mode: 'list' (Screenshot 1) or 'form' (Screenshot 2)
   const [viewMode, setViewMode] = useState<'list' | 'form'>('list');
 
@@ -293,6 +296,63 @@ export default function PurchasesView() {
     }
   ]);
 
+  // Mount hydration from Supabase
+  useEffect(() => {
+    async function loadPersistedPurchases() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.purchases_invoices && Array.isArray(data.feature_flags.purchases_invoices) && data.feature_flags.purchases_invoices.length > 0) {
+          setPurchases(data.feature_flags.purchases_invoices);
+        }
+      } catch (err) {
+        console.warn('Notice loading purchases from database:', err);
+      }
+    }
+    loadPersistedPurchases();
+  }, [currentTenant?.id]);
+
+  const persistPurchasesToDatabase = async (newPurchases: PurchaseInvoice[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            purchases_invoices: newPurchases
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
+
   // Form State (matching Screenshot 2)
   const [formBranch, setFormBranch] = useState('Main Branch');
   const [formLocation, setFormLocation] = useState('Choueifat Main Facility');
@@ -385,9 +445,16 @@ export default function PurchasesView() {
   }, [purchases, filterBranch, filterSupplier, filterStatus, filterTransfer, searchFilter]);
 
   // Open New Purchase form
-  const handlePostAllPurchases = () => {
-    setPurchases(prev => prev.map(p => ({ ...p, posted: true })));
-    setNotice('All unposted purchase invoices posted successfully.');
+  const handlePostAllPurchases = async () => {
+    const updated = purchases.map(p => ({ ...p, posted: true }));
+    const res = await persistPurchasesToDatabase(updated);
+    if (!res.success) {
+      setNotice(`Database persistence failed: ${res.error}`);
+      setTimeout(() => setNotice(null), 4000);
+      return;
+    }
+    setPurchases(updated);
+    setNotice('All unposted purchase invoices posted successfully to database.');
     setTimeout(() => setNotice(null), 3000);
   };
 
@@ -482,7 +549,7 @@ export default function PurchasesView() {
   };
 
   // Save as Draft (Unposted) -> audio requirement: explains where it goes and status
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
     if (!selectedSupplierName) {
       alert('Please select a Supplier before saving.');
       return;
@@ -520,23 +587,30 @@ export default function PurchasesView() {
       totalDiscount: totals.totalDiscount
     };
 
-    setPurchases((prev) => {
-      const idx = prev.findIndex((p) => p.id === newInvoice.id);
-      if (idx >= 0) {
-        const copy = [...prev];
-        copy[idx] = newInvoice;
-        return copy;
-      }
-      return [newInvoice, ...prev];
-    });
+    let updated: PurchaseInvoice[];
+    const idx = purchases.findIndex((p) => p.id === newInvoice.id);
+    if (idx >= 0) {
+      updated = [...purchases];
+      updated[idx] = newInvoice;
+    } else {
+      updated = [newInvoice, ...purchases];
+    }
 
-    setNotice(`Invoice #${formInvNumber} saved as UNPOSTED draft. Stock is not yet committed.`);
+    const res = await persistPurchasesToDatabase(updated);
+    if (!res.success) {
+      setNotice(`Database persistence failed: ${res.error}`);
+      setTimeout(() => setNotice(null), 4000);
+      return;
+    }
+
+    setPurchases(updated);
+    setNotice(`Invoice #${formInvNumber} saved to database as UNPOSTED draft.`);
     setTimeout(() => setNotice(null), 4000);
     setViewMode('list');
   };
 
   // Save & Post (Immediate stock entry and GL posting)
-  const handleSaveAndPost = () => {
+  const handleSaveAndPost = async () => {
     if (!selectedSupplierName) {
       alert('Please select a Supplier before saving.');
       return;
@@ -574,28 +648,40 @@ export default function PurchasesView() {
       totalDiscount: totals.totalDiscount
     };
 
-    setPurchases((prev) => {
-      const idx = prev.findIndex((p) => p.id === newInvoice.id);
-      if (idx >= 0) {
-        const copy = [...prev];
-        copy[idx] = newInvoice;
-        return copy;
-      }
-      return [newInvoice, ...prev];
-    });
+    let updated: PurchaseInvoice[];
+    const idx = purchases.findIndex((p) => p.id === newInvoice.id);
+    if (idx >= 0) {
+      updated = [...purchases];
+      updated[idx] = newInvoice;
+    } else {
+      updated = [newInvoice, ...purchases];
+    }
 
-    setNotice(`Invoice #${formInvNumber} saved and POSTED successfully. Inventory committed to ${formLocation}.`);
+    const res = await persistPurchasesToDatabase(updated);
+    if (!res.success) {
+      setNotice(`Database persistence failed: ${res.error}`);
+      setTimeout(() => setNotice(null), 4000);
+      return;
+    }
+
+    setPurchases(updated);
+    setNotice(`Invoice #${formInvNumber} saved and POSTED to database. Inventory committed to ${formLocation}.`);
     setTimeout(() => setNotice(null), 4500);
     setViewMode('list');
   };
 
   // Post an existing unposted draft invoice from table
-  const handlePostInvoiceFromTable = (id: string, invNum: string, loc: string) => {
+  const handlePostInvoiceFromTable = async (id: string, invNum: string, loc: string) => {
     if (confirm(`Do you want to POST Invoice #${invNum}? This will increase inventory in ${loc} and commit costs.`)) {
-      setPurchases((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, posted: true, transferred: true } : p))
-      );
-      setNotice(`Invoice #${invNum} has been POSTED. Inventory committed to ${loc}.`);
+      const updated = purchases.map((p) => (p.id === id ? { ...p, posted: true, transferred: true } : p));
+      const res = await persistPurchasesToDatabase(updated);
+      if (!res.success) {
+        setNotice(`Database persistence failed: ${res.error}`);
+        setTimeout(() => setNotice(null), 4000);
+        return;
+      }
+      setPurchases(updated);
+      setNotice(`Invoice #${invNum} has been POSTED to database. Inventory committed to ${loc}.`);
       setTimeout(() => setNotice(null), 4000);
     }
   };

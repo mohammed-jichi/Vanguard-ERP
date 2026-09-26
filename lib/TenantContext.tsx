@@ -480,7 +480,7 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     refreshTenants();
   }, []);
 
-  // Load user saved custom branding & legal numbers on initial mount
+  // Initialize license & restore user session on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -488,43 +488,6 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const savedLicense = localStorage.getItem('vanguard_activation_license');
         if (!savedLicense) {
           localStorage.setItem('vanguard_activation_license', JSON.stringify(SOUTHERN_OLIVE_OFFICIAL_LICENSE));
-        }
-        
-        const savedActiveTenant = localStorage.getItem('vanguard_active_tenant');
-        if (savedActiveTenant) {
-          const parsed = JSON.parse(savedActiveTenant);
-          if (
-            parsed.id === '1300' ||
-            parsed.id === DEFAULT_SUPERADMIN_TENANT.id ||
-            parsed.companyId === 1300 ||
-            parsed.company_id === 1300 ||
-            parsed.slug === 'southern-olive'
-          ) {
-            parsed.id = DEFAULT_SUPERADMIN_TENANT.id;
-            parsed.companyId = 1300;
-            parsed.company_id = 1300;
-          }
-          setCurrentTenant({
-            ...DEFAULT_SUPERADMIN_TENANT,
-            ...parsed,
-            license: SOUTHERN_OLIVE_OFFICIAL_LICENSE
-          });
-          return;
-        }
-
-        const saved = localStorage.getItem('vanguard_tenant_branding');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          setCurrentTenant(prev => ({
-            ...prev,
-            ...parsed,
-            license: SOUTHERN_OLIVE_OFFICIAL_LICENSE
-          }));
-        } else {
-          setCurrentTenant(prev => ({
-            ...prev,
-            license: SOUTHERN_OLIVE_OFFICIAL_LICENSE
-          }));
         }
 
         // Restore user role & identity ONLY if active session cookie is present
@@ -585,17 +548,119 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateTenantSettings = async (settings: Partial<TenantCompany>): Promise<{ success: boolean; error?: string }> => {
     try {
+      const targetId = (settings.id && settings.id !== '1300' && !settings.id.startsWith('comp-'))
+        ? settings.id
+        : (currentTenant.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+      const name = settings.name || settings.brandNameAr || currentTenant.name;
+      const brand_name_ar = settings.brandNameAr || settings.name || currentTenant.brandNameAr;
+      const brand_name_en = settings.brandNameEn || settings.name || currentTenant.brandNameEn;
+      const logo_url = settings.logoUrl !== undefined ? settings.logoUrl : currentTenant.logoUrl;
+      const cr_number = settings.companyRegistrationNumber !== undefined ? settings.companyRegistrationNumber : currentTenant.companyRegistrationNumber;
+      const tax_id = settings.taxIdentificationNumber !== undefined ? settings.taxIdentificationNumber : currentTenant.taxIdentificationNumber;
+      const address = settings.headquartersAddress !== undefined ? settings.headquartersAddress : currentTenant.headquartersAddress;
+      const city = settings.city !== undefined ? settings.city : currentTenant.city;
+      const country = settings.country !== undefined ? settings.country : currentTenant.country;
+      const phone = settings.phoneNumber !== undefined ? settings.phoneNumber : currentTenant.phoneNumber;
+      const billing_email = settings.billingEmail !== undefined ? settings.billingEmail : currentTenant.billingEmail;
+      const base_currency = settings.baseCurrency !== undefined ? settings.baseCurrency : currentTenant.baseCurrency;
+      const secondary_currency = settings.secondaryCurrency !== undefined ? settings.secondaryCurrency : currentTenant.secondaryCurrency;
+      const exchange_rate_policy = settings.exchangeRatePolicy !== undefined ? settings.exchangeRatePolicy : currentTenant.exchangeRatePolicy;
+      const nowIso = new Date().toISOString();
+
+      // Mirror legal & corporate data inside feature_flags JSONB for full backward compatibility
+      const existingFlags = currentTenant.feature_flags || {};
+      const updatedFeatureFlags = {
+        ...existingFlags,
+        corporate_profile: {
+          ...(existingFlags.corporate_profile || {}),
+          legal_entity_name: name,
+          trade_name_ar: brand_name_ar,
+          trade_name_en: brand_name_en,
+          cr_number: cr_number || 'CR-104928-LB',
+          tax_id: tax_id || 'MOF-7489201',
+          headquarters_address: address || 'Choueifat Industrial District, Mount Lebanon',
+          city: city || 'Choueifat',
+          country: country || 'Lebanon',
+          phone_number: phone || '+961 5 430 890',
+          billing_email: billing_email || 'operations@southernolive-lb.com',
+          base_currency: base_currency || 'USD',
+          secondary_currency: secondary_currency || 'LBP',
+          exchange_rate_policy: exchange_rate_policy || 'PLATFORM_FIXED'
+        }
+      };
+
+      // Payload strictly conforming to Supabase public.tenants columns
+      const tenantSettingsPayload: any = {
+        name,
+        brand_name_ar,
+        brand_name_en,
+        logo_url,
+        cr_number,
+        tax_id,
+        address,
+        headquarters_address: address,
+        city,
+        country,
+        phone,
+        phone_number: phone,
+        billing_email,
+        base_currency,
+        secondary_currency,
+        exchange_rate_policy,
+        feature_flags: updatedFeatureFlags,
+        updated_at: nowIso
+      };
+
+      const { data, error } = await supabase
+        .from('tenants')
+        .update(tenantSettingsPayload)
+        .eq('id', targetId)
+        .select('*');
+
+      if (error) {
+        console.error('Failed to update tenant in Supabase:', error);
+        return { success: false, error: `Database write failed: ${error.message}` };
+      }
+
+      if (!data || data.length === 0) {
+        console.error('Supabase update matched 0 rows for tenant ID:', targetId);
+        return { success: false, error: `Tenant #${targetId} was not found in the database. Changes could not be persisted.` };
+      }
+
+      const persistedRow = data[0];
       const updatedTenant: TenantCompany = {
         ...currentTenant,
         ...settings,
-        name: settings.name || settings.brandNameAr || currentTenant.name,
-        brandNameAr: settings.brandNameAr || settings.name || currentTenant.brandNameAr,
-        brandNameEn: settings.brandNameEn || settings.name || currentTenant.brandNameEn,
+        id: persistedRow.id,
+        companyId: persistedRow.company_id || 1300,
+        company_id: persistedRow.company_id || 1300,
+        name: persistedRow.name,
+        brandNameAr: persistedRow.brand_name_ar || persistedRow.name,
+        brandNameEn: persistedRow.brand_name_en || persistedRow.name,
+        logoUrl: persistedRow.logo_url || '',
+        companyRegistrationNumber: persistedRow.cr_number || '',
+        taxIdentificationNumber: persistedRow.tax_id || '',
+        headquartersAddress: persistedRow.headquarters_address || persistedRow.address || '',
+        city: persistedRow.city || '',
+        country: persistedRow.country || '',
+        phoneNumber: persistedRow.phone_number || persistedRow.phone || '',
+        billingEmail: persistedRow.billing_email || '',
+        baseCurrency: persistedRow.base_currency || 'USD',
+        secondaryCurrency: persistedRow.secondary_currency || 'LBP',
+        exchangeRatePolicy: persistedRow.exchange_rate_policy || 'PLATFORM_FIXED',
+        feature_flags: persistedRow.feature_flags,
+        updatedAt: persistedRow.updated_at,
+        updated_at: persistedRow.updated_at
       };
 
       setCurrentTenant(updatedTenant);
+      setRegisteredCompanies(prev => prev.map(c => c.id === targetId ? updatedTenant : c));
 
       if (typeof window !== 'undefined') {
+        localStorage.setItem('vanguard_active_tenant', JSON.stringify(updatedTenant));
         localStorage.setItem('vanguard_tenant_branding', JSON.stringify({
           name: updatedTenant.name,
           brandNameAr: updatedTenant.brandNameAr,
@@ -606,63 +671,18 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }));
       }
 
-      // Update Supabase database with dedicated columns and schema fallback
-      const tenantSettingsPayload: any = {
-        name: updatedTenant.name,
-        brand_name_ar: updatedTenant.brandNameAr,
-        brand_name_en: updatedTenant.brandNameEn,
-        logo_url: updatedTenant.logoUrl,
-        cr_number: updatedTenant.companyRegistrationNumber,
-        company_registration_number: updatedTenant.companyRegistrationNumber,
-        tax_id: updatedTenant.taxIdentificationNumber,
-        tax_identification_number: updatedTenant.taxIdentificationNumber,
-        address: updatedTenant.headquartersAddress,
-        headquarters_address: updatedTenant.headquartersAddress,
-        city: updatedTenant.city,
-        country: updatedTenant.country,
-        phone: updatedTenant.phoneNumber,
-        phone_number: updatedTenant.phoneNumber,
-        billing_email: updatedTenant.billingEmail,
-        base_currency: updatedTenant.baseCurrency,
-        secondary_currency: updatedTenant.secondaryCurrency,
-        exchange_rate_policy: updatedTenant.exchangeRatePolicy,
-        updated_at: new Date().toISOString()
-      };
-
-      let { error: updateErr } = await supabase
-        .from('tenants')
-        .update(tenantSettingsPayload)
-        .eq('id', updatedTenant.id);
-
-      if (updateErr && (updateErr.code === 'PGRST204' || updateErr.message?.includes('schema cache') || updateErr.message?.includes('column'))) {
-        console.warn('Dedicated columns pending migration in updateTenantSettings. Applying fallback update:', updateErr.message);
-        const fallbackSettings = {
-          name: updatedTenant.name,
-          brand_name_ar: updatedTenant.brandNameAr,
-          brand_name_en: updatedTenant.brandNameEn,
-          logo_url: updatedTenant.logoUrl,
-          updated_at: new Date().toISOString()
-        };
-        const res = await supabase.from('tenants').update(fallbackSettings).eq('id', updatedTenant.id);
-        updateErr = res.error;
-      }
-
-      if (updateErr) {
-        console.warn('Supabase tenant update notice:', updateErr.message);
-      }
-
       await logSystemActivity({
-        tenantId: updatedTenant.id,
-        companyId: updatedTenant.companyId || (updatedTenant.id === '00000000-0000-0000-0000-000000000001' ? 1300 : null),
+        tenantId: targetId,
+        companyId: updatedTenant.companyId || 1300,
         actionType: 'BRANDING_UPDATED',
         description: `تم تحديث السجلات القانونية والهوية لمؤسسة: ${updatedTenant.brandNameAr || updatedTenant.name} (معرف الشركة: #${updatedTenant.companyId || 1300})`,
         performedBy: currentUser?.fullName || 'Super Admin (System Owner)'
       });
 
-      console.log('✅ Successfully updated Tenant Settings & Legal Registration Data:', updatedTenant);
+      console.log('✅ Successfully persisted Tenant Settings & Legal Registration to Supabase:', updatedTenant);
       return { success: true };
     } catch (err: any) {
-      console.error('Error updating tenant settings:', err);
+      console.error('Exception updating tenant settings:', err);
       return { success: false, error: err.message || String(err) };
     }
   };
@@ -769,38 +789,24 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (corpProfile.secondary_currency !== undefined) dbUpdates.secondary_currency = corpProfile.secondary_currency;
       if (corpProfile.exchange_rate_policy !== undefined) dbUpdates.exchange_rate_policy = corpProfile.exchange_rate_policy;
 
+      const targetId = (tenantId && tenantId !== '1300' && !tenantId.startsWith('comp-'))
+        ? tenantId
+        : '00000000-0000-0000-0000-000000000001';
+
       let { data: updatedData, error } = await supabase
         .from('tenants')
         .update(dbUpdates)
-        .eq('id', tenantId)
+        .eq('id', targetId)
         .select('*');
 
-      if (error && (error.code === 'PGRST204' || error.message?.includes('schema cache') || error.message?.includes('column'))) {
-        console.warn('Dedicated columns pending Supabase migration. Applying JSONB fallback in updateTenantModulesAndBranding:', error.message);
-        const fallbackDbUpdates: any = {
-          name: dbUpdates.name,
-          brand_name_ar: dbUpdates.brand_name_ar,
-          brand_name_en: dbUpdates.brand_name_en,
-          logo_url: dbUpdates.logo_url,
-          primary_color: dbUpdates.primary_color,
-          theme_color: dbUpdates.theme_color,
-          subscription_tier: dbUpdates.subscription_tier,
-          subscription_status: dbUpdates.subscription_status,
-          enabled_modules: dbUpdates.enabled_modules,
-          feature_flags: dbUpdates.feature_flags,
-          updated_at: dbUpdates.updated_at
-        };
-        const fallbackRes = await supabase
-          .from('tenants')
-          .update(fallbackDbUpdates)
-          .eq('id', tenantId)
-          .select('*');
-        error = fallbackRes.error;
-        updatedData = fallbackRes.data;
+      if (error) {
+        console.error('Supabase tenant modules/branding update error:', error.message);
+        return { success: false, error: `Database update failed: ${error.message}` };
       }
 
-      if (error) {
-        console.warn('Supabase tenant modules/branding update notice:', error.message);
+      if (!updatedData || updatedData.length === 0) {
+        console.error('Supabase update matched 0 rows for tenant ID:', targetId);
+        return { success: false, error: `Tenant #${targetId} was not found in the database. Changes were not persisted.` };
       }
 
       setRegisteredCompanies(prev =>

@@ -19,6 +19,8 @@ import {
   LEBANON_CITIES,
   OMEGA_BRANCHES
 } from '@/lib/omegaZoneAndCurrencyData';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 interface ToastState {
   show: boolean;
@@ -27,17 +29,65 @@ interface ToastState {
 }
 
 export default function ZoneSetupView() {
-  const [zones, setZones] = useState<OmegaCallCenterZone[]>(() => {
-    if (typeof window !== 'undefined') {
+  const { currentTenant } = useTenant();
+  const [zones, setZones] = useState<OmegaCallCenterZone[]>(INITIAL_ZONES);
+
+  // Mount hydration from Supabase
+  useEffect(() => {
+    async function loadPersistedZones() {
       try {
-        const saved = localStorage.getItem('vanguard_callcenter_zones');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.callcenter_zones && Array.isArray(data.feature_flags.callcenter_zones) && data.feature_flags.callcenter_zones.length > 0) {
+          setZones(data.feature_flags.callcenter_zones);
+        }
+      } catch (err) {
+        console.warn('Notice loading call center zones from database:', err);
       }
     }
-    return INITIAL_ZONES;
-  });
+    loadPersistedZones();
+  }, [currentTenant?.id]);
+
+  const persistZonesToDatabase = async (newZones: OmegaCallCenterZone[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            callcenter_zones: newZones
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
 
   const [searchVal, setSearchVal] = useState<string>('');
   const [selectedBranchId, setSelectedBranchId] = useState<number | 'all'>('all');
@@ -54,15 +104,6 @@ export default function ZoneSetupView() {
       setToast(prev => ({ ...prev, show: false }));
     }, 3500);
   };
-
-  // Sync to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('vanguard_callcenter_zones', JSON.stringify(zones));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [zones]);
 
   // Modal States
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -139,7 +180,7 @@ export default function ZoneSetupView() {
   };
 
   // Save New Zone
-  const handleSaveAdd = (e: React.FormEvent) => {
+  const handleSaveAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newZoneName.trim()) {
       showToast('Please enter a zone name', 'error');
@@ -173,9 +214,16 @@ export default function ZoneSetupView() {
       cities: []
     };
 
-    setZones(prev => [...prev, newRecord]);
+    const updated = [...zones, newRecord];
+    const res = await persistZonesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setZones(updated);
     setShowAddModal(false);
-    showToast('Zone saved', 'success');
+    showToast('Zone saved to database', 'success');
   };
 
   // Open Edit Dialog
@@ -190,7 +238,7 @@ export default function ZoneSetupView() {
   };
 
   // Save Edit Zone
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingZone) return;
     if (!editZoneName.trim() || !editAreaCode.trim()) {
@@ -212,26 +260,31 @@ export default function ZoneSetupView() {
     const branchName =
       OMEGA_BRANCHES.find(b => b.BRANCHID === editBranchId)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
 
-    setZones(prev =>
-      prev.map(z => {
-        if (z.ID === editingZone.ID) {
-          return {
-            ...z,
-            ZONE: editZoneName.trim(),
-            AREACODE: editAreaCode.trim(),
-            TOBRANCH: editBranchId,
-            BARANCHNAME: branchName,
-            PRINTERNAME: editPrinterName.trim(),
-            DELIVERYCHARGE: editDeliveryCharge.trim()
-          };
-        }
-        return z;
-      })
-    );
+    const updated = zones.map(z => {
+      if (z.ID === editingZone.ID) {
+        return {
+          ...z,
+          ZONE: editZoneName.trim(),
+          AREACODE: editAreaCode.trim(),
+          TOBRANCH: editBranchId,
+          BARANCHNAME: branchName,
+          PRINTERNAME: editPrinterName.trim(),
+          DELIVERYCHARGE: editDeliveryCharge.trim()
+        };
+      }
+      return z;
+    });
 
+    const res = await persistZonesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setZones(updated);
     setShowEditModal(false);
     setEditingZone(null);
-    showToast('Zone updated', 'success');
+    showToast('Zone updated in database', 'success');
   };
 
   // Open Link Cities Dialog
@@ -249,7 +302,7 @@ export default function ZoneSetupView() {
   };
 
   // Save Linked Cities
-  const handleSaveLinkedCities = (e: React.FormEvent) => {
+  const handleSaveLinkedCities = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingZone) return;
 
@@ -258,23 +311,28 @@ export default function ZoneSetupView() {
       name: c.name
     }));
 
-    setZones(prev =>
-      prev.map(z => {
-        if (z.ID === editingZone.ID) {
-          return {
-            ...z,
-            cities: selectedCityObjects
-          };
-        }
-        return z;
-      })
-    );
+    const updated = zones.map(z => {
+      if (z.ID === editingZone.ID) {
+        return {
+          ...z,
+          cities: selectedCityObjects
+        };
+      }
+      return z;
+    });
 
+    const res = await persistZonesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setZones(updated);
     // Update current editingZone local reference
     setEditingZone(prev => (prev ? { ...prev, cities: selectedCityObjects } : null));
 
     setShowCitiesModal(false);
-    showToast('Cities Linked To This Zone.', 'success');
+    showToast('Cities Linked To This Zone in database.', 'success');
   };
 
   // Filter cities for Link Cities modal
@@ -285,11 +343,19 @@ export default function ZoneSetupView() {
   }, [citySearch]);
 
   // Confirm Delete
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteTarget) return;
-    setZones(prev => prev.filter(z => z.ID !== deleteTarget.ID));
+    const updated = zones.filter(z => z.ID !== deleteTarget.ID);
+
+    const res = await persistZonesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setZones(updated);
     setDeleteTarget(null);
-    showToast('Zone deleted', 'success');
+    showToast('Zone deleted from database', 'success');
   };
 
   return (

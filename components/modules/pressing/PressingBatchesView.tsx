@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Layers,
   Thermometer,
@@ -30,6 +32,7 @@ import { DynamicPressingLine, ScaleTicket, LineOperationalStatus } from '@/types
 import { useLanguage } from '@/lib/LanguageContext';
 
 export default function PressingBatchesView() {
+  const { currentTenant } = useTenant();
   const { t } = useLanguage();
   const [lines, setLines] = useState<DynamicPressingLine[]>(INITIAL_DYNAMIC_LINES);
   const [tickets, setTickets] = useState<ScaleTicket[]>(INITIAL_SCALE_TICKETS);
@@ -37,44 +40,115 @@ export default function PressingBatchesView() {
   const isSeasonActive = selectedSeason.status === 'Active';
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    async function loadPersistedLines() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.pressing_lines && Array.isArray(data.feature_flags.pressing_lines) && data.feature_flags.pressing_lines.length > 0) {
+          setLines(data.feature_flags.pressing_lines);
+        }
+        if (data?.feature_flags?.weighbridge_tickets && Array.isArray(data.feature_flags.weighbridge_tickets) && data.feature_flags.weighbridge_tickets.length > 0) {
+          setTickets(data.feature_flags.weighbridge_tickets);
+        }
+      } catch (err) {
+        console.warn('Notice loading pressing lines from database:', err);
+      }
+    }
+    loadPersistedLines();
+  }, [currentTenant?.id]);
+
+  const persistLinesToDatabase = async (newLines: DynamicPressingLine[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            pressing_lines: newLines
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  const handleToggleLineStatus = (lineId: string) => {
+  const handleToggleLineStatus = async (lineId: string) => {
     if (!isSeasonActive) {
       showToast(t('cannot_modify_line_campaign_closed', 'Cannot modify line operations: Campaign is currently frozen/closed.'));
       return;
     }
-    setLines((prev) =>
-      prev.map((l) => {
-        if (l.id === lineId) {
-          const nextStatus: LineOperationalStatus =
-            l.status === 'Active' ? 'Cleaning' : 'Active';
-          return { ...l, status: nextStatus };
-        }
-        return l;
-      })
-    );
-    showToast(`${t('extraction_line', 'Extraction line')} ${lineId} ${t('status_updated', 'status updated.')}`);
+    const updatedLines = lines.map((l) => {
+      if (l.id === lineId) {
+        const nextStatus: LineOperationalStatus =
+          l.status === 'Active' ? 'Cleaning' : 'Active';
+        return { ...l, status: nextStatus };
+      }
+      return l;
+    });
+
+    const res = await persistLinesToDatabase(updatedLines);
+    if (!res.success) {
+      showToast(`Database write error: ${res.error}`);
+      return;
+    }
+
+    setLines(updatedLines);
+    showToast(`${t('extraction_line', 'Extraction line')} ${lineId} ${t('status_updated', 'status updated and persisted.')}`);
   };
 
-  const handleAdvanceBatch = (lineId: string) => {
+  const handleAdvanceBatch = async (lineId: string) => {
     if (!isSeasonActive) {
       showToast(t('cannot_advance_batch_campaign_closed', 'Cannot advance batch: Campaign is currently frozen/closed.'));
       return;
     }
-    setLines((prev) =>
-      prev.map((l) => {
-        if (l.id === lineId) {
-          const nextProgress = Math.min(100, l.batchProgressPct + 15);
-          return { ...l, batchProgressPct: nextProgress };
-        }
-        return l;
-      })
-    );
-    showToast(`${t('extraction_progress_updated', 'Extraction progress updated for')} ${lineId}.`);
+    const updatedLines = lines.map((l) => {
+      if (l.id === lineId) {
+        const nextProgress = Math.min(100, l.batchProgressPct + 15);
+        return { ...l, batchProgressPct: nextProgress };
+      }
+      return l;
+    });
+
+    const res = await persistLinesToDatabase(updatedLines);
+    if (!res.success) {
+      showToast(`Database write error: ${res.error}`);
+      return;
+    }
+
+    setLines(updatedLines);
+    showToast(`${t('extraction_progress_updated', 'Extraction progress updated and persisted for')} ${lineId}.`);
   };
 
   return (

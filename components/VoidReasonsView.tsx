@@ -18,6 +18,8 @@ import {
   INITIAL_VOID_REASONS,
   OMEGA_BRANCHES
 } from '@/lib/omegaMoreSetupData';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 interface ToastState {
   show: boolean;
@@ -26,17 +28,65 @@ interface ToastState {
 }
 
 export default function VoidReasonsView() {
-  const [voidReasons, setVoidReasons] = useState<OmegaVoidReason[]>(() => {
-    if (typeof window !== 'undefined') {
+  const { currentTenant } = useTenant();
+  const [voidReasons, setVoidReasons] = useState<OmegaVoidReason[]>(INITIAL_VOID_REASONS);
+
+  // Mount hydration from Supabase
+  useEffect(() => {
+    async function loadPersistedVoidReasons() {
       try {
-        const saved = localStorage.getItem('vanguard_void_reasons');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.void_reasons && Array.isArray(data.feature_flags.void_reasons) && data.feature_flags.void_reasons.length > 0) {
+          setVoidReasons(data.feature_flags.void_reasons);
+        }
+      } catch (err) {
+        console.warn('Notice loading void reasons from database:', err);
       }
     }
-    return INITIAL_VOID_REASONS;
-  });
+    loadPersistedVoidReasons();
+  }, [currentTenant?.id]);
+
+  const persistVoidReasonsToDatabase = async (newReasons: OmegaVoidReason[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            void_reasons: newReasons
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
 
   const [searchVal, setSearchVal] = useState<string>('');
   const [selectedBranchId, setSelectedBranchId] = useState<number | 'all'>('all');
@@ -53,15 +103,6 @@ export default function VoidReasonsView() {
       setToast(prev => ({ ...prev, show: false }));
     }, 3500);
   };
-
-  // Sync to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('vanguard_void_reasons', JSON.stringify(voidReasons));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [voidReasons]);
 
   // Modal States
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -123,7 +164,7 @@ export default function VoidReasonsView() {
   };
 
   // Save New Void Reason
-  const handleSaveAdd = (e: React.FormEvent) => {
+  const handleSaveAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newDescription.trim()) {
       showToast('Please enter a void description', 'error');
@@ -155,9 +196,16 @@ export default function VoidReasonsView() {
       branch_excp: restrictedBranches
     };
 
-    setVoidReasons(prev => [newRecord, ...prev]);
+    const updated = [newRecord, ...voidReasons];
+    const res = await persistVoidReasonsToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setVoidReasons(updated);
     setShowAddModal(false);
-    showToast('Void reason saved', 'success');
+    showToast('Void reason saved to database', 'success');
   };
 
   // Open Edit Dialog
@@ -176,7 +224,7 @@ export default function VoidReasonsView() {
   };
 
   // Save Edit Void Reason
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingRow) return;
     if (!editDescription.trim()) {
@@ -197,31 +245,44 @@ export default function VoidReasonsView() {
       b => editBranchChecks[Number(b.BRANCHID)]
     ).map(b => ({ BRANCHID: Number(b.BRANCHID), BARANCHNAME: b.BARANCHNAME }));
 
-    setVoidReasons(prev =>
-      prev.map(item => {
-        if (item.VOIDID === editingRow.VOIDID) {
-          return {
-            ...item,
-            VOIDDESCRIPTION: editDescription.trim(),
-            DISCONTINUED: editDiscontinued ? -1 : 0,
-            branch_excp: restrictedBranches
-          };
-        }
-        return item;
-      })
-    );
+    const updated = voidReasons.map(item => {
+      if (item.VOIDID === editingRow.VOIDID) {
+        return {
+          ...item,
+          VOIDDESCRIPTION: editDescription.trim(),
+          DISCONTINUED: editDiscontinued ? -1 : 0,
+          branch_excp: restrictedBranches
+        };
+      }
+      return item;
+    });
 
+    const res = await persistVoidReasonsToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setVoidReasons(updated);
     setShowEditModal(false);
     setEditingRow(null);
-    showToast('Void reason saved', 'success');
+    showToast('Void reason saved to database', 'success');
   };
 
   // Confirm Delete
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteTarget) return;
-    setVoidReasons(prev => prev.filter(item => item.VOIDID !== deleteTarget.VOIDID));
+    const updated = voidReasons.filter(item => item.VOIDID !== deleteTarget.VOIDID);
+
+    const res = await persistVoidReasonsToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setVoidReasons(updated);
     setDeleteTarget(null);
-    showToast('Void reason deleted', 'success');
+    showToast('Void reason deleted from database', 'success');
   };
 
   return (

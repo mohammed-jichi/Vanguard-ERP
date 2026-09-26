@@ -33,13 +33,44 @@ import {
   PressingLinesLicenseQuota
 } from '@/types/pressingMill';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 export default function MillSettingsView() {
   const { t } = useLanguage();
+  const { currentTenant } = useTenant();
   const [config, setConfig] = useState<MillSettingsConfig>(INITIAL_MILL_SETTINGS);
   const [lines, setLines] = useState<DynamicPressingLine[]>(INITIAL_DYNAMIC_LINES);
   const [licenseQuota] = useState<PressingLinesLicenseQuota>(DEFAULT_LICENSE_QUOTA);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Mount hydration from Supabase
+  React.useEffect(() => {
+    async function loadMillSettings() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.pressing_lines && Array.isArray(data.feature_flags.pressing_lines) && data.feature_flags.pressing_lines.length > 0) {
+          setLines(data.feature_flags.pressing_lines);
+        }
+        if (data?.feature_flags?.mill_settings) {
+          setConfig(data.feature_flags.mill_settings);
+        }
+      } catch (err) {
+        console.warn('Notice loading mill settings from database:', err);
+      }
+    }
+    loadMillSettings();
+  }, [currentTenant?.id]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -86,8 +117,42 @@ export default function MillSettingsView() {
     showToast(`${t('extraction_line', 'Extraction line')} ${id} ${t('removed', 'removed.')}`);
   };
 
-  const handleSave = () => {
-    showToast(t('mill_settings_saved_success', 'Mill settings, line configurations, and operational quotas saved successfully.'));
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            pressing_lines: lines,
+            mill_settings: config
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        showToast(`Failed to save settings: ${dbError.message}`);
+        return;
+      }
+      showToast(t('mill_settings_saved_success', 'Mill settings, line configurations, and operational quotas saved successfully.'));
+    } catch (err: any) {
+      showToast(`Database error: ${err?.message || 'Unknown error'}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const isAtQuota = lines.length >= licenseQuota.maxAllowedLines;

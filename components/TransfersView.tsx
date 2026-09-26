@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Plus,
   Search,
@@ -326,6 +328,65 @@ export default function TransfersView() {
   const [isSearchInventoryModalOpen, setIsSearchInventoryModalOpen] = useState(false);
   const [modalSearchInitial, setModalSearchInitial] = useState('');
 
+  // Tenant Context & Database Persistence
+  const { currentTenant } = useTenant();
+
+  useEffect(() => {
+    async function loadPersistedTransfers() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.inventory_transfers && Array.isArray(data.feature_flags.inventory_transfers) && data.feature_flags.inventory_transfers.length > 0) {
+          setSavedTransfers(data.feature_flags.inventory_transfers);
+        }
+      } catch (err) {
+        console.warn('Notice loading transfers from database:', err);
+      }
+    }
+    loadPersistedTransfers();
+  }, [currentTenant?.id]);
+
+  const persistTransfersToDatabase = async (newTransfers: SavedTransferRecord[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            inventory_transfers: newTransfers
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
+
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const showToast = (msg: string) => {
@@ -425,7 +486,7 @@ export default function TransfersView() {
   };
 
   // Save / Post Actions
-  const handleSaveTransfer = (postImmediately: boolean) => {
+  const handleSaveTransfer = async (postImmediately: boolean) => {
     const statusVal: 'POSTED' | 'UNPOSTED' = postImmediately ? 'POSTED' : 'UNPOSTED';
     const newRecord: SavedTransferRecord = {
       id: `TRN-${Date.now()}`,
@@ -443,20 +504,39 @@ export default function TransfersView() {
       totalCostUsd: totalUnitCostUsd
     };
 
-    setSavedTransfers([newRecord, ...savedTransfers]);
+    const updated = [newRecord, ...savedTransfers];
+    const res = await persistTransfersToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database write failed: ${res.error}`);
+      return;
+    }
+
+    setSavedTransfers(updated);
     setPreviewReq(true);
-    showToast(postImmediately ? `Transfer ${transferNumber} Saved & Posted successfully!` : `Transfer ${transferNumber} Saved (Draft).`);
+    showToast(postImmediately ? `Transfer ${transferNumber} Saved, Posted & Persisted to DB successfully!` : `Transfer ${transferNumber} Saved & Persisted (Draft).`);
   };
 
-  const handlePostCurrentTransfer = () => {
-    setSavedTransfers(savedTransfers.map(tr => tr.reqNo === transferNumber ? { ...tr, status: 'POSTED', posted: true } : tr));
-    showToast(`Transfer ${transferNumber} Posted!`);
+  const handlePostCurrentTransfer = async () => {
+    const updated = savedTransfers.map(tr => tr.reqNo === transferNumber ? { ...tr, status: 'POSTED' as const, posted: true } : tr);
+    const res = await persistTransfersToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database write failed: ${res.error}`);
+      return;
+    }
+    setSavedTransfers(updated);
+    showToast(`Transfer ${transferNumber} Posted and updated in database!`);
   };
 
-  const handleDeleteCurrentTransfer = () => {
-    setSavedTransfers(savedTransfers.filter(tr => tr.reqNo !== transferNumber));
+  const handleDeleteCurrentTransfer = async () => {
+    const updated = savedTransfers.filter(tr => tr.reqNo !== transferNumber);
+    const res = await persistTransfersToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database write failed: ${res.error}`);
+      return;
+    }
+    setSavedTransfers(updated);
     handleNewTransfer();
-    showToast(`Transfer ${transferNumber} Deleted.`);
+    showToast(`Transfer ${transferNumber} Deleted from database.`);
   };
 
   // Load Transfer from Preview modal

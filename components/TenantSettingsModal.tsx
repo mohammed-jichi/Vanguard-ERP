@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useTenant, SOUTHERN_OLIVE_OFFICIAL_LICENSE } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import LicenseActivationCertificateModal from './LicenseActivationCertificateModal';
+import { uploadBrandAsset, uploadDataUrlToStorage } from '@/lib/supabaseStorage';
 import {
   Settings,
   Building,
@@ -17,7 +18,8 @@ import {
   Link as LinkIcon,
   Award,
   Key,
-  Copy
+  Copy,
+  Loader2
 } from 'lucide-react';
 
 interface TenantSettingsModalProps {
@@ -38,6 +40,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
   const [isCertModalOpen, setIsCertModalOpen] = useState<boolean>(false);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
@@ -53,16 +56,41 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
 
   if (!isOpen) return null;
 
-  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          setLogoUrl(reader.result);
+      setIsUploadingLogo(true);
+      setStatusMessage(null);
+      try {
+        const uploadRes = await uploadBrandAsset(file, 'tenant_logo', currentTenant?.id);
+        if (uploadRes.success && uploadRes.url) {
+          setLogoUrl(uploadRes.url);
+          setStatusMessage({
+            type: 'success',
+            text: 'Official logo uploaded to Supabase Storage successfully!'
+          });
+        } else {
+          // If storage bucket is pending or restricted, load data URL with error feedback
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+              setLogoUrl(reader.result);
+            }
+          };
+          reader.readAsDataURL(file);
+          setStatusMessage({
+            type: 'error',
+            text: uploadRes.error || 'Storage upload warning: temporary preview loaded.'
+          });
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err: any) {
+        setStatusMessage({
+          type: 'error',
+          text: `Storage upload error: ${err.message}`
+        });
+      } finally {
+        setIsUploadingLogo(false);
+      }
     }
   };
 
@@ -71,11 +99,19 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
     setIsSaving(true);
     setStatusMessage(null);
 
+    let finalLogoUrl = logoUrl;
+    if (logoUrl && logoUrl.startsWith('data:')) {
+      const uploadRes = await uploadDataUrlToStorage(logoUrl, 'tenant_logo', currentTenant?.id);
+      if (uploadRes.success && uploadRes.url) {
+        finalLogoUrl = uploadRes.url;
+      }
+    }
+
     const result = await updateTenantSettings({
       name: companyName,
       brandNameAr: brandNameAr || companyName,
       brandNameEn: brandNameEn || companyName,
-      logoUrl: logoUrl,
+      logoUrl: finalLogoUrl,
       companyRegistrationNumber: companyRegistrationNumber,
       taxIdentificationNumber: taxIdentificationNumber
     });
@@ -85,7 +121,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
     if (result.success) {
       setStatusMessage({
         type: 'success',
-        text: t('settings_saved_success', 'Legal details, logo, and brand identity saved successfully!')
+        text: t('settings_saved_success', 'Legal details, logo, and brand identity saved and persisted to database successfully!')
       });
       setTimeout(() => {
         onClose();
@@ -93,7 +129,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
     } else {
       setStatusMessage({
         type: 'error',
-        text: result.error || t('settings_save_error', 'An error occurred while saving settings.')
+        text: result.error || t('settings_save_error', 'Database write failed. Changes were not persisted.')
       });
     }
   };
@@ -161,7 +197,12 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                   onChange={handleLogoFileUpload}
                   className="hidden"
                 />
-                {logoUrl ? (
+                {isUploadingLogo ? (
+                  <div className="flex flex-col items-center justify-center p-2 text-center text-blue-600">
+                    <Loader2 className="w-7 h-7 animate-spin mb-1" />
+                    <span className="text-[10px] font-bold">Uploading to Cloud...</span>
+                  </div>
+                ) : logoUrl ? (
                   <>
                     <img
                       src={logoUrl}

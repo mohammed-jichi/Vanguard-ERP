@@ -18,6 +18,8 @@ import {
   INITIAL_INVOICE_MESSAGES,
   OMEGA_BRANCHES
 } from '@/lib/omegaMoreSetupData';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 interface ToastState {
   show: boolean;
@@ -26,17 +28,65 @@ interface ToastState {
 }
 
 export default function MessageOnInvoiceView() {
-  const [messages, setMessages] = useState<OmegaInvoiceMessage[]>(() => {
-    if (typeof window !== 'undefined') {
+  const { currentTenant } = useTenant();
+  const [messages, setMessages] = useState<OmegaInvoiceMessage[]>(INITIAL_INVOICE_MESSAGES);
+
+  // Mount hydration from Supabase
+  useEffect(() => {
+    async function loadPersistedMessages() {
       try {
-        const saved = localStorage.getItem('vanguard_invoice_messages');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.invoice_messages && Array.isArray(data.feature_flags.invoice_messages) && data.feature_flags.invoice_messages.length > 0) {
+          setMessages(data.feature_flags.invoice_messages);
+        }
+      } catch (err) {
+        console.warn('Notice loading invoice messages from database:', err);
       }
     }
-    return INITIAL_INVOICE_MESSAGES;
-  });
+    loadPersistedMessages();
+  }, [currentTenant?.id]);
+
+  const persistMessagesToDatabase = async (newMessages: OmegaInvoiceMessage[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            invoice_messages: newMessages
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
 
   const [searchVal, setSearchVal] = useState<string>('');
   const [selectedBranchId, setSelectedBranchId] = useState<number | 'all'>('all');
@@ -49,15 +99,6 @@ export default function MessageOnInvoiceView() {
       setToast(prev => ({ ...prev, show: false }));
     }, 3500);
   };
-
-  // Sync to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('vanguard_invoice_messages', JSON.stringify(messages));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [messages]);
 
   // Modal States
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -110,7 +151,7 @@ export default function MessageOnInvoiceView() {
   };
 
   // Save New Message
-  const handleSaveAdd = (e: React.FormEvent) => {
+  const handleSaveAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     const idNum = parseInt(newMsgId, 10);
     if (isNaN(idNum)) {
@@ -152,9 +193,16 @@ export default function MessageOnInvoiceView() {
       MSGID: messages.length + 1
     };
 
-    setMessages(prev => [newRecord, ...prev]);
+    const updated = [newRecord, ...messages];
+    const res = await persistMessagesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setMessages(updated);
     setShowAddModal(false);
-    showToast('Message on invoice saved', 'success');
+    showToast('Message on invoice saved to database', 'success');
   };
 
   // Open Edit Dialog
@@ -169,7 +217,7 @@ export default function MessageOnInvoiceView() {
   };
 
   // Update Message (allBranches = 0 or 1)
-  const handleUpdate = (allBranches: 0 | 1) => {
+  const handleUpdate = async (allBranches: 0 | 1) => {
     if (!editingMessage) return;
     const idNum = parseInt(editMsgId, 10);
     if (isNaN(idNum) || !editMsgTitle.trim() || !editMsgText.trim()) {
@@ -190,61 +238,78 @@ export default function MessageOnInvoiceView() {
         ? 'All Branches'
         : OMEGA_BRANCHES.find(b => b.BRANCHID === editBranch)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
 
-    setMessages(prev => {
-      return prev.map(m => {
-        if (m.ID === editingMessage.ID) {
-          return {
-            ...m,
-            MESSAGEID: idNum,
-            MESSAGETITLE: editMsgTitle.trim(),
-            MESSAGEDESC: editMsgText.trim(),
-            BRANCHID: allBranches === 1 ? 1 : editBranch,
-            BARANCHNAME: branchName,
-            STATUS: editDefault ? -1 : 0
-          };
-        }
-        // If this one is set to default, unset other defaults in the same branch
-        if (editDefault && m.BRANCHID === editBranch && m.ID !== editingMessage.ID) {
-          return { ...m, STATUS: 0 };
-        }
-        return m;
-      });
+    const updated = messages.map(m => {
+      if (m.ID === editingMessage.ID) {
+        return {
+          ...m,
+          MESSAGEID: idNum,
+          MESSAGETITLE: editMsgTitle.trim(),
+          MESSAGEDESC: editMsgText.trim(),
+          BRANCHID: allBranches === 1 ? 1 : editBranch,
+          BARANCHNAME: branchName,
+          STATUS: editDefault ? -1 : 0
+        };
+      }
+      if (editDefault && m.BRANCHID === editBranch && m.ID !== editingMessage.ID) {
+        return { ...m, STATUS: 0 };
+      }
+      return m;
     });
 
+    const res = await persistMessagesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setMessages(updated);
     setShowEditModal(false);
     setEditingMessage(null);
     showToast(
-      allBranches === 1 ? 'Message saved for all Branches' : 'Message saved',
+      allBranches === 1 ? 'Message saved for all Branches in database' : 'Message saved to database',
       'success'
     );
   };
 
   // Set As Default Action
-  const confirmSetDefault = () => {
+  const confirmSetDefault = async () => {
     if (!defaultTarget) return;
 
-    setMessages(prev =>
-      prev.map(m => {
-        if (m.MESSAGEID === defaultTarget.MESSAGEID) {
-          return { ...m, STATUS: -1 };
-        }
-        if (m.BRANCHID === defaultTarget.BRANCHID) {
-          return { ...m, STATUS: 0 };
-        }
-        return m;
-      })
-    );
+    const updated = messages.map(m => {
+      if (m.MESSAGEID === defaultTarget.MESSAGEID) {
+        return { ...m, STATUS: -1 };
+      }
+      if (m.BRANCHID === defaultTarget.BRANCHID) {
+        return { ...m, STATUS: 0 };
+      }
+      return m;
+    });
 
+    const res = await persistMessagesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setMessages(updated);
     setDefaultTarget(null);
-    showToast('Message has been set as default', 'success');
+    showToast('Message has been set as default in database', 'success');
   };
 
   // Confirm Delete Action
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteTarget) return;
-    setMessages(prev => prev.filter(m => m.MESSAGEID !== deleteTarget.MESSAGEID));
+    const updated = messages.filter(m => m.MESSAGEID !== deleteTarget.MESSAGEID);
+
+    const res = await persistMessagesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setMessages(updated);
     setDeleteTarget(null);
-    showToast('Message on invoice deleted', 'success');
+    showToast('Message on invoice deleted from database', 'success');
   };
 
   return (

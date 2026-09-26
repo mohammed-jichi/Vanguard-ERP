@@ -22,8 +22,11 @@ import {
 import { POS_CATALOG_ITEMS, INITIAL_TANKS } from '@/lib/pressingMillData';
 import { POSCartItem } from '@/types/pressingMill';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function PressingCounterPOSView() {
+  const { currentTenant } = useTenant();
   const { t } = useLanguage();
   const [cart, setCart] = useState<POSCartItem[]>([
     {
@@ -46,6 +49,7 @@ export default function PressingCounterPOSView() {
   const [cashTenderedUSD, setCashTenderedUSD] = useState<number>(200);
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isProcessingSale, setIsProcessingSale] = useState<boolean>(false);
   const [showReceiptModal, setShowReceiptModal] = useState<boolean>(false);
   const [lastReceipt, setLastReceipt] = useState<any>(null);
 
@@ -96,7 +100,7 @@ export default function PressingCounterPOSView() {
     setCart(cart.filter(c => c.id !== id));
   };
 
-  const handleCompleteSale = () => {
+  const handleCompleteSale = async () => {
     if (cart.length === 0) {
       showToast(t('pos_cart_empty', 'POS cart is empty!'));
       return;
@@ -115,10 +119,41 @@ export default function PressingCounterPOSView() {
       changeDueUSD
     };
 
-    setLastReceipt(receiptObj);
-    setShowReceiptModal(true);
-    setCart([]);
-    showToast(`${t('transaction_completed', 'Transaction completed. Receipt')} #${receiptObj.receiptNumber}`);
+    setIsProcessingSale(true);
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([{
+          tenant_id: targetId,
+          customer_name: customerName || 'Counter Retail Customer',
+          customer_phone: '+961 70 000000',
+          delivery_address: 'Point of Sale Counter / Southern Olive Mill',
+          total_amount: totalUSD,
+          status: 'COMPLETED',
+          payment_method: paymentType === 'Cash_USD' || paymentType === 'Cash_LBP' ? 'CASH' : 'CARD',
+          created_at: new Date().toISOString()
+        }])
+        .select('*');
+
+      if (error) {
+        console.error('Failed to persist POS order to Supabase:', error);
+        showToast(`Database write failed: ${error.message}`);
+        return;
+      }
+
+      setLastReceipt(receiptObj);
+      setShowReceiptModal(true);
+      setCart([]);
+      showToast(`${t('transaction_completed', 'Transaction completed and recorded in database. Receipt')} #${receiptObj.receiptNumber}`);
+    } catch (err: any) {
+      showToast(`Sale error: ${err?.message || 'Database connection error'}`);
+    } finally {
+      setIsProcessingSale(false);
+    }
   };
 
   return (

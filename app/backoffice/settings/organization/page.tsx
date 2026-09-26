@@ -48,10 +48,13 @@ export default function OrganizationSettingsPage() {
   useEffect(() => {
     if (currentTenant) {
       setCompanyName(currentTenant.name || 'Southern Olive Oil Products S.A.R.L');
-      setBrandNameAr(currentTenant.brandNameAr || 'شركة منتجات زيتون الجنوب ذ.م.م');
+      setBrandNameAr(currentTenant.brandNameAr || 'منتوجات زيت وزيتون الجنوب ش.م.م');
       setBrandNameEn(currentTenant.brandNameEn || 'Southern Olive Oil Products S.A.R.L');
-      setCrn(currentTenant.companyRegistrationNumber || 'CR-2018-98442');
-      setTin(currentTenant.taxIdentificationNumber || 'TIN-401928-88');
+      setCrn(currentTenant.companyRegistrationNumber || 'CR-104928-LB');
+      setTin(currentTenant.taxIdentificationNumber || 'MOF-7489201');
+      setAddress(currentTenant.headquartersAddress || 'Choueifat Industrial District, Mount Lebanon');
+      setPhone(currentTenant.phoneNumber || '+961 5 430 890');
+      setEmail(currentTenant.billingEmail || 'operations@southernolive-lb.com');
     }
   }, [currentTenant]);
 
@@ -60,22 +63,34 @@ export default function OrganizationSettingsPage() {
     setIsSaving(true);
     setStatusMsg(null);
     try {
-      await updateTenantSettings({
+      const result = await updateTenantSettings({
         name: companyName,
         brandNameAr,
         brandNameEn,
         companyRegistrationNumber: crn,
-        taxIdentificationNumber: tin
+        taxIdentificationNumber: tin,
+        headquartersAddress: address,
+        phoneNumber: phone,
+        billingEmail: email
       });
+
+      if (!result.success) {
+        setStatusMsg({
+          type: 'error',
+          text: result.error || 'Failed to update organization profile in Supabase database.'
+        });
+        return;
+      }
+
       setStatusMsg({
         type: 'success',
-        text: t('org_profile_updated', 'Organization profile updated successfully!')
+        text: t('org_profile_updated', 'Organization profile updated and persisted to database successfully!')
       });
-      setTimeout(() => setStatusMsg(null), 4000);
+      setTimeout(() => setStatusMsg(null), 5000);
     } catch (err: any) {
       setStatusMsg({
         type: 'error',
-        text: err?.message || 'Failed to save settings'
+        text: err?.message || 'Database connection error while saving profile.'
       });
     } finally {
       setIsSaving(false);

@@ -17,10 +17,70 @@ import {
 import { INITIAL_DISPATCH_PASSES, INITIAL_SETTLEMENTS } from '@/lib/pressingMillData';
 import { OilDispatchPass } from '@/types/pressingMill';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 export default function OilDispatchView() {
   const { t } = useLanguage();
+  const { currentTenant } = useTenant();
   const [passes, setPasses] = useState<OilDispatchPass[]>(INITIAL_DISPATCH_PASSES);
+
+  // Mount hydration from Supabase
+  React.useEffect(() => {
+    async function loadPersistedPasses() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.oil_dispatch_passes && Array.isArray(data.feature_flags.oil_dispatch_passes) && data.feature_flags.oil_dispatch_passes.length > 0) {
+          setPasses(data.feature_flags.oil_dispatch_passes);
+        }
+      } catch (err) {
+        console.warn('Notice loading dispatch passes from database:', err);
+      }
+    }
+    loadPersistedPasses();
+  }, [currentTenant?.id]);
+
+  const persistPassesToDatabase = async (newPasses: OilDispatchPass[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            oil_dispatch_passes: newPasses
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
   
   // New Pass Form
   const [farmerName, setFarmerName] = useState('');
@@ -38,7 +98,7 @@ export default function OilDispatchView() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  const handleCreatePass = () => {
+  const handleCreatePass = async () => {
     if (!farmerName.trim() || Number(tinsReleased) <= 0) {
       showToast(t('enter_grower_tins_count', 'Please enter grower name and released tins count.'));
       return;
@@ -47,7 +107,7 @@ export default function OilDispatchView() {
     const newPass: OilDispatchPass = {
       id: `DP-${Date.now()}`,
       passNumber: `GP-2026-${String(passes.length + 92).padStart(4, '0')}`,
-      date: '2026-09-22',
+      date: new Date().toISOString().split('T')[0],
       farmerName: farmerName.trim(),
       ticketNumber,
       tinsReleased: Number(tinsReleased),
@@ -58,7 +118,14 @@ export default function OilDispatchView() {
       gatePassStatus: 'Approved'
     };
 
-    setPasses([newPass, ...passes]);
+    const updated = [newPass, ...passes];
+    const res = await persistPassesToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`);
+      return;
+    }
+
+    setPasses(updated);
     setSelectedPassForPrint(newPass);
     showToast(`${t('gate_pass', 'Gate Pass')} ${newPass.passNumber} ${t('authorized_for_dispatch', 'authorized for dispatch.')}`);
   };

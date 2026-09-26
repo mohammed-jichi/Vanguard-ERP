@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Scale,
   DollarSign,
@@ -34,8 +36,65 @@ import {
 import { useLanguage } from '@/lib/LanguageContext';
 
 export default function WeighbridgeIntakeView() {
+  const { currentTenant } = useTenant();
   const { t } = useLanguage();
   const [tickets, setTickets] = useState<ScaleTicket[]>(INITIAL_SCALE_TICKETS);
+
+  useEffect(() => {
+    async function loadPersistedTickets() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.weighbridge_tickets && Array.isArray(data.feature_flags.weighbridge_tickets) && data.feature_flags.weighbridge_tickets.length > 0) {
+          setTickets(data.feature_flags.weighbridge_tickets);
+        }
+      } catch (err) {
+        console.warn('Notice loading scale tickets from database:', err);
+      }
+    }
+    loadPersistedTickets();
+  }, [currentTenant?.id]);
+
+  const persistTicketsToDatabase = async (newTickets: ScaleTicket[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            weighbridge_tickets: newTickets
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
   
   // Season & Line assignment
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>(INITIAL_SEASONS[0].id);
@@ -138,17 +197,25 @@ export default function WeighbridgeIntakeView() {
     };
   };
 
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
     if (!isSeasonActive) {
       showToast(t('cannot_save_campaign_closed', 'Cannot save ticket: Harvest campaign is closed.'));
       return;
     }
     const ticketObj = createTicketObject('Weighed');
-    setTickets([ticketObj, ...tickets]);
-    showToast(`${t('ticket_saved_draft_prefix', 'Intake scale ticket saved as draft:')} ${ticketObj.ticketNumber}`);
+    const updatedTickets = [ticketObj, ...tickets];
+
+    const res = await persistTicketsToDatabase(updatedTickets);
+    if (!res.success) {
+      showToast(`Database write error: ${res.error}`);
+      return;
+    }
+
+    setTickets(updatedTickets);
+    showToast(`${t('ticket_saved_draft_prefix', 'Intake scale ticket saved and persisted:')} ${ticketObj.ticketNumber}`);
   };
 
-  const handleSaveAndPrint = () => {
+  const handleSaveAndPrint = async () => {
     if (!isSeasonActive) {
       showToast(t('cannot_save_campaign_closed', 'Cannot save ticket: Harvest campaign is closed.'));
       return;
@@ -158,11 +225,19 @@ export default function WeighbridgeIntakeView() {
       return;
     }
     const ticketObj = createTicketObject('Weighed');
-    setTickets([ticketObj, ...tickets]);
+    const updatedTickets = [ticketObj, ...tickets];
+
+    const res = await persistTicketsToDatabase(updatedTickets);
+    if (!res.success) {
+      showToast(`Database write error: ${res.error}`);
+      return;
+    }
+
+    setTickets(updatedTickets);
     setSelectedTicketForPrint(ticketObj);
   };
 
-  const handleQueueToLine = () => {
+  const handleQueueToLine = async () => {
     if (!isSeasonActive) {
       showToast(t('cannot_queue_campaign_closed', 'Cannot queue batch: Harvest campaign is closed.'));
       return;
@@ -172,8 +247,16 @@ export default function WeighbridgeIntakeView() {
       return;
     }
     const ticketObj = createTicketObject('In_Queue');
-    setTickets([ticketObj, ...tickets]);
-    showToast(`${t('batch_queued_prefix', 'Batch queued to')} ${ticketObj.lineName || 'active line'}: ${ticketObj.ticketNumber}`);
+    const updatedTickets = [ticketObj, ...tickets];
+
+    const res = await persistTicketsToDatabase(updatedTickets);
+    if (!res.success) {
+      showToast(`Database write error: ${res.error}`);
+      return;
+    }
+
+    setTickets(updatedTickets);
+    showToast(`${t('batch_queued_prefix', 'Batch queued and persisted to')} ${ticketObj.lineName || 'active line'}: ${ticketObj.ticketNumber}`);
   };
 
   return (

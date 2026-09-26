@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 // Interfaces for Purchase Order
 export interface PurchaseOrderItem {
@@ -281,6 +283,65 @@ const ITEMS_CATALOG = [
 
 export default function PurchaseOrderView() {
   const { t, dir } = useLanguage();
+  const { currentTenant } = useTenant();
+
+  // Mount hydration from Supabase
+  useEffect(() => {
+    async function loadPersistedOrders() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.purchase_orders && Array.isArray(data.feature_flags.purchase_orders) && data.feature_flags.purchase_orders.length > 0) {
+          setOrders(data.feature_flags.purchase_orders);
+        }
+      } catch (err) {
+        console.warn('Notice loading purchase orders from database:', err);
+      }
+    }
+    loadPersistedOrders();
+  }, [currentTenant?.id]);
+
+  const persistOrdersToDatabase = async (newOrders: PurchaseOrderRecord[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            purchase_orders: newOrders
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
+
   // Mode: true = Preview Table (Picture 1), false = New/Edit Form
   const [showPreviewList, setShowPreviewList] = useState<boolean>(true);
 
@@ -528,7 +589,7 @@ export default function PurchaseOrderView() {
   };
 
   // Save Purchase Order
-  const handleSaveOrder = (post: boolean = false) => {
+  const handleSaveOrder = async (post: boolean = false) => {
     if (!formSupplier || !formSupplier.name) {
       alert('Please choose a supplier');
       return;
@@ -568,50 +629,81 @@ export default function PurchaseOrderView() {
       documentName: activeOrder?.documentName
     };
 
+    let updated: PurchaseOrderRecord[];
     if (activeOrder) {
-      setOrders(prev => prev.map(o => o.id === activeOrder.id ? newOrder : o));
-      triggerToast(`Purchase Order #${formPoNumber} updated successfully.`);
+      updated = orders.map(o => o.id === activeOrder.id ? newOrder : o);
     } else {
-      setOrders(prev => [newOrder, ...prev]);
-      triggerToast(`Purchase Order #${formPoNumber} created successfully.`);
+      updated = [newOrder, ...orders];
     }
 
+    const res = await persistOrdersToDatabase(updated);
+    if (!res.success) {
+      triggerToast(`Database persistence failed: ${res.error}`);
+      return;
+    }
+
+    setOrders(updated);
+    triggerToast(activeOrder ? `Purchase Order #${formPoNumber} updated in database.` : `Purchase Order #${formPoNumber} created in database.`);
     setShowPreviewList(true);
   };
 
   // Approve PO
-  const handleApprovePO = () => {
+  const handleApprovePO = async () => {
     if (!activeOrder) return;
-    setOrders(prev => prev.map(o => o.id === activeOrder.id ? { ...o, status: 'Approved' } : o));
-    triggerToast(`Purchase Order #${activeOrder.poNumber} has been APPROVED.`);
+    const updated = orders.map(o => o.id === activeOrder.id ? { ...o, status: 'Approved' as const } : o);
+    const res = await persistOrdersToDatabase(updated);
+    if (!res.success) {
+      triggerToast(`Database persistence failed: ${res.error}`);
+      return;
+    }
+    setOrders(updated);
+    triggerToast(`Purchase Order #${activeOrder.poNumber} has been APPROVED in database.`);
     setShowPreviewList(true);
   };
 
   // Reject PO
-  const handleRejectPO = () => {
+  const handleRejectPO = async () => {
     if (!activeOrder) return;
     const reason = prompt('Enter reason for rejection:', 'Price exceeds seasonal threshold');
     if (reason !== null) {
-      setOrders(prev => prev.map(o => o.id === activeOrder.id ? { ...o, status: 'Rejected', notes: `Rejected: ${reason}` } : o));
-      triggerToast(`Purchase Order #${activeOrder.poNumber} REJECTED.`);
+      const updated = orders.map(o => o.id === activeOrder.id ? { ...o, status: 'Rejected' as const, notes: `Rejected: ${reason}` } : o);
+      const res = await persistOrdersToDatabase(updated);
+      if (!res.success) {
+        triggerToast(`Database persistence failed: ${res.error}`);
+        return;
+      }
+      setOrders(updated);
+      triggerToast(`Purchase Order #${activeOrder.poNumber} REJECTED in database.`);
       setShowPreviewList(true);
     }
   };
 
   // Convert to Purchase Invoice
-  const handleConvertToInvoice = () => {
+  const handleConvertToInvoice = async () => {
     if (!activeOrder) return;
-    setOrders(prev => prev.map(o => o.id === activeOrder.id ? { ...o, status: 'Converted' } : o));
-    triggerToast(`Purchase Order #${activeOrder.poNumber} successfully converted to Purchase Invoice.`);
+    const updated = orders.map(o => o.id === activeOrder.id ? { ...o, status: 'Converted' as const } : o);
+    const res = await persistOrdersToDatabase(updated);
+    if (!res.success) {
+      triggerToast(`Database persistence failed: ${res.error}`);
+      return;
+    }
+    setOrders(updated);
+    triggerToast(`Purchase Order #${activeOrder.poNumber} successfully converted in database.`);
     setShowPreviewList(true);
   };
 
   // Delete PO
-  const handleDeletePO = () => {
+  const handleDeletePO = async () => {
     if (!activeOrder) return;
     if (confirm(`Are you sure you want to delete Purchase Order #${activeOrder.poNumber}?`)) {
-      setOrders(prev => prev.filter(o => o.id !== activeOrder.id));
-      triggerToast(`Purchase Order #${activeOrder.poNumber} deleted.`);
+      const updated = orders.filter(o => o.id !== activeOrder.id);
+      const res = await persistOrdersToDatabase(updated);
+      if (!res.success) {
+        triggerToast(`Database persistence failed: ${res.error}`);
+        return;
+      }
+      setOrders(updated);
+      triggerToast(`Purchase Order #${activeOrder.poNumber} deleted from database.`);
       setShowPreviewList(true);
     }
   };
@@ -625,12 +717,18 @@ export default function PurchaseOrderView() {
     setShowEmailModal(true);
   };
 
-  const handleSendEmail = () => {
+  const handleSendEmail = async () => {
     if (activeOrder) {
-      setOrders(prev => prev.map(o => o.id === activeOrder.id ? { ...o, emailStatus: 'Sent' } : o));
+      const updated = orders.map(o => o.id === activeOrder.id ? { ...o, emailStatus: 'Sent' as const } : o);
+      const res = await persistOrdersToDatabase(updated);
+      if (!res.success) {
+        triggerToast('Database persistence failed: ' + (res.error || 'Unknown error'));
+        return;
+      }
+      setOrders(updated);
     }
     setShowEmailModal(false);
-    triggerToast(`Purchase Order #${formPoNumber} emailed to ${emailTo}`);
+    triggerToast('Purchase Order #' + formPoNumber + ' emailed to ' + emailTo);
   };
 
   return (

@@ -17,10 +17,70 @@ import {
 import { INITIAL_SETTLEMENTS, INITIAL_SCALE_TICKETS } from '@/lib/pressingMillData';
 import { SettlementVoucher, SettlementMethod } from '@/types/pressingMill';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 export default function SettlementsEngineView() {
   const { t } = useLanguage();
+  const { currentTenant } = useTenant();
   const [settlements, setSettlements] = useState<SettlementVoucher[]>(INITIAL_SETTLEMENTS);
+
+  // Initial mount hydration from Supabase
+  React.useEffect(() => {
+    async function loadPersistedSettlements() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.olive_mill_settlements && Array.isArray(data.feature_flags.olive_mill_settlements) && data.feature_flags.olive_mill_settlements.length > 0) {
+          setSettlements(data.feature_flags.olive_mill_settlements);
+        }
+      } catch (err) {
+        console.warn('Notice loading settlements from database:', err);
+      }
+    }
+    loadPersistedSettlements();
+  }, [currentTenant?.id]);
+
+  const persistSettlementsToDatabase = async (newSettlements: SettlementVoucher[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            olive_mill_settlements: newSettlements
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
   
   // Interactive Calculator State
   const [calcNetOlivesKg, setCalcNetOlivesKg] = useState<number>(3500);
@@ -56,11 +116,11 @@ export default function SettlementsEngineView() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  const handlePostSettlement = () => {
+  const handlePostSettlement = async () => {
     const newVoucher: SettlementVoucher = {
       id: `SV-${Date.now()}`,
       voucherNumber: `SET-2026-${String(settlements.length + 82).padStart(4, '0')}`,
-      date: '2026-09-22',
+      date: new Date().toISOString().split('T')[0],
       ticketId: `ST-NEW`,
       ticketNumber: `TK-2026-${Math.floor(150 + Math.random() * 50)}`,
       farmerName: calcGrowerName.trim() || 'Grower Account',
@@ -76,9 +136,16 @@ export default function SettlementsEngineView() {
       paymentStatus: 'Paid'
     };
 
-    setSettlements([newVoucher, ...settlements]);
+    const updated = [newVoucher, ...settlements];
+    const res = await persistSettlementsToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`);
+      return;
+    }
+
+    setSettlements(updated);
     setSelectedVoucherForPrint(newVoucher);
-    showToast(`Settlement voucher ${newVoucher.voucherNumber} created & posted.`);
+    showToast(`Settlement voucher ${newVoucher.voucherNumber} created & posted to database.`);
   };
 
   return (

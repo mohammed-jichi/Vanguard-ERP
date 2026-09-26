@@ -15,6 +15,8 @@ import {
   OmegaVatExemptionReason,
   INITIAL_VAT_EXEMPTIONS
 } from '@/lib/omegaMoreSetupData';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 interface ToastState {
   show: boolean;
@@ -23,17 +25,65 @@ interface ToastState {
 }
 
 export default function VatExemptionReasonsView() {
-  const [reasons, setReasons] = useState<OmegaVatExemptionReason[]>(() => {
-    if (typeof window !== 'undefined') {
+  const { currentTenant } = useTenant();
+  const [reasons, setReasons] = useState<OmegaVatExemptionReason[]>(INITIAL_VAT_EXEMPTIONS);
+
+  // Mount hydration from Supabase
+  useEffect(() => {
+    async function loadPersistedVatExemptions() {
       try {
-        const saved = localStorage.getItem('vanguard_vat_exemptions');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.vat_exemptions && Array.isArray(data.feature_flags.vat_exemptions) && data.feature_flags.vat_exemptions.length > 0) {
+          setReasons(data.feature_flags.vat_exemptions);
+        }
+      } catch (err) {
+        console.warn('Notice loading VAT exemptions from database:', err);
       }
     }
-    return INITIAL_VAT_EXEMPTIONS;
-  });
+    loadPersistedVatExemptions();
+  }, [currentTenant?.id]);
+
+  const persistVatExemptionsToDatabase = async (newReasons: OmegaVatExemptionReason[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            vat_exemptions: newReasons
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
 
   const [searchVal, setSearchVal] = useState<string>('');
 
@@ -45,15 +95,6 @@ export default function VatExemptionReasonsView() {
       setToast(prev => ({ ...prev, show: false }));
     }, 3500);
   };
-
-  // Sync to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('vanguard_vat_exemptions', JSON.stringify(reasons));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [reasons]);
 
   // Modal States
   const [showModifyModal, setShowModifyModal] = useState<boolean>(false);
@@ -87,7 +128,7 @@ export default function VatExemptionReasonsView() {
   };
 
   // Save (New or Edit)
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formDescription.trim()) {
       showToast('Please enter a description', 'error');
@@ -105,12 +146,10 @@ export default function VatExemptionReasonsView() {
       return;
     }
 
+    let updated: OmegaVatExemptionReason[];
     if (editingRow) {
       // Update
-      setReasons(prev =>
-        prev.map(r => (r.ID === editingRow.ID ? { ...r, VATEXEMPTIONREASON: descTrimmed } : r))
-      );
-      showToast('Vat Exemption reason saved', 'success');
+      updated = reasons.map(r => (r.ID === editingRow.ID ? { ...r, VATEXEMPTIONREASON: descTrimmed } : r));
     } else {
       // Add
       const nextId = Math.max(0, ...reasons.map(r => r.ID)) + 1;
@@ -118,21 +157,36 @@ export default function VatExemptionReasonsView() {
         ID: nextId,
         VATEXEMPTIONREASON: descTrimmed
       };
-      setReasons(prev => [newRecord, ...prev]);
-      showToast('Vat Exemption reason saved', 'success');
+      updated = [newRecord, ...reasons];
     }
 
+    const res = await persistVatExemptionsToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setReasons(updated);
+    showToast('Vat Exemption reason saved to database', 'success');
     setShowModifyModal(false);
     setEditingRow(null);
     setFormDescription('');
   };
 
   // Confirm Delete
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteTarget) return;
-    setReasons(prev => prev.filter(r => r.ID !== deleteTarget.ID));
+    const updated = reasons.filter(r => r.ID !== deleteTarget.ID);
+
+    const res = await persistVatExemptionsToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setReasons(updated);
     setDeleteTarget(null);
-    showToast('Vat Exemption reason deleted', 'success');
+    showToast('Vat Exemption reason deleted from database', 'success');
   };
 
   return (

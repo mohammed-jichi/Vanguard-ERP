@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 import {
   Info,
   Search,
@@ -488,6 +490,105 @@ const INITIAL_SAVED_REORDERS: SavedReorder[] = [
 
 export default function ReorderGuideView() {
   const { t, dir } = useLanguage();
+  const { currentTenant } = useTenant();
+
+  // Mount hydration from Supabase
+  React.useEffect(() => {
+    async function loadPersistedReorderData() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.saved_reorders && Array.isArray(data.feature_flags.saved_reorders) && data.feature_flags.saved_reorders.length > 0) {
+          setSavedReorders(data.feature_flags.saved_reorders);
+        }
+        if (data?.feature_flags?.reorder_guide_settings) {
+          const s = data.feature_flags.reorder_guide_settings;
+          if (s.showProductCode !== undefined) setShowProductCode(s.showProductCode);
+          if (s.hideGroupHeader !== undefined) setHideGroupHeader(s.hideGroupHeader);
+          if (s.updateRecommendedQtyForFuture !== undefined) setUpdateRecommendedQtyForFuture(s.updateRecommendedQtyForFuture);
+          if (s.defaultQuantity !== undefined) setDefaultQuantity(s.defaultQuantity);
+        }
+      } catch (err) {
+        console.warn('Notice loading reorder guide from database:', err);
+      }
+    }
+    loadPersistedReorderData();
+  }, [currentTenant?.id]);
+
+  const persistReordersToDatabase = async (newReorders: SavedReorder[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            saved_reorders: newReorders
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
+
+  const persistReorderSettingsToDatabase = async (settings: any): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            reorder_guide_settings: settings
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
+
   // Top Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSupplierId, setSelectedSupplierId] = useState<number>(0);
@@ -880,7 +981,7 @@ export default function ReorderGuideView() {
     showToast('New Reorder Guide session initiated. Cart reset.');
   };
 
-  const handleSaveCart = () => {
+  const handleSaveCart = async () => {
     if (Object.keys(cartItems).length === 0) {
       showToast('Cannot save an empty shopping cart');
       return;
@@ -899,9 +1000,16 @@ export default function ReorderGuideView() {
       items: Object.values(cartItems)
     };
 
-    setSavedReorders((prev) => [newRecord, ...prev]);
+    const updated = [newRecord, ...savedReorders];
+    const res = await persistReordersToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`);
+      return;
+    }
+
+    setSavedReorders(updated);
     setCurrentReorderId(newId);
-    showToast(`Shopping Cart saved successfully! Reference ID: #${newId}`);
+    showToast(`Shopping Cart saved to database successfully! Reference ID: #${newId}`);
   };
 
   const handleExcludeProduct = (productId: number) => {
@@ -937,9 +1045,20 @@ export default function ReorderGuideView() {
     showToast(`Quotation request sent to ${emailTo} successfully!`);
   };
 
-  const handleSaveSettings = () => {
+  const handleSaveSettings = async () => {
+    const settings = {
+      showProductCode,
+      hideGroupHeader,
+      updateRecommendedQtyForFuture,
+      defaultQuantity
+    };
+    const res = await persistReorderSettingsToDatabase(settings);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`);
+      return;
+    }
     setIsSettingsOpen(false);
-    showToast('Reorder Guide Settings saved successfully');
+    showToast('Reorder Guide Settings saved to database successfully');
   };
 
   const availableGroups = useMemo(() => {

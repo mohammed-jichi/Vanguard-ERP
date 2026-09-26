@@ -15,6 +15,8 @@ import {
   isDarkColor,
   hexToRgb
 } from '@/lib/omegaScreenData';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 interface ToastState {
   show: boolean;
@@ -23,6 +25,7 @@ interface ToastState {
 }
 
 export default function ScreensView() {
+  const { currentTenant } = useTenant();
   // Navigation & View Mode
   const [viewMode, setViewMode] = useState<'list' | 'setup'>('list');
   const [screensList, setScreensList] = useState<OmegaScreen[]>(OMEGA_INITIAL_SCREENS);
@@ -56,6 +59,67 @@ export default function ScreensView() {
       SCREEN_DET_ID: 3
     }))
   });
+
+  // Mount hydration from Supabase
+  useEffect(() => {
+    async function loadPersistedScreens() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.touch_screens && Array.isArray(data.feature_flags.touch_screens) && data.feature_flags.touch_screens.length > 0) {
+          setScreensList(data.feature_flags.touch_screens);
+        }
+        if (data?.feature_flags?.touch_screen_layouts && typeof data.feature_flags.touch_screen_layouts === 'object') {
+          setScreensLayoutMap(data.feature_flags.touch_screen_layouts);
+        }
+      } catch (err) {
+        console.warn('Notice loading touch screens from database:', err);
+      }
+    }
+    loadPersistedScreens();
+  }, [currentTenant?.id]);
+
+  const persistScreensToDatabase = async (newScreens: OmegaScreen[], newLayouts?: Record<number, OmegaScreenItem[]>): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            touch_screens: newScreens,
+            ...(newLayouts ? { touch_screen_layouts: newLayouts } : {})
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
 
   // Current Screen Designer 40 Cells
   const currentShowlabels = useMemo(() => {
@@ -235,17 +299,23 @@ export default function ScreensView() {
     setIsEditScreenModalOpen(true);
   };
 
-  const handleDeleteScreen = (screen: OmegaScreen) => {
+  const handleDeleteScreen = async (screen: OmegaScreen) => {
     if (screensList.length <= 1) {
       showToast('Cannot delete the only remaining screen.', 'warning');
       return;
     }
     if (confirm(`Are you sure you want to delete screen: "${screen.SCREENNAME}"?`)) {
-      setScreensList(prev => prev.filter(s => s.SCRBRANCHID !== screen.SCRBRANCHID));
-      if (selectedScreenId === screen.SCRBRANCHID) {
-        setSelectedScreenId(screensList[0]?.SCRBRANCHID || 1);
+      const updated = screensList.filter(s => s.SCRBRANCHID !== screen.SCRBRANCHID);
+      const res = await persistScreensToDatabase(updated);
+      if (!res.success) {
+        showToast(`Database error: ${res.error}`, 'error');
+        return;
       }
-      showToast(`Screen "${screen.SCREENNAME}" deleted.`, 'success');
+      setScreensList(updated);
+      if (selectedScreenId === screen.SCRBRANCHID) {
+        setSelectedScreenId(updated[0]?.SCRBRANCHID || 1);
+      }
+      showToast(`Screen "${screen.SCREENNAME}" deleted from database.`, 'success');
     }
   };
 
@@ -437,12 +507,17 @@ export default function ScreensView() {
     showToast(`Copied layout from screen #${copySourceScreenId}`, 'success');
   };
 
-  const handleSaveScreenSetup = () => {
-    showToast('Screen Saved! Layout and buttons committed to workstation POS.', 'success');
+  const handleSaveScreenSetup = async () => {
+    const res = await persistScreensToDatabase(screensList, screensLayoutMap);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+    showToast('Screen Saved! Layout and buttons committed to database.', 'success');
   };
 
   // Modals Save Handlers
-  const handleSaveNewScreen = (e: React.FormEvent) => {
+  const handleSaveNewScreen = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newScreenName.trim()) {
       showToast('Screen name is required', 'error');
@@ -465,28 +540,40 @@ export default function ScreensView() {
       TOTALEXCEPTIONS: 0,
       sd_screens_branch_exception: []
     };
-    setScreensList(prev => [...prev, newScr]);
+    const updated = [...screensList, newScr];
+    const res = await persistScreensToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setScreensList(updated);
     setIsNewScreenModalOpen(false);
     setNewScreenName('');
     setNewScreenImage(null);
-    showToast('Screen saved successfully', 'success');
+    showToast('Screen saved successfully in database', 'success');
   };
 
-  const handleSaveEditScreen = (e: React.FormEvent) => {
+  const handleSaveEditScreen = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editScreenTarget || !editScreenName.trim()) return;
-    setScreensList(prev =>
-      prev.map(s =>
-        s.SCRBRANCHID === editScreenTarget.SCRBRANCHID
-          ? { ...s, SCREENNAME: editScreenName.trim(), SCPICTURE: editScreenImage || '' }
-          : s
-      )
+    const updated = screensList.map(s =>
+      s.SCRBRANCHID === editScreenTarget.SCRBRANCHID
+        ? { ...s, SCREENNAME: editScreenName.trim(), SCPICTURE: editScreenImage || '' }
+        : s
     );
+    const res = await persistScreensToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setScreensList(updated);
     setIsEditScreenModalOpen(false);
-    showToast('Screen updated successfully', 'success');
+    showToast('Screen updated successfully in database', 'success');
   };
 
-  const handleCreateScreensFromGroups = () => {
+  const handleCreateScreensFromGroups = async () => {
     const selectedIds = Object.keys(selectedGroupsForScreens)
       .filter(id => selectedGroupsForScreens[parseInt(id, 10)])
       .map(id => parseInt(id, 10));
@@ -517,10 +604,17 @@ export default function ScreensView() {
       }
     }
 
-    setScreensList(prev => [...prev, ...newScreens]);
+    const updated = [...screensList, ...newScreens];
+    const res = await persistScreensToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'error');
+      return;
+    }
+
+    setScreensList(updated);
     setIsGroupScreensModalOpen(false);
     setSelectedGroupsForScreens({});
-    showToast(`Created ${newScreens.length} screens from selected groups!`, 'success');
+    showToast(`Created ${newScreens.length} screens from selected groups in database!`, 'success');
   };
 
   return (

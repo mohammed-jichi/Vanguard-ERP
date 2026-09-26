@@ -30,6 +30,8 @@ import {
 } from '@/lib/omegaDeviceData';
 import { OMEGA_BRANCHES } from '@/lib/omegaDiscountData';
 import { INITIAL_PRICE_MODES } from '@/lib/omegaPriceModeData';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 
 interface ToastState {
   show: boolean;
@@ -38,12 +40,106 @@ interface ToastState {
 }
 
 export default function WorkstationsPrintersView() {
+  const { currentTenant } = useTenant();
   const [activeTab, setActiveTab] = useState<'workstations' | 'printers'>('workstations');
   const [selectedBranchId, setSelectedBranchId] = useState<number>(1);
 
   // Data State
   const [workstations, setWorkstations] = useState<OmegaWorkstation[]>(INITIAL_WORKSTATIONS);
   const [printers, setPrinters] = useState<OmegaPhysicalPrinter[]>(INITIAL_PHYSICAL_PRINTERS);
+
+  // Mount hydration from Supabase
+  React.useEffect(() => {
+    async function loadPersistedDevices() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.workstations && Array.isArray(data.feature_flags.workstations) && data.feature_flags.workstations.length > 0) {
+          setWorkstations(data.feature_flags.workstations);
+        }
+        if (data?.feature_flags?.printers && Array.isArray(data.feature_flags.printers) && data.feature_flags.printers.length > 0) {
+          setPrinters(data.feature_flags.printers);
+        }
+      } catch (err) {
+        console.warn('Notice loading workstations/printers from database:', err);
+      }
+    }
+    loadPersistedDevices();
+  }, [currentTenant?.id]);
+
+  const persistWorkstationsToDatabase = async (newWs: OmegaWorkstation[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            workstations: newWs
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
+
+  const persistPrintersToDatabase = async (newPrinters: OmegaPhysicalPrinter[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            printers: newPrinters
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
 
   // Toast Notification System
   const [toast, setToast] = useState<ToastState>({ show: false, message: '', type: 'info' });
@@ -136,41 +232,39 @@ export default function WorkstationsPrintersView() {
   };
 
   // Save Workstation
-  const handleSaveWorkstation = (e: React.FormEvent) => {
+  const handleSaveWorkstation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!wsName.trim()) {
       showToast('Workstation name is required.', 'warning');
       return;
     }
 
+    let updated: OmegaWorkstation[];
     if (editingWorkstation) {
-      setWorkstations(prev =>
-        prev.map(w =>
-          w.ID === editingWorkstation.ID
-            ? {
-                ...w,
-                WORKSTNAME: wsName.trim(),
-                ip_address: wsIp.trim(),
-                MENU: wsMenu,
-                MODES: wsMode,
-                MAINSCREEN: wsScreen,
-                CASHDRAWERPORT: wsDrawer,
-                SCALEPORT: wsScale,
-                TICKETNMB: wsTicket,
-                SKINSTYLE: wsSkin,
-                is_pda: wsIsPda,
-                is_omenu: wsIsOmenu,
-                print_for_pda: wsPrintForPda,
-                is_bitfood: wsIsBitfood,
-                check_1_printer: wsCheck1,
-                check_2_printer: wsCheck2,
-                fast_food_1_printer: wsFastFood1,
-                fast_food_2_printer: wsFastFood2
-              }
-            : w
-        )
+      updated = workstations.map(w =>
+        w.ID === editingWorkstation.ID
+          ? {
+              ...w,
+              WORKSTNAME: wsName.trim(),
+              ip_address: wsIp.trim(),
+              MENU: wsMenu,
+              MODES: wsMode,
+              MAINSCREEN: wsScreen,
+              CASHDRAWERPORT: wsDrawer,
+              SCALEPORT: wsScale,
+              TICKETNMB: wsTicket,
+              SKINSTYLE: wsSkin,
+              is_pda: wsIsPda,
+              is_omenu: wsIsOmenu,
+              print_for_pda: wsPrintForPda,
+              is_bitfood: wsIsBitfood,
+              check_1_printer: wsCheck1,
+              check_2_printer: wsCheck2,
+              fast_food_1_printer: wsFastFood1,
+              fast_food_2_printer: wsFastFood2
+            }
+          : w
       );
-      showToast(`Workstation "${wsName}" updated successfully.`, 'success');
     } else {
       const nextId = workstations.length > 0 ? Math.max(...workstations.map(w => w.ID)) + 1 : 10;
       const nextNbr = workstations.length > 0 ? Math.max(...workstations.map(w => w.WORKSTATION_NB)) + 1 : 1;
@@ -200,18 +294,36 @@ export default function WorkstationsPrintersView() {
         fast_food_1_printer: wsFastFood1,
         fast_food_2_printer: wsFastFood2
       };
-      setWorkstations(prev => [...prev, newWs]);
-      showToast(`Workstation "${wsName}" added successfully.`, 'success');
+      updated = [...workstations, newWs];
     }
 
+    const res = await persistWorkstationsToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'warning');
+      return;
+    }
+
+    setWorkstations(updated);
+    showToast(
+      editingWorkstation
+        ? `Workstation "${wsName}" updated in database.`
+        : `Workstation "${wsName}" added to database.`,
+      'success'
+    );
     setShowWorkstationModal(false);
   };
 
   // Delete Workstation
-  const handleDeleteWorkstation = (row: OmegaWorkstation) => {
+  const handleDeleteWorkstation = async (row: OmegaWorkstation) => {
     if (confirm(`Are you sure you want to remove workstation "${row.WORKSTNAME}"?`)) {
-      setWorkstations(prev => prev.filter(w => w.ID !== row.ID));
-      showToast(`Workstation "${row.WORKSTNAME}" removed.`, 'warning');
+      const updated = workstations.filter(w => w.ID !== row.ID);
+      const res = await persistWorkstationsToDatabase(updated);
+      if (!res.success) {
+        showToast(`Database persistence failed: ${res.error}`, 'warning');
+        return;
+      }
+      setWorkstations(updated);
+      showToast(`Workstation "${row.WORKSTNAME}" removed from database.`, 'warning');
     }
   };
 
@@ -240,7 +352,7 @@ export default function WorkstationsPrintersView() {
   };
 
   // Save Printer
-  const handleSavePrinter = (e: React.FormEvent) => {
+  const handleSavePrinter = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!prDescription.trim()) {
       showToast('Printer description is required.', 'warning');
@@ -249,24 +361,22 @@ export default function WorkstationsPrintersView() {
 
     const brandObj = PRINTER_BRANDS.find(b => b.id === prBrandId) || { id: 1, description: 'Omega' };
 
+    let updated: OmegaPhysicalPrinter[];
     if (editingPrinter) {
-      setPrinters(prev =>
-        prev.map(p =>
-          p.ID === editingPrinter.ID
-            ? {
-                ...p,
-                DESCRIPTION: prDescription.trim(),
-                TYPE_ID: prBrandId,
-                PRINTER_TYPE: prType,
-                PRINTER_IP: prType === 1 ? prIp.trim() : null,
-                PRINTER_NAME: prType === 2 ? prName.trim() : null,
-                PRINTER_SERIES: prSeries,
-                type: { id: brandObj.id, description: brandObj.description, active: 1 }
-              }
-            : p
-        )
+      updated = printers.map(p =>
+        p.ID === editingPrinter.ID
+          ? {
+              ...p,
+              DESCRIPTION: prDescription.trim(),
+              TYPE_ID: prBrandId,
+              PRINTER_TYPE: prType,
+              PRINTER_IP: prType === 1 ? prIp.trim() : null,
+              PRINTER_NAME: prType === 2 ? prName.trim() : null,
+              PRINTER_SERIES: prSeries,
+              type: { id: brandObj.id, description: brandObj.description, active: 1 }
+            }
+          : p
       );
-      showToast(`Physical Printer "${prDescription}" updated.`, 'success');
     } else {
       const nextId = printers.length > 0 ? Math.max(...printers.map(p => p.ID)) + 1 : 1;
       const newPr: OmegaPhysicalPrinter = {
@@ -281,19 +391,37 @@ export default function WorkstationsPrintersView() {
         PRINTER_SERIES: prSeries,
         type: { id: brandObj.id, description: brandObj.description, active: 1 }
       };
-      setPrinters(prev => [...prev, newPr]);
-      showToast(`Physical Printer "${prDescription}" added.`, 'success');
+      updated = [...printers, newPr];
     }
 
+    const res = await persistPrintersToDatabase(updated);
+    if (!res.success) {
+      showToast(`Database persistence failed: ${res.error}`, 'warning');
+      return;
+    }
+
+    setPrinters(updated);
+    showToast(
+      editingPrinter
+        ? `Physical Printer "${prDescription}" updated in database.`
+        : `Physical Printer "${prDescription}" added to database.`,
+      'success'
+    );
     setShowPrinterModal(false);
   };
 
   // Delete Printer
-  const handleDeletePrinter = (id: number) => {
+  const handleDeletePrinter = async (id: number) => {
     const item = printers.find(p => p.ID === id);
     if (confirm(`Are you sure you want to remove physical printer "${item?.DESCRIPTION || id}"?`)) {
-      setPrinters(prev => prev.filter(p => p.ID !== id));
-      showToast(`Printer removed.`, 'warning');
+      const updated = printers.filter(p => p.ID !== id);
+      const res = await persistPrintersToDatabase(updated);
+      if (!res.success) {
+        showToast(`Database persistence failed: ${res.error}`, 'warning');
+        return;
+      }
+      setPrinters(updated);
+      showToast(`Printer removed from database.`, 'warning');
     }
   };
 

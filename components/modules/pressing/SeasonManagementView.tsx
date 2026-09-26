@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
 import {
   Calendar,
   Clock,
@@ -26,9 +28,66 @@ import { HarvestSeason, SeasonStatus } from '@/types/pressingMill';
 import { useLanguage } from '@/lib/LanguageContext';
 
 export default function SeasonManagementView() {
+  const { currentTenant } = useTenant();
   const { t } = useLanguage();
   const [seasons, setSeasons] = useState<HarvestSeason[]>(INITIAL_SEASONS);
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>(INITIAL_SEASONS[0].id);
+
+  useEffect(() => {
+    async function loadPersistedSeasons() {
+      try {
+        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data, error } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        if (data?.feature_flags?.harvest_seasons && Array.isArray(data.feature_flags.harvest_seasons) && data.feature_flags.harvest_seasons.length > 0) {
+          setSeasons(data.feature_flags.harvest_seasons);
+        }
+      } catch (err) {
+        console.warn('Notice loading seasons from database:', err);
+      }
+    }
+    loadPersistedSeasons();
+  }, [currentTenant?.id]);
+
+  const persistSeasonsToDatabase = async (newSeasons: HarvestSeason[]): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetId)
+        .maybeSingle();
+
+      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
+      const { error: dbError } = await supabase
+        .from('tenants')
+        .update({
+          feature_flags: {
+            ...existingFlags,
+            harvest_seasons: newSeasons
+          },
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (dbError) {
+        return { success: false, error: dbError.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Database connection error' };
+    }
+  };
 
   // Form states for creating / editing season
   const [seasonName, setSeasonName] = useState('Season 2026/2027 (Active Campaign)');
@@ -84,45 +143,57 @@ export default function SeasonManagementView() {
     triggerToast('New planned season initialized.');
   };
 
-  const handleSaveSeason = () => {
-    setSeasons((prev) =>
-      prev.map((s) => {
-        if (s.id === selectedSeasonId) {
-          return {
-            ...s,
-            seasonName,
-            startDateTime,
-            endDateTime,
-            status,
-            notes
-          };
-        }
-        // If this season is activated, deactivate others
-        if (status === 'Active' && s.id !== selectedSeasonId && s.status === 'Active') {
-          return { ...s, status: 'Closed' as SeasonStatus };
-        }
-        return s;
-      })
-    );
-    triggerToast('Season configuration updated successfully.');
+  const handleSaveSeason = async () => {
+    const updatedSeasons = seasons.map((s) => {
+      if (s.id === selectedSeasonId) {
+        return {
+          ...s,
+          seasonName,
+          startDateTime,
+          endDateTime,
+          status,
+          notes
+        };
+      }
+      // If this season is activated, deactivate others
+      if (status === 'Active' && s.id !== selectedSeasonId && s.status === 'Active') {
+        return { ...s, status: 'Closed' as SeasonStatus };
+      }
+      return s;
+    });
+
+    const res = await persistSeasonsToDatabase(updatedSeasons);
+    if (!res.success) {
+      triggerToast(`Database save failed: ${res.error}`);
+      return;
+    }
+
+    setSeasons(updatedSeasons);
+    triggerToast('Season configuration updated and persisted to database.');
   };
 
-  const handleEndSeasonConfirm = () => {
-    setSeasons((prev) =>
-      prev.map((s) => {
-        if (s.id === selectedSeasonId) {
-          return {
-            ...s,
-            status: 'Closed' as SeasonStatus,
-            endDateTime: new Date().toISOString().slice(0, 16)
-          };
-        }
-        return s;
-      })
-    );
+  const handleEndSeasonConfirm = async () => {
+    const updatedSeasons = seasons.map((s) => {
+      if (s.id === selectedSeasonId) {
+        return {
+          ...s,
+          status: 'Closed' as SeasonStatus,
+          endDateTime: new Date().toISOString().slice(0, 16)
+        };
+      }
+      return s;
+    });
+
+    const res = await persistSeasonsToDatabase(updatedSeasons);
+    if (!res.success) {
+      triggerToast(`Database save failed: ${res.error}`);
+      return;
+    }
+
+    setSeasons(updatedSeasons);
     setStatus('Closed');
     setShowEndSeasonModal(false);
-    triggerToast('Season officially closed. Intake & pressing lines locked into read-only mode.');
+    triggerToast('Season officially closed and persisted to database. Intake & pressing lines locked into read-only mode.');
   };
 
   return (
