@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
@@ -371,6 +372,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
 ];
 
 export default function LostGoodsView() {
+  const { t } = useLanguage();
   // ==========================================================================
   // MAIN FORM STATE
   // ==========================================================================
@@ -671,12 +673,12 @@ export default function LostGoodsView() {
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-3 mb-2">
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight">
-            Lost Goods
+            {t('lost_goods', 'Lost Goods')}
           </h1>
           <nav className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 font-medium">
-            <span className="text-primary hover:underline cursor-pointer">Home</span>
+            <span className="text-primary hover:underline cursor-pointer">{t('home', 'Home')}</span>
             <span>/</span>
-            <span className="text-slate-500">Lost Goods</span>
+            <span className="text-slate-500">{t('lost_goods', 'Lost Goods')}</span>
             {activeVoucher && (
               <>
                 <span>/</span>
@@ -697,7 +699,7 @@ export default function LostGoodsView() {
             }}
             className="text-xs text-primary hover:underline font-medium flex items-center gap-1"
           >
-            Watch Tutorial
+            {t('watch_tutorial', 'Watch Tutorial')}
           </a>
         </div>
       </div>
@@ -730,7 +732,7 @@ export default function LostGoodsView() {
             className="h-[32px] px-3.5 bg-primary hover:bg-[#1a252f] active:bg-[#111920] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New</span>
+            <span>{t('new', 'New')}</span>
           </button>
 
           {/* Preview Button */}
@@ -739,7 +741,7 @@ export default function LostGoodsView() {
             className="h-[32px] px-3.5 bg-primary hover:bg-[#1a252f] active:bg-[#111920] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Search className="w-3.5 h-3.5" />
-            <span>Preview</span>
+            <span>{t('preview', 'Preview')}</span>
           </button>
 
           {/* Print Button */}
@@ -749,7 +751,7 @@ export default function LostGoodsView() {
             className="h-[32px] px-3.5 bg-primary hover:bg-[#1a252f] active:bg-[#111920] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Print</span>
+            <span>{t('print', 'Print')}</span>
           </button>
         </div>
       </div>
@@ -762,7 +764,7 @@ export default function LostGoodsView() {
         <div className="bg-white border border-slate-200 rounded-md shadow-xs overflow-hidden">
           <div className="bg-background px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
             <h2 className="text-xs font-semibold text-slate-700 tracking-wide">
-              Inventory Items Lost Goods
+              {t('inventory_items_lost_goods', 'Inventory Items Lost Goods')}
             </h2>
           </div>
 
@@ -771,7 +773,7 @@ export default function LostGoodsView() {
               {/* 1. Date */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Date
+                  {t('date', 'Date')}
                 </label>
                 <div className="relative flex items-center">
                   <input
@@ -786,7 +788,7 @@ export default function LostGoodsView() {
               {/* 2. Location (with + button) */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Location
+                  {t('location', 'Location')}
                 </label>
                 <div className="flex items-center gap-1.5">
                   <div className="relative flex-1">
@@ -795,7 +797,7 @@ export default function LostGoodsView() {
                       onChange={(e) => setSelectedLocationId(Number(e.target.value) || '')}
                       className="w-full h-[34px] px-3 pr-7 text-xs text-slate-700 bg-white border border-slate-300 rounded shadow-xs focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 cursor-pointer"
                     >
-                      <option value="">Select location</option>
+                      <option value="">{t('select_location', 'Select location')}</option>
                       {locations.map((loc) => (
                         <option key={loc.id} value={loc.id}>
                           {loc.name}
@@ -807,7 +809,7 @@ export default function LostGoodsView() {
                   <button
                     type="button"
                     onClick={() => setIsAddLocationModalOpen(true)}
-                    title="Add Location"
+                    title={t('add_location', 'Add Location')}
                     className="w-[34px] h-[34px] bg-primary hover:bg-[#1a252f] text-white rounded flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   >
                     <Plus className="w-4 h-4" />
@@ -818,7 +820,7 @@ export default function LostGoodsView() {
               {/* 3. Reported By Employee* */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Reported By Employee*
+                  {t('reported_by_employee', 'Reported By Employee*')}
                 </label>
                 <input
                   type="text"
@@ -831,7 +833,7 @@ export default function LostGoodsView() {
               {/* 4. Lost Goods Reason (with + button) */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Lost Goods Reason
+                  {t('lost_goods_reason', 'Lost Goods Reason')}
                 </label>
                 <div className="flex items-center gap-1.5">
                   <div className="relative flex-1">
@@ -853,7 +855,7 @@ export default function LostGoodsView() {
                       }}
                       className="w-full h-[34px] px-3 pr-7 text-xs text-slate-700 bg-white border border-slate-300 rounded shadow-xs focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 cursor-pointer"
                     >
-                      <option value="">Select Reason</option>
+                      <option value="">{t('select_reason', 'Select Reason')}</option>
                       {reasons.map((r) => (
                         <option key={r.id} value={r.id}>
                           {r.name}
@@ -865,7 +867,7 @@ export default function LostGoodsView() {
                   <button
                     type="button"
                     onClick={() => setIsAddReasonModalOpen(true)}
-                    title="Add Reason"
+                    title={t('add_reason', 'Add Reason')}
                     className="w-[34px] h-[34px] bg-primary hover:bg-[#1a252f] text-white rounded flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   >
                     <Plus className="w-4 h-4" />
@@ -882,7 +884,7 @@ export default function LostGoodsView() {
         <div className="bg-white border border-slate-200 rounded-md shadow-xs overflow-hidden">
           <div className="bg-background px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
             <h2 className="text-xs font-semibold text-slate-700 tracking-wide">
-              Details
+              {t('details', 'Details')}
             </h2>
           </div>
 
@@ -902,7 +904,7 @@ export default function LostGoodsView() {
                       }
                     }}
                     onClick={() => setIsSearchModalOpen(true)}
-                    placeholder="Search items..."
+                    placeholder={t('search_items', 'Search items...')}
                     className="w-full h-[34px] px-3.5 text-xs text-slate-700 bg-white border border-primary rounded-md shadow-[0_0_8px_rgba(102,175,233,0.4)] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer"
                   />
                   <Search
@@ -920,7 +922,7 @@ export default function LostGoodsView() {
                   className="h-[34px] px-4 bg-primary hover:bg-[#1a252f] text-white text-xs font-medium rounded shadow-xs flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  <span>Import CSV</span>
+                  <span>{t('import_csv', 'Import CSV')}</span>
                 </button>
               </div>
             </div>
@@ -930,12 +932,12 @@ export default function LostGoodsView() {
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-background text-slate-700 border-b border-slate-200 font-semibold">
-                    <th className="py-2.5 px-3 w-[30%]">Description</th>
-                    <th className="py-2.5 px-3 w-[10%] text-right">Qty</th>
-                    <th className="py-2.5 px-3 w-[12%] text-right">Unit Cost</th>
-                    <th className="py-2.5 px-3 w-[12%] text-right">Total Cost</th>
-                    <th className="py-2.5 px-3 w-[10%]">Unit</th>
-                    <th className="py-2.5 px-3 w-[22%]">Remark</th>
+                    <th className="py-2.5 px-3 w-[30%]">{t('description', 'Description')}</th>
+                    <th className="py-2.5 px-3 w-[10%] text-right">{t('qty', 'Qty')}</th>
+                    <th className="py-2.5 px-3 w-[12%] text-right">{t('unit_cost', 'Unit Cost')}</th>
+                    <th className="py-2.5 px-3 w-[12%] text-right">{t('total_cost', 'Total Cost')}</th>
+                    <th className="py-2.5 px-3 w-[10%]">{t('unit', 'Unit')}</th>
+                    <th className="py-2.5 px-3 w-[22%]">{t('remark', 'Remark')}</th>
                     <th className="py-2.5 px-3 w-[4%] text-center"></th>
                   </tr>
                 </thead>
@@ -951,14 +953,14 @@ export default function LostGoodsView() {
                               onClick={() => setIsSearchModalOpen(true)}
                               className="text-blue-600 underline font-semibold"
                             >
-                              Search items...
+                              {t('search_items', 'Search items...')}
                             </button>{' '}
                             or{' '}
                             <button
                               onClick={() => setIsImportCsvModalOpen(true)}
                               className="text-blue-600 underline font-semibold"
                             >
-                              Import CSV
+                              {t('import_csv', 'Import CSV')}
                             </button>{' '}
                             to add lost goods.
                           </p>
@@ -1013,14 +1015,14 @@ export default function LostGoodsView() {
                               type="text"
                               value={item.remark}
                               onChange={(e) => handleRemarkChange(item.id, e.target.value)}
-                              placeholder="Add remark..."
+                              placeholder={t('add_remark', 'Add remark...')}
                               className="w-full h-6 px-2 pr-14 text-xs border border-slate-300 rounded focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 bg-white"
                             />
                             <div className="absolute right-1 flex items-center gap-0.5">
                               <button
                                 type="button"
                                 onClick={() => handleSetRowReason(item.id)}
-                                title="Set current reason"
+                                title={t('set_current_reason', 'Set current reason')}
                                 className="w-5 h-5 bg-primary hover:bg-primary/90 text-white rounded text-[10px] flex items-center justify-center transition-colors cursor-pointer"
                               >
                                 <Edit2 className="w-2.5 h-2.5" />
@@ -1028,7 +1030,7 @@ export default function LostGoodsView() {
                               <button
                                 type="button"
                                 onClick={() => handleClearRemark(item.id)}
-                                title="Clear remark"
+                                title={t('clear_remark', 'Clear remark')}
                                 className="w-5 h-5 bg-rose-600 hover:bg-rose-700 text-white rounded text-[10px] flex items-center justify-center transition-colors cursor-pointer"
                               >
                                 <Eraser className="w-2.5 h-2.5" />
@@ -1042,7 +1044,7 @@ export default function LostGoodsView() {
                           <button
                             type="button"
                             onClick={() => handleDeleteItem(item.id)}
-                            title="Remove item"
+                            title={t('remove_item', 'Remove item')}
                             className="w-6 h-6 bg-rose-500 hover:bg-rose-600 text-white rounded flex items-center justify-center transition-colors cursor-pointer mx-auto"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1079,7 +1081,7 @@ export default function LostGoodsView() {
                     className="h-[34px] px-4 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>Save</span>
+                    <span>{t('save', 'Save')}</span>
                   </button>
 
                   {activeVoucher.posted !== -1 ? (
@@ -1089,7 +1091,7 @@ export default function LostGoodsView() {
                       className="h-[34px] px-4 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Tag className="w-3.5 h-3.5" />
-                      <span>Post</span>
+                      <span>{t('post', 'Post')}</span>
                     </button>
                   ) : (
                     <button
@@ -1098,7 +1100,7 @@ export default function LostGoodsView() {
                       className="h-[34px] px-4 bg-[#3498db] hover:bg-[#2980b9] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      <span>Unpost</span>
+                      <span>{t('unpost', 'Unpost')}</span>
                     </button>
                   )}
 
@@ -1108,7 +1110,7 @@ export default function LostGoodsView() {
                     className="h-[34px] px-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>Delete</span>
+                    <span>{t('delete', 'Delete')}</span>
                   </button>
                 </>
               ) : (
@@ -1120,7 +1122,7 @@ export default function LostGoodsView() {
                     className="h-[34px] px-4 bg-amber-600 hover:bg-amber-700 active:bg-[#c96902] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>Save</span>
+                    <span>{t('save', 'Save')}</span>
                   </button>
 
                   <button
@@ -1129,7 +1131,7 @@ export default function LostGoodsView() {
                     className="h-[34px] px-4 bg-emerald-700 hover:bg-emerald-700 active:bg-[#1e824c] text-white text-xs font-semibold rounded shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>Save And Post</span>
+                    <span>{t('save_and_post', 'Save And Post')}</span>
                   </button>
                 </>
               )}
@@ -1263,6 +1265,7 @@ function PreviewLostGoodsModal({
   onDeleteVoucher,
   onPostVoucher
 }: PreviewModalProps) {
+  const { t } = useLanguage();
   const [filterSearch, setFilterSearch] = useState('');
   const [filterBranch, setFilterBranch] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL'); // ALL, POSTED, UNPOSTED
@@ -1308,10 +1311,10 @@ function PreviewLostGoodsModal({
         <div className="px-5 py-4 border-b border-slate-200 bg-background flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-slate-800">
-              Preview Lost Goods Inventory Items
+              {t('preview_lost_goods_inventory_items', 'Preview Lost Goods Inventory Items')}
             </h3>
             <p className="text-xs text-slate-500">
-              Preview Lost Goods Inventory Item records from Omega ERP database
+              {t('preview_lost_goods_inventory_item', 'Preview Lost Goods Inventory Item records from Omega ERP database')}
             </p>
           </div>
           <button
@@ -1331,7 +1334,7 @@ function PreviewLostGoodsModal({
                 type="search"
                 value={filterSearch}
                 onChange={(e) => setFilterSearch(e.target.value)}
-                placeholder="Search..."
+                placeholder={t('search', 'Search...')}
                 className="w-full h-8 px-3 text-xs bg-white border border-slate-300 rounded focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
               />
             </div>
@@ -1344,8 +1347,8 @@ function PreviewLostGoodsModal({
                 className="w-full h-8 px-2 text-xs bg-white border border-slate-300 rounded focus:outline-none focus:border-blue-400"
               >
                 <option value="ALL">Select branch (All)</option>
-                <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub</option>
-                <option value="Choueifat Main Facility">Choueifat Main Facility</option>
+                <option value="Zeit w zaytoun ljanoub">{t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}</option>
+                <option value="Choueifat Main Facility">{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
               </select>
             </div>
 
@@ -1357,7 +1360,7 @@ function PreviewLostGoodsModal({
                 className="w-full h-8 px-2 text-xs bg-white border border-slate-300 rounded focus:outline-none focus:border-blue-400"
               >
                 <option value="ALL">Select status (All)</option>
-                <option value="POSTED">Posted</option>
+                <option value="POSTED">{t('posted', 'Posted')}</option>
                 <option value="UNPOSTED">Unposted (Draft)</option>
               </select>
             </div>
@@ -1372,7 +1375,7 @@ function PreviewLostGoodsModal({
                   onChange={(e) => setPostAllEnabled(e.target.checked)}
                   className="rounded text-blue-600"
                 />
-                <span>Multiple Posting</span>
+                <span>{t('multiple_posting', 'Multiple Posting')}</span>
               </label>
 
               <label className="flex items-center gap-1.5 cursor-pointer">
@@ -1382,7 +1385,7 @@ function PreviewLostGoodsModal({
                   onChange={(e) => setAllDatesChecked(e.target.checked)}
                   className="rounded text-blue-600"
                 />
-                <span>All Dates</span>
+                <span>{t('all_dates', 'All Dates')}</span>
               </label>
             </div>
 
@@ -1393,7 +1396,7 @@ function PreviewLostGoodsModal({
                 className="h-7 px-3 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-xs font-medium flex items-center gap-1"
               >
                 <Tag className="w-3.5 h-3.5" />
-                <span>Post Selected Transactions</span>
+                <span>{t('post_selected_transactions', 'Post Selected Transactions')}</span>
               </button>
             )}
           </div>
@@ -1406,13 +1409,13 @@ function PreviewLostGoodsModal({
               <tr className="bg-slate-100 text-slate-700 border-b border-slate-200 font-semibold">
                 {postAllEnabled && <th className="py-2 px-2 w-8"></th>}
                 <th className="py-2 px-3 w-16">#</th>
-                <th className="py-2 px-3">Branch</th>
+                <th className="py-2 px-3">{t('branch', 'Branch')}</th>
                 <th className="py-2 px-3">Requisitions (Date)</th>
-                <th className="py-2 px-3">Employee</th>
-                <th className="py-2 px-3">Location</th>
-                <th className="py-2 px-3">Reason</th>
-                <th className="py-2 px-3 text-center">Posted</th>
-                <th className="py-2 px-3 text-right">Actions</th>
+                <th className="py-2 px-3">{t('employee', 'Employee')}</th>
+                <th className="py-2 px-3">{t('location', 'Location')}</th>
+                <th className="py-2 px-3">{t('reason', 'Reason')}</th>
+                <th className="py-2 px-3 text-center">{t('posted', 'Posted')}</th>
+                <th className="py-2 px-3 text-right">{t('actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -1446,11 +1449,11 @@ function PreviewLostGoodsModal({
                   <td className="py-2 px-3 text-center">
                     {v.posted === -1 ? (
                       <span className="inline-block px-2 py-0.5 text-[10px] font-semibold text-emerald-800 bg-emerald-100 rounded-full">
-                        Posted
+                        {t('posted', 'Posted')}
                       </span>
                     ) : (
                       <span className="inline-block px-2 py-0.5 text-[10px] font-semibold text-amber-800 bg-amber-100 rounded-full">
-                        Draft
+                        {t('draft', 'Draft')}
                       </span>
                     )}
                   </td>
@@ -1459,7 +1462,7 @@ function PreviewLostGoodsModal({
                       {/* Open / Edit */}
                       <button
                         onClick={() => onOpenVoucher(v)}
-                        title="Open Voucher"
+                        title={t('open_voucher', 'Open Voucher')}
                         className="w-6 h-6 bg-primary hover:bg-primary/90 text-white rounded flex items-center justify-center transition-colors cursor-pointer"
                       >
                         <Edit2 className="w-3 h-3" />
@@ -1469,7 +1472,7 @@ function PreviewLostGoodsModal({
                       {v.posted !== -1 && (
                         <button
                           onClick={() => onPostVoucher(v.ser)}
-                          title="Post Voucher"
+                          title={t('post_voucher', 'Post Voucher')}
                           className="w-6 h-6 bg-emerald-700 hover:bg-emerald-700 text-white rounded flex items-center justify-center transition-colors cursor-pointer"
                         >
                           <Tag className="w-3 h-3" />
@@ -1479,7 +1482,7 @@ function PreviewLostGoodsModal({
                       {/* Delete */}
                       <button
                         onClick={() => onDeleteVoucher(v.ser)}
-                        title="Delete Voucher"
+                        title={t('delete_voucher', 'Delete Voucher')}
                         className="w-6 h-6 bg-rose-500 hover:bg-rose-600 text-white rounded flex items-center justify-center transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -1499,7 +1502,7 @@ function PreviewLostGoodsModal({
             onClick={onClose}
             className="h-8 px-4 bg-slate-300 hover:bg-slate-400 text-slate-800 rounded font-medium transition-colors"
           >
-            Close
+            {t('close', 'Close')}
           </button>
         </div>
       </div>
@@ -1518,6 +1521,7 @@ interface AddLocationModalProps {
 }
 
 function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
+  const { t } = useLanguage();
   const [locationName, setLocationName] = useState('');
 
   if (!isOpen) return null;
@@ -1526,7 +1530,7 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
       <div className="bg-white w-full max-w-sm rounded-lg shadow-xl overflow-hidden border border-slate-200">
         <div className="px-4 py-3 bg-background border-b border-slate-200 flex items-center justify-between">
-          <h4 className="text-xs font-bold text-slate-800">Add Inventory Location</h4>
+          <h4 className="text-xs font-bold text-slate-800">{t('add_inventory_location', 'Add Inventory Location')}</h4>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X className="w-4 h-4" />
           </button>
@@ -1534,14 +1538,14 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
         <div className="p-4 space-y-3">
           <div>
             <label className="block text-xs font-medium text-slate-700 mb-1">
-              Location Description
+              {t('location_description', 'Location Description')}
             </label>
             <input
               type="text"
               autoFocus
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
-              placeholder="e.g. Refrigerated Room 2"
+              placeholder={t('eg_refrigerated_room_2', 'e.g. Refrigerated Room 2')}
               className="w-full h-8 px-3 text-xs border border-slate-300 rounded focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
             />
           </div>
@@ -1552,7 +1556,7 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
             onClick={onClose}
             className="h-8 px-3 text-xs text-slate-600 hover:bg-slate-200 rounded font-medium"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="button"
@@ -1560,7 +1564,7 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
             onClick={() => onAdd(locationName.trim())}
             className="h-8 px-4 text-xs bg-primary hover:bg-[#1a252f] disabled:opacity-50 text-white rounded font-medium"
           >
-            Save Location
+            {t('save_location', 'Save Location')}
           </button>
         </div>
       </div>
@@ -1579,6 +1583,7 @@ interface AddReasonModalProps {
 }
 
 function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
+  const { t } = useLanguage();
   const [reasonName, setReasonName] = useState('');
 
   if (!isOpen) return null;
@@ -1587,7 +1592,7 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
       <div className="bg-white w-full max-w-sm rounded-lg shadow-xl overflow-hidden border border-slate-200">
         <div className="px-4 py-3 bg-background border-b border-slate-200 flex items-center justify-between">
-          <h4 className="text-xs font-bold text-slate-800">Add Lost Goods Reason</h4>
+          <h4 className="text-xs font-bold text-slate-800">{t('add_lost_goods_reason', 'Add Lost Goods Reason')}</h4>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X className="w-4 h-4" />
           </button>
@@ -1595,14 +1600,14 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
         <div className="p-4 space-y-3">
           <div>
             <label className="block text-xs font-medium text-slate-700 mb-1">
-              Reason Description
+              {t('reason_description', 'Reason Description')}
             </label>
             <input
               type="text"
               autoFocus
               value={reasonName}
               onChange={(e) => setReasonName(e.target.value)}
-              placeholder="e.g. Temperature Spoilage"
+              placeholder={t('eg_temperature_spoilage', 'e.g. Temperature Spoilage')}
               className="w-full h-8 px-3 text-xs border border-slate-300 rounded focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
             />
           </div>
@@ -1613,7 +1618,7 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
             onClick={onClose}
             className="h-8 px-3 text-xs text-slate-600 hover:bg-slate-200 rounded font-medium"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="button"
@@ -1621,7 +1626,7 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
             onClick={() => onAdd(reasonName.trim())}
             className="h-8 px-4 text-xs bg-primary hover:bg-[#1a252f] disabled:opacity-50 text-white rounded font-medium"
           >
-            Save Reason
+            {t('save_reason', 'Save Reason')}
           </button>
         </div>
       </div>
@@ -1640,6 +1645,7 @@ interface ImportCsvModalProps {
 }
 
 function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
+  const { t } = useLanguage();
   const [fileName, setFileName] = useState('');
   const [csvContent, setCsvContent] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -1718,7 +1724,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
       <div className="bg-white w-full max-w-md rounded-lg shadow-xl overflow-hidden border border-slate-200">
         <div className="px-5 py-3.5 bg-background border-b border-slate-200 flex items-center justify-between">
-          <h4 className="text-sm font-bold text-slate-800">Import Wastage</h4>
+          <h4 className="text-sm font-bold text-slate-800">{t('import_wastage', 'Import Wastage')}</h4>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X className="w-5 h-5" />
           </button>
@@ -1732,7 +1738,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
               className="text-xs text-primary hover:underline flex items-center gap-1 ml-auto font-medium"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Download Template</span>
+              <span>{t('download_template', 'Download Template')}</span>
             </button>
           </div>
 
@@ -1742,7 +1748,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
               {fileName || 'Click to select or drop CSV file here'}
             </div>
             <label className="inline-block px-4 py-2 bg-primary hover:bg-[#1a252f] text-white text-xs font-semibold rounded cursor-pointer transition-colors">
-              <span>Browse CSV</span>
+              <span>{t('browse_csv', 'Browse CSV')}</span>
               <input
                 type="file"
                 accept=".csv,text/csv"
@@ -1753,7 +1759,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
           </div>
 
           <p className="text-[11px] text-slate-400">
-            Supported columns: PRODUCTCODE, QUANTITY, UNITCOST, REMARK
+            {t('supported_columns_productcode_quantity', 'Supported columns: PRODUCTCODE, QUANTITY, UNITCOST, REMARK')}
           </p>
         </div>
 
@@ -1763,7 +1769,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
             onClick={onClose}
             className="h-8 px-4 text-xs text-slate-600 hover:bg-slate-200 rounded font-medium"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="button"
@@ -1809,6 +1815,7 @@ function PrintVoucherModal({
   items,
   totalSum
 }: PrintVoucherModalProps) {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   return (
@@ -1825,7 +1832,7 @@ function PrintVoucherModal({
               className="h-7 px-3 bg-primary hover:bg-[#1a252f] text-white text-xs font-medium rounded flex items-center gap-1"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print Now</span>
+              <span>{t('print_now', 'Print Now')}</span>
             </button>
             <button
               onClick={onClose}
@@ -1842,15 +1849,15 @@ function PrintVoucherModal({
           <div className="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-6">
             <div>
               <h1 className="text-2xl font-bold tracking-wider uppercase font-sans">
-                VANGUARD ERP
+                {t('vanguard_erp', 'VANGUARD ERP')}
               </h1>
               <p className="text-xs text-slate-500 font-sans">
-                Inventory & Lost Goods Adjustment Note
+                {t('inventory_lost_goods_adjustment_note', 'Inventory & Lost Goods Adjustment Note')}
               </p>
             </div>
             <div className="text-right font-sans">
               <div className="text-base font-bold text-slate-800">
-                LOST GOODS VOUCHER
+                {t('lost_goods_voucher', 'LOST GOODS VOUCHER')}
               </div>
               <div className="text-sm font-mono text-slate-600">
                 #{voucherNumber}
@@ -1862,19 +1869,19 @@ function PrintVoucherModal({
           {/* Meta Information */}
           <div className="grid grid-cols-2 gap-4 font-sans text-xs mb-6 border p-3 rounded bg-slate-50">
             <div>
-              <span className="font-semibold text-slate-500">Branch: </span>
+              <span className="font-semibold text-slate-500">{t('branch', 'Branch:')} </span>
               <span className="font-bold text-slate-800">{branch}</span>
             </div>
             <div>
-              <span className="font-semibold text-slate-500">Location: </span>
+              <span className="font-semibold text-slate-500">{t('location', 'Location:')} </span>
               <span className="font-bold text-slate-800">{location}</span>
             </div>
             <div>
-              <span className="font-semibold text-slate-500">Reported By: </span>
+              <span className="font-semibold text-slate-500">{t('reported_by', 'Reported By:')} </span>
               <span className="font-bold text-slate-800">{employee}</span>
             </div>
             <div>
-              <span className="font-semibold text-slate-500">Reason: </span>
+              <span className="font-semibold text-slate-500">{t('reason', 'Reason:')} </span>
               <span className="font-bold text-slate-800">{reason}</span>
             </div>
           </div>
@@ -1884,12 +1891,12 @@ function PrintVoucherModal({
             <thead>
               <tr className="border-b-2 border-slate-800 bg-slate-100 font-bold">
                 <th className="py-2 px-2">#</th>
-                <th className="py-2 px-2">Description</th>
-                <th className="py-2 px-2 text-right">Qty</th>
-                <th className="py-2 px-2">Unit</th>
+                <th className="py-2 px-2">{t('description', 'Description')}</th>
+                <th className="py-2 px-2 text-right">{t('qty', 'Qty')}</th>
+                <th className="py-2 px-2">{t('unit', 'Unit')}</th>
                 <th className="py-2 px-2 text-right">Unit Cost (LBP)</th>
                 <th className="py-2 px-2 text-right">Total Cost (LBP)</th>
-                <th className="py-2 px-2">Remark</th>
+                <th className="py-2 px-2">{t('remark', 'Remark')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -1912,7 +1919,7 @@ function PrintVoucherModal({
             <tfoot>
               <tr className="border-t-2 border-slate-800 font-bold text-sm bg-slate-50">
                 <td colSpan={2} className="py-2.5 px-2">
-                  Total Lost Goods
+                  {t('total_lost_goods', 'Total Lost Goods')}
                 </td>
                 <td className="py-2.5 px-2 text-right font-mono">
                   {items.reduce((acc, it) => acc + it.qty, 0)}
@@ -1930,16 +1937,16 @@ function PrintVoucherModal({
           {/* Signatures */}
           <div className="grid grid-cols-3 gap-6 pt-12 text-center font-sans text-xs">
             <div className="border-t border-slate-400 pt-2">
-              <p className="font-semibold">Prepared By</p>
+              <p className="font-semibold">{t('prepared_by', 'Prepared By')}</p>
               <p className="text-slate-500 mt-1">{employee}</p>
             </div>
             <div className="border-t border-slate-400 pt-2">
-              <p className="font-semibold">Warehouse Supervisor</p>
-              <p className="text-slate-500 mt-1">Signature</p>
+              <p className="font-semibold">{t('warehouse_supervisor', 'Warehouse Supervisor')}</p>
+              <p className="text-slate-500 mt-1">{t('signature', 'Signature')}</p>
             </div>
             <div className="border-t border-slate-400 pt-2">
-              <p className="font-semibold">Internal Audit / Approval</p>
-              <p className="text-slate-500 mt-1">Signature</p>
+              <p className="font-semibold">{t('internal_audit_approval', 'Internal Audit / Approval')}</p>
+              <p className="text-slate-500 mt-1">{t('signature', 'Signature')}</p>
             </div>
           </div>
         </div>

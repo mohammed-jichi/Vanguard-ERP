@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
@@ -31,6 +32,7 @@ interface ToastState {
 }
 
 export default function DiscountsView() {
+  const { t } = useLanguage();
   // Main state
   const [discountsList, setDiscountsList] = useState<OmegaDiscount[]>(INITIAL_DISCOUNTS);
   const [searchVal, setSearchVal] = useState<string>('');
@@ -261,13 +263,13 @@ export default function DiscountsView() {
       <div className="max-w-7xl mx-auto space-y-4">
         {/* Title and Breadcrumb */}
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Discounts</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">{t('discounts', 'Discounts')}</h1>
           <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 mt-1">
             <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
-              Home
+              {t('home', 'Home')}
             </Link>
             <span>/</span>
-            <span className="text-slate-800 font-semibold">Discounts</span>
+            <span className="text-slate-800 font-semibold">{t('discounts', 'Discounts')}</span>
           </nav>
         </div>
 
@@ -283,7 +285,7 @@ export default function DiscountsView() {
                   value={searchVal}
                   onChange={e => setSearchVal(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="Search..."
+                  placeholder={t('search', 'Search...')}
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <Search className="w-4 h-4" />
@@ -298,7 +300,7 @@ export default function DiscountsView() {
                 onChange={e => setSelectedBranchId(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
                 className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-700"
               >
-                <option value="all">All Branches</option>
+                <option value="all">{t('all_branches', 'All Branches')}</option>
                 {OMEGA_BRANCHES.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
                     {b.BARANCHNAME}
@@ -314,7 +316,7 @@ export default function DiscountsView() {
                 onClick={handleOpenAdd}
                 className="w-full sm:w-auto px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
               >
-                <Plus className="w-4 h-4 stroke-[2.2]" /> New
+                <Plus className="w-4 h-4 stroke-[2.2]" /> {t('new', 'New')}
               </button>
             </div>
           </div>
@@ -344,7 +346,7 @@ export default function DiscountsView() {
                     className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors"
                   >
                     <div className="flex items-center gap-1">
-                      Description
+                      {t('description', 'Description')}
                       <ArrowUpDown
                         className={`w-3.5 h-3.5 text-slate-400 ${
                           sorting.field === 'DISCDESCRIPTION' ? 'text-blue-600' : ''
@@ -352,16 +354,16 @@ export default function DiscountsView() {
                       />
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-center w-32">Type / Value</th>
-                  <th className="px-4 py-3 text-center w-28">Restrictions</th>
-                  <th className="px-4 py-3 text-right w-28">Actions</th>
+                  <th className="px-4 py-3 text-center w-32">{t('type_value', 'Type / Value')}</th>
+                  <th className="px-4 py-3 text-center w-28">{t('restrictions', 'Restrictions')}</th>
+                  <th className="px-4 py-3 text-right w-28">{t('actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
                 {filteredDiscounts.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
-                      No discounts found.
+                      {t('no_discounts_found', 'No discounts found.')}
                     </td>
                   </tr>
                 ) : (
@@ -376,12 +378,12 @@ export default function DiscountsView() {
                           <span className="font-bold text-slate-900">{row.DISCDESCRIPTION}</span>
                           {row.NOTACTIVE === -1 && (
                             <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500">
-                              Inactive
+                              {t('inactive', 'Inactive')}
                             </span>
                           )}
                           {row.OPENORFIX === 1 && (
                             <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
-                              Fix
+                              {t('fix', 'Fix')}
                             </span>
                           )}
                         </div>
@@ -401,7 +403,7 @@ export default function DiscountsView() {
                         {row.branch_excp && row.branch_excp.length > 0 ? (
                           <span
                             className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700"
-                            title="Branch Restrictions active"
+                            title={t('branch_restrictions_active', 'Branch Restrictions active')}
                           >
                             {row.branch_excp.length}
                           </span>
@@ -417,7 +419,7 @@ export default function DiscountsView() {
                             type="button"
                             onClick={() => handleOpenEdit(row)}
                             className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-2xs border border-blue-200 hover:border-blue-600"
-                            title="Edit Discount"
+                            title={t('edit_discount', 'Edit Discount')}
                           >
                             <Pencil className="w-4 h-4 stroke-[2.2]" />
                           </button>
@@ -425,7 +427,7 @@ export default function DiscountsView() {
                             type="button"
                             onClick={() => handleDeleteDiscount(row)}
                             className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-2xs border border-red-200 hover:border-red-600"
-                            title="Delete Discount"
+                            title={t('delete_discount', 'Delete Discount')}
                           >
                             <Trash2 className="w-4 h-4 stroke-[2.2]" />
                           </button>
@@ -456,7 +458,7 @@ export default function DiscountsView() {
             {/* Header */}
             <div className="px-5 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                <Tag className="w-4 h-4 text-blue-600" /> New Discount
+                <Tag className="w-4 h-4 text-blue-600" /> {t('new_discount', 'New Discount')}
               </h3>
               <button
                 type="button"
@@ -472,7 +474,7 @@ export default function DiscountsView() {
                 {/* Description */}
                 <div className="sm:col-span-7">
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Discount Description *
+                    {t('discount_description', 'Discount Description *')}
                   </label>
                   <input
                     type="text"
@@ -481,14 +483,14 @@ export default function DiscountsView() {
                     value={newDescription}
                     onChange={e => setNewDescription(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    placeholder="e.g. SPECIAL 10%"
+                    placeholder={t('eg_special_10', 'e.g. SPECIAL 10%')}
                   />
                 </div>
 
                 {/* Type Of Discount */}
                 <div className="sm:col-span-5">
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Type of Discount
+                    {t('type_of_discount', 'Type of Discount')}
                   </label>
                   <select
                     value={newType}
@@ -508,7 +510,7 @@ export default function DiscountsView() {
                 {/* Percent/Amount */}
                 <div className="sm:col-span-6">
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Percent / Amount
+                    {t('percent_amount', 'Percent / Amount')}
                   </label>
                   <input
                     type="number"
@@ -522,7 +524,7 @@ export default function DiscountsView() {
                 {/* Open/Fix */}
                 <div className="sm:col-span-6">
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Open / Fix *
+                    {t('open_fix', 'Open / Fix *')}
                   </label>
                   <select
                     value={newOpenFix}
@@ -541,14 +543,14 @@ export default function DiscountsView() {
               {/* Message on Invoice */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                  Message On Invoice
+                  {t('message_on_invoice', 'Message On Invoice')}
                 </label>
                 <select
                   value={newMsgId}
                   onChange={e => setNewMsgId(e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
                 >
-                  <option value="">Select message...</option>
+                  <option value="">{t('select_message', 'Select message...')}</option>
                   {INVOICE_MESSAGES.map(msg => (
                     <option key={msg.MESSAGEID} value={msg.MESSAGEID}>
                       {msg.MESSAGETITLE} - {msg.MESSAGEDESC}
@@ -566,7 +568,7 @@ export default function DiscountsView() {
                     onChange={e => setNewIsTaxable(e.target.checked)}
                     className="w-4 h-4 text-blue-600 rounded border-slate-300"
                   />
-                  <span>Discount Is Taxable</span>
+                  <span>{t('discount_is_taxable', 'Discount Is Taxable')}</span>
                 </label>
 
                 <div className="block">
@@ -577,7 +579,7 @@ export default function DiscountsView() {
                       onChange={e => setNewNotActive(e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded border-slate-300"
                     />
-                    <span>Not Active</span>
+                    <span>{t('not_active', 'Not Active')}</span>
                   </label>
                 </div>
               </div>
@@ -585,7 +587,7 @@ export default function DiscountsView() {
               {/* Branch Restrictions Panel */}
               <div className="border border-slate-200 rounded-md overflow-hidden">
                 <div className="bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 border-b border-slate-200">
-                  Branch Restrictions
+                  {t('branch_restrictions', 'Branch Restrictions')}
                 </div>
                 <div className="p-3 space-y-2">
                   {OMEGA_BRANCHES.map(b => (
@@ -614,13 +616,13 @@ export default function DiscountsView() {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-xs transition-colors"
                 >
-                  <Save className="w-4 h-4" /> Save
+                  <Save className="w-4 h-4" /> {t('save', 'Save')}
                 </button>
               </div>
             </form>
@@ -637,7 +639,7 @@ export default function DiscountsView() {
             {/* Header */}
             <div className="px-5 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-                <Tag className="w-4 h-4 text-blue-600" /> Edit Discount
+                <Tag className="w-4 h-4 text-blue-600" /> {t('edit_discount', 'Edit Discount')}
               </h3>
               <button
                 type="button"
@@ -653,7 +655,7 @@ export default function DiscountsView() {
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                   {/* ID (Disabled) */}
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Id</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('id', 'Id')}</label>
                     <input
                       type="text"
                       disabled
@@ -665,7 +667,7 @@ export default function DiscountsView() {
                   {/* Description */}
                   <div className="sm:col-span-6">
                     <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                      Discount Description *
+                      {t('discount_description', 'Discount Description *')}
                     </label>
                     <input
                       type="text"
@@ -679,7 +681,7 @@ export default function DiscountsView() {
                   {/* Type of Discount */}
                   <div className="sm:col-span-4">
                     <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                      Type of Discount
+                      {t('type_of_discount', 'Type of Discount')}
                     </label>
                     <select
                       value={editType}
@@ -699,7 +701,7 @@ export default function DiscountsView() {
                   {/* Percent/Amount */}
                   <div className="sm:col-span-6">
                     <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                      Percent / Amount
+                      {t('percent_amount', 'Percent / Amount')}
                     </label>
                     <input
                       type="number"
@@ -713,7 +715,7 @@ export default function DiscountsView() {
                   {/* Open/Fix */}
                   <div className="sm:col-span-6">
                     <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                      Open / Fix *
+                      {t('open_fix', 'Open / Fix *')}
                     </label>
                     <select
                       value={editOpenFix}
@@ -732,14 +734,14 @@ export default function DiscountsView() {
                 {/* Message on Invoice */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Message On Invoice
+                    {t('message_on_invoice', 'Message On Invoice')}
                   </label>
                   <select
                     value={editMsgId}
                     onChange={e => setEditMsgId(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
                   >
-                    <option value="">Select message...</option>
+                    <option value="">{t('select_message', 'Select message...')}</option>
                     {INVOICE_MESSAGES.map(msg => (
                       <option key={msg.MESSAGEID} value={msg.MESSAGEID}>
                         {msg.MESSAGETITLE} - {msg.MESSAGEDESC}
@@ -757,7 +759,7 @@ export default function DiscountsView() {
                       onChange={e => setEditIsTaxable(e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded border-slate-300"
                     />
-                    <span>Discount Is Taxable</span>
+                    <span>{t('discount_is_taxable', 'Discount Is Taxable')}</span>
                   </label>
 
                   <div className="block">
@@ -768,7 +770,7 @@ export default function DiscountsView() {
                         onChange={e => setEditNotActive(e.target.checked)}
                         className="w-4 h-4 text-blue-600 rounded border-slate-300"
                       />
-                      <span>Not Active</span>
+                      <span>{t('not_active', 'Not Active')}</span>
                     </label>
                   </div>
                 </div>
@@ -776,7 +778,7 @@ export default function DiscountsView() {
                 {/* Branch Restrictions Panel */}
                 <div className="border border-slate-200 rounded-md overflow-hidden">
                   <div className="bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 border-b border-slate-200">
-                    Branch Restrictions
+                    {t('branch_restrictions', 'Branch Restrictions')}
                   </div>
                   <div className="p-3 space-y-2">
                     {OMEGA_BRANCHES.map(b => (
@@ -804,7 +806,7 @@ export default function DiscountsView() {
                     type="submit"
                     className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold inline-flex items-center gap-1.5 shadow-xs transition-colors"
                   >
-                    <Save className="w-4 h-4" /> Save Discount Details
+                    <Save className="w-4 h-4" /> {t('save_discount_details', 'Save Discount Details')}
                   </button>
                 </div>
               </form>
@@ -815,9 +817,9 @@ export default function DiscountsView() {
               <div className="pt-4 border-t border-slate-200">
                 <form onSubmit={handleSaveGroupRestrictions} className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50/50">
                   <div className="bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-200 flex items-center justify-between">
-                    <span>Groups Restriction</span>
+                    <span>{t('groups_restriction', 'Groups Restriction')}</span>
                     <span className="text-[11px] font-normal text-slate-500">
-                      Check items that cannot receive this discount
+                      {t('check_items_that_cannot_receive_this', 'Check items that cannot receive this discount')}
                     </span>
                   </div>
                   <div className="p-4 space-y-3">
@@ -848,7 +850,7 @@ export default function DiscountsView() {
                         type="submit"
                         className="px-4 py-2 bg-primary hover:bg-primary text-white rounded-md text-xs font-bold inline-flex items-center gap-1.5 shadow-xs transition-colors"
                       >
-                        <Save className="w-3.5 h-3.5" /> Save Restrictions
+                        <Save className="w-3.5 h-3.5" /> {t('save_restrictions', 'Save Restrictions')}
                       </button>
                     </div>
                   </div>

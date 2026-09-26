@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 1: Journal Vouchers (JV)
@@ -139,6 +140,7 @@ export function Module1JournalVouchers({
   onOpenStatement,
   initialScreenMode = 'LIST'
 }: Module1JournalVouchersProps) {
+  const { t } = useLanguage();
   // Screen mode: 'LIST' or 'ENTRY' (Opened via `+ New`)
   const [screenMode, setScreenMode] = useState<'LIST' | 'ENTRY'>(initialScreenMode);
 
@@ -1039,7 +1041,7 @@ export function Module1JournalVouchers({
                 onClick={() => setShowRecurringModal(true)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
               >
-                Recurring Vouchers
+                {t('recurring_vouchers', 'Recurring Vouchers')}
               </button>
             </div>
 
@@ -1051,7 +1053,7 @@ export function Module1JournalVouchers({
                   onClick={() => setShowActionsDropdown((prev) => !prev)}
                   className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                 >
-                  <span>Actions</span>
+                  <span>{t('actions', 'Actions')}</span>
                   <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${showActionsDropdown ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -1066,7 +1068,7 @@ export function Module1JournalVouchers({
                       className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted font-medium text-foreground transition-colors cursor-pointer flex items-center gap-2"
                     >
                       <Info className="w-3.5 h-3.5 text-primary shrink-0" />
-                      <span>Account Inquiry</span>
+                      <span>{t('account_inquiry', 'Account Inquiry')}</span>
                     </button>
 
                     <button
@@ -1078,7 +1080,7 @@ export function Module1JournalVouchers({
                       className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted font-medium text-foreground transition-colors cursor-pointer flex items-center gap-2"
                     >
                       <Trash2 className="w-3.5 h-3.5 text-destructive shrink-0" />
-                      <span>Show Deleted Transactions</span>
+                      <span>{t('show_deleted_transactions', 'Show Deleted Transactions')}</span>
                     </button>
 
                     <button
@@ -1090,7 +1092,7 @@ export function Module1JournalVouchers({
                       className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted font-medium text-foreground transition-colors cursor-pointer flex items-center gap-2"
                     >
                       <Edit className="w-3.5 h-3.5 text-primary shrink-0" />
-                      <span>Show Lately Updated</span>
+                      <span>{t('show_lately_updated', 'Show Lately Updated')}</span>
                     </button>
                   </div>
                 )}
@@ -1105,7 +1107,7 @@ export function Module1JournalVouchers({
                 className="text-primary hover:underline text-xs font-semibold flex items-center gap-1 px-2 py-2"
               >
                 <Video className="w-3.5 h-3.5" />
-                <span>Watch Tutorial</span>
+                <span>{t('watch_tutorial', 'Watch Tutorial')}</span>
               </a>
             </div>
           </div>
@@ -1116,14 +1118,14 @@ export function Module1JournalVouchers({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 items-end">
               {/* Search text field */}
               <div className="sm:col-span-2 md:col-span-5">
-                <label className="text-muted-foreground mb-1 block text-xs font-medium">Search...</label>
+                <label className="text-muted-foreground mb-1 block text-xs font-medium">{t('search', 'Search...')}</label>
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search voucher #, reference, remark..."
+                    placeholder={t('search_voucher_reference_remark', 'Search voucher #, reference, remark...')}
                     className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs"
                   />
                 </div>
@@ -1131,7 +1133,7 @@ export function Module1JournalVouchers({
 
               {/* Date From (Default 01-Jan-2026) */}
               <div className="md:col-span-3">
-                <label className="text-muted-foreground mb-1 block text-xs font-medium">From</label>
+                <label className="text-muted-foreground mb-1 block text-xs font-medium">{t('from', 'From')}</label>
                 <input
                   type="date"
                   value={dateFrom}
@@ -1142,7 +1144,7 @@ export function Module1JournalVouchers({
 
               {/* Date To (Default 31-Dec-2026) */}
               <div className="md:col-span-3">
-                <label className="text-muted-foreground mb-1 block text-xs font-medium">To</label>
+                <label className="text-muted-foreground mb-1 block text-xs font-medium">{t('to', 'To')}</label>
                 <input
                   type="date"
                   value={dateTo}
@@ -1162,7 +1164,7 @@ export function Module1JournalVouchers({
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
                 >
                   <Filter className="w-3.5 h-3.5" />
-                  <span>Filter</span>
+                  <span>{t('filter', 'Filter')}</span>
                 </button>
               </div>
             </div>
@@ -1238,7 +1240,7 @@ export function Module1JournalVouchers({
                 className="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <Check className="w-3.5 h-3.5" />
-                <span>Post All</span>
+                <span>{t('post_all', 'Post All')}</span>
               </button>
             </div>
 
@@ -1255,7 +1257,7 @@ export function Module1JournalVouchers({
                       }}
                     >
                       <div className="flex items-center gap-1">
-                        <span>Date</span>
+                        <span>{t('date', 'Date')}</span>
                         <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
                       </div>
                     </th>
@@ -1267,12 +1269,12 @@ export function Module1JournalVouchers({
                       }}
                     >
                       <div className="flex items-center gap-1">
-                        <span>Date Of JV</span>
+                        <span>{t('date_of_jv', 'Date Of JV')}</span>
                         <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
                       </div>
                     </th>
-                    <th className="p-2.5">Type</th>
-                    <th className="p-2.5">Reference</th>
+                    <th className="p-2.5">{t('type', 'Type')}</th>
+                    <th className="p-2.5">{t('reference', 'Reference')}</th>
                     <th
                       className="p-2.5 text-right cursor-pointer hover:bg-muted/80 transition-colors"
                       onClick={() => {
@@ -1285,18 +1287,18 @@ export function Module1JournalVouchers({
                         <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
                       </div>
                     </th>
-                    <th className="p-2.5 min-w-[200px]">Remark</th>
-                    <th className="p-2.5 text-center">Posted</th>
-                    <th className="p-2.5">Created by</th>
-                    <th className="p-2.5">Sub Department</th>
-                    <th className="p-2.5 text-right">Actions</th>
+                    <th className="p-2.5 min-w-[200px]">{t('remark', 'Remark')}</th>
+                    <th className="p-2.5 text-center">{t('posted', 'Posted')}</th>
+                    <th className="p-2.5">{t('created_by', 'Created by')}</th>
+                    <th className="p-2.5">{t('sub_department', 'Sub Department')}</th>
+                    <th className="p-2.5 text-right">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
                   {filteredJVs.length === 0 ? (
                     <tr>
                       <td colSpan={10} className="p-12 text-center text-muted-foreground text-xs font-semibold">
-                        No Transactions Found!
+                        {t('no_transactions_found', 'No Transactions Found!')}
                       </td>
                     </tr>
                   ) : (
@@ -1331,11 +1333,11 @@ export function Module1JournalVouchers({
                           <td className="p-2.5 text-center">
                             {jv.is_posted ? (
                               <span className="bg-card text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
-                                <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Posted
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600" /> {t('posted', 'Posted')}
                               </span>
                             ) : (
                               <span className="bg-card text-amber-700 border border-amber-300 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
-                                Draft
+                                {t('draft', 'Draft')}
                               </span>
                             )}
                           </td>
@@ -1362,7 +1364,7 @@ export function Module1JournalVouchers({
                               <button
                                 type="button"
                                 onClick={() => setViewingJv(jv)}
-                                title="View Voucher Detail"
+                                title={t('view_voucher_detail', 'View Voucher Detail')}
                                 className="bg-card hover:bg-muted text-foreground border border-border p-1 rounded transition-colors cursor-pointer"
                               >
                                 <Eye className="w-3.5 h-3.5" />
@@ -1373,7 +1375,7 @@ export function Module1JournalVouchers({
                                 onClick={() => {
                                   if (typeof window !== 'undefined') window.print();
                                 }}
-                                title="Print Voucher"
+                                title={t('print_voucher', 'Print Voucher')}
                                 className="bg-card hover:bg-muted text-foreground border border-border p-1 rounded transition-colors cursor-pointer"
                               >
                                 <Printer className="w-3.5 h-3.5" />
@@ -1406,12 +1408,12 @@ export function Module1JournalVouchers({
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Preview</span>
+                <span>{t('preview', 'Preview')}</span>
               </button>
 
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2 ml-2">
                 <FileText className="w-4 h-4 text-primary" />
-                <span>Journal Voucher Entry</span>
+                <span>{t('journal_voucher_entry', 'Journal Voucher Entry')}</span>
               </h3>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-border uppercase">
                 {voucherNumber}
@@ -1426,7 +1428,7 @@ export function Module1JournalVouchers({
                 className="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <LinkIcon className="w-3.5 h-3.5" />
-                <span>Supporting Document</span>
+                <span>{t('supporting_document', 'Supporting Document')}</span>
               </button>
 
               <button
@@ -1462,7 +1464,7 @@ export function Module1JournalVouchers({
                   setInternalNote('');
                   onShowToast('Grid reset to clean initial state');
                 }}
-                title="Reset Form"
+                title={t('reset_form', 'Reset Form')}
                 className="bg-card hover:bg-muted text-muted-foreground hover:text-foreground border border-border p-1.5 rounded-lg text-xs transition-colors cursor-pointer shadow-2xs"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -1474,13 +1476,13 @@ export function Module1JournalVouchers({
           <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-3">
             <h4 className="text-xs font-bold text-foreground uppercase tracking-wide flex items-center gap-2">
               <Layers className="w-3.5 h-3.5 text-primary" />
-              <span>Journal Voucher</span>
+              <span>{t('journal_voucher', 'Journal Voucher')}</span>
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs font-medium">
               {/* Date */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Date</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('date', 'Date')}</label>
                 <input
                   type="date"
                   value={voucherDate}
@@ -1491,7 +1493,7 @@ export function Module1JournalVouchers({
 
               {/* Type (Defaults to JV - JOURNAL VOUCHER) */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Type</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('type', 'Type')}</label>
                 <select
                   value={voucherType}
                   onChange={(e) => setVoucherType(e.target.value)}
@@ -1508,35 +1510,35 @@ export function Module1JournalVouchers({
               {/* Journal voucher Label* with Copy Description Navy Button */}
               <div className="sm:col-span-2">
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-foreground font-semibold">Journal voucher Label*</label>
+                  <label className="text-foreground font-semibold">{t('journal_voucher_label', 'Journal voucher Label*')}</label>
                   {/* Right adjacent action button (Navy icon) */}
                   <button
                     type="button"
                     onClick={handleCopyDescriptionToAll}
-                    title="Copy JVs description to all details"
+                    title={t('copy_jvs_description_to_all_details', 'Copy JVs description to all details')}
                     className="text-xs font-medium text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <Copy className="w-3 h-3" />
-                    <span>Copy to all details</span>
+                    <span>{t('copy_to_all_details', 'Copy to all details')}</span>
                   </button>
                 </div>
                 <textarea
                   rows={2}
                   value={voucherLabel}
                   onChange={(e) => setVoucherLabel(e.target.value)}
-                  placeholder="Enter journal voucher label / description..."
+                  placeholder={t('enter_journal_voucher_label_description', 'Enter journal voucher label / description...')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs"
                 />
               </div>
 
               {/* Internal Note */}
               <div className="sm:col-span-2 md:col-span-4">
-                <label className="text-foreground mb-1 block font-semibold">Internal Note</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('internal_note', 'Internal Note')}</label>
                 <textarea
                   rows={1}
                   value={internalNote}
                   onChange={(e) => setInternalNote(e.target.value)}
-                  placeholder="Internal audit remarks or notes..."
+                  placeholder={t('internal_audit_remarks_or_notes', 'Internal audit remarks or notes...')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs"
                 />
               </div>
@@ -1548,7 +1550,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold text-foreground uppercase tracking-wide flex items-center gap-2">
                 <FileText className="w-3.5 h-3.5 text-primary" />
-                <span>Details</span>
+                <span>{t('details', 'Details')}</span>
               </h4>
               <span className="text-[11px] text-muted-foreground font-medium">
                 {lines.length} Line(s) in Ledger
@@ -1558,7 +1560,7 @@ export function Module1JournalVouchers({
             {/* DYNAMIC ENTRY CONTROLS ROW (QUICK-ADD FORM) */}
             <div className="bg-muted/50 border border-border rounded-xl p-3 space-y-2">
               <div className="text-[11px] font-bold text-foreground flex items-center justify-between">
-                <span>Quick Line Entry</span>
+                <span>{t('quick_line_entry', 'Quick Line Entry')}</span>
                 {/* Rate Button */}
                 <button
                   type="button"
@@ -1566,7 +1568,7 @@ export function Module1JournalVouchers({
                   className="bg-card hover:bg-muted text-foreground border border-border px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
                 >
                   <DollarSign className="w-3 h-3 text-emerald-700" />
-                  <span>Rate</span>
+                  <span>{t('rate', 'Rate')}</span>
                 </button>
               </div>
 
@@ -1590,21 +1592,21 @@ export function Module1JournalVouchers({
 
                 {/* Currency */}
                 <div className="md:col-span-1">
-                  <label className="text-muted-foreground mb-1 block text-[11px]">Currency</label>
+                  <label className="text-muted-foreground mb-1 block text-[11px]">{t('currency', 'Currency')}</label>
                   <select
                     value={quickCurrency}
                     onChange={(e) => setQuickCurrency(e.target.value as any)}
                     className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground text-xs shadow-2xs font-mono"
                   >
-                    <option value="USD">USD</option>
-                    <option value="LBP">LBP</option>
-                    <option value="EUR">EUR</option>
+                    <option value="USD">{t('usd', 'USD')}</option>
+                    <option value="LBP">{t('lbp', 'LBP')}</option>
+                    <option value="EUR">{t('eur', 'EUR')}</option>
                   </select>
                 </div>
 
                 {/* Debit */}
                 <div className="md:col-span-1">
-                  <label className="text-muted-foreground mb-1 block text-[11px]">Debit</label>
+                  <label className="text-muted-foreground mb-1 block text-[11px]">{t('debit', 'Debit')}</label>
                   <input
                     type="number"
                     value={quickDebit}
@@ -1620,7 +1622,7 @@ export function Module1JournalVouchers({
 
                 {/* Credit */}
                 <div className="md:col-span-1">
-                  <label className="text-muted-foreground mb-1 block text-[11px]">Credit</label>
+                  <label className="text-muted-foreground mb-1 block text-[11px]">{t('credit', 'Credit')}</label>
                   <input
                     type="number"
                     value={quickCredit}
@@ -1636,46 +1638,46 @@ export function Module1JournalVouchers({
 
                 {/* Description */}
                 <div className="md:col-span-2">
-                  <label className="text-muted-foreground mb-1 block text-[11px]">Description</label>
+                  <label className="text-muted-foreground mb-1 block text-[11px]">{t('description', 'Description')}</label>
                   <input
                     type="text"
                     value={quickDescription}
                     onChange={(e) => setQuickDescription(e.target.value)}
-                    placeholder="Enter description..."
+                    placeholder={t('enter_description', 'Enter description...')}
                     className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground text-xs shadow-2xs"
                   />
                 </div>
 
                 {/* Department */}
                 <div className="md:col-span-1">
-                  <label className="text-muted-foreground mb-1 block text-[11px]">Department</label>
+                  <label className="text-muted-foreground mb-1 block text-[11px]">{t('department', 'Department')}</label>
                   <select
                     value={quickDepartment}
                     onChange={(e) => setQuickDepartment(e.target.value)}
                     className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground text-xs shadow-2xs"
                   >
-                    <option value="Main Department">Main Department</option>
+                    <option value="Main Department">{t('main_department', 'Main Department')}</option>
                     <option value="Executive & Admin">Executive &amp; Admin</option>
-                    <option value="Mill Operations">Mill Operations</option>
-                    <option value="Sales">Sales</option>
+                    <option value="Mill Operations">{t('mill_operations', 'Mill Operations')}</option>
+                    <option value="Sales">{t('sales', 'Sales')}</option>
                   </select>
                 </div>
 
                 {/* Invoice # */}
                 <div className="md:col-span-1">
-                  <label className="text-muted-foreground mb-1 block text-[11px]">Invoice #</label>
+                  <label className="text-muted-foreground mb-1 block text-[11px]">{t('invoice', 'Invoice #')}</label>
                   <input
                     type="text"
                     value={quickInvoiceNo}
                     onChange={(e) => setQuickInvoiceNo(e.target.value)}
-                    placeholder="INV..."
+                    placeholder={t('inv', 'INV...')}
                     className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground text-xs shadow-2xs"
                   />
                 </div>
 
                 {/* Date */}
                 <div className="md:col-span-1">
-                  <label className="text-muted-foreground mb-1 block text-[11px]">Date</label>
+                  <label className="text-muted-foreground mb-1 block text-[11px]">{t('date', 'Date')}</label>
                   <input
                     type="date"
                     value={quickDate}
@@ -1690,10 +1692,10 @@ export function Module1JournalVouchers({
                     type="button"
                     onClick={handleAddQuickLine}
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-xs"
-                    title="Add Entry Line"
+                    title={t('add_entry_line', 'Add Entry Line')}
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Add</span>
+                    <span>{t('add', 'Add')}</span>
                   </button>
                 </div>
               </div>
@@ -1706,14 +1708,14 @@ export function Module1JournalVouchers({
                   <tr className="bg-muted text-foreground font-semibold border-b border-border">
                     <th className="p-2.5 w-10 text-center">#</th>
                     <th className="p-2.5 min-w-[240px]">Account Number &amp; Name</th>
-                    <th className="p-2.5 w-24">Currency</th>
-                    <th className="p-2.5 w-32 text-right">Debit</th>
-                    <th className="p-2.5 w-32 text-right">Credit</th>
-                    <th className="p-2.5 min-w-[200px]">Description</th>
-                    <th className="p-2.5 w-36">Department</th>
-                    <th className="p-2.5 w-28">Invoice #</th>
-                    <th className="p-2.5 w-28">Date</th>
-                    <th className="p-2.5 w-12 text-center">Actions</th>
+                    <th className="p-2.5 w-24">{t('currency', 'Currency')}</th>
+                    <th className="p-2.5 w-32 text-right">{t('debit', 'Debit')}</th>
+                    <th className="p-2.5 w-32 text-right">{t('credit', 'Credit')}</th>
+                    <th className="p-2.5 min-w-[200px]">{t('description', 'Description')}</th>
+                    <th className="p-2.5 w-36">{t('department', 'Department')}</th>
+                    <th className="p-2.5 w-28">{t('invoice', 'Invoice #')}</th>
+                    <th className="p-2.5 w-28">{t('date', 'Date')}</th>
+                    <th className="p-2.5 w-12 text-center">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -1737,7 +1739,7 @@ export function Module1JournalVouchers({
                       </td>
 
                       {/* Currency */}
-                      <td className="p-2 font-mono text-muted-foreground">USD</td>
+                      <td className="p-2 font-mono text-muted-foreground">{t('usd', 'USD')}</td>
 
                       {/* Debit */}
                       <td className="p-2">
@@ -1769,7 +1771,7 @@ export function Module1JournalVouchers({
                           type="text"
                           value={line.description}
                           onChange={(e) => handleUpdateLine(idx, 'description', e.target.value)}
-                          placeholder="Description note..."
+                          placeholder={t('description_note', 'Description note...')}
                           className="w-full bg-card border border-input rounded-md p-1 text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                         />
                       </td>
@@ -1791,7 +1793,7 @@ export function Module1JournalVouchers({
                           type="button"
                           onClick={() => handleDeleteLine(idx)}
                           className="text-muted-foreground hover:text-destructive p-1 rounded transition-colors cursor-pointer"
-                          title="Delete Line"
+                          title={t('delete_line', 'Delete Line')}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1806,19 +1808,19 @@ export function Module1JournalVouchers({
             <div className="bg-muted p-4 rounded-xl border border-border flex flex-wrap items-center justify-between gap-4 text-xs font-semibold">
               <div className="flex flex-wrap items-center gap-6">
                 <div>
-                  <span className="text-muted-foreground block text-[11px]">Total Debit:</span>
+                  <span className="text-muted-foreground block text-[11px]">{t('total_debit', 'Total Debit:')}</span>
                   <span className="font-mono text-emerald-700 text-sm font-bold">
                     ${totalDebit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground block text-[11px]">Total Credit:</span>
+                  <span className="text-muted-foreground block text-[11px]">{t('total_credit', 'Total Credit:')}</span>
                   <span className="font-mono text-destructive text-sm font-bold">
                     ${totalCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground block text-[11px]">Difference:</span>
+                  <span className="text-muted-foreground block text-[11px]">{t('difference', 'Difference:')}</span>
                   <span className={`font-mono text-sm font-bold ${isBalanced ? 'text-emerald-700' : 'text-destructive'}`}>
                     ${difference.toFixed(2)}
                   </span>
@@ -1875,7 +1877,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <RotateCcw className="w-4 h-4 text-primary" />
-                <span>Use Recurring</span>
+                <span>{t('use_recurring', 'Use Recurring')}</span>
               </h4>
               <button
                 type="button"
@@ -1889,35 +1891,35 @@ export function Module1JournalVouchers({
             {/* Top Filters: Search.. and Select Frequency */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="text-muted-foreground mb-1 block font-medium">Search..</label>
+                <label className="text-muted-foreground mb-1 block font-medium">{t('search', 'Search..')}</label>
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
                     type="text"
                     value={recurringSearch}
                     onChange={(e) => setRecurringSearch(e.target.value)}
-                    placeholder="Search description or user..."
+                    placeholder={t('search_description_or_user', 'Search description or user...')}
                     className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-muted-foreground mb-1 block font-medium">Select Frequency</label>
+                <label className="text-muted-foreground mb-1 block font-medium">{t('select_frequency', 'Select Frequency')}</label>
                 <select
                   value={recurringFrequency}
                   onChange={(e) => setRecurringFrequency(e.target.value)}
                   className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground text-xs shadow-2xs"
                 >
-                  <option value="All">All Frequencies</option>
-                  <option value="Daily">Daily</option>
-                  <option value="Weekly">Weekly</option>
+                  <option value="All">{t('all_frequencies', 'All Frequencies')}</option>
+                  <option value="Daily">{t('daily', 'Daily')}</option>
+                  <option value="Weekly">{t('weekly', 'Weekly')}</option>
                   <option value="2 Weeks">2 Weeks</option>
-                  <option value="Monthly">Monthly</option>
-                  <option value="Quarter">Quarter</option>
+                  <option value="Monthly">{t('monthly', 'Monthly')}</option>
+                  <option value="Quarter">{t('quarter', 'Quarter')}</option>
                   <option value="6 Months">6 Months</option>
-                  <option value="Yearly">Yearly</option>
-                  <option value="One Time">One Time</option>
+                  <option value="Yearly">{t('yearly', 'Yearly')}</option>
+                  <option value="One Time">{t('one_time', 'One Time')}</option>
                 </select>
               </div>
             </div>
@@ -1927,18 +1929,18 @@ export function Module1JournalVouchers({
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted text-foreground font-semibold border-b border-border sticky top-0">
                   <tr>
-                    <th className="p-2.5">Description</th>
-                    <th className="p-2.5">User</th>
-                    <th className="p-2.5">Date Entered</th>
-                    <th className="p-2.5">Frequency</th>
-                    <th className="p-2.5 text-right">Action</th>
+                    <th className="p-2.5">{t('description', 'Description')}</th>
+                    <th className="p-2.5">{t('user', 'User')}</th>
+                    <th className="p-2.5">{t('date_entered', 'Date Entered')}</th>
+                    <th className="p-2.5">{t('frequency', 'Frequency')}</th>
+                    <th className="p-2.5 text-right">{t('action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {filteredRecurring.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="p-8 text-center text-muted-foreground text-xs">
-                        No recurring templates found.
+                        {t('no_recurring_templates_found', 'No recurring templates found.')}
                       </td>
                     </tr>
                   ) : (
@@ -1958,7 +1960,7 @@ export function Module1JournalVouchers({
                             onClick={() => handleSelectRecurringTemplate(tpl)}
                             className="bg-primary hover:bg-primary/90 text-primary-foreground px-2.5 py-1 rounded text-xs font-semibold cursor-pointer shadow-2xs"
                           >
-                            Use Template
+                            {t('use_template', 'Use Template')}
                           </button>
                         </td>
                       </tr>
@@ -1974,7 +1976,7 @@ export function Module1JournalVouchers({
                 onClick={() => setShowRecurringModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1988,7 +1990,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Building className="w-4 h-4 text-primary" />
-                <span>Bank Movements</span>
+                <span>{t('bank_movements', 'Bank Movements')}</span>
               </h4>
               <button
                 type="button"
@@ -2007,7 +2009,7 @@ export function Module1JournalVouchers({
                   type="text"
                   value={deletedSearch}
                   onChange={(e) => setDeletedSearch(e.target.value)}
-                  placeholder="Search bank movements, remarks, or references..."
+                  placeholder={t('search_bank_movements_remarks_or', 'Search bank movements, remarks, or references...')}
                   className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs"
                 />
               </div>
@@ -2018,13 +2020,13 @@ export function Module1JournalVouchers({
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted text-foreground font-semibold border-b border-border sticky top-0">
                   <tr>
-                    <th className="p-2.5">Date</th>
-                    <th className="p-2.5">Date Of JV</th>
-                    <th className="p-2.5">Reference</th>
-                    <th className="p-2.5 text-right">Amount</th>
-                    <th className="p-2.5">Remark</th>
-                    <th className="p-2.5">Created by</th>
-                    <th className="p-2.5">Departement</th>
+                    <th className="p-2.5">{t('date', 'Date')}</th>
+                    <th className="p-2.5">{t('date_of_jv', 'Date Of JV')}</th>
+                    <th className="p-2.5">{t('reference', 'Reference')}</th>
+                    <th className="p-2.5 text-right">{t('amount', 'Amount')}</th>
+                    <th className="p-2.5">{t('remark', 'Remark')}</th>
+                    <th className="p-2.5">{t('created_by', 'Created by')}</th>
+                    <th className="p-2.5">{t('departement', 'Departement')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -2036,7 +2038,7 @@ export function Module1JournalVouchers({
                   ).length === 0 ? (
                     <tr>
                       <td colSpan={7} className="p-10 text-center text-muted-foreground text-xs font-semibold">
-                        No Transactions Found!
+                        {t('no_transactions_found', 'No Transactions Found!')}
                       </td>
                     </tr>
                   ) : (
@@ -2071,7 +2073,7 @@ export function Module1JournalVouchers({
                 onClick={() => setShowDeletedModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2085,7 +2087,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Edit className="w-4 h-4 text-primary" />
-                <span>Lately Updated</span>
+                <span>{t('lately_updated', 'Lately Updated')}</span>
               </h4>
               <button
                 type="button"
@@ -2100,12 +2102,12 @@ export function Module1JournalVouchers({
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted text-foreground font-semibold border-b border-border sticky top-0">
                   <tr>
-                    <th className="p-2.5">Date</th>
-                    <th className="p-2.5">Voucher #</th>
-                    <th className="p-2.5">User</th>
-                    <th className="p-2.5">Action</th>
-                    <th className="p-2.5">Time</th>
-                    <th className="p-2.5">Remark</th>
+                    <th className="p-2.5">{t('date', 'Date')}</th>
+                    <th className="p-2.5">{t('voucher', 'Voucher #')}</th>
+                    <th className="p-2.5">{t('user', 'User')}</th>
+                    <th className="p-2.5">{t('action', 'Action')}</th>
+                    <th className="p-2.5">{t('time', 'Time')}</th>
+                    <th className="p-2.5">{t('remark', 'Remark')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -2133,7 +2135,7 @@ export function Module1JournalVouchers({
                 onClick={() => setShowLatelyUpdatedModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2147,7 +2149,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-amber-600" />
-                <span>Post All Unposted Transactions</span>
+                <span>{t('post_all_unposted_transactions', 'Post All Unposted Transactions')}</span>
               </h4>
               <button
                 type="button"
@@ -2159,14 +2161,14 @@ export function Module1JournalVouchers({
             </div>
 
             <p className="text-xs text-foreground font-medium leading-relaxed">
-              Are you sure you want to post all unposted transactions? if yes type <strong className="text-primary font-bold">YES</strong>
+              {t('are_you_sure_you_want_to_post_all', 'Are you sure you want to post all unposted transactions? if yes type')} <strong className="text-primary font-bold">{t('yes', 'YES')}</strong>
             </p>
 
             <input
               type="text"
               value={postAllInputText}
               onChange={(e) => setPostAllInputText(e.target.value)}
-              placeholder="Type YES"
+              placeholder={t('type_yes', 'Type YES')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground font-bold text-xs focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
 
@@ -2176,7 +2178,7 @@ export function Module1JournalVouchers({
                 onClick={() => setShowPostAllModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
 
               <button
@@ -2185,7 +2187,7 @@ export function Module1JournalVouchers({
                 onClick={handleConfirmPostAll}
                 className="bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer disabled:cursor-not-allowed shadow-xs"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>
@@ -2204,7 +2206,7 @@ export function Module1JournalVouchers({
               <div className="flex items-center gap-3">
                 <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                   <Search className="w-4 h-4 text-primary" />
-                  <span>Search Accounts</span>
+                  <span>{t('search_accounts', 'Search Accounts')}</span>
                 </h4>
                 {/* Live counter dynamically reflecting filtered/total count */}
                 <span className="bg-primary/10 text-primary border border-primary/20 text-[11px] font-bold px-2 py-0.5 rounded">
@@ -2224,33 +2226,33 @@ export function Module1JournalVouchers({
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs items-end">
               {/* Type * Dropdown */}
               <div className="sm:col-span-4">
-                <label className="text-muted-foreground mb-1 block font-semibold">Type *</label>
+                <label className="text-muted-foreground mb-1 block font-semibold">{t('type', 'Type *')}</label>
                 <select
                   value={searchAccountsType}
                   onChange={(e) => setSearchAccountsType(e.target.value)}
                   className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground text-xs shadow-2xs"
                 >
-                  <option value="All Accounts">All Accounts</option>
-                  <option value="Bank">Bank</option>
-                  <option value="Cash">Cash</option>
-                  <option value="Customer">Customer</option>
-                  <option value="Employee">Employee</option>
-                  <option value="Expense">Expense</option>
-                  <option value="Others">Others</option>
-                  <option value="Supplier">Supplier</option>
+                  <option value="All Accounts">{t('all_accounts', 'All Accounts')}</option>
+                  <option value="Bank">{t('bank', 'Bank')}</option>
+                  <option value="Cash">{t('cash', 'Cash')}</option>
+                  <option value="Customer">{t('customer', 'Customer')}</option>
+                  <option value="Employee">{t('employee', 'Employee')}</option>
+                  <option value="Expense">{t('expense', 'Expense')}</option>
+                  <option value="Others">{t('others', 'Others')}</option>
+                  <option value="Supplier">{t('supplier', 'Supplier')}</option>
                 </select>
               </div>
 
               {/* Search... text field */}
               <div className="sm:col-span-6">
-                <label className="text-muted-foreground mb-1 block font-semibold">Search...</label>
+                <label className="text-muted-foreground mb-1 block font-semibold">{t('search', 'Search...')}</label>
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
                     type="text"
                     value={searchAccountsQuery}
                     onChange={(e) => setSearchAccountsQuery(e.target.value)}
-                    placeholder="Search account number or title..."
+                    placeholder={t('search_account_number_or_title', 'Search account number or title...')}
                     className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-foreground text-xs shadow-2xs"
                   />
                 </div>
@@ -2274,18 +2276,18 @@ export function Module1JournalVouchers({
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted text-foreground font-semibold border-b border-border sticky top-0">
                   <tr>
-                    <th className="p-2.5">Account Number</th>
-                    <th className="p-2.5 min-w-[200px]">Account Name</th>
-                    <th className="p-2.5 text-right">Balance $</th>
-                    <th className="p-2.5 text-right">Balance LBP</th>
-                    <th className="p-2.5 text-center">Type</th>
+                    <th className="p-2.5">{t('account_number', 'Account Number')}</th>
+                    <th className="p-2.5 min-w-[200px]">{t('account_name', 'Account Name')}</th>
+                    <th className="p-2.5 text-right">{t('balance', 'Balance $')}</th>
+                    <th className="p-2.5 text-right">{t('balance_lbp', 'Balance LBP')}</th>
+                    <th className="p-2.5 text-center">{t('type', 'Type')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {filteredSearchAccounts.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="p-8 text-center text-muted-foreground text-xs">
-                        No accounts matching criteria.
+                        {t('no_accounts_matching_criteria', 'No accounts matching criteria.')}
                       </td>
                     </tr>
                   ) : (
@@ -2323,7 +2325,7 @@ export function Module1JournalVouchers({
                 onClick={() => setShowSearchAccountsModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2337,7 +2339,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Plus className="w-4 h-4 text-primary" />
-                <span>Add Account</span>
+                <span>{t('add_account', 'Add Account')}</span>
               </h4>
               <button
                 type="button"
@@ -2351,7 +2353,7 @@ export function Module1JournalVouchers({
             <div className="space-y-3 text-xs">
               {/* Account Name* */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Account Name*</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('account_name', 'Account Name*')}</label>
                 <input
                   type="text"
                   value={newAccountName}
@@ -2363,31 +2365,31 @@ export function Module1JournalVouchers({
 
               {/* Description */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Description</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('description', 'Description')}</label>
                 <input
                   type="text"
                   value={newAccountDesc}
                   onChange={(e) => setNewAccountDesc(e.target.value)}
-                  placeholder="Auxiliary notes or details..."
+                  placeholder={t('auxiliary_notes_or_details', 'Auxiliary notes or details...')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground text-xs shadow-2xs focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               {/* Type * */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Type *</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('type', 'Type *')}</label>
                 <select
                   value={newAccountType}
                   onChange={(e) => setNewAccountType(e.target.value)}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground text-xs shadow-2xs focus:ring-1 focus:ring-primary"
                 >
-                  <option value="Customer">Customer</option>
-                  <option value="Bank">Bank</option>
-                  <option value="Cash">Cash</option>
-                  <option value="Employee">Employee</option>
-                  <option value="Expense">Expense</option>
-                  <option value="Others">Others</option>
-                  <option value="Supplier">Supplier</option>
+                  <option value="Customer">{t('customer', 'Customer')}</option>
+                  <option value="Bank">{t('bank', 'Bank')}</option>
+                  <option value="Cash">{t('cash', 'Cash')}</option>
+                  <option value="Employee">{t('employee', 'Employee')}</option>
+                  <option value="Expense">{t('expense', 'Expense')}</option>
+                  <option value="Others">{t('others', 'Others')}</option>
+                  <option value="Supplier">{t('supplier', 'Supplier')}</option>
                 </select>
               </div>
 
@@ -2401,7 +2403,7 @@ export function Module1JournalVouchers({
                     className="text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>Add Sub Class 4</span>
+                    <span>{t('add_sub_class_4', 'Add Sub Class 4')}</span>
                   </button>
                 </div>
                 <select
@@ -2426,7 +2428,7 @@ export function Module1JournalVouchers({
               {/* Class (Read-only badge) & Account Number */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-foreground mb-1 block font-semibold">Class</label>
+                  <label className="text-foreground mb-1 block font-semibold">{t('class', 'Class')}</label>
                   <input
                     type="text"
                     readOnly
@@ -2435,7 +2437,7 @@ export function Module1JournalVouchers({
                   />
                 </div>
                 <div>
-                  <label className="text-foreground mb-1 block font-semibold">Account Number</label>
+                  <label className="text-foreground mb-1 block font-semibold">{t('account_number', 'Account Number')}</label>
                   <input
                     type="text"
                     value={newAccountNumber}
@@ -2452,14 +2454,14 @@ export function Module1JournalVouchers({
                 onClick={() => setShowAddAccountModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleSaveNewAccount}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Save
+                {t('save', 'Save')}
               </button>
             </div>
           </div>
@@ -2473,7 +2475,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Layers className="w-4 h-4 text-primary" />
-                <span>Add Account Sub Classes 4</span>
+                <span>{t('add_account_sub_classes_4', 'Add Account Sub Classes 4')}</span>
               </h4>
               <button
                 type="button"
@@ -2487,24 +2489,24 @@ export function Module1JournalVouchers({
             <div className="space-y-3 text-xs">
               {/* Account Name * */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Account Name *</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('account_name', 'Account Name *')}</label>
                 <input
                   type="text"
                   value={newSub4Name}
                   onChange={(e) => setNewSub4Name(e.target.value)}
-                  placeholder="e.g. Export Receivables Europe"
+                  placeholder={t('eg_export_receivables_europe', 'e.g. Export Receivables Europe')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground text-xs shadow-2xs"
                 />
               </div>
 
               {/* Account Header Number * */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Account Header Number *</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('account_header_number', 'Account Header Number *')}</label>
                 <input
                   type="text"
                   value={newSub4HeaderNumber}
                   onChange={(e) => setNewSub4HeaderNumber(e.target.value)}
-                  placeholder="e.g. 41112"
+                  placeholder={t('eg_41112', 'e.g. 41112')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground font-mono text-xs shadow-2xs font-bold"
                 />
               </div>
@@ -2512,14 +2514,14 @@ export function Module1JournalVouchers({
               {/* Account Sub Class 3 * (Searchable select) + `+` button to add Sub Class 3 */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-foreground font-semibold">Account Sub Class 3 *</label>
+                  <label className="text-foreground font-semibold">{t('account_sub_class_3', 'Account Sub Class 3 *')}</label>
                   <button
                     type="button"
                     onClick={() => setShowAddSubClass3Modal(true)}
                     className="text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/20 px-2 py-0.5 rounded text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>Add Sub Class 3</span>
+                    <span>{t('add_sub_class_3', 'Add Sub Class 3')}</span>
                   </button>
                 </div>
                 <select
@@ -2537,18 +2539,18 @@ export function Module1JournalVouchers({
 
               {/* Account Class Type * */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Account Class Type *</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('account_class_type', 'Account Class Type *')}</label>
                 <select
                   value={newSub4ClassType}
                   onChange={(e) => setNewSub4ClassType(e.target.value)}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground text-xs shadow-2xs"
                 >
                   <option value="-Select One-">-Select One-</option>
-                  <option value="Assets">Assets</option>
-                  <option value="Expense">Expense</option>
-                  <option value="Liabilities">Liabilities</option>
-                  <option value="Equity">Equity</option>
-                  <option value="Revenue">Revenue</option>
+                  <option value="Assets">{t('assets', 'Assets')}</option>
+                  <option value="Expense">{t('expense', 'Expense')}</option>
+                  <option value="Liabilities">{t('liabilities', 'Liabilities')}</option>
+                  <option value="Equity">{t('equity', 'Equity')}</option>
+                  <option value="Revenue">{t('revenue', 'Revenue')}</option>
                 </select>
               </div>
             </div>
@@ -2559,14 +2561,14 @@ export function Module1JournalVouchers({
                 onClick={() => setShowAddSubClass4Modal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleSaveSubClass4}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Save
+                {t('save', 'Save')}
               </button>
             </div>
           </div>
@@ -2580,7 +2582,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Layers className="w-4 h-4 text-primary" />
-                <span>Add Account Sub Classes 3</span>
+                <span>{t('add_account_sub_classes_3', 'Add Account Sub Classes 3')}</span>
               </h4>
               <button
                 type="button"
@@ -2594,31 +2596,31 @@ export function Module1JournalVouchers({
             <div className="space-y-3 text-xs">
               {/* Account Name * */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Account Name *</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('account_name', 'Account Name *')}</label>
                 <input
                   type="text"
                   value={newSub3Name}
                   onChange={(e) => setNewSub3Name(e.target.value)}
-                  placeholder="e.g. Export Sales Receivables"
+                  placeholder={t('eg_export_sales_receivables', 'e.g. Export Sales Receivables')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground text-xs shadow-2xs"
                 />
               </div>
 
               {/* Account Header Number * */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Account Header Number *</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('account_header_number', 'Account Header Number *')}</label>
                 <input
                   type="text"
                   value={newSub3HeaderNumber}
                   onChange={(e) => setNewSub3HeaderNumber(e.target.value)}
-                  placeholder="e.g. 412"
+                  placeholder={t('eg_412', 'e.g. 412')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground font-mono text-xs shadow-2xs font-bold"
                 />
               </div>
 
               {/* Account Sub Class 2 * (Dropdown) */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Account Sub Class 2 *</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('account_sub_class_2', 'Account Sub Class 2 *')}</label>
                 <select
                   value={newSub3Sub2Ref}
                   onChange={(e) => setNewSub3Sub2Ref(e.target.value)}
@@ -2640,14 +2642,14 @@ export function Module1JournalVouchers({
                 onClick={() => setShowAddSubClass3Modal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleSaveSubClass3}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Save
+                {t('save', 'Save')}
               </button>
             </div>
           </div>
@@ -2661,7 +2663,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <LinkIcon className="w-4 h-4 text-emerald-700" />
-                <span>Supporting Document</span>
+                <span>{t('supporting_document', 'Supporting Document')}</span>
               </h4>
               <button
                 type="button"
@@ -2690,7 +2692,7 @@ export function Module1JournalVouchers({
                 onClick={() => setShowSupportingDocModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -2700,7 +2702,7 @@ export function Module1JournalVouchers({
                 }}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Save
+                {t('save', 'Save')}
               </button>
             </div>
           </div>
@@ -2714,7 +2716,7 @@ export function Module1JournalVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-emerald-700" />
-                <span>Exchange Rates</span>
+                <span>{t('exchange_rates', 'Exchange Rates')}</span>
               </h4>
               <button
                 type="button"
@@ -2726,12 +2728,12 @@ export function Module1JournalVouchers({
             </div>
 
             <p className="text-xs text-amber-700 bg-amber-500/10 p-2.5 rounded-lg border border-amber-500/20 font-medium">
-              Currency rates are not available automatically. Enter manual exchange parity rates for conversion:
+              {t('currency_rates_are_not_available', 'Currency rates are not available automatically. Enter manual exchange parity rates for conversion:')}
             </p>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="text-foreground mb-1 block font-semibold">USD Base Parity</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('usd_base_parity', 'USD Base Parity')}</label>
                 <input
                   type="text"
                   readOnly
@@ -2741,7 +2743,7 @@ export function Module1JournalVouchers({
               </div>
 
               <div>
-                <label className="text-foreground mb-1 block font-semibold">LBP / USD Rate</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('lbp_usd_rate', 'LBP / USD Rate')}</label>
                 <input
                   type="number"
                   value={customRateLbp}
@@ -2751,7 +2753,7 @@ export function Module1JournalVouchers({
               </div>
 
               <div>
-                <label className="text-foreground mb-1 block font-semibold">EUR / USD Rate</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('eur_usd_rate', 'EUR / USD Rate')}</label>
                 <input
                   type="number"
                   step="0.001"
@@ -2768,7 +2770,7 @@ export function Module1JournalVouchers({
                 onClick={() => setShowRateModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -2778,7 +2780,7 @@ export function Module1JournalVouchers({
                 }}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Apply
+                {t('apply', 'Apply')}
               </button>
             </div>
           </div>
@@ -2810,7 +2812,7 @@ export function Module1JournalVouchers({
             </div>
 
             <p className="text-xs text-foreground bg-muted p-2.5 rounded-lg border border-border">
-              <strong>Description:</strong> {viewingJv.description}
+              <strong>{t('description', 'Description:')}</strong> {viewingJv.description}
             </p>
 
             <div className="overflow-y-auto max-h-60 rounded-lg border border-border">
@@ -2818,10 +2820,10 @@ export function Module1JournalVouchers({
                 <thead className="bg-muted border-b border-border font-semibold text-foreground">
                   <tr>
                     <th className="p-2">#</th>
-                    <th className="p-2">Account</th>
+                    <th className="p-2">{t('account', 'Account')}</th>
                     <th className="p-2 text-right">Debit ($)</th>
                     <th className="p-2 text-right">Credit ($)</th>
-                    <th className="p-2">Line Memo</th>
+                    <th className="p-2">{t('line_memo', 'Line Memo')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -2860,7 +2862,7 @@ export function Module1JournalVouchers({
                 onClick={() => setViewingJv(null)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>

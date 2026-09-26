@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
@@ -659,6 +660,7 @@ const INITIAL_MULTIPLE_ASSEMBLIES: MultipleAssemblyRecord[] = [
 ];
 
 export default function ItemAssemblyView() {
+  const { t } = useLanguage();
   // Mode: 'single' | 'multiple'
   const [activeMode, setActiveMode] = useState<'single' | 'multiple'>('single');
   const [viewType, setViewType] = useState<'basedonrecipe' | 'itemproducedlocally'>('basedonrecipe');
@@ -1221,14 +1223,14 @@ export default function ItemAssemblyView() {
               className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs transition"
             >
               <Printer className="w-4 h-4" />
-              <span>Print</span>
+              <span>{t('print', 'Print')}</span>
             </button>
             <button
               onClick={() => setIsPrintReportView(false)}
               className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded text-xs font-bold flex items-center gap-1.5 cursor-pointer transition"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
+              <span>{t('back', 'Back')}</span>
             </button>
           </div>
           <span className="text-xs text-slate-500 font-mono">
@@ -1240,42 +1242,42 @@ export default function ItemAssemblyView() {
         <div className="w-full max-w-4xl bg-white p-10 rounded-xl shadow-lg border border-slate-200 print:border-none print:shadow-none font-sans text-slate-900">
           <div className="text-center border-b border-slate-300 pb-4 mb-6">
             <h1 className="text-2xl font-black text-slate-900 uppercase tracking-wide">
-              Item Assembly Sheet
+              {t('item_assembly_sheet', 'Item Assembly Sheet')}
             </h1>
             <p className="text-xs text-slate-500 mt-1">
-              Zeit w Zaytoun • Production & Formulation Registry
+              {t('zeit_w_zaytoun_production_formulation', 'Zeit w Zaytoun • Production & Formulation Registry')}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 text-xs mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
             <div>
               <p className="text-slate-500">
-                <span className="font-bold text-slate-700">Assembly ID: </span> #{reportVoucher.id}
+                <span className="font-bold text-slate-700">{t('assembly_id', 'Assembly ID:')} </span> #{reportVoucher.id}
               </p>
               <p className="text-slate-500 mt-1">
-                <span className="font-bold text-slate-700">Assembly Date: </span> {reportVoucher.date}
+                <span className="font-bold text-slate-700">{t('assembly_date', 'Assembly Date:')} </span> {reportVoucher.date}
               </p>
               <p className="text-slate-500 mt-1">
-                <span className="font-bold text-slate-700">Branch: </span> {reportVoucher.branchName}
+                <span className="font-bold text-slate-700">{t('branch', 'Branch:')} </span> {reportVoucher.branchName}
               </p>
               <p className="text-slate-500 mt-1">
-                <span className="font-bold text-slate-700">Location: </span> {reportVoucher.locationName}
+                <span className="font-bold text-slate-700">{t('location', 'Location:')} </span> {reportVoucher.locationName}
               </p>
             </div>
             <div>
               <p className="text-slate-500">
-                <span className="font-bold text-slate-700">Assembled By: </span> {reportVoucher.assembledBy}
+                <span className="font-bold text-slate-700">{t('assembled_by', 'Assembled By:')} </span> {reportVoucher.assembledBy}
               </p>
               <p className="text-slate-500 mt-1">
-                <span className="font-bold text-slate-700">Finished Item: </span>
+                <span className="font-bold text-slate-700">{t('finished_item', 'Finished Item:')} </span>
                 <span className="font-black text-slate-900">{reportVoucher.productDescription}</span>
               </p>
               <p className="text-slate-500 mt-1">
-                <span className="font-bold text-slate-700">Assembled Quantity: </span>
+                <span className="font-bold text-slate-700">{t('assembled_quantity', 'Assembled Quantity:')} </span>
                 <span className="font-bold text-emerald-800">{reportVoucher.qty} {reportVoucher.unit}</span>
               </p>
               <p className="text-slate-500 mt-1">
-                <span className="font-bold text-slate-700">Status: </span>
+                <span className="font-bold text-slate-700">{t('status', 'Status:')} </span>
                 <span className="font-bold text-emerald-800">
                   {reportVoucher.posted === -1 ? 'Posted / Completed' : 'Draft'}
                 </span>
@@ -1284,14 +1286,14 @@ export default function ItemAssemblyView() {
           </div>
 
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-            Formulation Ingredients / Raw Materials Consumed
+            {t('formulation_ingredients_raw_materials', 'Formulation Ingredients / Raw Materials Consumed')}
           </h3>
           <table className="w-full text-xs text-left border-collapse border border-slate-300 mb-6">
             <thead>
               <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-300">
-                <th className="py-2 px-3 border-r border-slate-300">Description</th>
-                <th className="py-2 px-3 text-right border-r border-slate-300">Qty</th>
-                <th className="py-2 px-3 border-r border-slate-300">Unit</th>
+                <th className="py-2 px-3 border-r border-slate-300">{t('description', 'Description')}</th>
+                <th className="py-2 px-3 text-right border-r border-slate-300">{t('qty', 'Qty')}</th>
+                <th className="py-2 px-3 border-r border-slate-300">{t('unit', 'Unit')}</th>
                 <th className="py-2 px-3 text-right border-r border-slate-300">Unit Cost (LBP)</th>
                 <th className="py-2 px-3 text-right">Total Cost (LBP)</th>
               </tr>
@@ -1313,7 +1315,7 @@ export default function ItemAssemblyView() {
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-slate-800 font-bold bg-slate-50">
-                <td colSpan={4} className="py-2.5 px-3 text-right">Total Production Cost:</td>
+                <td colSpan={4} className="py-2.5 px-3 text-right">{t('total_production_cost', 'Total Production Cost:')}</td>
                 <td className="py-2.5 px-3 text-right font-mono text-emerald-800 text-sm">
                   {reportVoucher.totalCost.toLocaleString()} LBP
                 </td>
@@ -1324,16 +1326,16 @@ export default function ItemAssemblyView() {
           {/* Signatures */}
           <div className="grid grid-cols-3 gap-6 pt-12 text-center text-xs">
             <div className="border-t border-slate-400 pt-2">
-              <p className="font-semibold text-slate-800">Assembled By</p>
+              <p className="font-semibold text-slate-800">{t('assembled_by', 'Assembled By')}</p>
               <p className="text-slate-500 mt-1">{reportVoucher.assembledBy}</p>
             </div>
             <div className="border-t border-slate-400 pt-2">
-              <p className="font-semibold text-slate-800">Production Supervisor</p>
-              <p className="text-slate-500 mt-1">Signature</p>
+              <p className="font-semibold text-slate-800">{t('production_supervisor', 'Production Supervisor')}</p>
+              <p className="text-slate-500 mt-1">{t('signature', 'Signature')}</p>
             </div>
             <div className="border-t border-slate-400 pt-2">
-              <p className="font-semibold text-slate-800">Quality Control / Approval</p>
-              <p className="text-slate-500 mt-1">Signature</p>
+              <p className="font-semibold text-slate-800">{t('quality_control_approval', 'Quality Control / Approval')}</p>
+              <p className="text-slate-500 mt-1">{t('signature', 'Signature')}</p>
             </div>
           </div>
         </div>
@@ -1376,7 +1378,7 @@ export default function ItemAssemblyView() {
             {activeMode === 'single' ? 'Item Assembly' : 'Multiple Item Assembly'}
           </h1>
           <nav className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
-            <span className="hover:text-blue-600 cursor-pointer">Home</span>
+            <span className="hover:text-blue-600 cursor-pointer">{t('home', 'Home')}</span>
             <span>/</span>
             {activeMode === 'multiple' ? (
               <>
@@ -1384,13 +1386,13 @@ export default function ItemAssemblyView() {
                   onClick={() => setActiveMode('single')}
                   className="hover:text-blue-600 cursor-pointer"
                 >
-                  Item Assembly
+                  {t('item_assembly', 'Item Assembly')}
                 </span>
                 <span>/</span>
-                <span className="text-slate-800 font-semibold">Multiple Item Assembly</span>
+                <span className="text-slate-800 font-semibold">{t('multiple_item_assembly', 'Multiple Item Assembly')}</span>
               </>
             ) : (
-              <span className="text-slate-800 font-semibold">Item Assembly</span>
+              <span className="text-slate-800 font-semibold">{t('item_assembly', 'Item Assembly')}</span>
             )}
           </nav>
         </div>
@@ -1405,7 +1407,7 @@ export default function ItemAssemblyView() {
             className="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            <span>Watch Tutorial</span>
+            <span>{t('watch_tutorial', 'Watch Tutorial')}</span>
           </a>
         </div>
       </div>
@@ -1431,7 +1433,7 @@ export default function ItemAssemblyView() {
                     }}
                     className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
                   >
-                    <option value="">Select branch</option>
+                    <option value="">{t('select_branch', 'Select branch')}</option>
                     {AUTHENTIC_BRANCHES.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.name}
@@ -1448,8 +1450,8 @@ export default function ItemAssemblyView() {
                   onChange={(e) => setViewType(e.target.value as any)}
                   className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
                 >
-                  <option value="basedonrecipe">Based on Included Items</option>
-                  <option value="itemproducedlocally">Based on Usage</option>
+                  <option value="basedonrecipe">{t('based_on_included_items', 'Based on Included Items')}</option>
+                  <option value="itemproducedlocally">{t('based_on_usage', 'Based on Usage')}</option>
                 </select>
               </div>
 
@@ -1463,7 +1465,7 @@ export default function ItemAssemblyView() {
                 className="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Multiple Item Assembly</span>
+                <span>{t('multiple_item_assembly', 'Multiple Item Assembly')}</span>
               </button>
             </div>
 
@@ -1481,7 +1483,7 @@ export default function ItemAssemblyView() {
                 }`}
               >
                 <Search className="w-3.5 h-3.5" />
-                <span>Preview</span>
+                <span>{t('preview', 'Preview')}</span>
               </button>
 
               {/* + New Button */}
@@ -1490,7 +1492,7 @@ export default function ItemAssemblyView() {
                 className="bg-primary hover:bg-primary/90 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>New</span>
+                <span>{t('new', 'New')}</span>
               </button>
 
               {/* Actions Dropdown (Locked until choosing branch) */}
@@ -1504,7 +1506,7 @@ export default function ItemAssemblyView() {
                       : 'bg-primary hover:bg-primary/90 text-white cursor-pointer'
                   }`}
                 >
-                  <span>Actions</span>
+                  <span>{t('actions', 'Actions')}</span>
                   <ChevronDown className="w-3 h-3" />
                 </button>
 
@@ -1515,28 +1517,28 @@ export default function ItemAssemblyView() {
                       className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center gap-2"
                     >
                       <Printer className="w-3.5 h-3.5 text-blue-600" />
-                      <span>Print Production Sheet</span>
+                      <span>{t('print_production_sheet', 'Print Production Sheet')}</span>
                     </button>
                     <button
                       onClick={() => showToast('Stored to recurring templates.', 'info')}
                       className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center gap-2"
                     >
                       <Upload className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Store as Recurring</span>
+                      <span>{t('store_as_recurring', 'Store as Recurring')}</span>
                     </button>
                     <button
                       onClick={() => showToast('Recalled recurring assembly.', 'info')}
                       className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center gap-2"
                     >
                       <Download className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Recall Recurring</span>
+                      <span>{t('recall_recurring', 'Recall Recurring')}</span>
                     </button>
                     <button
                       onClick={() => showToast('Transfer initiated to requisition.', 'info')}
                       className="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center gap-2"
                     >
                       <RefreshCw className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Transfer to Requisition</span>
+                      <span>{t('transfer_to_requisition', 'Transfer to Requisition')}</span>
                     </button>
                   </div>
                 )}
@@ -1552,7 +1554,7 @@ export default function ItemAssemblyView() {
                 className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded text-xs font-bold flex items-center gap-1.5 cursor-pointer transition"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Single Item Assembly</span>
+                <span>{t('single_item_assembly', 'Single Item Assembly')}</span>
               </button>
 
               <button
@@ -1565,7 +1567,7 @@ export default function ItemAssemblyView() {
                 }`}
               >
                 <Eraser className="w-3.5 h-3.5" />
-                <span>Clear</span>
+                <span>{t('clear', 'Clear')}</span>
               </button>
 
               <button
@@ -1578,7 +1580,7 @@ export default function ItemAssemblyView() {
                 }`}
               >
                 <Search className="w-3.5 h-3.5" />
-                <span>Preview</span>
+                <span>{t('preview', 'Preview')}</span>
               </button>
 
               <button
@@ -1591,18 +1593,18 @@ export default function ItemAssemblyView() {
                 }`}
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print</span>
+                <span>{t('print', 'Print')}</span>
               </button>
             </div>
 
             <div className="text-xs text-slate-500 font-mono">
               {multiPosted ? (
                 <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
-                  POSTED
+                  {t('posted', 'POSTED')}
                 </span>
               ) : (
                 <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold border border-amber-300">
-                  DRAFT
+                  {t('draft', 'DRAFT')}
                 </span>
               )}
             </div>
@@ -1626,7 +1628,7 @@ export default function ItemAssemblyView() {
               className="bg-slate-100/80 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between cursor-pointer select-none hover:bg-slate-100"
             >
               <h2 className="text-xs font-bold text-slate-800 tracking-wide">
-                Item Assembly Based on Included Items
+                {t('item_assembly_based_on_included_items', 'Item Assembly Based on Included Items')}
               </h2>
               <ChevronDown
                 className={`w-4 h-4 text-slate-500 transition-transform ${
@@ -1643,7 +1645,7 @@ export default function ItemAssemblyView() {
                   {/* Location Field + Quick Add Button */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Location*
+                      {t('location', 'Location*')}
                     </label>
                     <div className="flex items-center gap-1.5">
                       <select
@@ -1657,7 +1659,7 @@ export default function ItemAssemblyView() {
                           isSingleBranchLocked ? 'bg-slate-100 cursor-not-allowed opacity-60' : 'bg-white'
                         }`}
                       >
-                        <option value="">Select location</option>
+                        <option value="">{t('select_location', 'Select location')}</option>
                         {AUTHENTIC_LOCATIONS.map((loc) => (
                           <option key={loc.id} value={loc.id}>
                             {loc.name}
@@ -1683,7 +1685,7 @@ export default function ItemAssemblyView() {
                   {/* Assembled By (Locked / Read-Only Mohammed Jichi) */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Assembled By
+                      {t('assembled_by', 'Assembled By')}
                     </label>
                     <input
                       type="text"
@@ -1696,7 +1698,7 @@ export default function ItemAssemblyView() {
                   {/* Item Assembly Date (Locked until choosing branch) */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Item Assembly Date
+                      {t('item_assembly_date', 'Item Assembly Date')}
                     </label>
                     <input
                       type="date"
@@ -1716,12 +1718,12 @@ export default function ItemAssemblyView() {
                     {/* Item Search Input with Search Icon Button */}
                     <div className="md:col-span-6">
                       <label className="block text-xs font-semibold text-slate-700 mb-1">
-                        Item
+                        {t('item', 'Item')}
                       </label>
                       <div className="flex items-center gap-1.5">
                         <input
                           type="search"
-                          placeholder="search item..."
+                          placeholder={t('search_item', 'search item...')}
                           disabled={isSingleBranchLocked}
                           value={itemSearchText}
                           onChange={(e) => setItemSearchText(e.target.value)}
@@ -1753,7 +1755,7 @@ export default function ItemAssemblyView() {
                     {/* Quantity + Refresh/Sync Button */}
                     <div className="md:col-span-3">
                       <label className="block text-xs font-semibold text-slate-700 mb-1">
-                        Quantity
+                        {t('quantity', 'Quantity')}
                       </label>
                       <div className="flex items-center gap-1.5">
                         <input
@@ -1776,7 +1778,7 @@ export default function ItemAssemblyView() {
                           type="button"
                           disabled={isSingleBranchLocked || !selectedItem}
                           onClick={() => handleApplyNewQuantity(quantity)}
-                          title="Recalculate ingredients for quantity"
+                          title={t('recalculate_ingredients_for_quantity', 'Recalculate ingredients for quantity')}
                           className={`p-1.5 rounded transition ${
                             isSingleBranchLocked || !selectedItem
                               ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
@@ -1791,13 +1793,13 @@ export default function ItemAssemblyView() {
                     {/* Unit (Read-only, locked until choosing branch and selecting item) */}
                     <div className="md:col-span-3">
                       <label className="block text-xs font-semibold text-slate-700 mb-1">
-                        Unit
+                        {t('unit', 'Unit')}
                       </label>
                       <input
                         type="text"
                         disabled
                         value={unit}
-                        placeholder="Unit"
+                        placeholder={t('unit', 'Unit')}
                         className="w-full bg-slate-100 border border-slate-200 rounded px-3 py-1.5 text-xs font-medium text-slate-700 cursor-not-allowed"
                       />
                     </div>
@@ -1806,14 +1808,14 @@ export default function ItemAssemblyView() {
                   {/* Remark Textarea */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Remark
+                      {t('remark', 'Remark')}
                     </label>
                     <textarea
                       rows={2}
                       disabled={isSingleBranchLocked}
                       value={remark}
                       onChange={(e) => setRemark(e.target.value)}
-                      placeholder="Add assembly notes or batch details..."
+                      placeholder={t('add_assembly_notes_or_batch_details', 'Add assembly notes or batch details...')}
                       className={`w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                         isSingleBranchLocked ? 'bg-slate-100 cursor-not-allowed opacity-60' : 'bg-white'
                       }`}
@@ -1832,7 +1834,7 @@ export default function ItemAssemblyView() {
               className="bg-slate-100/80 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between cursor-pointer select-none hover:bg-slate-100"
             >
               <h2 className="text-xs font-bold text-slate-800 tracking-wide">
-                Item Assembly Details
+                {t('item_assembly_details', 'Item Assembly Details')}
               </h2>
               <ChevronDown
                 className={`w-4 h-4 text-slate-500 transition-transform ${
@@ -1856,7 +1858,7 @@ export default function ItemAssemblyView() {
                         triggerSearchModal('ingredient', ingredientSearchText);
                       }
                     }}
-                    placeholder="Search ingredients..."
+                    placeholder={t('search_ingredients', 'Search ingredients...')}
                     className={`flex-1 border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                       isSingleBranchLocked || !selectedItem
                         ? 'bg-slate-100 cursor-not-allowed opacity-60'
@@ -1867,7 +1869,7 @@ export default function ItemAssemblyView() {
                     type="button"
                     disabled={isSingleBranchLocked || !selectedItem}
                     onClick={() => triggerSearchModal('ingredient', ingredientSearchText)}
-                    title="Search extra ingredients to add"
+                    title={t('search_extra_ingredients_to_add', 'Search extra ingredients to add')}
                     className={`p-2 rounded text-white transition ${
                       isSingleBranchLocked || !selectedItem
                         ? 'bg-slate-300 cursor-not-allowed opacity-60'
@@ -1883,11 +1885,11 @@ export default function ItemAssemblyView() {
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold">
-                        <th className="py-2.5 px-3">Description</th>
-                        <th className="py-2.5 px-3 text-right">Qty</th>
-                        <th className="py-2.5 px-3">Unit</th>
-                        <th className="py-2.5 px-3 text-right">Cost</th>
-                        <th className="py-2.5 px-3 text-right">Total Cost</th>
+                        <th className="py-2.5 px-3">{t('description', 'Description')}</th>
+                        <th className="py-2.5 px-3 text-right">{t('qty', 'Qty')}</th>
+                        <th className="py-2.5 px-3">{t('unit', 'Unit')}</th>
+                        <th className="py-2.5 px-3 text-right">{t('cost', 'Cost')}</th>
+                        <th className="py-2.5 px-3 text-right">{t('total_cost', 'Total Cost')}</th>
                         <th className="py-2.5 px-2 text-center w-12"></th>
                       </tr>
                     </thead>
@@ -1895,7 +1897,7 @@ export default function ItemAssemblyView() {
                       {ingredients.length === 0 ? (
                         <tr>
                           <td colSpan={6} className="py-8 text-center text-slate-400 italic">
-                            No ingredients selected. Choose a finished item above or search ingredients to formulate.
+                            {t('no_ingredients_selected_choose_a', 'No ingredients selected. Choose a finished item above or search ingredients to formulate.')}
                           </td>
                         </tr>
                       ) : (
@@ -1905,7 +1907,7 @@ export default function ItemAssemblyView() {
                               {ing.description}
                               {ing.isMain && (
                                 <span className="ml-2 text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200">
-                                  Primary Ingredient
+                                  {t('primary_ingredient', 'Primary Ingredient')}
                                 </span>
                               )}
                             </td>
@@ -1941,7 +1943,7 @@ export default function ItemAssemblyView() {
                                   setIngredients((prev) => prev.filter((_, i) => i !== idx))
                                 }
                                 className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
-                                title="Remove ingredient"
+                                title={t('remove_ingredient', 'Remove ingredient')}
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -1964,7 +1966,7 @@ export default function ItemAssemblyView() {
                   <div className="flex items-center gap-6">
                     {/* Total */}
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-slate-700">Total</span>
+                      <span className="text-sm font-bold text-slate-700">{t('total', 'Total')}</span>
                       <span className="text-sm font-bold font-mono text-slate-900 bg-slate-50 px-3 py-1 rounded border border-slate-200">
                         {totalAssemblyCost.toLocaleString()} LBP
                       </span>
@@ -1983,7 +1985,7 @@ export default function ItemAssemblyView() {
                         }`}
                       >
                         <Save className="w-3.5 h-3.5" />
-                        <span>Save</span>
+                        <span>{t('save', 'Save')}</span>
                       </button>
 
                       <button
@@ -1997,7 +1999,7 @@ export default function ItemAssemblyView() {
                         }`}
                       >
                         <Save className="w-3.5 h-3.5" />
-                        <span>Save And Post</span>
+                        <span>{t('save_and_post', 'Save And Post')}</span>
                       </button>
                     </div>
                   </div>
@@ -2021,7 +2023,7 @@ export default function ItemAssemblyView() {
               className="bg-slate-100/80 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between cursor-pointer select-none hover:bg-slate-100"
             >
               <h2 className="text-xs font-bold text-slate-800 tracking-wide">
-                Multiple Item Assembly Info
+                {t('multiple_item_assembly_info', 'Multiple Item Assembly Info')}
               </h2>
               <ChevronDown
                 className={`w-4 h-4 text-slate-500 transition-transform ${
@@ -2037,7 +2039,7 @@ export default function ItemAssemblyView() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Branch*
+                      {t('branch', 'Branch*')}
                     </label>
                     <select
                       value={multiBranchId || ''}
@@ -2049,7 +2051,7 @@ export default function ItemAssemblyView() {
                       }}
                       className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
                     >
-                      <option value="">Select branch</option>
+                      <option value="">{t('select_branch', 'Select branch')}</option>
                       {AUTHENTIC_BRANCHES.map((b) => (
                         <option key={b.id} value={b.id}>
                           {b.name}
@@ -2060,7 +2062,7 @@ export default function ItemAssemblyView() {
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Location*
+                      {t('location', 'Location*')}
                     </label>
                     <select
                       disabled={isMultiBranchLocked}
@@ -2074,7 +2076,7 @@ export default function ItemAssemblyView() {
                         isMultiBranchLocked ? 'bg-slate-100 cursor-not-allowed opacity-60' : 'bg-white'
                       }`}
                     >
-                      <option value="">Select location</option>
+                      <option value="">{t('select_location', 'Select location')}</option>
                       {AUTHENTIC_LOCATIONS.map((loc) => (
                         <option key={loc.id} value={loc.id}>
                           {loc.name}
@@ -2089,14 +2091,14 @@ export default function ItemAssemblyView() {
                   {/* Multiple Item Assembly Name* (Locked upon choosing Branch and Location) */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Multiple Item Assembly Name*
+                      {t('multiple_item_assembly_name', 'Multiple Item Assembly Name*')}
                     </label>
                     <input
                       type="text"
                       disabled={isMultiLocationLocked}
                       value={multiAssemblyName}
                       onChange={(e) => setMultiAssemblyName(e.target.value)}
-                      placeholder="e.g. MULTIPLE ITEM ASSEMBLY 2"
+                      placeholder={t('eg_multiple_item_assembly_2', 'e.g. MULTIPLE ITEM ASSEMBLY 2')}
                       className={`w-full border border-slate-300 rounded px-3 py-1.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                         isMultiLocationLocked ? 'bg-slate-100 cursor-not-allowed opacity-60' : 'bg-white'
                       }`}
@@ -2106,7 +2108,7 @@ export default function ItemAssemblyView() {
                   {/* Assembled By (Locked upon choosing Branch and Location) */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Assembled By
+                      {t('assembled_by', 'Assembled By')}
                     </label>
                     <input
                       type="text"
@@ -2122,7 +2124,7 @@ export default function ItemAssemblyView() {
                   {/* Item Assembly Date (Locked upon choosing Branch and Location) */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Item Assembly Date
+                      {t('item_assembly_date', 'Item Assembly Date')}
                     </label>
                     <input
                       type="date"
@@ -2139,14 +2141,14 @@ export default function ItemAssemblyView() {
                 {/* Row 3: Remark */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Remark
+                    {t('remark', 'Remark')}
                   </label>
                   <input
                     type="text"
                     disabled={isMultiLocationLocked}
                     value={multiRemark}
                     onChange={(e) => setMultiRemark(e.target.value)}
-                    placeholder="General batch remark or production reason..."
+                    placeholder={t('general_batch_remark_or_production', 'General batch remark or production reason...')}
                     className={`w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                       isMultiLocationLocked ? 'bg-slate-100 cursor-not-allowed opacity-60' : 'bg-white'
                     }`}
@@ -2164,7 +2166,7 @@ export default function ItemAssemblyView() {
               className="bg-slate-100/80 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between cursor-pointer select-none hover:bg-slate-100"
             >
               <h2 className="text-xs font-bold text-slate-800 tracking-wide">
-                Multiple Item Assembly
+                {t('multiple_item_assembly', 'Multiple Item Assembly')}
               </h2>
               <ChevronDown
                 className={`w-4 h-4 text-slate-500 transition-transform ${
@@ -2189,7 +2191,7 @@ export default function ItemAssemblyView() {
                           triggerSearchModal('multiple_item', multiSearchText);
                         }
                       }}
-                      placeholder="Assemble Items ..."
+                      placeholder={t('assemble_items', 'Assemble Items ...')}
                       className={`w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                         isMultiLocationLocked ? 'bg-slate-100 cursor-not-allowed opacity-60' : 'bg-white'
                       }`}
@@ -2198,7 +2200,7 @@ export default function ItemAssemblyView() {
                       type="button"
                       disabled={isMultiLocationLocked}
                       onClick={() => triggerSearchModal('multiple_item', multiSearchText)}
-                      title="Search inventory items to add"
+                      title={t('search_inventory_items_to_add', 'Search inventory items to add')}
                       className={`p-2 rounded text-white transition ${
                         isMultiLocationLocked
                           ? 'bg-slate-300 cursor-not-allowed opacity-60'
@@ -2221,7 +2223,7 @@ export default function ItemAssemblyView() {
                       }`}
                     >
                       <Upload className="w-3.5 h-3.5" />
-                      <span>Import CSV</span>
+                      <span>{t('import_csv', 'Import CSV')}</span>
                     </button>
                   </div>
                 </div>
@@ -2232,12 +2234,12 @@ export default function ItemAssemblyView() {
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold">
                         {multiPosted && <th className="py-2.5 px-3">#</th>}
-                        <th className="py-2.5 px-3">Description</th>
-                        <th className="py-2.5 px-3 text-right">Qty</th>
-                        <th className="py-2.5 px-3">Unit</th>
-                        <th className="py-2.5 px-3">Location</th>
-                        <th className="py-2.5 px-3">Date</th>
-                        <th className="py-2.5 px-3">Expiry Date</th>
+                        <th className="py-2.5 px-3">{t('description', 'Description')}</th>
+                        <th className="py-2.5 px-3 text-right">{t('qty', 'Qty')}</th>
+                        <th className="py-2.5 px-3">{t('unit', 'Unit')}</th>
+                        <th className="py-2.5 px-3">{t('location', 'Location')}</th>
+                        <th className="py-2.5 px-3">{t('date', 'Date')}</th>
+                        <th className="py-2.5 px-3">{t('expiry_date', 'Expiry Date')}</th>
                         <th className="py-2.5 px-2 text-center w-12"></th>
                       </tr>
                     </thead>
@@ -2245,7 +2247,7 @@ export default function ItemAssemblyView() {
                       {multiItems.length === 0 ? (
                         <tr>
                           <td colSpan={8} className="py-8 text-center text-slate-400 italic">
-                            No items added to assembly. Search items or import CSV above to assemble in bulk.
+                            {t('no_items_added_to_assembly_search_items', 'No items added to assembly. Search items or import CSV above to assemble in bulk.')}
                           </td>
                         </tr>
                       ) : (
@@ -2298,7 +2300,7 @@ export default function ItemAssemblyView() {
                                   setMultiItems((prev) => prev.filter((_, i) => i !== idx))
                                 }
                                 className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
-                                title="Remove item"
+                                title={t('remove_item', 'Remove item')}
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -2328,7 +2330,7 @@ export default function ItemAssemblyView() {
                       }`}
                     >
                       <Save className="w-3.5 h-3.5" />
-                      <span>Save</span>
+                      <span>{t('save', 'Save')}</span>
                     </button>
 
                     <button
@@ -2342,7 +2344,7 @@ export default function ItemAssemblyView() {
                       }`}
                     >
                       <Save className="w-3.5 h-3.5" />
-                      <span>Save And Post</span>
+                      <span>{t('save_and_post', 'Save And Post')}</span>
                     </button>
                   </div>
                 </div>
@@ -2462,7 +2464,7 @@ export default function ItemAssemblyView() {
 // SUB-MODAL 1: PREVIEW SINGLE PRODUCTIONS MODAL
 // ============================================================================
 function PreviewSingleProductionsModal({
-  isOpen,
+isOpen,
   onClose,
   records,
   onOpenRecord,
@@ -2476,6 +2478,7 @@ function PreviewSingleProductionsModal({
   onDeleteRecord: (id: number) => void;
   onPostRecord: (id: number) => void;
 }) {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'POSTED' | 'DRAFT'>('ALL');
 
@@ -2515,7 +2518,7 @@ function PreviewSingleProductionsModal({
             <Search className="w-4 h-4 text-slate-400" />
             <input
               type="search"
-              placeholder="Search by ID, item name, code..."
+              placeholder={t('search_by_id_item_name_code', 'Search by ID, item name, code...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -2523,7 +2526,7 @@ function PreviewSingleProductionsModal({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-600 font-semibold">Status:</span>
+            <span className="text-xs text-slate-600 font-semibold">{t('status', 'Status:')}</span>
             <div className="flex rounded border border-slate-300 overflow-hidden text-xs">
               <button
                 onClick={() => setStatusFilter('ALL')}
@@ -2531,7 +2534,7 @@ function PreviewSingleProductionsModal({
                   statusFilter === 'ALL' ? 'bg-primary text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                All
+                {t('all', 'All')}
               </button>
               <button
                 onClick={() => setStatusFilter('POSTED')}
@@ -2539,7 +2542,7 @@ function PreviewSingleProductionsModal({
                   statusFilter === 'POSTED' ? 'bg-primary text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                Posted
+                {t('posted', 'Posted')}
               </button>
               <button
                 onClick={() => setStatusFilter('DRAFT')}
@@ -2547,7 +2550,7 @@ function PreviewSingleProductionsModal({
                   statusFilter === 'DRAFT' ? 'bg-primary text-white' : 'bg-white text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                Draft
+                {t('draft', 'Draft')}
               </button>
             </div>
           </div>
@@ -2558,22 +2561,22 @@ function PreviewSingleProductionsModal({
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold">
-                <th className="py-2.5 px-3">ID</th>
-                <th className="py-2.5 px-3">Date</th>
-                <th className="py-2.5 px-3">Branch</th>
-                <th className="py-2.5 px-3">Location</th>
-                <th className="py-2.5 px-3">Assembled Item</th>
-                <th className="py-2.5 px-3 text-right">Qty</th>
-                <th className="py-2.5 px-3 text-right">Total Cost</th>
-                <th className="py-2.5 px-3 text-center">Status</th>
-                <th className="py-2.5 px-3 text-right">Actions</th>
+                <th className="py-2.5 px-3">{t('id', 'ID')}</th>
+                <th className="py-2.5 px-3">{t('date', 'Date')}</th>
+                <th className="py-2.5 px-3">{t('branch', 'Branch')}</th>
+                <th className="py-2.5 px-3">{t('location', 'Location')}</th>
+                <th className="py-2.5 px-3">{t('assembled_item', 'Assembled Item')}</th>
+                <th className="py-2.5 px-3 text-right">{t('qty', 'Qty')}</th>
+                <th className="py-2.5 px-3 text-right">{t('total_cost', 'Total Cost')}</th>
+                <th className="py-2.5 px-3 text-center">{t('status', 'Status')}</th>
+                <th className="py-2.5 px-3 text-right">{t('actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="py-8 text-center text-slate-400 italic">
-                    No matching item assembly records found.
+                    {t('no_matching_item_assembly_records_found', 'No matching item assembly records found.')}
                   </td>
                 </tr>
               ) : (
@@ -2596,11 +2599,11 @@ function PreviewSingleProductionsModal({
                     <td className="py-2.5 px-3 text-center">
                       {rec.posted === -1 ? (
                         <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-300">
-                          POSTED
+                          {t('posted', 'POSTED')}
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px] border border-amber-300">
-                          DRAFT
+                          {t('draft', 'DRAFT')}
                         </span>
                       )}
                     </td>
@@ -2610,25 +2613,25 @@ function PreviewSingleProductionsModal({
                           type="button"
                           onClick={() => onOpenRecord(rec)}
                           className="px-2 py-1 bg-primary hover:bg-primary/90 text-white rounded text-[11px] font-bold"
-                          title="Open in workstation"
+                          title={t('open_in_workstation', 'Open in workstation')}
                         >
-                          Open
+                          {t('open', 'Open')}
                         </button>
                         {rec.posted !== -1 && (
                           <button
                             type="button"
                             onClick={() => onPostRecord(rec.id)}
                             className="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold"
-                            title="Post assembly"
+                            title={t('post_assembly', 'Post assembly')}
                           >
-                            Post
+                            {t('post', 'Post')}
                           </button>
                         )}
                         <button
                           type="button"
                           onClick={() => onDeleteRecord(rec.id)}
                           className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
-                          title="Delete record"
+                          title={t('delete_record', 'Delete record')}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -2648,7 +2651,7 @@ function PreviewSingleProductionsModal({
             onClick={onClose}
             className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded cursor-pointer"
           >
-            Close
+            {t('close', 'Close')}
           </button>
         </div>
       </div>
@@ -2660,7 +2663,7 @@ function PreviewSingleProductionsModal({
 // SUB-MODAL 2: PREVIEW MULTIPLE PRODUCTIONS MODAL
 // ============================================================================
 function PreviewMultipleProductionsModal({
-  isOpen,
+isOpen,
   onClose,
   records,
   onOpenRecord,
@@ -2672,6 +2675,7 @@ function PreviewMultipleProductionsModal({
   onOpenRecord: (record: MultipleAssemblyRecord) => void;
   onDeleteRecord: (id: number) => void;
 }) {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   return (
@@ -2693,14 +2697,14 @@ function PreviewMultipleProductionsModal({
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold">
-                <th className="py-2.5 px-3">ID</th>
-                <th className="py-2.5 px-3">Multiple Assembly Name</th>
-                <th className="py-2.5 px-3">Date</th>
-                <th className="py-2.5 px-3">Branch</th>
-                <th className="py-2.5 px-3">Location</th>
-                <th className="py-2.5 px-3 text-center">Items Count</th>
-                <th className="py-2.5 px-3 text-center">Status</th>
-                <th className="py-2.5 px-3 text-right">Actions</th>
+                <th className="py-2.5 px-3">{t('id', 'ID')}</th>
+                <th className="py-2.5 px-3">{t('multiple_assembly_name', 'Multiple Assembly Name')}</th>
+                <th className="py-2.5 px-3">{t('date', 'Date')}</th>
+                <th className="py-2.5 px-3">{t('branch', 'Branch')}</th>
+                <th className="py-2.5 px-3">{t('location', 'Location')}</th>
+                <th className="py-2.5 px-3 text-center">{t('items_count', 'Items Count')}</th>
+                <th className="py-2.5 px-3 text-center">{t('status', 'Status')}</th>
+                <th className="py-2.5 px-3 text-right">{t('actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -2716,7 +2720,7 @@ function PreviewMultipleProductionsModal({
                   </td>
                   <td className="py-2.5 px-3 text-center">
                     <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-300">
-                      POSTED
+                      {t('posted', 'POSTED')}
                     </span>
                   </td>
                   <td className="py-2.5 px-3 text-right">
@@ -2726,7 +2730,7 @@ function PreviewMultipleProductionsModal({
                         onClick={() => onOpenRecord(r)}
                         className="px-2 py-1 bg-primary hover:bg-primary/90 text-white rounded text-[11px] font-bold cursor-pointer"
                       >
-                        Load Items
+                        {t('load_items', 'Load Items')}
                       </button>
                       <button
                         type="button"
@@ -2748,7 +2752,7 @@ function PreviewMultipleProductionsModal({
             onClick={onClose}
             className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded text-xs cursor-pointer"
           >
-            Close
+            {t('close', 'Close')}
           </button>
         </div>
       </div>
@@ -2760,7 +2764,7 @@ function PreviewMultipleProductionsModal({
 // SUB-MODAL 3: ADD LOCATION MODAL
 // ============================================================================
 function AddLocationModal({
-  isOpen,
+isOpen,
   onClose,
   onAddLocation
 }: {
@@ -2768,6 +2772,7 @@ function AddLocationModal({
   onClose: () => void;
   onAddLocation: (name: string) => void;
 }) {
+  const { t } = useLanguage();
   const [locationName, setLocationName] = useState('');
 
   if (!isOpen) return null;
@@ -2776,7 +2781,7 @@ function AddLocationModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden animate-scale-in font-sans">
         <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
-          <h2 className="text-sm font-bold">Add Location</h2>
+          <h2 className="text-sm font-bold">{t('add_location', 'Add Location')}</h2>
           <button onClick={onClose} className="text-white hover:opacity-75">
             <X className="w-4 h-4" />
           </button>
@@ -2784,11 +2789,11 @@ function AddLocationModal({
         <div className="p-5 space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Location Description*
+              {t('location_description', 'Location Description*')}
             </label>
             <input
               type="text"
-              placeholder="e.g. Packing Room / Cold Store 2"
+              placeholder={t('eg_packing_room_cold_store_2', 'e.g. Packing Room / Cold Store 2')}
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
               className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
@@ -2799,7 +2804,7 @@ function AddLocationModal({
               onClick={onClose}
               className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded"
             >
-              Cancel
+              {t('cancel', 'Cancel')}
             </button>
             <button
               onClick={() => {
@@ -2810,7 +2815,7 @@ function AddLocationModal({
               disabled={!locationName.trim()}
               className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded disabled:opacity-50"
             >
-              Save Location
+              {t('save_location', 'Save Location')}
             </button>
           </div>
         </div>
@@ -2823,7 +2828,7 @@ function AddLocationModal({
 // SUB-MODAL 4: IMPORT CSV MODAL
 // ============================================================================
 function ImportCsvModal({
-  isOpen,
+isOpen,
   onClose,
   onImport
 }: {
@@ -2831,6 +2836,7 @@ function ImportCsvModal({
   onClose: () => void;
   onImport: (items: any[]) => void;
 }) {
+  const { t } = useLanguage();
   const [csvText, setCsvText] = useState('');
 
   if (!isOpen) return null;
@@ -2864,14 +2870,14 @@ function ImportCsvModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
       <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden animate-scale-in font-sans">
         <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
-          <h2 className="text-sm font-bold">Import CSV - Multiple Item Assembly</h2>
+          <h2 className="text-sm font-bold">{t('import_csv_multiple_item_assembly', 'Import CSV - Multiple Item Assembly')}</h2>
           <button onClick={onClose} className="text-white hover:opacity-75">
             <X className="w-4 h-4" />
           </button>
         </div>
         <div className="p-5 space-y-4 text-xs">
           <p className="text-slate-600">
-            Paste CSV data below or click &quot;Import Sample Data&quot;. Required columns: <code>Code,Description,Qty,Unit</code>
+            Paste CSV data below or click &quot;Import Sample Data&quot;. Required columns: <code>{t('codedescriptionqtyunit', 'Code,Description,Qty,Unit')}</code>
           </p>
           <textarea
             rows={5}
@@ -2889,20 +2895,20 @@ function ImportCsvModal({
               }}
               className="text-blue-600 hover:underline font-semibold"
             >
-              Load Sample Template
+              {t('load_sample_template', 'Load Sample Template')}
             </button>
             <div className="flex gap-2">
               <button
                 onClick={onClose}
                 className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 onClick={handleParseCsv}
                 className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded"
               >
-                Import Items
+                {t('import_items', 'Import Items')}
               </button>
             </div>
           </div>

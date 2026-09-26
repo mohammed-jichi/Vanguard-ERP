@@ -652,11 +652,11 @@ export default function POSTouchTerminalPage() {
           <div className="flex items-center gap-2.5">
             <span className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)] animate-pulse" />
             <span className="font-mono font-black text-amber-400 text-lg tracking-wider">
-              VANGUARD <span className="text-white font-light">TOUCH POS</span>
+              {t('vanguard', 'VANGUARD')} <span className="text-white font-light">{t('touch_pos', 'TOUCH POS')}</span>
             </span>
           </div>
           <div className="text-xs font-mono text-slate-400">
-            Node: CHO-MAIN-01 | Commercial Retail Edition
+            {t('node_chomain01_commercial_retail_edition', 'Node: CHO-MAIN-01 | Commercial Retail Edition')}
           </div>
         </div>
 
@@ -668,10 +668,10 @@ export default function POSTouchTerminalPage() {
             </div>
 
             <h1 className="text-lg font-black font-mono tracking-wide text-slate-100 uppercase mb-1">
-              ENTER CASHIER ID
+              {t('enter_cashier_id', 'ENTER CASHIER ID')}
             </h1>
             <p className="text-xs text-slate-400 mb-4 text-center">
-              Use tactile numpad or pick an active cashier profile
+              {t('use_tactile_numpad_or_pick_an_active', 'Use tactile numpad or pick an active cashier profile')}
             </p>
 
             {/* User ID Input Box */}
@@ -741,7 +741,7 @@ export default function POSTouchTerminalPage() {
               href="/backoffice"
               className="px-3 py-1.5 rounded-lg bg-[#1a1f2c] hover:bg-slate-800 text-slate-300 font-bold border border-slate-700"
             >
-              Exit to Backoffice
+              {t('exit_to_backoffice', 'Exit to Backoffice')}
             </Link>
           </div>
         </div>
@@ -760,7 +760,7 @@ export default function POSTouchTerminalPage() {
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
             <span className="font-mono font-black text-amber-400 text-lg">
-              VANGUARD <span className="text-white font-light">TOUCH POS</span>
+              {t('vanguard', 'VANGUARD')} <span className="text-white font-light">{t('touch_pos', 'TOUCH POS')}</span>
             </span>
           </div>
           <button
@@ -780,7 +780,7 @@ export default function POSTouchTerminalPage() {
             </div>
 
             <h1 className="text-lg font-black font-mono tracking-wide text-slate-100 uppercase mb-1">
-              ENTER CASHIER PIN
+              {t('enter_cashier_pin', 'ENTER CASHIER PIN')}
             </h1>
             <p className="text-xs text-amber-400 font-bold mb-4 text-center">
               {currentUser?.name} ({currentUser?.role})
@@ -788,7 +788,7 @@ export default function POSTouchTerminalPage() {
 
             {/* Masked Password Display */}
             <div className="w-full bg-[#0e1118] border-2 border-amber-500/80 rounded-xl h-14 flex items-center justify-center px-4 font-mono text-3xl font-bold tracking-widest text-amber-400 shadow-inner mb-3">
-              {enteredPassword ? '•'.repeat(enteredPassword.length) : <span className="text-slate-600">PIN</span>}
+              {enteredPassword ? '•'.repeat(enteredPassword.length) : <span className="text-slate-600">{t('pin', 'PIN')}</span>}
             </div>
 
             {/* Error Banner */}
@@ -819,7 +819,7 @@ export default function POSTouchTerminalPage() {
             onClick={() => setWorkflowState('LOGIN_USER_ID')}
             className="text-amber-400 hover:underline font-bold"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
         </div>
       </div>
@@ -834,11 +834,11 @@ export default function POSTouchTerminalPage() {
       <div className="w-screen h-screen bg-[#0b0e14] text-white flex flex-col items-center justify-center font-mono">
         <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex flex-col items-center gap-3">
           <ShieldCheck className="w-12 h-12 text-amber-400 animate-bounce" />
-          <h2 className="text-xl font-bold text-amber-300">AUTHENTICATION VERIFIED</h2>
+          <h2 className="text-xl font-bold text-amber-300">{t('authentication_verified', 'AUTHENTICATION VERIFIED')}</h2>
           <p className="text-xs text-slate-300">
             Role: {currentUser?.role} | Station: {currentUser?.workstation} | Branch: {currentUser?.branch}
           </p>
-          <div className="text-[11px] text-emerald-400 font-bold">Routing to Fullscreen POS Terminal...</div>
+          <div className="text-[11px] text-emerald-400 font-bold">{t('routing_to_fullscreen_pos_terminal', 'Routing to Fullscreen POS Terminal...')}</div>
         </div>
       </div>
     );
@@ -910,7 +910,7 @@ export default function POSTouchTerminalPage() {
                 <Barcode className="w-4 h-4 text-amber-400" />
                 <span className="font-bold text-amber-300 uppercase">MODE: {inputMode}</span>
               </div>
-              <span className="text-[10px] text-slate-500">Rate: 89,500 LBP / USD</span>
+              <span className="text-[10px] text-slate-500">{t('rate_89500_lbp_usd', 'Rate: 89,500 LBP / USD')}</span>
             </div>
 
             <div className="text-xl sm:text-2xl font-mono font-black text-amber-400 tracking-wider flex items-center justify-between min-h-[36px]">
@@ -924,7 +924,7 @@ export default function POSTouchTerminalPage() {
                   }}
                   className="text-xs font-sans px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:text-white"
                 >
-                  Reset Mode
+                  {t('reset_mode', 'Reset Mode')}
                 </button>
               )}
             </div>
@@ -933,7 +933,7 @@ export default function POSTouchTerminalPage() {
           {/* Quick Item Category Tabs & Grid (Commercial Touch Panel) */}
           <div className="mb-2.5">
             <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider font-bold mb-1.5 flex justify-between items-center">
-              <span>QUICK TOUCH PRODUCTS</span>
+              <span>{t('quick_touch_products', 'QUICK TOUCH PRODUCTS')}</span>
               <span className="text-emerald-400">1-Touch Add</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
@@ -1082,7 +1082,7 @@ export default function POSTouchTerminalPage() {
           <div className="bg-[#161a23] border border-slate-700 rounded-2xl w-full max-w-md p-5 text-slate-100 shadow-2xl flex flex-col gap-4 select-none">
             <div className="flex justify-between items-center border-b border-slate-700 pb-3">
               <h2 className="text-lg font-mono font-black text-amber-400 uppercase">
-                TENDER PAYMENT
+                {t('tender_payment', 'TENDER PAYMENT')}
               </h2>
               <button
                 type="button"
@@ -1095,7 +1095,7 @@ export default function POSTouchTerminalPage() {
 
             <div className="bg-[#0e1118] border border-slate-700 rounded-xl p-3 font-mono space-y-1">
               <div className="flex justify-between text-xs text-slate-400">
-                <span>Total Due USD:</span>
+                <span>{t('total_due_usd', 'Total Due USD:')}</span>
                 <span className="text-emerald-400 font-bold text-sm">
                   ${financialSummary.netUsd.toFixed(2)}
                 </span>
@@ -1159,7 +1159,7 @@ export default function POSTouchTerminalPage() {
           <div className="bg-[#161a23] border border-slate-700 rounded-2xl w-full max-w-xl p-5 text-slate-100 shadow-2xl flex flex-col gap-3 select-none">
             <div className="flex justify-between items-center border-b border-slate-700 pb-2.5">
               <h2 className="text-base font-mono font-bold text-amber-400 uppercase">
-                PRODUCT CATALOGUE SEARCH
+                {t('product_catalogue_search', 'PRODUCT CATALOGUE SEARCH')}
               </h2>
               <button
                 type="button"

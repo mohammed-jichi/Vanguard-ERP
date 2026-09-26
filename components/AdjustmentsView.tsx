@@ -522,15 +522,15 @@ export default function AdjustmentsView() {
         {/* Top Report Controls */}
         <div className="bg-white rounded-lg border border-slate-200 p-4 mb-4 shadow-sm flex flex-wrap items-center justify-between gap-3 print:hidden">
           <div className="flex items-center gap-3">
-            <label className="text-xs font-bold text-slate-600 uppercase">Export Format:</label>
+            <label className="text-xs font-bold text-slate-600 uppercase">{t('export_format', 'Export Format:')}</label>
             <select
               value={reportExportType}
               onChange={e => setReportExportType(e.target.value)}
               className="px-3 py-1.5 text-sm border border-slate-300 rounded bg-white text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-slate-400"
             >
               <option value="html">Preview (HTML)</option>
-              <option value="pdf">PDF Document</option>
-              <option value="csv">CSV Spreadsheet</option>
+              <option value="pdf">{t('pdf_document', 'PDF Document')}</option>
+              <option value="csv">{t('csv_spreadsheet', 'CSV Spreadsheet')}</option>
             </select>
           </div>
 
@@ -539,19 +539,19 @@ export default function AdjustmentsView() {
               onClick={() => showToast('Report generated successfully.', 'info')}
               className="px-4 py-2 bg-[#2b3442] hover:bg-slate-800 text-white rounded text-sm font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
             >
-              <FileText className="w-4 h-4" /> Generate
+              <FileText className="w-4 h-4" /> {t('generate', 'Generate')}
             </button>
             <button
               onClick={() => window.print()}
               className="px-4 py-2 bg-[#2b3442] hover:bg-slate-800 text-white rounded text-sm font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
             >
-              <Printer className="w-4 h-4" /> Print
+              <Printer className="w-4 h-4" /> {t('print', 'Print')}
             </button>
             <button
               onClick={() => setReportView(false)}
               className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded text-sm font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
             >
-              <X className="w-4 h-4" /> Close
+              <X className="w-4 h-4" /> {t('close', 'Close')}
             </button>
           </div>
         </div>
@@ -561,8 +561,8 @@ export default function AdjustmentsView() {
           {/* Company Document Header */}
           <div className="border-b-2 border-slate-900 pb-5 mb-6 flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Vanguard ERP Systems</h1>
-              <p className="text-xs text-slate-600 font-medium mt-0.5">Zeit w zaytoun ljanoub • Operational Control Center</p>
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">{t('vanguard_erp_systems', 'Vanguard ERP Systems')}</h1>
+              <p className="text-xs text-slate-600 font-medium mt-0.5">{t('zeit_w_zaytoun_ljanoub_operational', 'Zeit w zaytoun ljanoub • Operational Control Center')}</p>
               <p className="text-xs text-slate-500">Facility: {branchName} — Location: {locName}</p>
             </div>
             <div className="text-right">
@@ -575,25 +575,25 @@ export default function AdjustmentsView() {
           </div>
 
           <div className="text-center my-4">
-            <h2 className="text-lg font-bold uppercase tracking-wide text-slate-800">Inventory Stock Count & Adjustment Summary</h2>
+            <h2 className="text-lg font-bold uppercase tracking-wide text-slate-800">{t('inventory_stock_count_adjustment_summary', 'Inventory Stock Count & Adjustment Summary')}</h2>
           </div>
 
           {/* Metadata Block */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded border border-slate-200 mb-6 text-xs">
             <div>
-              <span className="text-slate-500 block">Adjustment #:</span>
+              <span className="text-slate-500 block">{t('adjustment', 'Adjustment #:')}</span>
               <span className="font-bold text-slate-800">#{adjustmentId || 'Unsaved'}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Adjustment Date:</span>
+              <span className="text-slate-500 block">{t('adjustment_date', 'Adjustment Date:')}</span>
               <span className="font-bold text-slate-800">{adjustmentDate}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Branch & Location:</span>
+              <span className="text-slate-500 block">{t('branch_location', 'Branch & Location:')}</span>
               <span className="font-bold text-slate-800">{locName}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Created By:</span>
+              <span className="text-slate-500 block">{t('created_by', 'Created By:')}</span>
               <span className="font-bold text-slate-800">{createdBy.firstname} {createdBy.lastname}</span>
             </div>
           </div>
@@ -602,13 +602,13 @@ export default function AdjustmentsView() {
           <table className="w-full text-xs border-collapse border border-slate-300 mb-6">
             <thead>
               <tr className="bg-slate-100 text-slate-800 border-b border-slate-300 font-bold">
-                <th className="p-2 border-r border-slate-300 text-left">Code</th>
-                <th className="p-2 border-r border-slate-300 text-left">Description</th>
-                <th className="p-2 border-r border-slate-300 text-center">Unit</th>
-                <th className="p-2 border-r border-slate-300 text-right">QOH</th>
+                <th className="p-2 border-r border-slate-300 text-left">{t('code', 'Code')}</th>
+                <th className="p-2 border-r border-slate-300 text-left">{t('description', 'Description')}</th>
+                <th className="p-2 border-r border-slate-300 text-center">{t('unit', 'Unit')}</th>
+                <th className="p-2 border-r border-slate-300 text-right">{t('qoh', 'QOH')}</th>
                 <th className="p-2 border-r border-slate-300 text-right">Counted (New)</th>
-                <th className="p-2 border-r border-slate-300 text-right text-rose-700">Variance</th>
-                <th className="p-2 text-left">Remark</th>
+                <th className="p-2 border-r border-slate-300 text-right text-rose-700">{t('variance', 'Variance')}</th>
+                <th className="p-2 text-left">{t('remark', 'Remark')}</th>
               </tr>
             </thead>
             <tbody>
@@ -628,7 +628,7 @@ export default function AdjustmentsView() {
             </tbody>
             <tfoot>
               <tr className="bg-slate-100 font-bold border-t-2 border-slate-400 text-slate-900">
-                <td colSpan={3} className="p-2 text-right">Totals:</td>
+                <td colSpan={3} className="p-2 text-right">{t('totals', 'Totals:')}</td>
                 <td className="p-2 text-right font-mono">{totals.totalQOH.toFixed(3)}</td>
                 <td className="p-2 text-right font-mono">{totals.totalNewQty.toFixed(3)}</td>
                 <td className="p-2 text-right font-mono text-rose-700">{totals.totalVariance.toFixed(3)}</td>
@@ -641,18 +641,18 @@ export default function AdjustmentsView() {
           <div className="grid grid-cols-3 gap-6 pt-10 border-t border-slate-300 text-center text-xs">
             <div>
               <div className="border-b border-slate-400 pb-8 mb-2"></div>
-              <p className="font-bold text-slate-800">Inventory Count Controller</p>
-              <p className="text-[10px] text-slate-500">Name & Signature</p>
+              <p className="font-bold text-slate-800">{t('inventory_count_controller', 'Inventory Count Controller')}</p>
+              <p className="text-[10px] text-slate-500">{t('name_signature', 'Name & Signature')}</p>
             </div>
             <div>
               <div className="border-b border-slate-400 pb-8 mb-2"></div>
-              <p className="font-bold text-slate-800">Warehouse Manager</p>
-              <p className="text-[10px] text-slate-500">Verification & Approval</p>
+              <p className="font-bold text-slate-800">{t('warehouse_manager', 'Warehouse Manager')}</p>
+              <p className="text-[10px] text-slate-500">{t('verification_approval', 'Verification & Approval')}</p>
             </div>
             <div>
               <div className="border-b border-slate-400 pb-8 mb-2"></div>
-              <p className="font-bold text-slate-800">Financial Auditor</p>
-              <p className="text-[10px] text-slate-500">General Ledger Posting</p>
+              <p className="font-bold text-slate-800">{t('financial_auditor', 'Financial Auditor')}</p>
+              <p className="text-[10px] text-slate-500">{t('general_ledger_posting', 'General Ledger Posting')}</p>
             </div>
           </div>
         </div>
@@ -692,11 +692,11 @@ export default function AdjustmentsView() {
       <div className="mb-3">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 mb-1">Adjustments</h1>
+            <h1 className="text-2xl font-bold text-slate-900 mb-1">{t('adjustments', 'Adjustments')}</h1>
             <nav className="flex items-center gap-1.5 text-xs text-slate-500">
-              <a href="/inventory" className="text-blue-600 hover:underline">Home</a>
+              <a href="/inventory" className="text-blue-600 hover:underline">{t('home', 'Home')}</a>
               <span>/</span>
-              <span className="text-slate-600">Adjustments</span>
+              <span className="text-slate-600">{t('adjustments', 'Adjustments')}</span>
             </nav>
           </div>
           <button
@@ -704,7 +704,7 @@ export default function AdjustmentsView() {
             onClick={() => setTutorialModalOpen(true)}
             className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1 hover:underline cursor-pointer"
           >
-            <b>Watch Tutorial</b>
+            <b>{t('watch_tutorial', 'Watch Tutorial')}</b>
           </button>
         </div>
       </div>
@@ -735,21 +735,21 @@ export default function AdjustmentsView() {
             onClick={() => setRecallModalOpen(true)}
             className="px-4 py-2 bg-[#2b3442] hover:bg-slate-800 text-white rounded text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
           >
-            <Search className="w-4 h-4" /> Preview
+            <Search className="w-4 h-4" /> {t('preview', 'Preview')}
           </button>
           <button
             type="button"
             onClick={handleNewAdjustmentClick}
             className="px-4 py-2 bg-[#2b3442] hover:bg-slate-800 text-white rounded text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
           >
-            <Plus className="w-4 h-4" /> New
+            <Plus className="w-4 h-4" /> {t('new', 'New')}
           </button>
           <button
             type="button"
             onClick={() => setReportView(true)}
             className="px-4 py-2 bg-[#475569] hover:bg-slate-700 text-white rounded text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
           >
-            <Printer className="w-4 h-4" /> Print Report
+            <Printer className="w-4 h-4" /> {t('print_report', 'Print Report')}
           </button>
         </div>
       </div>
@@ -759,7 +759,7 @@ export default function AdjustmentsView() {
           ========================================================================= */}
       <div className="bg-white rounded-lg border border-[#dfe5ee] mb-4 shadow-none">
         <div className="bg-[#f8fafc] border-b border-[#dfe5ee] font-semibold text-slate-800 px-4 py-2.5">
-          Adjustment
+          {t('adjustment', 'Adjustment')}
         </div>
 
         <div className="p-4">
@@ -767,7 +767,7 @@ export default function AdjustmentsView() {
             {/* Location* + Add Location button */}
             <div className="col-span-12 md:col-span-3">
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Location<span className="text-red-500">*</span>
+                {t('location', 'Location')}<span className="text-red-500">*</span>
               </label>
               <div className="flex items-center gap-1.5">
                 <select
@@ -776,7 +776,7 @@ export default function AdjustmentsView() {
                   onChange={e => setSelectedLocationId(Number(e.target.value))}
                   className="flex-1 px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-slate-400"
                 >
-                  <option value={0}>Select location</option>
+                  <option value={0}>{t('select_location', 'Select location')}</option>
                   {locations.map(loc => (
                     <option key={loc.LOCATIONID} value={loc.LOCATIONID}>
                       {loc.LOCATIONDESCRIPTION}
@@ -785,7 +785,7 @@ export default function AdjustmentsView() {
                 </select>
                 <button
                   type="button"
-                  title="Add new storage/warehouse location"
+                  title={t('add_new_storagewarehouse_location', 'Add new storage/warehouse location')}
                   onClick={() => setAddLocationModalOpen(true)}
                   className="px-2.5 py-1.5 bg-[#2b3442] hover:bg-slate-800 text-white rounded font-bold text-sm transition-colors"
                 >
@@ -796,50 +796,50 @@ export default function AdjustmentsView() {
 
             {/* Include */}
             <div className="col-span-12 md:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Include</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">{t('include', 'Include')}</label>
               <select
                 id="includeFilter"
                 value={includeFilter}
                 onChange={e => setIncludeFilter(Number(e.target.value))}
                 className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-slate-400"
               >
-                <option value={0}>All</option>
-                <option value={1}>Daily adjustment</option>
-                <option value={2}>Weekly adjustment</option>
+                <option value={0}>{t('all', 'All')}</option>
+                <option value={1}>{t('daily_adjustment', 'Daily adjustment')}</option>
+                <option value={2}>{t('weekly_adjustment', 'Weekly adjustment')}</option>
               </select>
             </div>
 
             {/* Sort by */}
             <div className="col-span-12 md:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Sort by</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">{t('sort_by', 'Sort by')}</label>
               <select
                 id="sortBy"
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
                 className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-slate-400"
               >
-                <option value="PRODUCTCODE">Product code</option>
-                <option value="PRODUCTDESCRIPTION">Product description</option>
+                <option value="PRODUCTCODE">{t('product_code', 'Product code')}</option>
+                <option value="PRODUCTDESCRIPTION">{t('product_description', 'Product description')}</option>
               </select>
             </div>
 
             {/* Sort Type */}
             <div className="col-span-12 md:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Sort Type</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">{t('sort_type', 'Sort Type')}</label>
               <select
                 value={sortType}
                 onChange={e => setSortType(e.target.value)}
                 className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-slate-400"
               >
-                <option value="asc">Select Type</option>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
+                <option value="asc">{t('select_type', 'Select Type')}</option>
+                <option value="asc">{t('ascending', 'Ascending')}</option>
+                <option value="desc">{t('descending', 'Descending')}</option>
               </select>
             </div>
 
             {/* Search (with subcategory trigger) */}
             <div className="col-span-12 md:col-span-3">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Search</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">{t('search', 'Search')}</label>
               <select
                 value={searchBy}
                 onChange={e => {
@@ -848,10 +848,10 @@ export default function AdjustmentsView() {
                 }}
                 className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-slate-400"
               >
-                <option value={0}>Select</option>
-                <option value={1}>Category</option>
-                <option value={2}>Division</option>
-                <option value={3}>Group</option>
+                <option value={0}>{t('select', 'Select')}</option>
+                <option value={1}>{t('category', 'Category')}</option>
+                <option value={2}>{t('division', 'Division')}</option>
+                <option value={3}>{t('group', 'Group')}</option>
               </select>
 
               {/* Dynamic subcategory dropdown */}
@@ -861,7 +861,7 @@ export default function AdjustmentsView() {
                   onChange={e => setComboValue(Number(e.target.value))}
                   className="w-full mt-2 px-3 py-1.5 text-sm bg-white border border-slate-300 rounded"
                 >
-                  <option value={0}>Select Category</option>
+                  <option value={0}>{t('select_category', 'Select Category')}</option>
                   {OMEGA_CATEGORIES.map(c => (
                     <option key={c.CATEGORYID} value={c.CATEGORYID}>
                       {c.CATEGORYNAME}
@@ -875,7 +875,7 @@ export default function AdjustmentsView() {
                   onChange={e => setComboValue(Number(e.target.value))}
                   className="w-full mt-2 px-3 py-1.5 text-sm bg-white border border-slate-300 rounded"
                 >
-                  <option value={0}>Select Division</option>
+                  <option value={0}>{t('select_division', 'Select Division')}</option>
                   {OMEGA_DIVISIONS.map(d => (
                     <option key={d.DIVISIONID} value={d.DIVISIONID}>
                       {d.DIVISIONNAME}
@@ -889,7 +889,7 @@ export default function AdjustmentsView() {
                   onChange={e => setComboValue(Number(e.target.value))}
                   className="w-full mt-2 px-3 py-1.5 text-sm bg-white border border-slate-300 rounded"
                 >
-                  <option value={0}>Select Group</option>
+                  <option value={0}>{t('select_group', 'Select Group')}</option>
                   {OMEGA_GROUPS.map(g => (
                     <option key={g.GROUPID} value={g.GROUPID}>
                       {g.GROUPNAME}
@@ -905,12 +905,12 @@ export default function AdjustmentsView() {
             {/* Adjustment Date */}
             <div className="col-span-12 md:col-span-4">
               <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 mb-1">
-                Adjustment Date
+                {t('adjustment_date', 'Adjustment Date')}
                 <button
                   type="button"
                   onClick={() => setIsEditingDate(!isEditingDate)}
                   className="text-blue-600 hover:text-blue-800"
-                  title="Edit Date"
+                  title={t('edit_date', 'Edit Date')}
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
@@ -942,7 +942,7 @@ export default function AdjustmentsView() {
                   onChange={e => setShowNegQtyOnly(e.target.checked)}
                   className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
                 />
-                <span>Show neg. Qty only</span>
+                <span>{t('show_neg_qty_only', 'Show neg. Qty only')}</span>
               </label>
 
               <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700">
@@ -952,7 +952,7 @@ export default function AdjustmentsView() {
                   onChange={e => setHide0Qty(e.target.checked)}
                   className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
                 />
-                <span>Hide items with 0 Qty</span>
+                <span>{t('hide_items_with_0_qty', 'Hide items with 0 Qty')}</span>
               </label>
             </div>
 
@@ -960,7 +960,7 @@ export default function AdjustmentsView() {
             {isPreviewMode && (
               <div className="col-span-12 md:col-span-4 text-xs bg-slate-50 border border-slate-200 rounded p-2 text-right">
                 <p className="text-slate-600 font-mono">
-                  Reference: <b>#{adjustmentId}</b> {isPosted ? <span className="ml-1 text-emerald-600 font-bold">(POSTED)</span> : <span className="ml-1 text-amber-600 font-bold">(DRAFT)</span>}
+                  {t('reference', 'Reference:')} <b>#{adjustmentId}</b> {isPosted ? <span className="ml-1 text-emerald-600 font-bold">(POSTED)</span> : <span className="ml-1 text-amber-600 font-bold">(DRAFT)</span>}
                 </p>
                 <p className="text-slate-500 mt-0.5">
                   Created by: {createdBy.firstname} {createdBy.lastname}
@@ -976,7 +976,7 @@ export default function AdjustmentsView() {
           ========================================================================= */}
       <div className="bg-white rounded-lg border border-[#dfe5ee] mb-4 shadow-none">
         <div className="bg-[#f8fafc] border-b border-[#dfe5ee] font-semibold text-slate-800 px-4 py-2.5">
-          Details
+          {t('details', 'Details')}
         </div>
 
         <div className="p-4">
@@ -992,7 +992,7 @@ export default function AdjustmentsView() {
                     setTableSearchText(e.target.value);
                     setCurrentPage(1);
                   }}
-                  placeholder="Search item by code, description or barcodes..."
+                  placeholder={t('search_item_by_code_description_or', 'Search item by code, description or barcodes...')}
                   className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-l focus:outline-none focus:ring-1 focus:ring-slate-400 placeholder:text-slate-400"
                 />
                 <button
@@ -1011,7 +1011,7 @@ export default function AdjustmentsView() {
                 onClick={() => setAddItemsModalOpen(true)}
                 className="px-3 py-1.5 bg-[#475569] hover:bg-slate-700 text-white rounded text-sm font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
               >
-                <Plus className="w-4 h-4" /> Add Items
+                <Plus className="w-4 h-4" /> {t('add_items', 'Add Items')}
               </button>
 
               {/* Actions Dropdown */}
@@ -1020,7 +1020,7 @@ export default function AdjustmentsView() {
                   type="button"
                   className="px-3.5 py-1.5 bg-[#2b3442] hover:bg-slate-800 text-white rounded text-sm font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
                 >
-                  Actions <ChevronDown className="w-3.5 h-3.5" />
+                  {t('actions', 'Actions')} <ChevronDown className="w-3.5 h-3.5" />
                 </button>
                 <div className="absolute right-0 mt-1 w-56 bg-white border border-slate-200 rounded-lg shadow-xl hidden group-hover:block z-30 py-1 text-xs">
                   <button
@@ -1028,14 +1028,14 @@ export default function AdjustmentsView() {
                     onClick={handleExportCsv}
                     className="w-full px-4 py-2 text-left text-slate-700 hover:bg-slate-100 flex items-center gap-2 font-medium"
                   >
-                    <Download className="w-3.5 h-3.5 text-slate-500" /> Export Items
+                    <Download className="w-3.5 h-3.5 text-slate-500" /> {t('export_items', 'Export Items')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setImportModalOpen(true)}
                     className="w-full px-4 py-2 text-left text-slate-700 hover:bg-slate-100 flex items-center gap-2 font-medium"
                   >
-                    <Upload className="w-3.5 h-3.5 text-slate-500" /> Import Items
+                    <Upload className="w-3.5 h-3.5 text-slate-500" /> {t('import_items', 'Import Items')}
                   </button>
                   <div className="border-t border-slate-100 my-1"></div>
                   <button
@@ -1043,14 +1043,14 @@ export default function AdjustmentsView() {
                     onClick={() => setConfirmZeroModalOpen(true)}
                     className="w-full px-4 py-2 text-left text-red-700 hover:bg-red-50 flex items-center gap-2 font-bold"
                   >
-                    <RotateCcw className="w-3.5 h-3.5 text-red-600" /> Set All Qty to 0
+                    <RotateCcw className="w-3.5 h-3.5 text-red-600" /> {t('set_all_qty_to_0', 'Set All Qty to 0')}
                   </button>
                   <button
                     type="button"
                     onClick={handleSetAllNegativeQtyZero}
                     className="w-full px-4 py-2 text-left text-red-700 hover:bg-red-50 flex items-center gap-2 font-bold"
                   >
-                    <RotateCcw className="w-3.5 h-3.5 text-red-600" /> Set All negative QTY to Zero
+                    <RotateCcw className="w-3.5 h-3.5 text-red-600" /> {t('set_all_negative_qty_to_zero', 'Set All negative QTY to Zero')}
                   </button>
                 </div>
               </div>
@@ -1062,13 +1062,13 @@ export default function AdjustmentsView() {
             <table className="w-full text-xs text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                  <th className="py-2.5 px-3 w-[15%]">Code</th>
-                  <th className="py-2.5 px-3 w-[25%]">Description</th>
-                  <th className="py-2.5 px-3 w-[10%] text-right">QOH</th>
-                  <th className="py-2.5 px-3 w-[15%] text-right whitespace-nowrap">New Qty</th>
-                  <th className="py-2.5 px-3 w-[10%] text-right text-red-700">Variance</th>
-                  <th className="py-2.5 px-3 w-[15%]">Units</th>
-                  <th className="py-2.5 px-3 w-[20%]">Remark</th>
+                  <th className="py-2.5 px-3 w-[15%]">{t('code', 'Code')}</th>
+                  <th className="py-2.5 px-3 w-[25%]">{t('description', 'Description')}</th>
+                  <th className="py-2.5 px-3 w-[10%] text-right">{t('qoh', 'QOH')}</th>
+                  <th className="py-2.5 px-3 w-[15%] text-right whitespace-nowrap">{t('new_qty', 'New Qty')}</th>
+                  <th className="py-2.5 px-3 w-[10%] text-right text-red-700">{t('variance', 'Variance')}</th>
+                  <th className="py-2.5 px-3 w-[15%]">{t('units', 'Units')}</th>
+                  <th className="py-2.5 px-3 w-[20%]">{t('remark', 'Remark')}</th>
                   <th className="py-2.5 px-2 w-[5%] text-center"></th>
                 </tr>
               </thead>
@@ -1077,13 +1077,13 @@ export default function AdjustmentsView() {
                   <tr>
                     <td colSpan={8} className="py-8 text-center text-slate-500">
                       <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-1 text-slate-400" />
-                      Loading inventory adjustment items...
+                      {t('loading_inventory_adjustment_items', 'Loading inventory adjustment items...')}
                     </td>
                   </tr>
                 ) : paginatedItems.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="py-8 text-center text-slate-400">
-                      No inventory items found matching your filters.
+                      {t('no_inventory_items_found_matching_your', 'No inventory items found matching your filters.')}
                     </td>
                   </tr>
                 ) : (
@@ -1137,7 +1137,7 @@ export default function AdjustmentsView() {
                           type="text"
                           value={item.REMARK || ''}
                           onChange={e => handleRemarkChange(item.PRODUCTID, e.target.value)}
-                          placeholder="Remark..."
+                          placeholder={t('remark', 'Remark...')}
                           className="w-full px-2 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-700 placeholder:text-slate-300"
                         />
                       </td>
@@ -1147,7 +1147,7 @@ export default function AdjustmentsView() {
                         <button
                           type="button"
                           onClick={() => handleRemoveRow(item.PRODUCTID)}
-                          title="Remove item"
+                          title={t('remove_item', 'Remove item')}
                           className="text-slate-400 hover:text-red-600 p-1 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1174,7 +1174,7 @@ export default function AdjustmentsView() {
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 className="px-2.5 py-1 border border-slate-300 rounded bg-white hover:bg-slate-50 disabled:opacity-50"
               >
-                Previous
+                {t('previous', 'Previous')}
               </button>
               {Array.from({ length: Math.min(5, totalPages) }, (_, idx) => {
                 const pageNum = idx + 1;
@@ -1199,7 +1199,7 @@ export default function AdjustmentsView() {
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 className="px-2.5 py-1 border border-slate-300 rounded bg-white hover:bg-slate-50 disabled:opacity-50"
               >
-                Next
+                {t('next', 'Next')}
               </button>
             </div>
           </div>
@@ -1217,7 +1217,7 @@ export default function AdjustmentsView() {
                   style={{ backgroundColor: '#fb8205', borderColor: '#da6f00' }}
                   className="px-5 py-2 text-white font-bold rounded shadow-sm hover:brightness-95 flex items-center gap-1.5 text-sm transition-all cursor-pointer"
                 >
-                  <Check className="w-4 h-4" /> Save
+                  <Check className="w-4 h-4" /> {t('save', 'Save')}
                 </button>
                 <button
                   type="button"
@@ -1238,21 +1238,21 @@ export default function AdjustmentsView() {
                   style={{ backgroundColor: '#fb8205', borderColor: '#da6f00' }}
                   className="px-5 py-2 text-white font-bold rounded shadow-sm hover:brightness-95 flex items-center gap-1.5 text-sm transition-all cursor-pointer"
                 >
-                  <Check className="w-4 h-4" /> Save
+                  <Check className="w-4 h-4" /> {t('save', 'Save')}
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveAndPostAdjustment}
                   className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded shadow-sm flex items-center gap-1.5 text-sm transition-all cursor-pointer"
                 >
-                  <Check className="w-4 h-4" /> Post
+                  <Check className="w-4 h-4" /> {t('post', 'Post')}
                 </button>
                 <button
                   type="button"
                   onClick={handleDeleteCurrentAdjustment}
                   className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded shadow-sm flex items-center gap-1.5 text-sm transition-all cursor-pointer"
                 >
-                  <Trash2 className="w-4 h-4" /> Delete
+                  <Trash2 className="w-4 h-4" /> {t('delete', 'Delete')}
                 </button>
               </>
             )}
@@ -1268,7 +1268,7 @@ export default function AdjustmentsView() {
                   onClick={handleTransferToAccounting}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded shadow-sm flex items-center gap-1.5 text-sm transition-all cursor-pointer"
                 >
-                  <Calculator className="w-4 h-4" /> Transfer To Accounting
+                  <Calculator className="w-4 h-4" /> {t('transfer_to_accounting', 'Transfer To Accounting')}
                 </button>
               </>
             )}
@@ -1279,7 +1279,7 @@ export default function AdjustmentsView() {
               ========================================================================= */}
           <hr className="my-6 border-slate-200" />
           <div className="text-center text-xs text-slate-500 py-2">
-            <p className="mb-2">Download the Omega Stock App to take your stock count from your mobile device.</p>
+            <p className="mb-2">{t('download_the_omega_stock_app_to_take', 'Download the Omega Stock App to take your stock count from your mobile device.')}</p>
             <a
               href="https://play.google.com/store/apps/details?id=com.omegasoftware.ostock"
               target="_blank"
@@ -1314,7 +1314,7 @@ export default function AdjustmentsView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-6 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-slate-200">
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
-              <h5 className="font-bold text-slate-800 text-base">Recall Adjustments</h5>
+              <h5 className="font-bold text-slate-800 text-base">{t('recall_adjustments', 'Recall Adjustments')}</h5>
               <button
                 type="button"
                 onClick={() => setRecallModalOpen(false)}
@@ -1332,7 +1332,7 @@ export default function AdjustmentsView() {
                     type="search"
                     value={recallSearch}
                     onChange={e => setRecallSearch(e.target.value)}
-                    placeholder="Search adjustment ID, branch, creator..."
+                    placeholder={t('search_adjustment_id_branch_creator', 'Search adjustment ID, branch, creator...')}
                     className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded"
                   />
                 </div>
@@ -1359,7 +1359,7 @@ export default function AdjustmentsView() {
                       checked={recallStatus === 3}
                       onChange={() => setRecallStatus(3)}
                     />
-                    <span>All</span>
+                    <span>{t('all', 'All')}</span>
                   </label>
                   <label className="flex items-center gap-1.5 text-slate-700">
                     <input
@@ -1368,7 +1368,7 @@ export default function AdjustmentsView() {
                       checked={recallStatus === 1}
                       onChange={() => setRecallStatus(1)}
                     />
-                    <span>Posted</span>
+                    <span>{t('posted', 'Posted')}</span>
                   </label>
                   <label className="flex items-center gap-1.5 text-slate-700">
                     <input
@@ -1377,7 +1377,7 @@ export default function AdjustmentsView() {
                       checked={recallStatus === 2}
                       onChange={() => setRecallStatus(2)}
                     />
-                    <span>Unposted</span>
+                    <span>{t('unposted', 'Unposted')}</span>
                   </label>
                 </div>
               </div>
@@ -1392,7 +1392,7 @@ export default function AdjustmentsView() {
                       onChange={e => setRecallAllDates(e.target.checked)}
                       className="rounded"
                     />
-                    <span>All Dates</span>
+                    <span>{t('all_dates', 'All Dates')}</span>
                   </label>
                   {!recallAllDates && (
                     <div className="flex items-center gap-1.5 ml-2">
@@ -1402,7 +1402,7 @@ export default function AdjustmentsView() {
                         onChange={e => setRecallFromDate(e.target.value)}
                         className="px-2 py-1 bg-white border border-slate-300 rounded text-xs"
                       />
-                      <span>to</span>
+                      <span>{t('to', 'to')}</span>
                       <input
                         type="date"
                         value={recallToDate}
@@ -1418,7 +1418,7 @@ export default function AdjustmentsView() {
                   onClick={handleDeleteAllUnposted}
                   className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded font-bold text-xs flex items-center gap-1 transition-colors"
                 >
-                  <Trash2 className="w-3.5 h-3.5" /> Delete all unposted Adjustments
+                  <Trash2 className="w-3.5 h-3.5" /> {t('delete_all_unposted_adjustments', 'Delete all unposted Adjustments')}
                 </button>
               </div>
             </div>
@@ -1428,13 +1428,13 @@ export default function AdjustmentsView() {
               <table className="w-full text-xs text-left border-collapse border border-slate-200">
                 <thead>
                   <tr className="bg-slate-100 font-bold text-slate-700 border-b border-slate-200">
-                    <th className="p-2 border-r border-slate-200">Adjust #</th>
-                    <th className="p-2 border-r border-slate-200">Date</th>
-                    <th className="p-2 border-r border-slate-200">Branch</th>
-                    <th className="p-2 border-r border-slate-200">Location</th>
-                    <th className="p-2 border-r border-slate-200">Status</th>
-                    <th className="p-2 border-r border-slate-200">Created By</th>
-                    <th className="p-2 text-center">Actions</th>
+                    <th className="p-2 border-r border-slate-200">{t('adjust', 'Adjust #')}</th>
+                    <th className="p-2 border-r border-slate-200">{t('date', 'Date')}</th>
+                    <th className="p-2 border-r border-slate-200">{t('branch', 'Branch')}</th>
+                    <th className="p-2 border-r border-slate-200">{t('location', 'Location')}</th>
+                    <th className="p-2 border-r border-slate-200">{t('status', 'Status')}</th>
+                    <th className="p-2 border-r border-slate-200">{t('created_by', 'Created By')}</th>
+                    <th className="p-2 text-center">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -1470,11 +1470,11 @@ export default function AdjustmentsView() {
                         <td className="p-2 border-r border-slate-200">
                           {row.POSTED === -1 ? (
                             <span className="px-2 py-0.5 bg-emerald-50 border border-emerald-300 text-emerald-700 rounded font-bold">
-                              Posted
+                              {t('posted', 'Posted')}
                             </span>
                           ) : (
                             <span className="px-2 py-0.5 bg-amber-50 border border-amber-300 text-amber-700 rounded font-bold">
-                              Unposted
+                              {t('unposted', 'Unposted')}
                             </span>
                           )}
                         </td>
@@ -1487,13 +1487,13 @@ export default function AdjustmentsView() {
                             onClick={() => handleLoadRecallAdjustment(row)}
                             className="px-2.5 py-1 bg-[#2b3442] hover:bg-slate-800 text-white rounded text-xs font-semibold flex items-center gap-1 transition-colors"
                           >
-                            <Eye className="w-3 h-3" /> Load
+                            <Eye className="w-3 h-3" /> {t('load', 'Load')}
                           </button>
                           {row.POSTED === 0 && (
                             <button
                               type="button"
                               onClick={() => handleDeleteRecallRow(row.ADJUSTID)}
-                              title="Delete Draft"
+                              title={t('delete_draft', 'Delete Draft')}
                               className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -1512,7 +1512,7 @@ export default function AdjustmentsView() {
                 onClick={() => setRecallModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-semibold text-xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1526,7 +1526,7 @@ export default function AdjustmentsView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg border border-slate-200">
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
-              <h5 className="font-bold text-slate-800 text-base">Import Adjustment Items</h5>
+              <h5 className="font-bold text-slate-800 text-base">{t('import_adjustment_items', 'Import Adjustment Items')}</h5>
               <button
                 type="button"
                 onClick={() => setImportModalOpen(false)}
@@ -1538,18 +1538,18 @@ export default function AdjustmentsView() {
 
             <div className="p-5 text-xs text-slate-700 space-y-4">
               <div className="flex items-center justify-between bg-blue-50 p-3 rounded border border-blue-200">
-                <span className="text-blue-800">CSV format: <b>Code, NewQty, Remark</b></span>
+                <span className="text-blue-800">{t('csv_format', 'CSV format:')} <b>{t('code_newqty_remark', 'Code, NewQty, Remark')}</b></span>
                 <button
                   type="button"
                   onClick={handleDownloadTemplate}
                   className="text-blue-700 font-bold hover:underline flex items-center gap-1 text-xs"
                 >
-                  <Download className="w-3.5 h-3.5" /> Download Template
+                  <Download className="w-3.5 h-3.5" /> {t('download_template', 'Download Template')}
                 </button>
               </div>
 
               <div>
-                <label className="block font-semibold mb-1">Paste CSV Contents or Drop File:</label>
+                <label className="block font-semibold mb-1">{t('paste_csv_contents_or_drop_file', 'Paste CSV Contents or Drop File:')}</label>
                 <textarea
                   rows={6}
                   value={csvContent}
@@ -1566,14 +1566,14 @@ export default function AdjustmentsView() {
                 onClick={() => setImportModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold text-xs"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleCsvImportSubmit}
                 className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-xs flex items-center gap-1"
               >
-                <Upload className="w-3.5 h-3.5" /> Import
+                <Upload className="w-3.5 h-3.5" /> {t('import', 'Import')}
               </button>
             </div>
           </div>
@@ -1587,7 +1587,7 @@ export default function AdjustmentsView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md border border-slate-200">
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
-              <h5 className="font-bold text-slate-800 text-base">Add New Location</h5>
+              <h5 className="font-bold text-slate-800 text-base">{t('add_new_location', 'Add New Location')}</h5>
               <button
                 type="button"
                 onClick={() => setAddLocationModalOpen(false)}
@@ -1599,7 +1599,7 @@ export default function AdjustmentsView() {
 
             <div className="p-5 text-xs text-slate-700 space-y-3">
               <div>
-                <label className="block font-semibold mb-1">Branch:</label>
+                <label className="block font-semibold mb-1">{t('branch', 'Branch:')}</label>
                 <input
                   type="text"
                   disabled
@@ -1609,12 +1609,12 @@ export default function AdjustmentsView() {
               </div>
 
               <div>
-                <label className="block font-semibold mb-1">Location Name / Description:</label>
+                <label className="block font-semibold mb-1">{t('location_name_description', 'Location Name / Description:')}</label>
                 <input
                   type="text"
                   value={newLocationName}
                   onChange={e => setNewLocationName(e.target.value)}
-                  placeholder="e.g. Cold Storage Room B, Olive Tank 4..."
+                  placeholder={t('eg_cold_storage_room_b_olive_tank_4', 'e.g. Cold Storage Room B, Olive Tank 4...')}
                   className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
@@ -1626,14 +1626,14 @@ export default function AdjustmentsView() {
                 onClick={() => setAddLocationModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold text-xs"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleAddLocationSubmit}
                 className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-xs flex items-center gap-1"
               >
-                <Plus className="w-3.5 h-3.5" /> Save Location
+                <Plus className="w-3.5 h-3.5" /> {t('save_location', 'Save Location')}
               </button>
             </div>
           </div>
@@ -1647,7 +1647,7 @@ export default function AdjustmentsView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-slate-200">
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
-              <h5 className="font-bold text-slate-800 text-base">Add Items to Location</h5>
+              <h5 className="font-bold text-slate-800 text-base">{t('add_items_to_location', 'Add Items to Location')}</h5>
               <button
                 type="button"
                 onClick={() => setAddItemsModalOpen(false)}
@@ -1658,7 +1658,7 @@ export default function AdjustmentsView() {
             </div>
 
             <div className="p-4 overflow-y-auto flex-1 text-xs">
-              <p className="text-slate-500 mb-3">Click on any inventory item below to insert it into the current adjustment table:</p>
+              <p className="text-slate-500 mb-3">{t('click_on_any_inventory_item_below_to', 'Click on any inventory item below to insert it into the current adjustment table:')}</p>
               <div className="space-y-1.5">
                 {SEED_ADJUSTMENT_ITEMS.filter(i => !items.some(x => x.PRODUCTID === i.PRODUCTID)).map(item => (
                   <div
@@ -1691,7 +1691,7 @@ export default function AdjustmentsView() {
                 onClick={() => setAddItemsModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-semibold text-xs"
               >
-                Done
+                {t('done', 'Done')}
               </button>
             </div>
           </div>
@@ -1707,9 +1707,9 @@ export default function AdjustmentsView() {
             <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-3">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <h4 className="text-base font-bold text-slate-900 mb-2">Confirm Zeroing All Quantities</h4>
+            <h4 className="text-base font-bold text-slate-900 mb-2">{t('confirm_zeroing_all_quantities', 'Confirm Zeroing All Quantities')}</h4>
             <p className="text-xs text-slate-600 mb-5">
-              This action will set all items in this location to zero. Do you want to proceed?
+              {t('this_action_will_set_all_items_in_this', 'This action will set all items in this location to zero. Do you want to proceed?')}
             </p>
             <div className="flex items-center justify-center gap-3">
               <button
@@ -1717,14 +1717,14 @@ export default function AdjustmentsView() {
                 onClick={() => setConfirmZeroModalOpen(false)}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold transition-colors"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleSetAllQtyZero}
                 className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-bold transition-colors shadow-sm"
               >
-                Yes, Set to Zero
+                {t('yes_set_to_zero', 'Yes, Set to Zero')}
               </button>
             </div>
           </div>
@@ -1739,7 +1739,7 @@ export default function AdjustmentsView() {
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-slate-900 text-white">
               <h5 className="font-bold text-sm flex items-center gap-2">
-                <PlayCircle className="w-4 h-4 text-emerald-400" /> Omega Stock Adjustments Tutorial
+                <PlayCircle className="w-4 h-4 text-emerald-400" /> {t('omega_stock_adjustments_tutorial', 'Omega Stock Adjustments Tutorial')}
               </h5>
               <button
                 type="button"
@@ -1754,20 +1754,20 @@ export default function AdjustmentsView() {
                 width="100%"
                 height="340"
                 src="https://www.youtube.com/embed/xmlMuGFimfA"
-                title="Adjustments Tutorial"
+                title={t('adjustments_tutorial', 'Adjustments Tutorial')}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="rounded border border-slate-800 shadow"
               ></iframe>
             </div>
             <div className="p-4 bg-slate-50 text-xs text-slate-600 flex justify-between items-center">
-              <span>Learn how to perform stock takes, cycle counts, variance resolution, and posting.</span>
+              <span>{t('learn_how_to_perform_stock_takes_cycle', 'Learn how to perform stock takes, cycle counts, variance resolution, and posting.')}</span>
               <button
                 type="button"
                 onClick={() => setTutorialModalOpen(false)}
                 className="px-3 py-1 bg-slate-800 text-white rounded font-bold"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>

@@ -319,39 +319,39 @@ export function downloadQuotationPdfFile(doc: QuotationRecord, customFilename?: 
 <body>
   <div class="header">
     <div>
-      <div class="doc-title">QUOTATION</div>
+      <div class="doc-title">{t('quotation', 'QUOTATION')}</div>
       <div class="branch-name">${doc.branch || 'Zeit w zaytoun ljanoub'}</div>
     </div>
     <div style="text-align: right; font-size: 12px;">
-      <div><strong>Quotation #:</strong> <span class="num">${doc.quotationNo}</span></div>
-      <div><strong>Date:</strong> <span class="num">${doc.date}</span></div>
-      <div><strong>Currency:</strong> <strong>${doc.currency}</strong></div>
+      <div><strong>{t('quotation', 'Quotation #:')}</strong> <span class="num">${doc.quotationNo}</span></div>
+      <div><strong>{t('date', 'Date:')}</strong> <span class="num">${doc.date}</span></div>
+      <div><strong>{t('currency', 'Currency:')}</strong> <strong>${doc.currency}</strong></div>
     </div>
   </div>
 
   <div class="meta-box-grid">
     <div class="meta-card">
-      <div class="meta-card-title">Quotation To</div>
-      <div><strong>Customer:</strong> ${doc.customerName || 'N/A'}</div>
-      ${doc.phone ? `<div><strong>Phone:</strong> <span class="num">${doc.phone}</span></div>` : ''}
-      ${doc.contactPerson ? `<div><strong>Contact:</strong> ${doc.contactPerson}</div>` : ''}
+      <div class="meta-card-title">{t('quotation_to', 'Quotation To')}</div>
+      <div><strong>{t('customer', 'Customer:')}</strong> ${doc.customerName || 'N/A'}</div>
+      ${doc.phone ? `<div><strong>{t('phone', 'Phone:')}</strong> <span class="num">${doc.phone}</span></div>` : ''}
+      ${doc.contactPerson ? `<div><strong>{t('contact', 'Contact:')}</strong> ${doc.contactPerson}</div>` : ''}
     </div>
     <div class="meta-card">
-      <div class="meta-card-title">Order Information</div>
-      <div><strong>Delivery Date:</strong> ${doc.deliveryDate || 'N/A'}</div>
-      <div><strong>Source:</strong> ${doc.source || 'N/A'}</div>
-      <div><strong>Salesman:</strong> ${doc.salesman || 'Mahdi'}</div>
+      <div class="meta-card-title">{t('order_information', 'Order Information')}</div>
+      <div><strong>{t('delivery_date', 'Delivery Date:')}</strong> ${doc.deliveryDate || 'N/A'}</div>
+      <div><strong>{t('source', 'Source:')}</strong> ${doc.source || 'N/A'}</div>
+      <div><strong>{t('salesman', 'Salesman:')}</strong> ${doc.salesman || 'Mahdi'}</div>
     </div>
   </div>
 
   <table>
     <thead>
       <tr>
-        <th style="width: 50px; text-align: center;">Qty</th>
-        <th>Description</th>
-        <th style="width: 70px; text-align: center;">Unit</th>
-        <th style="width: 100px; text-align: right;">Unit Price</th>
-        <th style="width: 100px; text-align: right;">Total Price</th>
+        <th style="width: 50px; text-align: center;">{t('qty', 'Qty')}</th>
+        <th>{t('description', 'Description')}</th>
+        <th style="width: 70px; text-align: center;">{t('unit', 'Unit')}</th>
+        <th style="width: 100px; text-align: right;">{t('unit_price', 'Unit Price')}</th>
+        <th style="width: 100px; text-align: right;">{t('total_price', 'Total Price')}</th>
       </tr>
     </thead>
     <tbody>
@@ -369,11 +369,11 @@ export function downloadQuotationPdfFile(doc: QuotationRecord, customFilename?: 
 
   <div class="total-box">
     <div class="total-row">
-      <span>Grand Total:</span>
+      <span>{t('grand_total', 'Grand Total:')}</span>
       <span class="num">${doc.grandTotalUSD.toFixed(2)} $</span>
     </div>
     <div class="total-lbp">
-      Equivalent LBP: <span class="num">${doc.grandTotalLL.toLocaleString()} L.L.</span>
+      {t('equivalent_lbp', 'Equivalent LBP:')} <span class="num">${doc.grandTotalLL.toLocaleString()} L.L.</span>
     </div>
   </div>
 </body>
@@ -1737,7 +1737,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
       <div className="bg-white border-b border-slate-200 px-4 py-2 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 shadow-2xs">
         {/* Left Title */}
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-normal text-slate-800 tracking-tight">Quotation</h1>
+          <h1 className="text-xl font-normal text-slate-800 tracking-tight">{t('quotation', 'Quotation')}</h1>
           {notice && (
             <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs px-2.5 py-0.5 rounded animate-fade-in">
               <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -1753,10 +1753,10 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             type="button"
             onClick={handleTriggerNewQuotation}
             className="bg-primary hover:bg-primary text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
-            title="Start New Quotation"
+            title={t('start_new_quotation', 'Start New Quotation')}
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New</span>
+            <span>{t('new', 'New')}</span>
           </button>
 
           {/* Search Button (Opens Preview Quotations) */}
@@ -1764,7 +1764,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             type="button"
             onClick={() => setIsPreviewModalOpen(true)}
             className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
-            title="Search / Preview Quotations"
+            title={t('search_preview_quotations', 'Search / Preview Quotations')}
           >
             <Search className="w-3.5 h-3.5" />
           </button>
@@ -1774,10 +1774,10 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             type="button"
             onClick={handleSaveQuotation}
             className="bg-amber-600 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
-            title="Save Quotation"
+            title={t('save_quotation', 'Save Quotation')}
           >
             <Save className="w-3.5 h-3.5" />
-            <span>Save</span>
+            <span>{t('save', 'Save')}</span>
           </button>
 
           {/* Store Recurring Button (Up Arrow) */}
@@ -1785,7 +1785,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             type="button"
             onClick={() => setIsStoreRecurringModalOpen(true)}
             className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
-            title="Store as Recurring Quotation"
+            title={t('store_as_recurring_quotation', 'Store as Recurring Quotation')}
           >
             <Upload className="w-3.5 h-3.5" />
           </button>
@@ -1795,7 +1795,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             type="button"
             onClick={() => setIsInfoModalOpen(true)}
             className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
-            title="Quotation Information"
+            title={t('quotation_information', 'Quotation Information')}
           >
             <Info className="w-3.5 h-3.5" />
           </button>
@@ -1805,7 +1805,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             type="button"
             onClick={() => setIsDeleteConfirmOpen(true)}
             className="bg-primary hover:bg-primary text-white p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
-            title="Delete Quotation"
+            title={t('delete_quotation', 'Delete Quotation')}
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -1820,7 +1820,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             className={`text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer ${
               isTaxEnabled ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-primary hover:bg-primary'
             }`}
-            title="Toggle Tax Calculation"
+            title={t('toggle_tax_calculation', 'Toggle Tax Calculation')}
           >
             {isTaxEnabled ? <Unlock className="w-3.5 h-3.5 text-emerald-300" /> : <Lock className="w-3.5 h-3.5 text-rose-400" />}
             <span>{isTaxEnabled ? 'VAT (11%)' : 'No Tax'}</span>
@@ -1833,7 +1833,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
               className="bg-primary hover:bg-primary text-white text-xs font-semibold px-2.5 py-1.5 rounded flex items-center gap-1 shadow-2xs transition-colors cursor-pointer"
             >
-              <span>Actions</span>
+              <span>{t('actions', 'Actions')}</span>
               <ChevronDown className="w-3 h-3" />
             </button>
 
@@ -1848,7 +1848,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   className="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5 text-blue-600" />
-                  <span>New Quotation</span>
+                  <span>{t('new_quotation', 'New Quotation')}</span>
                 </button>
                 <button
                   type="button"
@@ -1859,7 +1859,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   className="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                 >
                   <Sliders className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Default Configuration</span>
+                  <span>{t('default_configuration', 'Default Configuration')}</span>
                 </button>
                 <button
                   type="button"
@@ -1870,7 +1870,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   className="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                 >
                   <Settings className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Settings</span>
+                  <span>{t('settings', 'Settings')}</span>
                 </button>
                 <button
                   type="button"
@@ -1881,7 +1881,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   className="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center gap-2 cursor-pointer border-t border-slate-100"
                 >
                   <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Recall Recurring</span>
+                  <span>{t('recall_recurring', 'Recall Recurring')}</span>
                 </button>
               </div>
             )}
@@ -1903,7 +1903,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               onClick={() => setIsQuotationToOpen(!isQuotationToOpen)}
               className="px-4 py-2 border-b border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-50 select-none bg-slate-50/50"
             >
-              <h2 className="text-xs font-bold text-slate-700">Quotation To</h2>
+              <h2 className="text-xs font-bold text-slate-700">{t('quotation_to', 'Quotation To')}</h2>
               <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isQuotationToOpen ? '' : '-rotate-90'}`} />
             </div>
 
@@ -1919,7 +1919,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onChange={() => setCustomerType('Contact')}
                       className="cursor-pointer"
                     />
-                    <span>Contact</span>
+                    <span>{t('contact', 'Contact')}</span>
                   </label>
                   <label className="flex items-center gap-1.5 cursor-pointer text-slate-700 font-semibold">
                     <input
@@ -1929,7 +1929,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onChange={() => setCustomerType('Customer')}
                       className="cursor-pointer"
                     />
-                    <span>Customer</span>
+                    <span>{t('customer', 'Customer')}</span>
                   </label>
                 </div>
 
@@ -1939,7 +1939,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     <div className="relative flex items-center">
                       <input
                         type="text"
-                        placeholder="Search customer..."
+                        placeholder={t('search_customer', 'Search customer...')}
                         value={customerSearch}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -1972,7 +1972,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             setIsCustomerDropdownOpen(false);
                           }}
                           className="absolute right-7 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-                          title="Clear customer"
+                          title={t('clear_customer', 'Clear customer')}
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
@@ -1981,7 +1981,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     </div>
                     {validationErrors.customer && (
                       <div className="text-[10px] text-rose-600 font-bold mt-1">
-                        Please select a customer before saving
+                        {t('please_select_a_customer_before_saving', 'Please select a customer before saving')}
                       </div>
                     )}
 
@@ -2032,14 +2032,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   <div className="space-y-2">
                     {/* Header with link to Open Contacts in New Tab */}
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-slate-500 font-medium">Contact Person</span>
+                      <span className="text-[11px] text-slate-500 font-medium">{t('contact_person', 'Contact Person')}</span>
                       <button
                         type="button"
                         onClick={() => window.open('/contacts', '_blank')}
                         className="text-[11px] text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 cursor-pointer font-medium"
-                        title="Open Contacts View in a new tab"
+                        title={t('open_contacts_view_in_a_new_tab', 'Open Contacts View in a new tab')}
                       >
-                        <span>Open Contacts in New Tab</span>
+                        <span>{t('open_contacts_in_new_tab', 'Open Contacts in New Tab')}</span>
                         <ExternalLink className="w-3 h-3" />
                       </button>
                     </div>
@@ -2048,7 +2048,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       <div className="relative">
                         <input
                           type="text"
-                          placeholder="Contact Name*..."
+                          placeholder={t('contact_name', 'Contact Name*...')}
                           value={contactName}
                           onChange={(e) => {
                             const val = e.target.value;
@@ -2105,7 +2105,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                                     onClick={() => window.open('/contacts', '_blank')}
                                     className="text-[10px] text-blue-600 hover:underline flex items-center justify-end gap-1 ml-auto cursor-pointer"
                                   >
-                                    <span>Manage Contacts in New Tab</span>
+                                    <span>{t('manage_contacts_in_new_tab', 'Manage Contacts in New Tab')}</span>
                                     <ExternalLink className="w-2.5 h-2.5" />
                                   </button>
                                 </div>
@@ -2121,7 +2121,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                                   No contact found for &ldquo;{contactName}&rdquo;
                                 </div>
                                 <p className="text-[10px] text-slate-600 mb-2.5">
-                                  This contact is not registered in CRM yet. Click below to open Contacts in a new tab and create a new contact:
+                                  {t('this_contact_is_not_registered_in_crm', 'This contact is not registered in CRM yet. Click below to open Contacts in a new tab and create a new contact:')}
                                 </p>
                                 <button
                                   type="button"
@@ -2145,14 +2145,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                       <input
                         type="text"
-                        placeholder="Phone..."
+                        placeholder={t('phone', 'Phone...')}
                         value={contactPhone}
                         onChange={(e) => setContactPhone(e.target.value)}
                         className="border border-slate-300 rounded px-2.5 py-1.5 text-xs bg-white text-slate-800 focus:outline-none focus:border-blue-500 shadow-2xs"
                       />
                       <input
                         type="text"
-                        placeholder="Company..."
+                        placeholder={t('company', 'Company...')}
                         value={contactCompany}
                         onChange={(e) => setContactCompany(e.target.value)}
                         className="border border-slate-300 rounded px-2.5 py-1.5 text-xs bg-white text-slate-800 focus:outline-none focus:border-blue-500 shadow-2xs"
@@ -2160,7 +2160,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     </div>
                     {validationErrors.customer && (
                       <div className="text-[10px] text-rose-600 font-bold mt-1">
-                        Please enter contact name before saving
+                        {t('please_enter_contact_name_before_saving', 'Please enter contact name before saving')}
                       </div>
                     )}
                   </div>
@@ -2177,7 +2177,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search Items By Description, Code or Barcode..."
+                  placeholder={t('search_items_by_description_code_or', 'Search Items By Description, Code or Barcode...')}
                   value={catalogSearch}
                   onChange={(e) => setCatalogSearch(e.target.value)}
                   className="w-full bg-white border border-slate-300 rounded pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
@@ -2249,7 +2249,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 ))
               ) : (
                 <span className="px-3 py-1 text-slate-400 text-[11px] italic">
-                  All Items
+                  {t('all_items', 'All Items')}
                 </span>
               )}
             </div>
@@ -2258,7 +2258,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="divide-y divide-slate-100 max-h-[480px] overflow-y-auto text-xs">
               {filteredCatalogItems.length === 0 ? (
                 <div className="p-8 text-center text-slate-400">
-                  No items found matching the selected category or filter.
+                  {t('no_items_found_matching_the_selected', 'No items found matching the selected category or filter.')}
                 </div>
               ) : (
                 filteredCatalogItems.map((prod) => {
@@ -2298,7 +2298,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         type="button"
                         onClick={() => handleAddItem(prod)}
                         className="w-7 h-7 flex items-center justify-center rounded border border-slate-300 hover:border-blue-500 hover:bg-blue-600 hover:text-white text-slate-600 cursor-pointer transition-colors shadow-2xs"
-                        title="Add to Quotation"
+                        title={t('add_to_quotation', 'Add to Quotation')}
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -2320,7 +2320,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               onClick={() => setIsQuotationFromOpen(!isQuotationFromOpen)}
               className="px-4 py-2 border-b border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-50 select-none bg-slate-50/50"
             >
-              <h2 className="text-xs font-bold text-slate-700">Quotation From</h2>
+              <h2 className="text-xs font-bold text-slate-700">{t('quotation_from', 'Quotation From')}</h2>
               <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isQuotationFromOpen ? '' : '-rotate-90'}`} />
             </div>
 
@@ -2330,7 +2330,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-end relative z-30">
                   {/* Branch Selector (4 cols) */}
                   <div className="sm:col-span-4">
-                    <label className="block text-[11px] text-slate-500 font-medium mb-1">Branch</label>
+                    <label className="block text-[11px] text-slate-500 font-medium mb-1">{t('branch', 'Branch')}</label>
                     <div className="relative">
                       <select
                         value={selectedBranch}
@@ -2347,7 +2347,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                   {/* Quotation Date (4 cols) */}
                   <div className="sm:col-span-4 relative">
-                    <label className="block text-[11px] text-slate-500 font-medium mb-1">Quotation Date</label>
+                    <label className="block text-[11px] text-slate-500 font-medium mb-1">{t('quotation_date', 'Quotation Date')}</label>
                     <DatePickerInput
                       value={quotationDate}
                       onChange={setQuotationDate}
@@ -2359,9 +2359,9 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   {/* Delivery Date* (4 cols) */}
                   <div className="sm:col-span-4 relative">
                     <div className="flex items-center justify-between mb-1">
-                      <label className="block text-[11px] text-slate-500 font-medium">Delivery Date*</label>
+                      <label className="block text-[11px] text-slate-500 font-medium">{t('delivery_date', 'Delivery Date*')}</label>
                       {validationErrors.deliveryDate && (
-                        <span className="text-[10px] text-rose-600 font-bold">Required</span>
+                        <span className="text-[10px] text-rose-600 font-bold">{t('required', 'Required')}</span>
                       )}
                     </div>
                     <div className={validationErrors.deliveryDate ? 'ring-2 ring-rose-500 rounded' : ''}>
@@ -2371,7 +2371,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           setDeliveryDate(val);
                           setValidationErrors((prev) => ({ ...prev, deliveryDate: false }));
                         }}
-                        placeholder="dd-----yyyy"
+                        placeholder={t('ddyyyy', 'dd-----yyyy')}
                         className="w-full"
                         inputWidth="w-full"
                         alignRight={true}
@@ -2390,9 +2390,9 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         onChange={(e) => setCurrency(e.target.value as any)}
                         className="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 appearance-none pr-7 shadow-2xs focus:outline-none focus:border-blue-500 cursor-pointer"
                       >
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                        <option value="LBP">LBP</option>
+                        <option value="USD">{t('usd', 'USD')}</option>
+                        <option value="EUR">{t('eur', 'EUR')}</option>
+                        <option value="LBP">{t('lbp', 'LBP')}</option>
                       </select>
                       <ChevronDown className="w-3 h-3 text-slate-400 absolute right-2 top-2 pointer-events-none" />
                     </div>
@@ -2425,7 +2425,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   <div className="sm:col-span-5">
                     <input
                       type="text"
-                      placeholder="Quotation Notes"
+                      placeholder={t('quotation_notes', 'Quotation Notes')}
                       value={quotationNotes}
                       onChange={(e) => setQuotationNotes(e.target.value)}
                       className="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
@@ -2442,7 +2442,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               onClick={() => setIsOrderSummaryOpen(!isOrderSummaryOpen)}
               className="px-4 py-2 border-b border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-50 select-none bg-slate-50/50"
             >
-              <h2 className="text-xs font-bold text-slate-700">Order Summary</h2>
+              <h2 className="text-xs font-bold text-slate-700">{t('order_summary', 'Order Summary')}</h2>
               <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${isOrderSummaryOpen ? '' : '-rotate-90'}`} />
             </div>
 
@@ -2450,8 +2450,8 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <div>
                 {/* Table Header */}
                 <div className="grid grid-cols-12 px-4 py-2 border-b border-slate-200 text-xs font-semibold text-slate-600 bg-background">
-                  <div className="col-span-5">Product</div>
-                  <div className="col-span-2 text-center">Qty</div>
+                  <div className="col-span-5">{t('product', 'Product')}</div>
+                  <div className="col-span-2 text-center">{t('qty', 'Qty')}</div>
                   <div className="col-span-3 text-right">Unit Price ($)</div>
                   <div className="col-span-2 text-right">Total ($)</div>
                 </div>
@@ -2463,10 +2463,10 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       {validationErrors.items ? (
                         <div className="space-y-1">
                           <div className="text-rose-700 font-bold">⚠️ Required: No items in quotation</div>
-                          <div className="text-xs text-rose-600 font-normal">Click [+] on any product from the catalog on the left to add items before saving.</div>
+                          <div className="text-xs text-rose-600 font-normal">{t('click_on_any_product_from_the_catalog', 'Click [+] on any product from the catalog on the left to add items before saving.')}</div>
                         </div>
                       ) : (
-                        <span>No items added yet. Click <span className="font-semibold text-slate-600">[+]</span> on any product to add to quotation.</span>
+                        <span>{t('no_items_added_yet_click', 'No items added yet. Click')} <span className="font-semibold text-slate-600">[+]</span> {t('on_any_product_to_add_to_quotation', 'on any product to add to quotation.')}</span>
                       )}
                     </div>
                   ) : (
@@ -2509,7 +2509,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                               handleUpdateUnitPrice(qItem.item.code, isNaN(val) ? 0 : val);
                             }}
                             className="w-20 bg-white border border-slate-300 focus:border-blue-500 rounded px-1.5 py-0.5 text-xs text-right font-mono font-medium text-slate-800 focus:outline-none shadow-2xs"
-                            title="Edit Unit Price manually"
+                            title={t('edit_unit_price_manually', 'Edit Unit Price manually')}
                           />
                           <span className="text-slate-500 text-xs font-mono">$</span>
                         </div>
@@ -2523,7 +2523,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             type="button"
                             onClick={() => handleRemoveItem(qItem.item.code)}
                             className="text-slate-400 hover:text-red-600 p-0.5 rounded hover:bg-red-50 cursor-pointer transition-colors"
-                            title="Remove item"
+                            title={t('remove_item', 'Remove item')}
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
@@ -2537,7 +2537,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 <div className="border-t border-slate-200 p-4 space-y-2 bg-background/50 text-xs">
                   {/* Subtotal */}
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Subtotal:</span>
+                    <span className="font-semibold text-slate-700">{t('subtotal', 'Subtotal:')}</span>
                     <span className="font-mono text-slate-800">
                       {Math.round(subtotalUSD * LBP_RATE).toLocaleString()} LL ({subtotalUSD.toFixed(2)} $)
                     </span>
@@ -2550,7 +2550,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onClick={handleOpenDiscountModal}
                       className="bg-primary hover:bg-primary text-white text-[11px] font-semibold px-2.5 py-0.5 rounded shadow-2xs cursor-pointer"
                     >
-                      Discount
+                      {t('discount', 'Discount')}
                     </button>
                     <span className="font-mono text-emerald-700">
                       {Math.round(calculatedDiscount * LBP_RATE).toLocaleString()} LL ({calculatedDiscount.toFixed(2)} $)
@@ -2559,7 +2559,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                   {/* Total Tax */}
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700">Total Tax:</span>
+                    <span className="font-semibold text-slate-700">{t('total_tax', 'Total Tax:')}</span>
                     <span className="font-mono text-slate-800">
                       {Math.round(taxAmountUSD * LBP_RATE).toLocaleString()} LL ({taxAmountUSD.toFixed(2)} $)
                     </span>
@@ -2567,7 +2567,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                   {/* Grand Total LL (Red text matching screenshot) */}
                   <div className="flex items-center justify-between pt-1 border-t border-slate-200">
-                    <span className="font-bold text-red-600 text-xs">Grand Total LL:</span>
+                    <span className="font-bold text-red-600 text-xs">{t('grand_total_ll', 'Grand Total LL:')}</span>
                     <span className="font-mono font-extrabold text-red-600 text-sm">
                       {grandTotalLL.toLocaleString()} LL
                     </span>
@@ -2575,7 +2575,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                   {/* Grand Total $ (Bold black text matching screenshot) */}
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800 text-xs">Grand Total $:</span>
+                    <span className="font-bold text-slate-800 text-xs">{t('grand_total', 'Grand Total $:')}</span>
                     <span className="font-mono font-extrabold text-slate-900 text-sm">
                       {grandTotalUSD.toFixed(2)} $
                     </span>
@@ -2589,7 +2589,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       className="bg-amber-600 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
                     >
                       <Save className="w-3.5 h-3.5" />
-                      <span>Save</span>
+                      <span>{t('save', 'Save')}</span>
                     </button>
                   </div>
                 </div>
@@ -2604,7 +2604,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className="fixed bottom-5 right-5 z-40 p-2.5 rounded-full bg-white text-blue-700 shadow-xl border border-slate-200 hover:bg-slate-50 cursor-pointer"
-        title="Scroll to top"
+        title={t('scroll_to_top', 'Scroll to top')}
       >
         <ChevronUp className="w-5 h-5 stroke-[2.5]" />
       </button>
@@ -2619,7 +2619,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Search className="w-4 h-4 text-orange-400" />
-                <h3 className="text-sm font-bold">Preview Quotations</h3>
+                <h3 className="text-sm font-bold">{t('preview_quotations', 'Preview Quotations')}</h3>
               </div>
               <button
                 type="button"
@@ -2652,13 +2652,13 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               {/* Date Filters + Search Bar */}
               <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center pt-1">
                 <div className="sm:col-span-5 flex items-center gap-2">
-                  <span className="text-slate-600 font-medium">From</span>
+                  <span className="text-slate-600 font-medium">{t('from', 'From')}</span>
                   <DatePickerInput
                     value={previewFromDate}
                     onChange={setPreviewFromDate}
                     inputWidth="w-28"
                   />
-                  <span className="text-slate-600 font-medium">To</span>
+                  <span className="text-slate-600 font-medium">{t('to', 'To')}</span>
                   <DatePickerInput
                     value={previewToDate}
                     onChange={setPreviewToDate}
@@ -2669,7 +2669,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 <div className="sm:col-span-7 relative">
                   <input
                     type="text"
-                    placeholder="Search by Quotation #, Customer or Branch..."
+                    placeholder={t('search_by_quotation_customer_or_branch', 'Search by Quotation #, Customer or Branch...')}
                     value={previewSearch}
                     onChange={(e) => setPreviewSearch(e.target.value)}
                     className="w-full bg-white border border-slate-300 rounded pl-8 pr-3 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
@@ -2684,22 +2684,22 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                    <th className="p-2">Quotation #</th>
-                    <th className="p-2">Date</th>
-                    <th className="p-2">Customer</th>
-                    <th className="p-2">Branch</th>
-                    <th className="p-2">Salesman</th>
-                    <th className="p-2 text-right">Total USD</th>
-                    <th className="p-2 text-right">Total LL</th>
-                    <th className="p-2 text-center">Status</th>
-                    <th className="p-2 text-center">Actions</th>
+                    <th className="p-2">{t('quotation', 'Quotation #')}</th>
+                    <th className="p-2">{t('date', 'Date')}</th>
+                    <th className="p-2">{t('customer', 'Customer')}</th>
+                    <th className="p-2">{t('branch', 'Branch')}</th>
+                    <th className="p-2">{t('salesman', 'Salesman')}</th>
+                    <th className="p-2 text-right">{t('total_usd', 'Total USD')}</th>
+                    <th className="p-2 text-right">{t('total_ll', 'Total LL')}</th>
+                    <th className="p-2 text-center">{t('status', 'Status')}</th>
+                    <th className="p-2 text-center">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
                   {filteredPreviewQuotations.length === 0 ? (
                     <tr>
                       <td colSpan={9} className="p-8 text-center text-slate-400">
-                        No quotations found matching criteria.
+                        {t('no_quotations_found_matching_criteria', 'No quotations found matching criteria.')}
                       </td>
                     </tr>
                   ) : (
@@ -2740,7 +2740,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             }}
                             className="text-blue-600 hover:text-blue-800 font-semibold px-2 py-1 bg-blue-50 rounded hover:bg-blue-100 cursor-pointer"
                           >
-                            Load
+                            {t('load', 'Load')}
                           </button>
                         </td>
                       </tr>
@@ -2760,7 +2760,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => setIsPreviewModalOpen(false)}
                 className="bg-primary hover:bg-primary text-white px-4 py-1 rounded font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2775,7 +2775,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-[620px] overflow-visible flex flex-col font-sans text-xs">
             {/* Header */}
             <div className="px-6 py-3.5 flex items-center justify-between border-b border-slate-200">
-              <h2 className="text-base font-normal text-slate-700">Quotation Info</h2>
+              <h2 className="text-base font-normal text-slate-700">{t('quotation_info', 'Quotation Info')}</h2>
               <button
                 type="button"
                 onClick={() => setIsInfoModalOpen(false)}
@@ -2789,7 +2789,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="p-6 space-y-3.5">
               {/* Row 1: Rate */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Rate</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('rate', 'Rate')}</label>
                 <div className="col-span-8 flex items-center gap-2">
                   <input
                     type="text"
@@ -2813,7 +2813,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Row 2: Workstation */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Workstation</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('workstation', 'Workstation')}</label>
                 <div className="col-span-8 flex items-center gap-2">
                   <input
                     type="text"
@@ -2840,7 +2840,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Row 3: Salesman */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Salesman</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('salesman', 'Salesman')}</label>
                 <div className="col-span-8 relative">
                   <select
                     value={infoSalesman}
@@ -2857,7 +2857,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Row 4: Department* */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Department*</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('department', 'Department*')}</label>
                 <div className="col-span-8 relative">
                   <select
                     value={infoDepartment}
@@ -2874,7 +2874,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Row 5: Reference # */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Reference #</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('reference', 'Reference #')}</label>
                 <div className="col-span-8">
                   <input
                     type="text"
@@ -2887,11 +2887,11 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Row 6: Internal Note */}
               <div className="grid grid-cols-12 gap-3 items-start">
-                <label className="col-span-4 font-bold text-slate-800 text-xs pt-1.5">Internal Note</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs pt-1.5">{t('internal_note', 'Internal Note')}</label>
                 <div className="col-span-8">
                   <textarea
                     rows={2}
-                    placeholder="Internal note"
+                    placeholder={t('internal_note', 'Internal note')}
                     value={infoInternalNote}
                     onChange={(e) => setInfoInternalNote(e.target.value)}
                     className="w-full bg-white border border-slate-300 rounded p-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 placeholder:text-slate-400 shadow-2xs"
@@ -2901,7 +2901,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Row 7: Transaction Type */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Transaction Type</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('transaction_type', 'Transaction Type')}</label>
                 <div className="col-span-8">
                   <input
                     type="text"
@@ -2925,7 +2925,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   }}
                   className="bg-[#374151] hover:bg-[#1f2937] text-white px-6 py-1.5 rounded text-xs font-bold shadow-2xs cursor-pointer transition-colors"
                 >
-                  OK
+                  {t('ok', 'OK')}
                 </button>
               </div>
             </div>
@@ -2941,7 +2941,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-[620px] overflow-hidden flex flex-col font-sans text-xs">
             {/* Header */}
             <div className="px-6 py-3.5 flex items-center justify-between border-b border-slate-200">
-              <h2 className="text-base font-normal text-primary">Invoice Discount</h2>
+              <h2 className="text-base font-normal text-primary">{t('invoice_discount', 'Invoice Discount')}</h2>
               <button
                 type="button"
                 onClick={() => setIsDiscountModalOpen(false)}
@@ -2958,7 +2958,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 {/* Section 1: Discount % */}
                 <div className="border border-slate-200 rounded p-2.5 bg-slate-50/50">
                   <div className="text-xs font-bold text-slate-800 border-b border-slate-200 pb-1.5 mb-2">
-                    Discount %
+                    {t('discount', 'Discount %')}
                   </div>
                   <div className="space-y-1.5">
                     <button
@@ -2973,7 +2973,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           : 'bg-[#5f6d7e] hover:bg-[#4d5b6c] text-white'
                       }`}
                     >
-                      DISCOUNT
+                      {t('discount', 'DISCOUNT')}
                     </button>
                     <button
                       type="button"
@@ -2987,7 +2987,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           : 'bg-[#5f6d7e] hover:bg-[#4d5b6c] text-white'
                       }`}
                     >
-                      DISCOUNT 100%
+                      {t('discount_100', 'DISCOUNT 100%')}
                     </button>
                   </div>
                 </div>
@@ -2995,7 +2995,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 {/* Section 2: Discount amount */}
                 <div className="border border-slate-200 rounded p-2.5 bg-slate-50/50">
                   <div className="text-xs font-bold text-slate-800 border-b border-slate-200 pb-1.5 mb-2">
-                    Discount amount
+                    {t('discount_amount', 'Discount amount')}
                   </div>
                   <div className="space-y-1.5">
                     <button
@@ -3010,7 +3010,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           : 'bg-[#5f6d7e] hover:bg-[#4d5b6c] text-white'
                       }`}
                     >
-                      AMOUNT DISCOUNT
+                      {t('amount_discount', 'AMOUNT DISCOUNT')}
                     </button>
                     <button
                       type="button"
@@ -3024,7 +3024,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           : 'bg-[#5f6d7e] hover:bg-[#4d5b6c] text-white'
                       }`}
                     >
-                      Disc $
+                      {t('disc', 'Disc $')}
                     </button>
                   </div>
                 </div>
@@ -3079,7 +3079,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       type="button"
                       onClick={handleKeypadBackspace}
                       className="bg-white hover:bg-slate-50 text-slate-800 py-2.5 rounded shadow-2xs flex items-center justify-center cursor-pointer active:scale-95 transition-all select-none"
-                      title="Backspace"
+                      title={t('backspace', 'Backspace')}
                     >
                       <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6-7h12a1 1 0 011 1v12a1 1 0 01-1 1H9l-6-7z" />
@@ -3092,14 +3092,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onClick={handleKeypadClear}
                       className="bg-white hover:bg-slate-50 text-slate-800 font-medium py-2.5 rounded text-xs shadow-2xs text-center cursor-pointer active:scale-95 transition-all select-none"
                     >
-                      Clr. Discount
+                      {t('clr_discount', 'Clr. Discount')}
                     </button>
                     <button
                       type="button"
                       onClick={handleApplyDiscount}
                       className="col-span-2 bg-white hover:bg-slate-50 text-slate-800 font-medium py-2.5 rounded text-xs shadow-2xs text-center cursor-pointer active:scale-95 transition-all select-none"
                     >
-                      Apply
+                      {t('apply', 'Apply')}
                     </button>
                   </div>
                 </div>
@@ -3117,7 +3117,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-[620px] overflow-hidden flex flex-col font-sans text-xs">
             {/* Header */}
             <div className="px-6 py-3.5 flex items-center justify-between border-b border-slate-200">
-              <h2 className="text-base font-normal text-primary">Store Recurring Quotation</h2>
+              <h2 className="text-base font-normal text-primary">{t('store_recurring_quotation', 'Store Recurring Quotation')}</h2>
               <button
                 type="button"
                 onClick={() => setIsStoreRecurringModalOpen(false)}
@@ -3131,7 +3131,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-normal text-slate-800 mb-2">
-                  Quotation Recurring Description
+                  {t('quotation_recurring_description', 'Quotation Recurring Description')}
                 </label>
                 <input
                   type="text"
@@ -3176,7 +3176,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   className="bg-primary hover:bg-primary text-white px-4 py-1.5 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </div>
@@ -3191,7 +3191,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-sm overflow-hidden flex flex-col font-sans text-xs">
             <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
-              <h3 className="text-sm font-bold">New Quotation</h3>
+              <h3 className="text-sm font-bold">{t('new_quotation', 'New Quotation')}</h3>
               <button
                 type="button"
                 onClick={() => setIsClearConfirmOpen(false)}
@@ -3201,7 +3201,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               </button>
             </div>
             <div className="p-4 text-slate-700 text-sm">
-              Are you sure you want to clear? Changes will not be saved
+              {t('are_you_sure_you_want_to_clear_changes', 'Are you sure you want to clear? Changes will not be saved')}
             </div>
             <div className="border-t border-slate-200 px-4 py-2.5 flex justify-end gap-2 bg-slate-50">
               <button
@@ -3209,7 +3209,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => setIsClearConfirmOpen(false)}
                 className="px-4 py-1.5 rounded border border-slate-300 text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -3219,7 +3219,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 }}
                 className="bg-primary hover:bg-primary text-white px-4 py-1.5 rounded font-semibold cursor-pointer transition-colors"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>
@@ -3233,7 +3233,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-sm overflow-hidden flex flex-col font-sans text-xs">
             <div className="bg-primary text-white px-4 py-3 flex items-center justify-between">
-              <h3 className="text-sm font-bold">Delete Quotation</h3>
+              <h3 className="text-sm font-bold">{t('delete_quotation', 'Delete Quotation')}</h3>
               <button
                 type="button"
                 onClick={() => setIsDeleteConfirmOpen(false)}
@@ -3243,7 +3243,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               </button>
             </div>
             <div className="p-4 text-slate-700 text-sm">
-              Are you sure you want to delete this quotation?
+              {t('are_you_sure_you_want_to_delete_this', 'Are you sure you want to delete this quotation?')}
             </div>
             <div className="border-t border-slate-200 px-4 py-2.5 flex justify-end gap-2 bg-slate-50">
               <button
@@ -3251,14 +3251,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => setIsDeleteConfirmOpen(false)}
                 className="px-4 py-1.5 rounded border border-slate-300 text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleDeleteQuotation}
                 className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-1.5 rounded font-semibold cursor-pointer transition-colors"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>
@@ -3275,7 +3275,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="bg-primary text-white px-6 py-3.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <RotateCcw className="w-4 h-4 text-amber-400" />
-                <h2 className="text-base font-bold">Recall Recurring / Recall Sales</h2>
+                <h2 className="text-base font-bold">{t('recall_recurring_recall_sales', 'Recall Recurring / Recall Sales')}</h2>
               </div>
               <button
                 type="button"
@@ -3290,7 +3290,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="p-4 overflow-y-auto flex-1 space-y-2">
               {allRecallableSales.length === 0 ? (
                 <div className="py-12 text-center text-slate-400">
-                  No recurring templates or past sales quotations found.
+                  {t('no_recurring_templates_or_past_sales', 'No recurring templates or past sales quotations found.')}
                 </div>
               ) : (
                 allRecallableSales.map((item) => (
@@ -3307,10 +3307,10 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         <span className="text-[11px] text-slate-400 font-mono">({item.code})</span>
                       </div>
                       <div className="mt-1 text-[11px] text-slate-600 flex flex-wrap items-center gap-x-4 gap-y-1">
-                        <span><strong>Customer:</strong> {item.customerName || 'N/A'}</span>
-                        <span><strong>Branch:</strong> {item.branch}</span>
-                        <span><strong>Date:</strong> {item.date}</span>
-                        <span><strong>Items:</strong> {item.items?.length || 0}</span>
+                        <span><strong>{t('customer', 'Customer:')}</strong> {item.customerName || 'N/A'}</span>
+                        <span><strong>{t('branch', 'Branch:')}</strong> {item.branch}</span>
+                        <span><strong>{t('date', 'Date:')}</strong> {item.date}</span>
+                        <span><strong>{t('items', 'Items:')}</strong> {item.items?.length || 0}</span>
                         <span className="text-emerald-700 font-semibold font-mono">
                           {item.totalUSD.toFixed(2)} $ / {item.totalLL.toLocaleString()} L.L
                         </span>
@@ -3323,7 +3323,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       className="bg-primary hover:bg-primary text-white px-3.5 py-1.5 rounded font-semibold text-xs shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 transition-colors"
                     >
                       <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Pick Up</span>
+                      <span>{t('pick_up', 'Pick Up')}</span>
                     </button>
                   </div>
                 ))
@@ -3337,7 +3337,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => setIsRecallRecurringModalOpen(false)}
                 className="px-4 py-1.5 rounded border border-slate-300 text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -3360,7 +3360,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               </button>
             </div>
             <div className="px-6 pb-6 pt-1 text-slate-800 text-sm font-normal">
-              Are you sure you want to save this quotation?
+              {t('are_you_sure_you_want_to_save_this', 'Are you sure you want to save this quotation?')}
             </div>
             <div className="border-t border-slate-200 px-4 py-2.5 flex justify-end items-center gap-3 bg-white">
               <button
@@ -3368,14 +3368,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => setIsSaveConfirmModalOpen(false)}
                 className="px-3 py-1.5 text-slate-700 hover:text-slate-900 font-normal text-xs cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleConfirmSave}
                 className="bg-[#374151] hover:bg-[#1f2937] text-white px-5 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer transition-colors"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>
@@ -3398,7 +3398,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               </button>
             </div>
             <div className="px-6 pb-6 pt-1 text-slate-800 text-sm font-normal">
-              Do you want to print the quotation ?
+              {t('do_you_want_to_print_the_quotation', 'Do you want to print the quotation ?')}
             </div>
             <div className="border-t border-slate-200 px-4 py-2.5 flex justify-end items-center gap-3 bg-white">
               <button
@@ -3406,14 +3406,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => handleConfirmPrintDecision(false)}
                 className="px-3 py-1.5 text-slate-700 hover:text-slate-900 font-normal text-xs cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={() => handleConfirmPrintDecision(true)}
                 className="bg-[#374151] hover:bg-[#1f2937] text-white px-5 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer transition-colors"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>
@@ -3428,7 +3428,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-4xl overflow-visible flex flex-col font-sans text-xs">
             {/* Header */}
             <div className="px-6 py-3.5 flex items-center justify-between border-b border-slate-200">
-              <h2 className="text-sm font-medium text-slate-700">Send Sales Report</h2>
+              <h2 className="text-sm font-medium text-slate-700">{t('send_sales_report', 'Send Sales Report')}</h2>
               <button
                 type="button"
                 onClick={() => setIsSendEmailModalOpen(false)}
@@ -3442,7 +3442,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="p-6 space-y-4">
               {/* To field */}
               <div>
-                <label className="block text-slate-700 text-xs font-normal mb-1">To</label>
+                <label className="block text-slate-700 text-xs font-normal mb-1">{t('to', 'To')}</label>
                 <input
                   type="email"
                   value={emailTo}
@@ -3453,7 +3453,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* From field with searchable dropdown & custom entry */}
               <div className="relative">
-                <label className="block text-slate-700 text-xs font-normal mb-1">From</label>
+                <label className="block text-slate-700 text-xs font-normal mb-1">{t('from', 'From')}</label>
                 <div
                   onClick={() => setIsFromEmailDropdownOpen(!isFromEmailDropdownOpen)}
                   className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 flex items-center justify-between bg-white cursor-pointer shadow-2xs hover:border-blue-400"
@@ -3469,7 +3469,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           setEmailFrom('');
                         }}
                         className="text-slate-400 hover:text-slate-700 p-0.5 rounded cursor-pointer text-[10px]"
-                        title="Clear selection"
+                        title={t('clear_selection', 'Clear selection')}
                       >
                         ✕
                       </span>
@@ -3491,7 +3491,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         <Search className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                         <input
                           type="text"
-                          placeholder="Search email or enter custom email..."
+                          placeholder={t('search_email_or_enter_custom_email', 'Search email or enter custom email...')}
                           value={fromEmailSearch}
                           onChange={(e) => setFromEmailSearch(e.target.value)}
                           onKeyDown={(e) => {
@@ -3514,7 +3514,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             }}
                             className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] px-2 py-0.5 rounded font-medium cursor-pointer shrink-0"
                           >
-                            Select
+                            {t('select', 'Select')}
                           </button>
                         )}
                       </div>
@@ -3553,7 +3553,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             className="px-3 py-2 text-xs text-blue-700 font-semibold hover:bg-blue-50 cursor-pointer rounded flex items-center gap-2 bg-blue-50/50"
                           >
                             <Plus className="w-3.5 h-3.5 text-blue-600" />
-                            <span>Use custom email: <strong className="font-mono underline">{fromEmailSearch.trim()}</strong></span>
+                            <span>{t('use_custom_email', 'Use custom email:')} <strong className="font-mono underline">{fromEmailSearch.trim()}</strong></span>
                           </div>
                         )}
                       </div>
@@ -3564,7 +3564,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Subject (Red outline per screenshot 7) */}
               <div>
-                <label className="block text-slate-700 text-xs font-normal mb-1">Subject</label>
+                <label className="block text-slate-700 text-xs font-normal mb-1">{t('subject', 'Subject')}</label>
                 <input
                   type="text"
                   value={emailSubject}
@@ -3575,7 +3575,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Message */}
               <div>
-                <label className="block text-slate-700 text-xs font-normal mb-1">Message</label>
+                <label className="block text-slate-700 text-xs font-normal mb-1">{t('message', 'Message')}</label>
                 <textarea
                   rows={4}
                   value={emailMessage}
@@ -3593,7 +3593,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 className="bg-[#374151] hover:bg-[#1f2937] text-white px-6 py-2 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>Send</span>
+                <span>{t('send', 'Send')}</span>
               </button>
             </div>
           </div>
@@ -3610,7 +3610,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="bg-[#f0f0f0] border-b border-slate-300 px-3 py-1.5 flex items-center justify-between text-slate-800">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-blue-600" />
-                <span className="font-normal text-xs">Save As</span>
+                <span className="font-normal text-xs">{t('save_as', 'Save As')}</span>
               </div>
               <div className="flex items-center">
                 <button type="button" className="px-3 py-0.5 hover:bg-slate-200 text-slate-600 text-xs">─</button>
@@ -3637,9 +3637,9 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <div className="flex-1 border border-slate-300 rounded px-2.5 py-1 flex items-center gap-1.5 bg-white text-xs text-slate-700">
                 <span className="text-slate-400">📁</span>
                 <span className="text-slate-400">&gt;</span>
-                <span className="hover:bg-slate-100 px-1 rounded cursor-pointer">This PC</span>
+                <span className="hover:bg-slate-100 px-1 rounded cursor-pointer">{t('this_pc', 'This PC')}</span>
                 <span className="text-slate-400">&gt;</span>
-                <span className="hover:bg-slate-100 px-1 rounded cursor-pointer font-medium">Desktop</span>
+                <span className="hover:bg-slate-100 px-1 rounded cursor-pointer font-medium">{t('desktop', 'Desktop')}</span>
                 <div className="ml-auto flex items-center gap-2 text-slate-400">
                   <ChevronDown className="w-3 h-3 cursor-pointer" />
                   <RotateCcw className="w-3 h-3 cursor-pointer hover:text-slate-600" />
@@ -3651,7 +3651,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 <Search className="w-3.5 h-3.5 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search Desktop"
+                  placeholder={t('search_desktop', 'Search Desktop')}
                   value={saveAsSearch}
                   onChange={(e) => setSaveAsSearch(e.target.value)}
                   className="w-full text-xs outline-none bg-transparent"
@@ -3665,50 +3665,50 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <div className="w-56 border-r border-slate-200 bg-[#fbfbfb] p-2 overflow-y-auto text-[11px] space-y-1">
                 {/* Quick Access */}
                 <div className="font-semibold text-slate-700 flex items-center gap-1 px-1.5 py-0.5">
-                  <span className="text-amber-500">★</span> Quick access
+                  <span className="text-amber-500">★</span> {t('quick_access', 'Quick access')}
                 </div>
                 <div className="pl-4 space-y-0.5 text-slate-700">
                   <div className="px-2 py-1 rounded bg-muted border border-[#99d1ff] font-medium flex items-center gap-2 cursor-pointer">
-                    <span>🖥️</span> Desktop
+                    <span>🖥️</span> {t('desktop', 'Desktop')}
                   </div>
                   <div className="px-2 py-1 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                    <span>📥</span> Downloads
+                    <span>📥</span> {t('downloads', 'Downloads')}
                   </div>
                   <div className="px-2 py-1 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                    <span>📄</span> Documents
+                    <span>📄</span> {t('documents', 'Documents')}
                   </div>
                   <div className="px-2 py-1 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                    <span>🖼️</span> Pictures
+                    <span>🖼️</span> {t('pictures', 'Pictures')}
                   </div>
                   <div className="px-2 py-1 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
                     <span>📁</span> Google Drive (G:)
                   </div>
                   <div className="px-2 py-1 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                    <span>📁</span> Southern Olive and Oil Products
+                    <span>📁</span> {t('southern_olive_and_oil_products', 'Southern Olive and Oil Products')}
                   </div>
                   <div className="px-2 py-1 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                    <span>📁</span> Vanguard-ERP
+                    <span>📁</span> {t('vanguarderp', 'Vanguard-ERP')}
                   </div>
                 </div>
 
                 {/* OneDrive */}
                 <div className="font-semibold text-slate-700 flex items-center gap-1 px-1.5 py-0.5 pt-2">
-                  <span className="text-blue-500">☁️</span> OneDrive - Personal
+                  <span className="text-blue-500">☁️</span> {t('onedrive_personal', 'OneDrive - Personal')}
                 </div>
 
                 {/* This PC */}
                 <div className="font-semibold text-slate-700 flex items-center gap-1 px-1.5 py-0.5 pt-2">
-                  <span className="text-slate-600">💻</span> This PC
+                  <span className="text-slate-600">💻</span> {t('this_pc', 'This PC')}
                 </div>
                 <div className="pl-4 space-y-0.5 text-slate-700">
                   <div className="px-2 py-0.5 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                    <span>📁</span> Desktop
+                    <span>📁</span> {t('desktop', 'Desktop')}
                   </div>
                   <div className="px-2 py-0.5 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                    <span>📁</span> Documents
+                    <span>📁</span> {t('documents', 'Documents')}
                   </div>
                   <div className="px-2 py-0.5 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
-                    <span>📁</span> Downloads
+                    <span>📁</span> {t('downloads', 'Downloads')}
                   </div>
                   <div className="px-2 py-0.5 rounded hover:bg-slate-100 flex items-center gap-2 cursor-pointer">
                     <span>💾</span> Local Disk (C:)
@@ -3724,10 +3724,10 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 <table className="w-full text-left border-collapse text-[11px]">
                   <thead className="bg-white border-b border-slate-200 sticky top-0 text-slate-600 select-none">
                     <tr>
-                      <th className="py-1.5 px-3 font-normal border-r border-slate-200">Name</th>
-                      <th className="py-1.5 px-2 font-normal border-r border-slate-200 w-24">Date modified</th>
-                      <th className="py-1.5 px-2 font-normal border-r border-slate-200 w-36">Type</th>
-                      <th className="py-1.5 px-2 font-normal w-16 text-right">Size</th>
+                      <th className="py-1.5 px-3 font-normal border-r border-slate-200">{t('name', 'Name')}</th>
+                      <th className="py-1.5 px-2 font-normal border-r border-slate-200 w-24">{t('date_modified', 'Date modified')}</th>
+                      <th className="py-1.5 px-2 font-normal border-r border-slate-200 w-36">{t('type', 'Type')}</th>
+                      <th className="py-1.5 px-2 font-normal w-16 text-right">{t('size', 'Size')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -3755,7 +3755,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             {/* Bottom Form Fields & Action Buttons */}
             <div className="bg-[#f0f0f0] border-t border-slate-300 p-3 space-y-2">
               <div className="grid grid-cols-12 gap-2 items-center">
-                <label className="col-span-2 text-right pr-2 text-slate-700 font-medium">File name:</label>
+                <label className="col-span-2 text-right pr-2 text-slate-700 font-medium">{t('file_name', 'File name:')}</label>
                 <div className="col-span-10">
                   <input
                     type="text"
@@ -3768,7 +3768,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               </div>
 
               <div className="grid grid-cols-12 gap-2 items-center">
-                <label className="col-span-2 text-right pr-2 text-slate-700 font-medium">Save as type:</label>
+                <label className="col-span-2 text-right pr-2 text-slate-700 font-medium">{t('save_as_type', 'Save as type:')}</label>
                 <div className="col-span-10">
                   <div className="w-full bg-white border border-slate-300 rounded-xs px-2 py-1 text-xs text-slate-700 flex items-center justify-between">
                     <span>PDF Document (*.pdf)</span>
@@ -3779,7 +3779,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               <div className="flex items-center justify-between pt-1">
                 <button type="button" className="text-slate-600 hover:text-slate-900 text-xs flex items-center gap-1 cursor-pointer">
-                  <span>▲</span> Hide Folders
+                  <span>▲</span> {t('hide_folders', 'Hide Folders')}
                 </button>
                 <div className="flex items-center gap-2">
                   <button
@@ -3794,14 +3794,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     }}
                     className="bg-[#e1e1e1] hover:bg-[#e5f1fb] hover:border-[#0078d7] border border-border text-slate-900 px-6 py-1 rounded-xs text-xs font-normal cursor-pointer transition-colors"
                   >
-                    Save
+                    {t('save', 'Save')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsSaveAsModalOpen(false)}
                     className="bg-[#e1e1e1] hover:bg-[#e5f1fb] hover:border-[#0078d7] border border-border text-slate-900 px-6 py-1 rounded-xs text-xs font-normal cursor-pointer transition-colors"
                   >
-                    Cancel
+                    {t('cancel', 'Cancel')}
                   </button>
                 </div>
               </div>
@@ -3819,9 +3819,9 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             {/* Header */}
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-base font-semibold text-white tracking-tight">Save to your account</h3>
+                <h3 className="text-base font-semibold text-white tracking-tight">{t('save_to_your_account', 'Save to your account')}</h3>
                 <p className="text-slate-300 text-xs mt-1">
-                  Find your <strong className="text-white font-medium">Quotations.pdf</strong> in the <span className="underline">Saved from Chrome folder</span>
+                  {t('find_your', 'Find your')} <strong className="text-white font-medium">{t('quotationspdf', 'Quotations.pdf')}</strong> {t('in_the', 'in the')} <span className="underline">{t('saved_from_chrome_folder', 'Saved from Chrome folder')}</span>
                 </p>
               </div>
               <div className="flex items-center gap-1.5 bg-[#2a2b2e] px-2.5 py-1 rounded-lg border border-slate-700">
@@ -3833,7 +3833,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   <path d="m62.25 55.5-18.6-30.5L25.95 55.5h36.3z" fill="#2684fc"/>
                   <path d="m70.65 66.85-8.4-11.35H25.95l-8.4 11.35c-1.3.8-2.4 1.9-3.2 3.3l-3.85 6.65h65.8l-3.85-6.65c-.8-1.4-1.9-2.5-3.2-3.3z" fill="#ffba00"/>
                 </svg>
-                <span className="font-medium text-slate-200 text-[11px]">Drive</span>
+                <span className="font-medium text-slate-200 text-[11px]">{t('drive', 'Drive')}</span>
               </div>
             </div>
 
@@ -3854,7 +3854,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
             {/* Direct Open Google Drive Link */}
             <div className="bg-[#2a2b2e] rounded-lg p-2.5 mb-4 flex items-center justify-between border border-slate-700/60">
-              <span className="text-[11px] text-slate-300">Open Google Drive in your browser:</span>
+              <span className="text-[11px] text-slate-300">{t('open_google_drive_in_your_browser', 'Open Google Drive in your browser:')}</span>
               <button
                 type="button"
                 onClick={() => {
@@ -3863,7 +3863,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 }}
                 className="text-xs text-[#8ab4f8] hover:text-[#aecbfa] font-medium flex items-center gap-1 cursor-pointer"
               >
-                <span>drive.google.com</span>
+                <span>{t('drivegooglecom', 'drive.google.com')}</span>
                 <ExternalLink className="w-3 h-3" />
               </button>
             </div>
@@ -3881,7 +3881,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 }}
                 className="border border-slate-600 hover:border-slate-400 text-slate-200 hover:bg-slate-800 px-4 py-2 rounded-full text-xs font-medium cursor-pointer transition-colors flex items-center gap-1.5"
               >
-                <span>Use a different account</span>
+                <span>{t('use_a_different_account', 'Use a different account')}</span>
                 <ExternalLink className="w-3 h-3 text-slate-400" />
               </button>
 
@@ -3899,14 +3899,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   }}
                   className="bg-[#c2e7ff] hover:bg-[#a8daf7] text-[#001d35] font-semibold px-5 py-2 rounded-full text-xs cursor-pointer transition-colors shadow-sm"
                 >
-                  Save to Drive
+                  {t('save_to_drive', 'Save to Drive')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsGoogleDriveModalOpen(false)}
                   className="hover:bg-slate-800 text-slate-300 hover:text-white px-4 py-2 rounded-full text-xs font-medium cursor-pointer transition-colors"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
               </div>
             </div>
@@ -3958,7 +3958,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     {/* Header: Clean Typography, NO logo */}
                     <div className="flex items-center justify-between pb-3 border-b-2 border-slate-800">
                       <div className="flex flex-col">
-                        <span className="text-2xl font-black text-slate-900 tracking-wider uppercase">QUOTATION</span>
+                        <span className="text-2xl font-black text-slate-900 tracking-wider uppercase">{t('quotation', 'QUOTATION')}</span>
                         <span className="text-xs text-slate-600 font-medium">Branch: {doc.branch || 'Zeit w zaytoun ljanoub'}</span>
                       </div>
 
@@ -3972,25 +3972,25 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     <div className="grid grid-cols-2 gap-4 mt-6">
                       <div className="border border-slate-700 rounded-xl p-3 min-h-[90px] text-xs space-y-1">
                         <div className="font-bold text-slate-900">
-                          Contact: <span className="font-normal">{doc.customerName || 'Mr Jad Youssef'}</span>
+                          {t('contact', 'Contact:')} <span className="font-normal">{doc.customerName || 'Mr Jad Youssef'}</span>
                         </div>
                         <div className="font-bold text-slate-900">
-                          Mobile: <span className="font-normal font-mono">{doc.phone || '0022236818688'}</span>
+                          {t('mobile', 'Mobile:')} <span className="font-normal font-mono">{doc.phone || '0022236818688'}</span>
                         </div>
                         <div className="font-bold text-slate-900">
-                          Address: <span className="font-normal">Saida, South Lebanon</span>
+                          {t('address', 'Address:')} <span className="font-normal">{t('saida_south_lebanon', 'Saida, South Lebanon')}</span>
                         </div>
                       </div>
 
                       <div className="border border-slate-700 rounded-xl p-3 min-h-[90px] text-xs space-y-1">
                         <div className="font-bold text-slate-900">
-                          Quotation #: <span className="font-normal">{doc.quotationNo || '27'}</span>
+                          {t('quotation', 'Quotation #:')} <span className="font-normal">{doc.quotationNo || '27'}</span>
                         </div>
                         <div className="font-bold text-slate-900">
-                          Date: <span className="font-normal">{doc.date || '08-Sep-26'}</span>
+                          {t('date', 'Date:')} <span className="font-normal">{doc.date || '08-Sep-26'}</span>
                         </div>
                         <div className="font-bold text-slate-900">
-                          Branch: <span className="font-normal">{doc.branch || 'Zeit w zaytoun ljanoub'}</span>
+                          {t('branch', 'Branch:')} <span className="font-normal">{doc.branch || 'Zeit w zaytoun ljanoub'}</span>
                         </div>
                       </div>
                     </div>
@@ -3999,13 +3999,13 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     <table className="w-full mt-6 border-collapse text-xs">
                       <thead>
                         <tr className="border-b-2 border-slate-800 text-slate-800 font-bold">
-                          <th className="py-2 text-left w-12">Item</th>
-                          <th className="py-2 text-left">Description</th>
-                          <th className="py-2 text-center w-16">Unit</th>
-                          <th className="py-2 text-right w-16">Qty</th>
-                          <th className="py-2 text-right w-24">Unit Price $</th>
-                          <th className="py-2 text-right w-16">Disc %</th>
-                          <th className="py-2 text-right w-24">Total $</th>
+                          <th className="py-2 text-left w-12">{t('item', 'Item')}</th>
+                          <th className="py-2 text-left">{t('description', 'Description')}</th>
+                          <th className="py-2 text-center w-16">{t('unit', 'Unit')}</th>
+                          <th className="py-2 text-right w-16">{t('qty', 'Qty')}</th>
+                          <th className="py-2 text-right w-24">{t('unit_price', 'Unit Price $')}</th>
+                          <th className="py-2 text-right w-16">{t('disc', 'Disc %')}</th>
+                          <th className="py-2 text-right w-24">{t('total', 'Total $')}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-300">
@@ -4033,23 +4033,23 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="space-y-4">
               {/* Header */}
               <div className="flex items-center justify-between border-b border-slate-700 pb-3">
-                <span className="text-sm font-semibold text-slate-100">Print</span>
+                <span className="text-sm font-semibold text-slate-100">{t('print', 'Print')}</span>
                 <span className="text-slate-400 text-[11px]">1 sheet of paper</span>
               </div>
 
               {/* Destination */}
               <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">Destination</label>
+                <label className="text-slate-300 text-[11px] block">{t('destination', 'Destination')}</label>
                 <div className="relative">
                   <select
                     value={printDestination}
                     onChange={(e) => setPrintDestination(e.target.value)}
                     className="w-full bg-[#2d2e31] border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8"
                   >
-                    <option value="HP LaserJet MFP M139-M142">HP LaserJet MFP M139-M142</option>
-                    <option value="Save as PDF">Save as PDF</option>
-                    <option value="Microsoft Print to PDF">Microsoft Print to PDF</option>
-                    <option value="Save to Google Drive">Save to Google Drive</option>
+                    <option value="HP LaserJet MFP M139-M142">{t('hp_laserjet_mfp_m139m142', 'HP LaserJet MFP M139-M142')}</option>
+                    <option value="Save as PDF">{t('save_as_pdf', 'Save as PDF')}</option>
+                    <option value="Microsoft Print to PDF">{t('microsoft_print_to_pdf', 'Microsoft Print to PDF')}</option>
+                    <option value="Save to Google Drive">{t('save_to_google_drive', 'Save to Google Drive')}</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
                 </div>
@@ -4057,15 +4057,15 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Pages */}
               <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">Pages</label>
+                <label className="text-slate-300 text-[11px] block">{t('pages', 'Pages')}</label>
                 <div className="relative">
                   <select
                     value={printPages}
                     onChange={(e) => setPrintPages(e.target.value)}
                     className="w-full bg-[#2d2e31] border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8"
                   >
-                    <option value="All">All</option>
-                    <option value="Custom">Custom</option>
+                    <option value="All">{t('all', 'All')}</option>
+                    <option value="Custom">{t('custom', 'Custom')}</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
                 </div>
@@ -4073,7 +4073,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   <div className="pt-1">
                     <input
                       type="text"
-                      placeholder="e.g. 1-2"
+                      placeholder={t('eg_12', 'e.g. 1-2')}
                       value={printPagesCustom}
                       onChange={(e) => setPrintPagesCustom(e.target.value)}
                       className="w-full bg-[#2d2e31] border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white placeholder:text-slate-500 focus:outline-none"
@@ -4084,7 +4084,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Copies */}
               <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">Copies</label>
+                <label className="text-slate-300 text-[11px] block">{t('copies', 'Copies')}</label>
                 <input
                   type="number"
                   min={1}
@@ -4096,15 +4096,15 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Layout */}
               <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">Layout</label>
+                <label className="text-slate-300 text-[11px] block">{t('layout', 'Layout')}</label>
                 <div className="relative">
                   <select
                     value={printLayout}
                     onChange={(e) => setPrintLayout(e.target.value as any)}
                     className="w-full bg-[#2d2e31] border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8"
                   >
-                    <option value="Portrait">Portrait</option>
-                    <option value="Landscape">Landscape</option>
+                    <option value="Portrait">{t('portrait', 'Portrait')}</option>
+                    <option value="Landscape">{t('landscape', 'Landscape')}</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
                 </div>
@@ -4112,15 +4112,15 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* Color */}
               <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">Color</label>
+                <label className="text-slate-300 text-[11px] block">{t('color', 'Color')}</label>
                 <div className="relative">
                   <select
                     value={printColor}
                     onChange={(e) => setPrintColor(e.target.value as any)}
                     className="w-full bg-[#2d2e31] border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8"
                   >
-                    <option value="Color">Color</option>
-                    <option value="Black and white">Black and white</option>
+                    <option value="Color">{t('color', 'Color')}</option>
+                    <option value="Black and white">{t('black_and_white', 'Black and white')}</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
                 </div>
@@ -4132,7 +4132,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   onClick={() => setPrintMoreSettingsOpen(!printMoreSettingsOpen)}
                   className="flex items-center justify-between text-slate-300 hover:text-white cursor-pointer py-1.5"
                 >
-                  <span className="font-medium text-xs">More settings</span>
+                  <span className="font-medium text-xs">{t('more_settings', 'More settings')}</span>
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${printMoreSettingsOpen ? 'rotate-180' : ''}`} />
                 </div>
 
@@ -4140,7 +4140,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   <div className="space-y-3.5 pt-2 animate-fade-in text-xs">
                     {/* Paper size */}
                     <div className="space-y-1">
-                      <label className="text-slate-400 text-[11px] block">Paper size</label>
+                      <label className="text-slate-400 text-[11px] block">{t('paper_size', 'Paper size')}</label>
                       <select
                         value={printPaperSize}
                         onChange={(e) => setPrintPaperSize(e.target.value)}
@@ -4154,7 +4154,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                     {/* Pages per sheet */}
                     <div className="space-y-1">
-                      <label className="text-slate-400 text-[11px] block">Pages per sheet</label>
+                      <label className="text-slate-400 text-[11px] block">{t('pages_per_sheet', 'Pages per sheet')}</label>
                       <select
                         value={printPagesPerSheet}
                         onChange={(e) => setPrintPagesPerSheet(parseInt(e.target.value))}
@@ -4168,7 +4168,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                     {/* Scale */}
                     <div className="space-y-1">
-                      <label className="text-slate-400 text-[11px] block">Scale</label>
+                      <label className="text-slate-400 text-[11px] block">{t('scale', 'Scale')}</label>
                       <select
                         value={printScale}
                         onChange={(e) => setPrintScale(e.target.value)}
@@ -4193,7 +4193,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                     {/* Two-sided */}
                     <div className="space-y-1 pt-1">
-                      <label className="text-slate-400 text-[11px] block">Two-sided</label>
+                      <label className="text-slate-400 text-[11px] block">{t('twosided', 'Two-sided')}</label>
                       <label className="flex items-center gap-2 text-slate-200 cursor-pointer">
                         <input
                           type="checkbox"
@@ -4201,7 +4201,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           onChange={(e) => setPrintTwoSided(e.target.checked)}
                           className="rounded border-slate-600 text-blue-500"
                         />
-                        <span>Print on both sides</span>
+                        <span>{t('print_on_both_sides', 'Print on both sides')}</span>
                       </label>
                       {printTwoSided && (
                         <div className="pl-6 space-y-1 pt-1 text-slate-300">
@@ -4212,7 +4212,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                               checked={printTwoSidedFlip === 'long'}
                               onChange={() => setPrintTwoSidedFlip('long')}
                             />
-                            <span>Flip on long edge</span>
+                            <span>{t('flip_on_long_edge', 'Flip on long edge')}</span>
                           </label>
                           <label className="flex items-center gap-2 cursor-pointer">
                             <input
@@ -4221,7 +4221,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                               checked={printTwoSidedFlip === 'short'}
                               onChange={() => setPrintTwoSidedFlip('short')}
                             />
-                            <span>Flip on short edge</span>
+                            <span>{t('flip_on_short_edge', 'Flip on short edge')}</span>
                           </label>
                         </div>
                       )}
@@ -4250,7 +4250,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => setIsChromePrintPreviewOpen(false)}
                 className="border border-slate-600 hover:bg-slate-700 text-slate-200 px-5 py-2 rounded-full text-xs font-medium cursor-pointer transition-colors"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -4298,7 +4298,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="bg-white px-3 py-1.5 flex items-center justify-between border-b border-slate-300">
               <div className="flex items-center gap-2">
                 <Printer className="w-4 h-4 text-slate-600" />
-                <span className="font-normal text-xs text-slate-800">Print</span>
+                <span className="font-normal text-xs text-slate-800">{t('print', 'Print')}</span>
               </div>
               <button
                 type="button"
@@ -4312,7 +4312,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             {/* Tab Strip */}
             <div className="px-3 pt-2 flex border-b border-slate-300 bg-[#f0f0f0]">
               <div className="bg-white border-t-2 border-l border-r border-slate-300 border-t-blue-600 px-4 py-1 rounded-t-xs text-xs font-medium text-slate-800 -mb-px">
-                General
+                {t('general', 'General')}
               </div>
             </div>
 
@@ -4320,7 +4320,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="p-3 bg-white space-y-3">
               {/* Select Printer Fieldset */}
               <fieldset className="border border-slate-300 rounded p-2.5 space-y-2">
-                <legend className="text-xs px-1 text-slate-700 font-normal">Select Printer</legend>
+                <legend className="text-xs px-1 text-slate-700 font-normal">{t('select_printer', 'Select Printer')}</legend>
 
                 {/* Printers Grid */}
                 <div className="border border-slate-300 rounded bg-white h-28 overflow-y-auto p-1 divide-y divide-slate-100">
@@ -4350,9 +4350,9 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 {/* Printer Details & Buttons */}
                 <div className="flex items-start justify-between text-[11px] pt-1">
                   <div className="space-y-0.5 text-slate-600">
-                    <div>Status: <span className="font-normal text-slate-800">Ready</span></div>
-                    <div>Location:</div>
-                    <div>Comment:</div>
+                    <div>{t('status', 'Status:')} <span className="font-normal text-slate-800">{t('ready', 'Ready')}</span></div>
+                    <div>{t('location', 'Location:')}</div>
+                    <div>{t('comment', 'Comment:')}</div>
                   </div>
 
                   <div className="space-y-1.5">
@@ -4361,14 +4361,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onClick={() => setIsPreferencesModalOpen(true)}
                       className="w-24 bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border rounded px-2 py-1 text-xs text-slate-800 cursor-pointer shadow-2xs"
                     >
-                      Preferences
+                      {t('preferences', 'Preferences')}
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsFindPrinterModalOpen(true)}
                       className="w-24 bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border rounded px-2 py-1 text-xs text-slate-800 cursor-pointer shadow-2xs"
                     >
-                      Find Printer...
+                      {t('find_printer', 'Find Printer...')}
                     </button>
                   </div>
                 </div>
@@ -4378,7 +4378,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <div className="grid grid-cols-2 gap-3">
                 {/* Page Range */}
                 <fieldset className="border border-slate-300 rounded p-2.5 space-y-1 text-xs">
-                  <legend className="text-xs px-1 text-slate-700 font-normal">Page Range</legend>
+                  <legend className="text-xs px-1 text-slate-700 font-normal">{t('page_range', 'Page Range')}</legend>
                   <label className="flex items-center gap-2 cursor-pointer text-slate-800">
                     <input
                       type="radio"
@@ -4386,11 +4386,11 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       checked={systemPageRange === 'all'}
                       onChange={() => setSystemPageRange('all')}
                     />
-                    <span>All</span>
+                    <span>{t('all', 'All')}</span>
                   </label>
                   <label className="flex items-center gap-2 text-slate-400 cursor-not-allowed">
                     <input type="radio" name="pageRange" disabled />
-                    <span>Selection</span>
+                    <span>{t('selection', 'Selection')}</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer text-slate-800">
                     <input
@@ -4399,7 +4399,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       checked={systemPageRange === 'current'}
                       onChange={() => setSystemPageRange('current')}
                     />
-                    <span>Current Page</span>
+                    <span>{t('current_page', 'Current Page')}</span>
                   </label>
                   <div className="flex items-center gap-2 pt-0.5">
                     <label className="flex items-center gap-2 cursor-pointer text-slate-800">
@@ -4409,7 +4409,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         checked={systemPageRange === 'pages'}
                         onChange={() => setSystemPageRange('pages')}
                       />
-                      <span>Pages:</span>
+                      <span>{t('pages', 'Pages:')}</span>
                     </label>
                     <input
                       type="text"
@@ -4425,9 +4425,9 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                 {/* Number of Copies */}
                 <fieldset className="border border-slate-300 rounded p-2.5 space-y-3 text-xs">
-                  <legend className="text-xs px-1 text-slate-700 font-normal">Number of copies</legend>
+                  <legend className="text-xs px-1 text-slate-700 font-normal">{t('number_of_copies', 'Number of copies')}</legend>
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-700">Number of copies:</span>
+                    <span className="text-slate-700">{t('number_of_copies', 'Number of copies:')}</span>
                     <input
                       type="number"
                       min={1}
@@ -4443,7 +4443,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onChange={(e) => setSystemCollate(e.target.checked)}
                       className="rounded border-slate-300"
                     />
-                    <span>Collate</span>
+                    <span>{t('collate', 'Collate')}</span>
                   </label>
                 </fieldset>
               </div>
@@ -4461,21 +4461,21 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 }}
                 className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#0078d7] text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
               >
-                Print
+                {t('print', 'Print')}
               </button>
               <button
                 type="button"
                 onClick={() => setIsSystemPrintModalOpen(false)}
                 className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 disabled
                 className="bg-[#e1e1e1] border border-border text-slate-400 px-5 py-1 rounded-xs text-xs font-normal cursor-not-allowed opacity-60"
               >
-                Apply
+                {t('apply', 'Apply')}
               </button>
             </div>
           </div>
@@ -4511,7 +4511,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Layout
+                {t('layout', 'Layout')}
               </button>
               <button
                 type="button"
@@ -4522,7 +4522,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Paper/Quality
+                {t('paperquality', 'Paper/Quality')}
               </button>
             </div>
 
@@ -4531,7 +4531,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               {prefActiveTab === 'Layout' ? (
                 <div className="space-y-3">
                   <fieldset className="border border-slate-300 rounded p-2.5 space-y-2">
-                    <legend className="text-xs px-1 text-slate-700">Orientation</legend>
+                    <legend className="text-xs px-1 text-slate-700">{t('orientation', 'Orientation')}</legend>
                     <div className="flex gap-4">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -4540,7 +4540,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           checked={prefOrientation === 'Portrait'}
                           onChange={() => setPrefOrientation('Portrait')}
                         />
-                        <span>Portrait</span>
+                        <span>{t('portrait', 'Portrait')}</span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
@@ -4549,40 +4549,40 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           checked={prefOrientation === 'Landscape'}
                           onChange={() => setPrefOrientation('Landscape')}
                         />
-                        <span>Landscape</span>
+                        <span>{t('landscape', 'Landscape')}</span>
                       </label>
                     </div>
                   </fieldset>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-slate-700 block mb-1">Print on Both Sides:</label>
+                      <label className="text-slate-700 block mb-1">{t('print_on_both_sides', 'Print on Both Sides:')}</label>
                       <select
                         value={prefBothSides}
                         onChange={(e) => setPrefBothSides(e.target.value)}
                         className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs"
                       >
-                        <option value="None">None</option>
-                        <option value="Flip on Long Edge">Flip on Long Edge</option>
-                        <option value="Flip on Short Edge">Flip on Short Edge</option>
+                        <option value="None">{t('none', 'None')}</option>
+                        <option value="Flip on Long Edge">{t('flip_on_long_edge', 'Flip on Long Edge')}</option>
+                        <option value="Flip on Short Edge">{t('flip_on_short_edge', 'Flip on Short Edge')}</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="text-slate-700 block mb-1">Page Order:</label>
+                      <label className="text-slate-700 block mb-1">{t('page_order', 'Page Order:')}</label>
                       <select
                         value={prefPageOrder}
                         onChange={(e) => setPrefPageOrder(e.target.value)}
                         className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs"
                       >
-                        <option value="Front to Back">Front to Back</option>
-                        <option value="Back to Front">Back to Front</option>
+                        <option value="Front to Back">{t('front_to_back', 'Front to Back')}</option>
+                        <option value="Back to Front">{t('back_to_front', 'Back to Front')}</option>
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-slate-700 block mb-1">Pages Per Sheet:</label>
+                    <label className="text-slate-700 block mb-1">{t('pages_per_sheet', 'Pages Per Sheet:')}</label>
                     <select
                       value={prefPagesPerSheet}
                       onChange={(e) => setPrefPagesPerSheet(e.target.value)}
@@ -4598,34 +4598,34 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               ) : (
                 <div className="space-y-3">
                   <div>
-                    <label className="text-slate-700 block mb-1">Paper Source / Tray:</label>
+                    <label className="text-slate-700 block mb-1">{t('paper_source_tray', 'Paper Source / Tray:')}</label>
                     <select
                       value={prefPaperSource}
                       onChange={(e) => setPrefPaperSource(e.target.value)}
                       className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs"
                     >
-                      <option value="Automatically Select">Automatically Select</option>
+                      <option value="Automatically Select">{t('automatically_select', 'Automatically Select')}</option>
                       <option value="Tray 1 (Standard)">Tray 1 (Standard)</option>
-                      <option value="Manual Feed Slot">Manual Feed Slot</option>
+                      <option value="Manual Feed Slot">{t('manual_feed_slot', 'Manual Feed Slot')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-slate-700 block mb-1">Media Type:</label>
+                    <label className="text-slate-700 block mb-1">{t('media_type', 'Media Type:')}</label>
                     <select
                       value={prefMedia}
                       onChange={(e) => setPrefMedia(e.target.value)}
                       className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs"
                     >
-                      <option value="Plain Paper">Plain Paper</option>
-                      <option value="Letterhead">Letterhead</option>
-                      <option value="Heavy Cardstock">Heavy Cardstock</option>
-                      <option value="Recycled">Recycled</option>
+                      <option value="Plain Paper">{t('plain_paper', 'Plain Paper')}</option>
+                      <option value="Letterhead">{t('letterhead', 'Letterhead')}</option>
+                      <option value="Heavy Cardstock">{t('heavy_cardstock', 'Heavy Cardstock')}</option>
+                      <option value="Recycled">{t('recycled', 'Recycled')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-slate-700 block mb-1">Print Quality:</label>
+                    <label className="text-slate-700 block mb-1">{t('print_quality', 'Print Quality:')}</label>
                     <select
                       value={prefQuality}
                       onChange={(e) => setPrefQuality(e.target.value)}
@@ -4651,14 +4651,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 }}
                 className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#0078d7] text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
               <button
                 type="button"
                 onClick={() => setIsPreferencesModalOpen(false)}
                 className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
             </div>
           </div>
@@ -4673,7 +4673,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
             <div className="bg-white px-3 py-1.5 flex items-center justify-between border-b border-slate-300">
               <div className="flex items-center gap-2">
                 <Printer className="w-4 h-4 text-slate-600" />
-                <span className="font-normal text-xs text-slate-800">Find Printers</span>
+                <span className="font-normal text-xs text-slate-800">{t('find_printers', 'Find Printers')}</span>
               </div>
               <button
                 type="button"
@@ -4688,12 +4688,12 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               {/* Search fields */}
               <div className="grid grid-cols-3 gap-2">
                 <div className="col-span-2 space-y-1">
-                  <label className="text-slate-700 block text-[11px]">Name or IP Address:</label>
+                  <label className="text-slate-700 block text-[11px]">{t('name_or_ip_address', 'Name or IP Address:')}</label>
                   <input
                     type="text"
                     value={findPrinterName}
                     onChange={(e) => setFindPrinterName(e.target.value)}
-                    placeholder="Search printer name..."
+                    placeholder={t('search_printer_name', 'Search printer name...')}
                     className="w-full border border-slate-300 rounded px-2 py-1 text-xs focus:outline-none"
                   />
                 </div>
@@ -4703,14 +4703,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     onClick={() => notify('Scanning local network and USB ports...')}
                     className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border rounded px-3 py-1 text-xs cursor-pointer shadow-2xs font-medium"
                   >
-                    Find Now
+                    {t('find_now', 'Find Now')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setFindPrinterName('')}
                     className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border rounded px-3 py-1 text-xs cursor-pointer shadow-2xs"
                   >
-                    Clear
+                    {t('clear', 'Clear')}
                   </button>
                 </div>
               </div>
@@ -4718,9 +4718,9 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               {/* Discovered Printers Table */}
               <div className="border border-slate-300 rounded overflow-hidden">
                 <div className="bg-slate-100 border-b border-slate-300 px-2 py-1 font-semibold text-[11px] grid grid-cols-12 gap-1 text-slate-700">
-                  <div className="col-span-5">Name</div>
-                  <div className="col-span-4">Port / Location</div>
-                  <div className="col-span-3 text-right">Status</div>
+                  <div className="col-span-5">{t('name', 'Name')}</div>
+                  <div className="col-span-4">{t('port_location', 'Port / Location')}</div>
+                  <div className="col-span-3 text-right">{t('status', 'Status')}</div>
                 </div>
                 <div className="max-h-36 overflow-y-auto divide-y divide-slate-100">
                   {[
@@ -4765,7 +4765,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => setIsFindPrinterModalOpen(false)}
                 className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-border text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -4795,7 +4795,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 className="bg-primary hover:bg-primary text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Export</span>
+                <span>{t('export', 'Export')}</span>
               </button>
 
               {/* Send Email Button */}
@@ -4813,7 +4813,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 className="bg-primary hover:bg-primary text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <Mail className="w-3.5 h-3.5" />
-                <span>Send Email</span>
+                <span>{t('send_email', 'Send Email')}</span>
               </button>
 
               {/* Close Button */}
@@ -4823,12 +4823,12 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 className="bg-destructive hover:bg-destructive text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
-                <span>Close</span>
+                <span>{t('close', 'Close')}</span>
               </button>
             </div>
 
             <div className="text-xs text-blue-600 hover:underline cursor-pointer">
-              Watch Tutorial
+              {t('watch_tutorial', 'Watch Tutorial')}
             </div>
           </div>
 
@@ -4859,7 +4859,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 type="button"
                 onClick={() => setPdfZoom((prev) => Math.max(60, prev - 10))}
                 className="p-1 rounded hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer"
-                title="Zoom Out"
+                title={t('zoom_out', 'Zoom Out')}
               >
                 -
               </button>
@@ -4869,7 +4869,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 type="button"
                 onClick={() => setPdfZoom((prev) => Math.min(160, prev + 10))}
                 className="p-1 rounded hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer"
-                title="Zoom In"
+                title={t('zoom_in', 'Zoom In')}
               >
                 +
               </button>
@@ -4881,7 +4881,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 type="button"
                 onClick={() => setPdfRotation((prev) => (prev + 270) % 360)}
                 className="p-1 rounded hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer"
-                title="Rotate counter-clockwise"
+                title={t('rotate_counterclockwise', 'Rotate counter-clockwise')}
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
@@ -4895,7 +4895,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   type="button"
                   onClick={() => setIsThreeDotsMenuOpen(!isThreeDotsMenuOpen)}
                   className="p-1.5 rounded hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer"
-                  title="More actions"
+                  title={t('more_actions', 'More actions')}
                 >
                   <MoreVertical className="w-3.5 h-3.5" />
                 </button>
@@ -4909,7 +4909,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className="px-3 py-1.5 hover:bg-slate-700 cursor-pointer"
                     >
-                      Two page view
+                      {t('two_page_view', 'Two page view')}
                     </div>
                     <div
                       onClick={() => {
@@ -4918,7 +4918,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className="px-3 py-1.5 hover:bg-slate-700 cursor-pointer"
                     >
-                      Annotation
+                      {t('annotation', 'Annotation')}
                     </div>
                     <div
                       onClick={() => {
@@ -4931,7 +4931,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className="px-3 py-1.5 hover:bg-slate-700 cursor-pointer"
                     >
-                      Present
+                      {t('present', 'Present')}
                     </div>
                     <div
                       onClick={() => {
@@ -4940,7 +4940,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className="px-3 py-1.5 hover:bg-slate-700 cursor-pointer border-t border-slate-700"
                     >
-                      Document properties
+                      {t('document_properties', 'Document properties')}
                     </div>
                   </div>
                 )}
@@ -4951,7 +4951,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 type="button"
                 onClick={() => setIsChromePrintPreviewOpen(true)}
                 className="p-1.5 rounded hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer transition-colors"
-                title="Print Quotation"
+                title={t('print_quotation', 'Print Quotation')}
               >
                 <Printer className="w-4 h-4" />
               </button>
@@ -4969,7 +4969,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   setIsSaveAsModalOpen(true);
                 }}
                 className="p-1.5 rounded hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer transition-colors"
-                title="Download PDF"
+                title={t('download_pdf', 'Download PDF')}
               >
                 <Download className="w-4 h-4" />
               </button>
@@ -4987,7 +4987,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   notify('Quotations.pdf downloaded to computer and real Google Drive opened!');
                 }}
                 className="p-1.5 rounded hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer transition-colors flex items-center justify-center"
-                title="Save to Google Drive"
+                title={t('save_to_google_drive', 'Save to Google Drive')}
               >
                 <svg className="w-4 h-4" viewBox="0 0 87.3 78" fill="none">
                   <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.9 2.5 3.2 3.3l12.3-21.3H1.7c0 1.5.4 3 1.2 4.35l3.7 7z" fill="#0066da"/>
@@ -5009,7 +5009,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 <div className="p-1 border-2 border-blue-500 rounded bg-white shadow-md cursor-pointer transform hover:scale-105 transition-transform w-28 h-36 overflow-hidden flex flex-col justify-between">
                   <div className="scale-[0.25] origin-top-left w-[400%] p-2 pointer-events-none">
                     <div className="w-16 h-8 bg-yellow-300 rounded-full mx-auto" />
-                    <div className="text-center font-bold text-base mt-2">Quotation</div>
+                    <div className="text-center font-bold text-base mt-2">{t('quotation', 'Quotation')}</div>
                     <div className="h-4 bg-slate-200 mt-2 rounded" />
                     <div className="h-4 bg-slate-200 mt-1 rounded" />
                   </div>
@@ -5058,7 +5058,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       {/* Logo and Quotation Title */}
                       <div className="flex items-center justify-between pb-3 border-b-2 border-slate-800">
                         <div className="flex flex-col">
-                          <span className="text-2xl font-black text-slate-900 tracking-wider uppercase">QUOTATION</span>
+                          <span className="text-2xl font-black text-slate-900 tracking-wider uppercase">{t('quotation', 'QUOTATION')}</span>
                           <span className="text-xs text-slate-600 font-medium">Branch: {doc.branch || 'Zeit w zaytoun ljanoub'}</span>
                         </div>
 
@@ -5073,11 +5073,11 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         {/* Left Customer Box */}
                         <div className="border border-slate-800 rounded-2xl p-4 space-y-2 text-xs">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900">Customer:</span>
+                            <span className="font-bold text-slate-900">{t('customer', 'Customer:')}</span>
                             <span className="text-slate-800 font-medium">{doc.customerName || 'Mauritania Mauritania'}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900">Mobile:</span>
+                            <span className="font-bold text-slate-900">{t('mobile', 'Mobile:')}</span>
                             <span className="text-slate-800 font-mono">{doc.phone || '0022236818688'}</span>
                           </div>
                         </div>
@@ -5085,20 +5085,20 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         {/* Right Quotation Details Box */}
                         <div className="border border-slate-800 rounded-2xl p-4 space-y-1.5 text-xs">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-slate-900">Date:</span>
+                            <span className="font-bold text-slate-900">{t('date', 'Date:')}</span>
                             <span className="font-mono text-slate-800">{doc.date || '08-Sep-26'}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-slate-900">Quotation #:</span>
+                            <span className="font-bold text-slate-900">{t('quotation', 'Quotation #:')}</span>
                             <span className="font-mono text-slate-800">{doc.quotationNo.replace('QT-2026-', '') || '28'}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-slate-900">Currency:</span>
+                            <span className="font-bold text-slate-900">{t('currency', 'Currency:')}</span>
                             <span className="font-mono font-bold text-slate-800">{doc.currency || 'USD'}</span>
                           </div>
                           <div className="flex items-center justify-between pt-1">
-                            <span className="font-bold text-slate-900">Payment Type:</span>
-                            <span className="font-mono text-slate-800">CASH</span>
+                            <span className="font-bold text-slate-900">{t('payment_type', 'Payment Type:')}</span>
+                            <span className="font-mono text-slate-800">{t('cash', 'CASH')}</span>
                           </div>
                         </div>
                       </div>
@@ -5108,12 +5108,12 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         <table className="w-full text-xs">
                           <thead>
                             <tr className="border-b border-slate-800 text-[11px] font-bold text-slate-900">
-                              <th className="py-2 text-center w-12">Qty</th>
-                              <th className="py-2 text-left">Description</th>
-                              <th className="py-2 text-center w-16">Unit</th>
-                              <th className="py-2 text-right w-20">Unit Price</th>
-                              <th className="py-2 text-right w-16">Tax</th>
-                              <th className="py-2 text-right w-24">Total Price</th>
+                              <th className="py-2 text-center w-12">{t('qty', 'Qty')}</th>
+                              <th className="py-2 text-left">{t('description', 'Description')}</th>
+                              <th className="py-2 text-center w-16">{t('unit', 'Unit')}</th>
+                              <th className="py-2 text-right w-20">{t('unit_price', 'Unit Price')}</th>
+                              <th className="py-2 text-right w-16">{t('tax', 'Tax')}</th>
+                              <th className="py-2 text-right w-24">{t('total_price', 'Total Price')}</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
@@ -5136,7 +5136,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             ) : (
                               <tr>
                                 <td colSpan={6} className="py-4 text-center text-slate-400 font-sans">
-                                  No items in quotation.
+                                  {t('no_items_in_quotation', 'No items in quotation.')}
                                 </td>
                               </tr>
                             )}
@@ -5149,14 +5149,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         {/* Notes and Words */}
                         <div className="space-y-4 max-w-sm">
                           <div className="text-xs">
-                            <span className="font-bold text-slate-900">Note</span>
+                            <span className="font-bold text-slate-900">{t('note', 'Note')}</span>
                             <div className="text-slate-600 mt-0.5 text-[11px]">{doc.notes || ''}</div>
                           </div>
                           <div className="text-xs font-mono text-slate-700">
                             {`Only ${numberToEnglishWords(Math.round(doc.grandTotalLL || (doc.grandTotalUSD * 89500)))} LBP`}
                           </div>
                           <div className="text-xs font-bold text-slate-800">
-                            Credit Limit : <span className="font-normal font-mono">0.00</span>
+                            {t('credit_limit', 'Credit Limit :')} <span className="font-normal font-mono">0.00</span>
                           </div>
                         </div>
 
@@ -5173,7 +5173,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     {/* Bottom Document Page Indicator */}
                     <div className="mt-20 pt-4 border-t border-slate-400 flex items-center justify-between text-[11px] text-slate-500 font-mono">
                       <span>null</span>
-                      <span>Page 1 of 1</span>
+                      <span>{t('page_1_of_1', 'Page 1 of 1')}</span>
                     </div>
                   </div>
                 );
@@ -5191,7 +5191,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   <div className="w-4 h-4 bg-white rounded-full flex items-center justify-center font-bold text-red-600 text-[10px]">
                     A
                   </div>
-                  <span className="text-xs font-semibold">Open in Acrobat</span>
+                  <span className="text-xs font-semibold">{t('open_in_acrobat', 'Open in Acrobat')}</span>
                   <ChevronUp className="w-3.5 h-3.5 text-white/80" />
                 </button>
 
@@ -5204,7 +5204,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className="px-3 py-2 hover:bg-slate-700 cursor-pointer flex items-center gap-2"
                     >
-                      <span>Open PDF in Acrobat</span>
+                      <span>{t('open_pdf_in_acrobat', 'Open PDF in Acrobat')}</span>
                     </div>
                     <div
                       onClick={() => {
@@ -5213,7 +5213,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className="px-3 py-2 hover:bg-slate-700 cursor-pointer"
                     >
-                      <span>Hide icon for now</span>
+                      <span>{t('hide_icon_for_now', 'Hide icon for now')}</span>
                     </div>
                     <div
                       onClick={() => {
@@ -5222,7 +5222,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       }}
                       className="px-3 py-2 hover:bg-slate-700 cursor-pointer border-t border-slate-700 text-slate-400"
                     >
-                      <span>Manage preferences</span>
+                      <span>{t('manage_preferences', 'Manage preferences')}</span>
                     </div>
                   </div>
                 )}
@@ -5248,7 +5248,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-[620px] overflow-hidden flex flex-col font-sans text-xs">
             {/* Header */}
             <div className="px-6 py-3.5 flex items-center justify-between border-b border-slate-200">
-              <h2 className="text-base font-normal text-slate-700">Options</h2>
+              <h2 className="text-base font-normal text-slate-700">{t('options', 'Options')}</h2>
               <button
                 type="button"
                 onClick={() => setIsDefaultConfigModalOpen(false)}
@@ -5260,11 +5260,11 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
             {/* Body */}
             <div className="p-6 space-y-3.5 max-h-[80vh] overflow-y-auto">
-              <h3 className="text-xs font-bold text-[#2a4365] mb-2">Default Values</h3>
+              <h3 className="text-xs font-bold text-[#2a4365] mb-2">{t('default_values', 'Default Values')}</h3>
 
               {/* 1. Default Branch */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Default Branch</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('default_branch', 'Default Branch')}</label>
                 <div className="col-span-8 relative">
                   <select
                     value={defaultBranch}
@@ -5281,16 +5281,16 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* 2. Default Currency */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Default Currency</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('default_currency', 'Default Currency')}</label>
                 <div className="col-span-8 relative">
                   <select
                     value={defaultCurrency}
                     onChange={(e) => setDefaultCurrency(e.target.value)}
                     className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 appearance-none pr-8 focus:outline-none focus:border-blue-500 cursor-pointer shadow-2xs"
                   >
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="LBP">LBP</option>
+                    <option value="USD">{t('usd', 'USD')}</option>
+                    <option value="EUR">{t('eur', 'EUR')}</option>
+                    <option value="LBP">{t('lbp', 'LBP')}</option>
                   </select>
                   <ChevronDown className="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" />
                 </div>
@@ -5298,7 +5298,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* 3. Default Payment */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Default Payment</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('default_payment', 'Default Payment')}</label>
                 <div className="col-span-8 relative">
                   <select
                     value={defaultPayment}
@@ -5315,7 +5315,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* 4. Default Salesman */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Default Salesman</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('default_salesman', 'Default Salesman')}</label>
                 <div className="col-span-8 relative">
                   <select
                     value={defaultSalesman}
@@ -5332,7 +5332,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* 5. Default Department */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Default Department</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('default_department', 'Default Department')}</label>
                 <div className="col-span-8 relative">
                   <select
                     value={defaultDepartment}
@@ -5349,7 +5349,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* 6. Printer Type (Screenshots 1 & 3) */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Printer Type</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('printer_type', 'Printer Type')}</label>
                 <div className="col-span-8 relative">
                   <button
                     type="button"
@@ -5369,7 +5369,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       <div className="p-1">
                         <input
                           type="text"
-                          placeholder="Search..."
+                          placeholder={t('search', 'Search...')}
                           value={printerTypeSearch}
                           onChange={(e) => setPrinterTypeSearch(e.target.value)}
                           className="w-full border border-blue-300 rounded px-2 py-1 text-xs outline-none focus:border-blue-500"
@@ -5404,7 +5404,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* 7. Print Report on Save (Screenshots 1 & 2) */}
               <div className="grid grid-cols-12 gap-3 items-center">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Print Report on Save</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('print_report_on_save', 'Print Report on Save')}</label>
                 <div className="col-span-8 relative">
                   <button
                     type="button"
@@ -5424,7 +5424,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       <div className="p-1">
                         <input
                           type="text"
-                          placeholder="Search..."
+                          placeholder={t('search', 'Search...')}
                           value={printOnSaveSearch}
                           onChange={(e) => setPrintOnSaveSearch(e.target.value)}
                           className="w-full border border-blue-300 rounded px-2 py-1 text-xs outline-none focus:border-blue-500"
@@ -5459,7 +5459,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
               {/* 8. Sales Report Footer */}
               <div className="grid grid-cols-12 gap-3 items-start">
-                <label className="col-span-4 font-bold text-slate-800 text-xs pt-1.5">Sales Report Footer</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs pt-1.5">{t('sales_report_footer', 'Sales Report Footer')}</label>
                 <div className="col-span-8">
                   <textarea
                     rows={3}
@@ -5484,7 +5484,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   className="bg-primary hover:bg-primary text-white px-4 py-2 rounded text-xs font-bold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save Default Values</span>
+                  <span>{t('save_default_values', 'Save Default Values')}</span>
                 </button>
               </div>
             </div>
@@ -5500,7 +5500,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
           <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-[580px] overflow-visible flex flex-col font-sans text-xs relative">
             {/* Header */}
             <div className="px-6 py-3.5 flex items-center justify-between border-b border-slate-200 rounded-t-xl bg-white">
-              <h2 className="text-base font-normal text-slate-700">Settings</h2>
+              <h2 className="text-base font-normal text-slate-700">{t('settings', 'Settings')}</h2>
               <button
                 type="button"
                 onClick={() => setIsSettingsModalOpen(false)}
@@ -5539,13 +5539,13 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
                 />
                 <label htmlFor="applyMarkupOnItem" className="text-slate-800 font-normal text-xs cursor-pointer select-none">
-                  Apply Markup On Item
+                  {t('apply_markup_on_item', 'Apply Markup On Item')}
                 </label>
               </div>
 
               {/* 3. Calculate mark-up based on: */}
               <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
-                <span className="text-slate-800 font-normal text-xs">Calculate mark-up based on:</span>
+                <span className="text-slate-800 font-normal text-xs">{t('calculate_markup_based_on', 'Calculate mark-up based on:')}</span>
                 <div className="flex items-center gap-6">
                   <label className="flex items-center gap-1.5 cursor-pointer text-slate-800 text-xs select-none">
                     <input
@@ -5556,7 +5556,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onChange={() => setMarkupBasis('Average Cost')}
                       className="w-3.5 h-3.5 text-blue-600 focus:ring-0 cursor-pointer"
                     />
-                    <span>Average Cost</span>
+                    <span>{t('average_cost', 'Average Cost')}</span>
                   </label>
                   <label className="flex items-center gap-1.5 cursor-pointer text-slate-800 text-xs select-none">
                     <input
@@ -5567,14 +5567,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                       onChange={() => setMarkupBasis('Unit Cost')}
                       className="w-3.5 h-3.5 text-blue-600 focus:ring-0 cursor-pointer"
                     />
-                    <span>Unit Cost</span>
+                    <span>{t('unit_cost', 'Unit Cost')}</span>
                   </label>
                 </div>
               </div>
 
               {/* 4. Selling Price (Screenshots 1 & 2) */}
               <div className="grid grid-cols-12 gap-3 items-center pt-1 pb-1">
-                <label className="col-span-4 font-bold text-slate-800 text-xs">Selling Price</label>
+                <label className="col-span-4 font-bold text-slate-800 text-xs">{t('selling_price', 'Selling Price')}</label>
                 <div className="col-span-8 relative">
                   <button
                     type="button"
@@ -5597,7 +5597,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         <div className="p-1">
                           <input
                             type="text"
-                            placeholder="Search..."
+                            placeholder={t('search', 'Search...')}
                             value={sellingPriceSearch}
                             onChange={(e) => setSellingPriceSearch(e.target.value)}
                             className="w-full border border-blue-400 rounded px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-blue-500"
@@ -5629,7 +5629,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                             p.toLowerCase().includes(sellingPriceSearch.toLowerCase())
                           ).length === 0 && (
                             <div className="px-3 py-2 text-xs text-slate-400 text-center">
-                              No matching selling price
+                              {t('no_matching_selling_price', 'No matching selling price')}
                             </div>
                           )}
                         </div>

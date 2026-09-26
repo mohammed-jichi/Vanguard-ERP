@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
@@ -43,6 +44,7 @@ interface ToastState {
 }
 
 export default function PaymentTypesView() {
+  const { t } = useLanguage();
   // Navigation & Sub-views
   const [activeView, setActiveView] = useState<'types' | 'bills'>('types');
 
@@ -454,7 +456,7 @@ export default function PaymentTypesView() {
               <ul className="breadcrumb flex items-center gap-2 text-xs text-slate-500 mt-1">
                 <li>
                   <Link href="/backoffice" className="text-blue-600 hover:underline">
-                    Home
+                    {t('home', 'Home')}
                   </Link>
                 </li>
                 <li>/</li>
@@ -462,17 +464,17 @@ export default function PaymentTypesView() {
                   <>
                     <li>
                       <button onClick={() => setActiveView('types')} className="text-blue-600 hover:underline">
-                        Payment Types
+                        {t('payment_types', 'Payment Types')}
                       </button>
                     </li>
                     <li>/</li>
                     <li className="active text-slate-700 font-semibold" aria-current="page">
-                      Payment Bills
+                      {t('payment_bills', 'Payment Bills')}
                     </li>
                   </>
                 ) : (
                   <li className="active text-slate-700 font-semibold" aria-current="page">
-                    Payment Types
+                    {t('payment_types', 'Payment Types')}
                   </li>
                 )}
               </ul>
@@ -486,7 +488,7 @@ export default function PaymentTypesView() {
                   onClick={() => setActiveView('types')}
                   className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors"
                 >
-                  <ArrowLeft className="w-3.5 h-3.5" /> Back to Payment Types
+                  <ArrowLeft className="w-3.5 h-3.5" /> {t('back_to_payment_types', 'Back to Payment Types')}
                 </button>
               )}
             </div>
@@ -510,7 +512,7 @@ export default function PaymentTypesView() {
                       value={searchVal}
                       onChange={e => setSearchVal(e.target.value)}
                       className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Search..."
+                      placeholder={t('search', 'Search...')}
                     />
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                       <Search className="w-4 h-4 text-slate-400" />
@@ -525,7 +527,7 @@ export default function PaymentTypesView() {
                     onChange={e => setSelectedBranch(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-700"
                   >
-                    <option value="allbranch">All Branches</option>
+                    <option value="allbranch">{t('all_branches', 'All Branches')}</option>
                     {OMEGA_BRANCHES.map(b => (
                       <option key={b.BRANCHID} value={String(b.BRANCHID)}>
                         {b.BARANCHNAME}
@@ -541,7 +543,7 @@ export default function PaymentTypesView() {
                     onClick={handleOpenSortingModal}
                     className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-medium flex items-center gap-1.5 shadow-sm transition-colors"
                   >
-                    <ArrowUpDown className="w-4 h-4" /> Sorting
+                    <ArrowUpDown className="w-4 h-4" /> {t('sorting', 'Sorting')}
                   </button>
 
                   <button
@@ -549,7 +551,7 @@ export default function PaymentTypesView() {
                     onClick={() => setActiveView('bills')}
                     className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-medium flex items-center gap-1.5 shadow-sm transition-colors"
                   >
-                    <Banknote className="w-4 h-4" /> Payment Bills
+                    <Banknote className="w-4 h-4" /> {t('payment_bills', 'Payment Bills')}
                   </button>
 
                   <button
@@ -557,7 +559,7 @@ export default function PaymentTypesView() {
                     onClick={handleOpenAdd}
                     className="px-3.5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
                   >
-                    <Plus className="w-4 h-4" /> New
+                    <Plus className="w-4 h-4" /> {t('new', 'New')}
                   </button>
                 </div>
               </div>
@@ -583,7 +585,7 @@ export default function PaymentTypesView() {
                         className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors"
                       >
                         <div className="flex items-center gap-1">
-                          Name
+                          {t('name', 'Name')}
                           <ArrowUpDown className={`w-3.5 h-3.5 text-slate-400 ${sortConfig.field === 'PAYMENTTYPE' ? 'text-blue-600' : ''}`} />
                         </div>
                       </th>
@@ -592,7 +594,7 @@ export default function PaymentTypesView() {
                         className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors hidden sm:table-cell"
                       >
                         <div className="flex items-center gap-1">
-                          Type
+                          {t('type', 'Type')}
                           <ArrowUpDown className={`w-3.5 h-3.5 text-slate-400 ${sortConfig.field === 'CREDIT' ? 'text-blue-600' : ''}`} />
                         </div>
                       </th>
@@ -601,7 +603,7 @@ export default function PaymentTypesView() {
                         className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors hidden md:table-cell"
                       >
                         <div className="flex items-center gap-1">
-                          Change Status
+                          {t('change_status', 'Change Status')}
                           <ArrowUpDown className={`w-3.5 h-3.5 text-slate-400 ${sortConfig.field === 'CHANGESTATUS' ? 'text-blue-600' : ''}`} />
                         </div>
                       </th>
@@ -610,7 +612,7 @@ export default function PaymentTypesView() {
                         className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors hidden lg:table-cell"
                       >
                         <div className="flex items-center gap-1">
-                          Account Number
+                          {t('account_number', 'Account Number')}
                           <ArrowUpDown className={`w-3.5 h-3.5 text-slate-400 ${sortConfig.field === 'ACCNO' ? 'text-blue-600' : ''}`} />
                         </div>
                       </th>
@@ -619,19 +621,19 @@ export default function PaymentTypesView() {
                         className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors hidden sm:table-cell"
                       >
                         <div className="flex items-center gap-1">
-                          Sorting
+                          {t('sorting', 'Sorting')}
                           <ArrowUpDown className={`w-3.5 h-3.5 text-slate-400 ${sortConfig.field === 'SORTING' ? 'text-blue-600' : ''}`} />
                         </div>
                       </th>
-                      <th className="px-4 py-3 text-center w-24">Exceptions</th>
-                      <th className="px-4 py-3 text-right w-24">Actions</th>
+                      <th className="px-4 py-3 text-center w-24">{t('exceptions', 'Exceptions')}</th>
+                      <th className="px-4 py-3 text-right w-24">{t('actions', 'Actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
                     {filteredPaymentTypes.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="px-4 py-8 text-center text-slate-400">
-                          No payment types match your criteria.
+                          {t('no_payment_types_match_your_criteria', 'No payment types match your criteria.')}
                         </td>
                       </tr>
                     ) : (
@@ -667,7 +669,7 @@ export default function PaymentTypesView() {
                                 type="button"
                                 onClick={() => handleOpenEdit(row)}
                                 className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-blue-200 hover:border-blue-600"
-                                title="Edit Payment Type"
+                                title={t('edit_payment_type', 'Edit Payment Type')}
                               >
                                 <Pencil className="w-4 h-4 stroke-[2.2]" />
                               </button>
@@ -675,7 +677,7 @@ export default function PaymentTypesView() {
                                 type="button"
                                 onClick={() => setDeleteConfirmItem(row)}
                                 className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-red-200 hover:border-red-600"
-                                title="Delete Payment Type"
+                                title={t('delete_payment_type', 'Delete Payment Type')}
                               >
                                 <Trash2 className="w-4 h-4 stroke-[2.2]" />
                               </button>
@@ -713,7 +715,7 @@ export default function PaymentTypesView() {
                       value={billSearch}
                       onChange={e => setBillSearch(e.target.value)}
                       className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Search Bills..."
+                      placeholder={t('search_bills', 'Search Bills...')}
                     />
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                       <Search className="w-4 h-4 text-slate-400" />
@@ -727,7 +729,7 @@ export default function PaymentTypesView() {
                     onChange={e => setBillTypeFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700"
                   >
-                    <option value="">All Payment Types</option>
+                    <option value="">{t('all_payment_types', 'All Payment Types')}</option>
                     {paymentTypes.map(pt => (
                       <option key={pt.PAYMENTID} value={String(pt.PAYMENTID)}>
                         {pt.PAYMENTTYPE}
@@ -742,7 +744,7 @@ export default function PaymentTypesView() {
                     onClick={handleOpenAddBill}
                     className="px-3.5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
                   >
-                    <Plus className="w-4 h-4" /> New Bill
+                    <Plus className="w-4 h-4" /> {t('new_bill', 'New Bill')}
                   </button>
                 </div>
               </div>
@@ -758,19 +760,19 @@ export default function PaymentTypesView() {
                       className="px-4 py-3 cursor-pointer hover:bg-slate-100"
                     >
                       <div className="flex items-center gap-1">
-                        Types
+                        {t('types', 'Types')}
                         <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
                       </div>
                     </th>
-                    <th className="px-4 py-3">Payment Type</th>
-                    <th className="px-4 py-3 text-right w-24">Actions</th>
+                    <th className="px-4 py-3">{t('payment_type', 'Payment Type')}</th>
+                    <th className="px-4 py-3 text-right w-24">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white">
                   {filteredBills.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
-                        No payment bills recorded.
+                        {t('no_payment_bills_recorded', 'No payment bills recorded.')}
                       </td>
                     </tr>
                   ) : (
@@ -789,7 +791,7 @@ export default function PaymentTypesView() {
                               type="button"
                               onClick={() => handleOpenEditBill(row)}
                               className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-blue-200 hover:border-blue-600"
-                              title="Edit Bill"
+                              title={t('edit_bill', 'Edit Bill')}
                             >
                               <Pencil className="w-4 h-4 stroke-[2.2]" />
                             </button>
@@ -797,7 +799,7 @@ export default function PaymentTypesView() {
                               type="button"
                               onClick={() => setDeleteConfirmBill(row)}
                               className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-red-200 hover:border-red-600"
-                              title="Delete Bill"
+                              title={t('delete_bill', 'Delete Bill')}
                             >
                               <Trash2 className="w-4 h-4 stroke-[2.2]" />
                             </button>
@@ -839,7 +841,7 @@ export default function PaymentTypesView() {
               {/* Payment Description */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Payment Description*
+                  {t('payment_description', 'Payment Description*')}
                 </label>
                 <input
                   type="text"
@@ -847,7 +849,7 @@ export default function PaymentTypesView() {
                   value={formDesc}
                   onChange={e => setFormDesc(e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="e.g. CASH, CREDIT CARD, OMT"
+                  placeholder={t('eg_cash_credit_card_omt', 'e.g. CASH, CREDIT CARD, OMT')}
                 />
               </div>
 
@@ -856,7 +858,7 @@ export default function PaymentTypesView() {
                 {/* Currency with Add Button */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Payment Currency*
+                    {t('payment_currency', 'Payment Currency*')}
                   </label>
                   <div className="flex gap-1.5">
                     <select
@@ -874,7 +876,7 @@ export default function PaymentTypesView() {
                       type="button"
                       onClick={() => setShowAddCurrencyModal(true)}
                       className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold transition-colors"
-                      title="Add New Currency"
+                      title={t('add_new_currency', 'Add New Currency')}
                     >
                       +
                     </button>
@@ -883,7 +885,7 @@ export default function PaymentTypesView() {
 
                 {/* Type */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Type*</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t('type', 'Type*')}</label>
                   <select
                     value={formType}
                     onChange={e => setFormType(parseInt(e.target.value))}
@@ -901,9 +903,9 @@ export default function PaymentTypesView() {
               {/* Conditional Panel: Credit Card Options (if type == 1) */}
               {formType === 1 && (
                 <div className="p-3.5 bg-blue-50/70 rounded-md border border-blue-200 space-y-2">
-                  <h4 className="text-xs font-bold text-blue-900 uppercase tracking-wider">Credit Card Options</h4>
+                  <h4 className="text-xs font-bold text-blue-900 uppercase tracking-wider">{t('credit_card_options', 'Credit Card Options')}</h4>
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Options*</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">{t('options', 'Options*')}</label>
                     <select
                       value={formCreditCardOpt}
                       onChange={e => setFormCreditCardOpt(parseInt(e.target.value))}
@@ -922,10 +924,10 @@ export default function PaymentTypesView() {
               {/* Conditional Panel: Ticket Option (if type == 5) */}
               {formType === 5 && (
                 <div className="p-3.5 bg-amber-50/70 rounded-md border border-amber-200 space-y-3">
-                  <h4 className="text-xs font-bold text-amber-900 uppercase tracking-wider">Ticket Options</h4>
+                  <h4 className="text-xs font-bold text-amber-900 uppercase tracking-wider">{t('ticket_options', 'Ticket Options')}</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Option Type*</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">{t('option_type', 'Option Type*')}</label>
                       <select
                         value={formTicketOpt}
                         onChange={e => setFormTicketOpt(parseInt(e.target.value))}
@@ -939,7 +941,7 @@ export default function PaymentTypesView() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Regular Price*</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">{t('regular_price', 'Regular Price*')}</label>
                       <input
                         type="number"
                         value={formRegPrice}
@@ -949,7 +951,7 @@ export default function PaymentTypesView() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Weekend Price*</label>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">{t('weekend_price', 'Weekend Price*')}</label>
                       <input
                         type="number"
                         value={formWeekPrice}
@@ -960,13 +962,13 @@ export default function PaymentTypesView() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Instruction</label>
+                    <label className="block text-xs font-medium text-slate-700 mb-1">{t('instruction', 'Instruction')}</label>
                     <input
                       type="text"
                       value={formInstruction}
                       onChange={e => setFormInstruction(e.target.value)}
                       className="w-full px-2 py-1.5 text-xs border border-slate-300 rounded"
-                      placeholder="Special ticket printing instructions"
+                      placeholder={t('special_ticket_printing_instructions', 'Special ticket printing instructions')}
                     />
                   </div>
                 </div>
@@ -976,7 +978,7 @@ export default function PaymentTypesView() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Change Status*
+                    {t('change_status', 'Change Status*')}
                   </label>
                   <select
                     value={formStatus}
@@ -1000,7 +1002,7 @@ export default function PaymentTypesView() {
                     value={formCommission}
                     onChange={e => setFormCommission(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. 1.5"
+                    placeholder={t('eg_15', 'e.g. 1.5')}
                   />
                 </div>
               </div>
@@ -1009,7 +1011,7 @@ export default function PaymentTypesView() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Account Number
+                    {t('account_number', 'Account Number')}
                   </label>
                   <div className="flex gap-1.5">
                     <input
@@ -1017,13 +1019,13 @@ export default function PaymentTypesView() {
                       value={formAccNo}
                       onChange={e => setFormAccNo(e.target.value)}
                       className="flex-1 px-3 py-2 text-sm font-mono border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                      placeholder="e.g. 58100010"
+                      placeholder={t('eg_58100010', 'e.g. 58100010')}
                     />
                     <button
                       type="button"
                       onClick={() => setShowAccountSearchModal(true)}
                       className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-xs font-bold border border-slate-300 transition-colors flex items-center justify-center"
-                      title="Search Chart of Accounts"
+                      title={t('search_chart_of_accounts', 'Search Chart of Accounts')}
                     >
                       <Search className="w-3.5 h-3.5" />
                     </button>
@@ -1032,14 +1034,14 @@ export default function PaymentTypesView() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Bank Deposit Account Number
+                    {t('bank_deposit_account_number', 'Bank Deposit Account Number')}
                   </label>
                   <input
                     type="text"
                     value={formDepositAccNo}
                     onChange={e => setFormDepositAccNo(e.target.value)}
                     className="w-full px-3 py-2 text-sm font-mono border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. 58100010"
+                    placeholder={t('eg_58100010', 'e.g. 58100010')}
                   />
                 </div>
               </div>
@@ -1048,14 +1050,14 @@ export default function PaymentTypesView() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                    Message On Invoice
+                    {t('message_on_invoice', 'Message On Invoice')}
                   </label>
                   <select
                     value={formInvoiceMsg}
                     onChange={e => setFormInvoiceMsg(parseInt(e.target.value))}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
                   >
-                    <option value={0}>None</option>
+                    <option value={0}>{t('none', 'None')}</option>
                     {OMEGA_INVOICE_MESSAGES.map(msg => (
                       <option key={msg.MESSAGEID} value={msg.MESSAGEID}>
                         {msg.MESSAGETITLE} - {msg.MESSAGEDESC.substring(0, 35)}...
@@ -1064,7 +1066,7 @@ export default function PaymentTypesView() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Sorting</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t('sorting', 'Sorting')}</label>
                   <input
                     type="number"
                     value={formSorting}
@@ -1083,7 +1085,7 @@ export default function PaymentTypesView() {
                     onChange={e => setFormOpenCashDrawer(e.target.checked)}
                     className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
                   />
-                  <span>Open Cash Drawer</span>
+                  <span>{t('open_cash_drawer', 'Open Cash Drawer')}</span>
                 </label>
 
                 <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
@@ -1093,14 +1095,14 @@ export default function PaymentTypesView() {
                     onChange={e => setFormNotActive(e.target.checked)}
                     className="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500"
                   />
-                  <span>Not Active</span>
+                  <span>{t('not_active', 'Not Active')}</span>
                 </label>
               </div>
 
               {/* Branches Restriction Collapsible Panel */}
               <div className="border border-slate-200 rounded-md overflow-hidden bg-slate-50/50">
                 <div className="px-4 py-2 bg-slate-100 border-b border-slate-200 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Branches Restriction
+                  {t('branches_restriction', 'Branches Restriction')}
                 </div>
                 <div className="p-3 space-y-2">
                   {OMEGA_BRANCHES.map(b => (
@@ -1131,13 +1133,13 @@ export default function PaymentTypesView() {
                   onClick={() => setShowAddEditModal(false)}
                   className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-sm transition-colors"
                 >
-                  <Save className="w-4 h-4" /> Save Payment Type
+                  <Save className="w-4 h-4" /> {t('save_payment_type', 'Save Payment Type')}
                 </button>
               </div>
             </form>
@@ -1154,7 +1156,7 @@ export default function PaymentTypesView() {
             {/* Header */}
             <div className="px-4 py-3 bg-primary text-white flex items-center justify-between">
               <h3 className="text-base font-bold flex items-center gap-2">
-                <ArrowUpDown className="w-4 h-4" /> Sorting
+                <ArrowUpDown className="w-4 h-4" /> {t('sorting', 'Sorting')}
               </h3>
               <button
                 type="button"
@@ -1168,15 +1170,15 @@ export default function PaymentTypesView() {
             {/* Body */}
             <div className="p-4 max-h-96 overflow-y-auto">
               <p className="text-xs text-slate-500 mb-3">
-                Adjust order of payment buttons on the POS workstation screen:
+                {t('adjust_order_of_payment_buttons_on_the', 'Adjust order of payment buttons on the POS workstation screen:')}
               </p>
               <table className="w-full text-left text-sm border border-slate-200">
                 <thead className="bg-slate-100 text-xs text-slate-600">
                   <tr>
                     <th className="p-2 w-10">#</th>
-                    <th className="p-2">Name</th>
-                    <th className="p-2 w-20 text-center">Order</th>
-                    <th className="p-2 w-16 text-center">Move</th>
+                    <th className="p-2">{t('name', 'Name')}</th>
+                    <th className="p-2 w-20 text-center">{t('order', 'Order')}</th>
+                    <th className="p-2 w-16 text-center">{t('move', 'Move')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -1202,7 +1204,7 @@ export default function PaymentTypesView() {
                             disabled={idx === 0}
                             onClick={() => moveSortingItem(idx, 'up')}
                             className="p-1 text-slate-500 hover:text-blue-600 disabled:opacity-30"
-                            title="Move Up"
+                            title={t('move_up', 'Move Up')}
                           >
                             <ChevronUp className="w-4 h-4" />
                           </button>
@@ -1211,7 +1213,7 @@ export default function PaymentTypesView() {
                             disabled={idx === sortingItems.length - 1}
                             onClick={() => moveSortingItem(idx, 'down')}
                             className="p-1 text-slate-500 hover:text-blue-600 disabled:opacity-30"
-                            title="Move Down"
+                            title={t('move_down', 'Move Down')}
                           >
                             <ChevronDown className="w-4 h-4" />
                           </button>
@@ -1230,14 +1232,14 @@ export default function PaymentTypesView() {
                 onClick={() => setShowSortingModal(false)}
                 className="px-3 py-1.5 border border-slate-300 text-slate-700 rounded text-xs font-medium hover:bg-white"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleSaveSorting}
                 className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded text-xs font-bold transition-colors flex items-center gap-1"
               >
-                <Save className="w-3.5 h-3.5" /> Save Sorting
+                <Save className="w-3.5 h-3.5" /> {t('save_sorting', 'Save Sorting')}
               </button>
             </div>
           </div>
@@ -1252,7 +1254,7 @@ export default function PaymentTypesView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="px-4 py-3 bg-slate-800 text-white flex items-center justify-between">
               <h3 className="text-sm font-bold flex items-center gap-2">
-                <BookOpen className="w-4 h-4" /> Select Account from General Ledger
+                <BookOpen className="w-4 h-4" /> {t('select_account_from_general_ledger', 'Select Account from General Ledger')}
               </h3>
               <button
                 type="button"
@@ -1270,7 +1272,7 @@ export default function PaymentTypesView() {
                   value={accountSearchQuery}
                   onChange={e => setAccountSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                  placeholder="Search account code or name..."
+                  placeholder={t('search_account_code_or_name', 'Search account code or name...')}
                   autoFocus
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -1282,11 +1284,11 @@ export default function PaymentTypesView() {
                 <table className="w-full text-left text-xs divide-y divide-slate-100">
                   <thead className="bg-slate-50 font-semibold text-slate-600">
                     <tr>
-                      <th className="p-2">Acc No</th>
-                      <th className="p-2">Name</th>
-                      <th className="p-2">Type</th>
-                      <th className="p-2">Curr</th>
-                      <th className="p-2 text-right">Action</th>
+                      <th className="p-2">{t('acc_no', 'Acc No')}</th>
+                      <th className="p-2">{t('name', 'Name')}</th>
+                      <th className="p-2">{t('type', 'Type')}</th>
+                      <th className="p-2">{t('curr', 'Curr')}</th>
+                      <th className="p-2 text-right">{t('action', 'Action')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1306,7 +1308,7 @@ export default function PaymentTypesView() {
                             }}
                             className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-[11px]"
                           >
-                            Select
+                            {t('select', 'Select')}
                           </button>
                         </td>
                       </tr>
@@ -1326,29 +1328,29 @@ export default function PaymentTypesView() {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-3">
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-sm overflow-hidden p-4 space-y-3">
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-              <Coins className="w-4 h-4 text-emerald-600" /> Add New Currency
+              <Coins className="w-4 h-4 text-emerald-600" /> {t('add_new_currency', 'Add New Currency')}
             </h3>
             <form onSubmit={handleSaveCurrency} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">Currency Name</label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">{t('currency_name', 'Currency Name')}</label>
                 <input
                   type="text"
                   required
                   value={newCurrencyDesc}
                   onChange={e => setNewCurrencyDesc(e.target.value)}
                   className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded"
-                  placeholder="e.g. Canadian Dollar"
+                  placeholder={t('eg_canadian_dollar', 'e.g. Canadian Dollar')}
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">Currency Symbol</label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">{t('currency_symbol', 'Currency Symbol')}</label>
                 <input
                   type="text"
                   required
                   value={newCurrencySymbol}
                   onChange={e => setNewCurrencySymbol(e.target.value)}
                   className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded"
-                  placeholder="e.g. CAD"
+                  placeholder={t('eg_cad', 'e.g. CAD')}
                 />
               </div>
               <div>
@@ -1368,10 +1370,10 @@ export default function PaymentTypesView() {
                   onClick={() => setShowAddCurrencyModal(false)}
                   className="px-3 py-1.5 border border-slate-300 text-slate-600 rounded text-xs"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button type="submit" className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold">
-                  Save Currency
+                  {t('save_currency', 'Save Currency')}
                 </button>
               </div>
             </form>
@@ -1391,18 +1393,18 @@ export default function PaymentTypesView() {
             </h3>
             <form onSubmit={handleSaveBill} className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Bill Denomination / Name*</label>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('bill_denomination_name', 'Bill Denomination / Name*')}</label>
                 <input
                   type="text"
                   required
                   value={billFormType}
                   onChange={e => setBillFormType(e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md"
-                  placeholder="e.g. 50,000 LBP or $20 USD"
+                  placeholder={t('eg_50000_lbp_or_20_usd', 'e.g. 50,000 LBP or $20 USD')}
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Linked Payment Type*</label>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('linked_payment_type', 'Linked Payment Type*')}</label>
                 <select
                   value={billFormPaymentId}
                   onChange={e => setBillFormPaymentId(parseInt(e.target.value))}
@@ -1421,10 +1423,10 @@ export default function PaymentTypesView() {
                   onClick={() => setShowBillModal(false)}
                   className="px-3.5 py-1.5 border border-slate-300 text-slate-700 rounded text-xs"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button type="submit" className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold flex items-center gap-1">
-                  <Save className="w-3.5 h-3.5" /> Save Bill
+                  <Save className="w-3.5 h-3.5" /> {t('save_bill', 'Save Bill')}
                 </button>
               </div>
             </form>
@@ -1438,22 +1440,22 @@ export default function PaymentTypesView() {
       {deleteConfirmItem && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl p-5 max-w-sm w-full space-y-3">
-            <h4 className="text-sm font-bold text-slate-800">Confirm Deletion</h4>
+            <h4 className="text-sm font-bold text-slate-800">{t('confirm_deletion', 'Confirm Deletion')}</h4>
             <p className="text-xs text-slate-600">
-              Are you sure you want to delete payment type <b>{deleteConfirmItem.PAYMENTTYPE}</b>? This cannot be undone.
+              {t('are_you_sure_you_want_to_delete_payment', 'Are you sure you want to delete payment type')} <b>{deleteConfirmItem.PAYMENTTYPE}</b>? This cannot be undone.
             </p>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setDeleteConfirmItem(null)}
                 className="px-3 py-1.5 border border-slate-300 rounded text-xs font-medium text-slate-600 hover:bg-slate-50"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 onClick={handleDeletePaymentType}
                 className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-bold hover:bg-red-700"
               >
-                Delete
+                {t('delete', 'Delete')}
               </button>
             </div>
           </div>
@@ -1463,22 +1465,22 @@ export default function PaymentTypesView() {
       {deleteConfirmBill && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl p-5 max-w-sm w-full space-y-3">
-            <h4 className="text-sm font-bold text-slate-800">Confirm Deletion</h4>
+            <h4 className="text-sm font-bold text-slate-800">{t('confirm_deletion', 'Confirm Deletion')}</h4>
             <p className="text-xs text-slate-600">
-              Are you sure you want to delete bill <b>{deleteConfirmBill.TYPES}</b>?
+              {t('are_you_sure_you_want_to_delete_bill', 'Are you sure you want to delete bill')} <b>{deleteConfirmBill.TYPES}</b>?
             </p>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setDeleteConfirmBill(null)}
                 className="px-3 py-1.5 border border-slate-300 rounded text-xs font-medium text-slate-600"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 onClick={handleDeleteBill}
                 className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-bold hover:bg-red-700"
               >
-                Delete
+                {t('delete', 'Delete')}
               </button>
             </div>
           </div>

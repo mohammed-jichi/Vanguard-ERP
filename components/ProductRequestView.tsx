@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import {
@@ -41,6 +42,7 @@ import {
 } from '@/lib/productRequestData';
 
 export default function ProductRequestView() {
+  const { t } = useLanguage();
   // Master selection & form state
   const [currentPrId, setCurrentPrId] = useState<number | null>(null);
   const [prNumber, setPrNumber] = useState<string>('New Request');
@@ -458,12 +460,12 @@ export default function ProductRequestView() {
       <div className="bg-white border-b border-border px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
-            <span>Operations Center</span>
+            <span>{t('operations_center', 'Operations Center')}</span>
             <span>/</span>
-            <span className="text-teal-600 font-bold">Product Request</span>
+            <span className="text-teal-600 font-bold">{t('product_request', 'Product Request')}</span>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Product Request</h1>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{t('product_request', 'Product Request')}</h1>
             <span
               className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                 status === 'Approved'
@@ -486,10 +488,10 @@ export default function ProductRequestView() {
           <button
             onClick={() => setShowPreviewModal(true)}
             className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-xs font-semibold transition-all border border-slate-300 shadow-sm"
-            title="Browse and Recall existing Product Requests"
+            title={t('browse_and_recall_existing_product', 'Browse and Recall existing Product Requests')}
           >
             <Eye className="w-3.5 h-3.5 text-slate-600" />
-            <span>Preview PRs</span>
+            <span>{t('preview_prs', 'Preview PRs')}</span>
           </button>
 
           {/* Items button */}
@@ -498,7 +500,7 @@ export default function ProductRequestView() {
             className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-md text-xs font-semibold transition-all shadow-sm"
           >
             <Boxes className="w-3.5 h-3.5" />
-            <span>Items</span>
+            <span>{t('items', 'Items')}</span>
           </button>
 
           {/* Recommended Request button */}
@@ -507,7 +509,7 @@ export default function ProductRequestView() {
             className="flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-primary text-white rounded-md text-xs font-semibold transition-all shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Recommended Request</span>
+            <span>{t('recommended_request', 'Recommended Request')}</span>
           </button>
 
           {/* Below Minimum button */}
@@ -516,7 +518,7 @@ export default function ProductRequestView() {
             className="flex items-center gap-1.5 px-3.5 py-2 bg-amber-600 hover:bg-amber-600 text-white rounded-md text-xs font-semibold transition-all shadow-sm"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>Below Minimum Items</span>
+            <span>{t('below_minimum_items', 'Below Minimum Items')}</span>
           </button>
 
           {/* Save button */}
@@ -526,7 +528,7 @@ export default function ProductRequestView() {
             className="flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-md text-xs font-bold transition-all shadow-sm disabled:opacity-50"
           >
             {isLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-            <span>Save</span>
+            <span>{t('save', 'Save')}</span>
           </button>
 
           {/* Print button */}
@@ -535,14 +537,14 @@ export default function ProductRequestView() {
             className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-md text-xs font-semibold transition-all border border-slate-300 shadow-sm"
           >
             <Printer className="w-3.5 h-3.5 text-slate-500" />
-            <span>Print</span>
+            <span>{t('print', 'Print')}</span>
           </button>
 
           {/* Template & More Actions Dropdown */}
           <div className="relative group">
             <button className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-md text-xs font-semibold transition-all border border-slate-300 shadow-sm">
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
-              <span>Actions</span>
+              <span>{t('actions', 'Actions')}</span>
               <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
             <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-xl border border-slate-200 py-1 hidden group-hover:block z-30 animate-in fade-in slide-in-from-top-1">
@@ -554,15 +556,15 @@ export default function ProductRequestView() {
               >
                 <div className="flex items-center gap-2">
                   <ClipboardList className="w-3.5 h-3.5 text-teal-600" />
-                  <span className="font-bold text-slate-800">Product Req. Preparation</span>
+                  <span className="font-bold text-slate-800">{t('product_req_preparation', 'Product Req. Preparation')}</span>
                 </div>
                 {status === 'Approved' ? (
                   <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    Approved
+                    {t('approved', 'Approved')}
                   </span>
                 ) : (
                   <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-slate-100 text-slate-600">
-                    Queue
+                    {t('queue', 'Queue')}
                   </span>
                 )}
               </button>
@@ -572,28 +574,28 @@ export default function ProductRequestView() {
                 className="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
               >
                 <Plus className="w-3.5 h-3.5 text-teal-600" />
-                <span>New Request</span>
+                <span>{t('new_request', 'New Request')}</span>
               </button>
               <button
                 onClick={() => setShowStoreTemplateModal(true)}
                 className="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
               >
                 <BookmarkPlus className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Store Template</span>
+                <span>{t('store_template', 'Store Template')}</span>
               </button>
               <button
                 onClick={() => setShowRecallTemplateModal(true)}
                 className="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
               >
                 <FolderOpen className="w-3.5 h-3.5 text-amber-600" />
-                <span>Recall Template</span>
+                <span>{t('recall_template', 'Recall Template')}</span>
               </button>
               <button
                 onClick={() => setShowExportModal(true)}
                 className="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2"
               >
                 <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Export to Excel/CSV</span>
+                <span>{t('export_to_excelcsv', 'Export to Excel/CSV')}</span>
               </button>
               {currentPrId && (
                 <div className="border-t border-slate-100 mt-1 pt-1">
@@ -602,7 +604,7 @@ export default function ProductRequestView() {
                     className="w-full text-left px-3.5 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2"
                   >
                     <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                    <span>Delete Request</span>
+                    <span>{t('delete_request', 'Delete Request')}</span>
                   </button>
                 </div>
               )}
@@ -619,7 +621,7 @@ export default function ProductRequestView() {
             {/* Requested By Branch */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                Requested By Branch *
+                {t('requested_by_branch', 'Requested By Branch *')}
               </label>
               <select
                 value={branchId}
@@ -642,7 +644,7 @@ export default function ProductRequestView() {
             {/* To Location */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                To Location *
+                {t('to_location', 'To Location *')}
               </label>
               <select
                 value={locationId}
@@ -660,7 +662,7 @@ export default function ProductRequestView() {
             {/* Requested From Branch */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                Requested From Branch *
+                {t('requested_from_branch', 'Requested From Branch *')}
               </label>
               <select
                 value={fromBranchId}
@@ -678,7 +680,7 @@ export default function ProductRequestView() {
             {/* Retrieval / Delivery Date */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                Delivery Date *
+                {t('delivery_date', 'Delivery Date *')}
               </label>
               <div className="relative">
                 <input
@@ -694,7 +696,7 @@ export default function ProductRequestView() {
             {/* Delivery Time */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                Delivery Time
+                {t('delivery_time', 'Delivery Time')}
               </label>
               <div className="relative">
                 <input
@@ -711,13 +713,13 @@ export default function ProductRequestView() {
           {/* Remark row */}
           <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
             <label className="text-xs font-bold text-slate-600 uppercase tracking-wider whitespace-nowrap">
-              Remark / Note:
+              {t('remark_note', 'Remark / Note:')}
             </label>
             <input
               type="text"
               value={remark}
               onChange={e => setRemark(e.target.value)}
-              placeholder="Enter special instructions or notes for kitchen / dispatch..."
+              placeholder={t('enter_special_instructions_or_notes_for', 'Enter special instructions or notes for kitchen / dispatch...')}
               className="flex-1 h-9 px-3 bg-white border border-border rounded-md text-xs text-slate-700 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
             />
           </div>
@@ -728,7 +730,7 @@ export default function ProductRequestView() {
           <div className="px-5 py-3.5 bg-slate-50/70 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Boxes className="w-4 h-4 text-teal-600" />
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Requested Items</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-700">{t('requested_items', 'Requested Items')}</span>
               <span className="bg-teal-100 text-teal-800 text-[11px] font-bold px-2 py-0.5 rounded-full ml-1">
                 {items.length} items
               </span>
@@ -739,7 +741,7 @@ export default function ProductRequestView() {
               className="flex items-center gap-1.5 text-xs font-semibold text-teal-600 hover:text-teal-700 bg-teal-50 px-2.5 py-1 rounded border border-teal-200 transition-colors"
             >
               <Plus className="w-3 h-3" />
-              <span>Add Items</span>
+              <span>{t('add_items', 'Add Items')}</span>
             </button>
           </div>
 
@@ -748,13 +750,13 @@ export default function ProductRequestView() {
               <thead className="bg-card text-slate-500 font-bold uppercase tracking-wider border-b border-border">
                 <tr>
                   <th className="py-3 px-4 w-12 text-center">#</th>
-                  <th className="py-3 px-4 min-w-[220px]">Description</th>
-                  <th className="py-3 px-4 w-32">Code</th>
-                  <th className="py-3 px-4 w-32 text-center">Qty Req</th>
-                  <th className="py-3 px-4 w-28 text-right">Cost</th>
-                  <th className="py-3 px-4 w-24 text-center">Unit</th>
-                  <th className="py-3 px-4 min-w-[180px]">Remark</th>
-                  <th className="py-3 px-4 w-16 text-center">Actions</th>
+                  <th className="py-3 px-4 min-w-[220px]">{t('description', 'Description')}</th>
+                  <th className="py-3 px-4 w-32">{t('code', 'Code')}</th>
+                  <th className="py-3 px-4 w-32 text-center">{t('qty_req', 'Qty Req')}</th>
+                  <th className="py-3 px-4 w-28 text-right">{t('cost', 'Cost')}</th>
+                  <th className="py-3 px-4 w-24 text-center">{t('unit', 'Unit')}</th>
+                  <th className="py-3 px-4 min-w-[180px]">{t('remark', 'Remark')}</th>
+                  <th className="py-3 px-4 w-16 text-center">{t('actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -794,7 +796,7 @@ export default function ProductRequestView() {
                           type="text"
                           value={it.REMARK}
                           onChange={e => handleUpdateItemRemark(idx, e.target.value)}
-                          placeholder="Line note..."
+                          placeholder={t('line_note', 'Line note...')}
                           className="w-full h-7 px-2 bg-transparent hover:bg-white border border-transparent hover:border-slate-200 focus:border-teal-500 focus:bg-white rounded text-xs text-slate-700 transition-all focus:outline-none"
                         />
                       </td>
@@ -802,7 +804,7 @@ export default function ProductRequestView() {
                         <button
                           onClick={() => handleRemoveItem(idx)}
                           className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                          title="Remove line item"
+                          title={t('remove_line_item', 'Remove line item')}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -819,10 +821,10 @@ export default function ProductRequestView() {
             <div className="bg-card px-6 py-4 border-t border-border flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-slate-700">
               <div className="flex items-center gap-6">
                 <span>
-                  Total Items: <span className="text-teal-700">{items.length}</span>
+                  {t('total_items', 'Total Items:')} <span className="text-teal-700">{items.length}</span>
                 </span>
                 <span>
-                  Total Qty Requested: <span className="text-teal-700">{totalQtyRequested}</span>
+                  {t('total_qty_requested', 'Total Qty Requested:')} <span className="text-teal-700">{totalQtyRequested}</span>
                 </span>
               </div>
               <div className="text-sm">
@@ -846,7 +848,7 @@ export default function ProductRequestView() {
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <Boxes className="w-5 h-5 text-teal-600" />
-                <h3 className="text-base font-bold text-slate-800">Search & Add Inventory Items</h3>
+                <h3 className="text-base font-bold text-slate-800">{t('search_add_inventory_items', 'Search & Add Inventory Items')}</h3>
               </div>
               <button
                 onClick={() => setShowSearchModal(false)}
@@ -862,7 +864,7 @@ export default function ProductRequestView() {
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search item name, code, barcode..."
+                  placeholder={t('search_item_name_code_barcode', 'Search item name, code, barcode...')}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className="w-full h-10 pl-9 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-teal-500 focus:bg-white"
@@ -875,16 +877,16 @@ export default function ProductRequestView() {
                   onChange={e => setSelectedCategory(Number(e.target.value))}
                   className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-teal-500 focus:bg-white"
                 >
-                  <option value={0}>All Categories</option>
-                  <option value={1}>Fresh Produce</option>
-                  <option value={2}>Herbs & Spices</option>
-                  <option value={3}>Oils & Fats</option>
-                  <option value={4}>Dairy Products</option>
-                  <option value={5}>Bakery & Flour</option>
-                  <option value={6}>Poultry & Meat</option>
-                  <option value={7}>Packaging Materials</option>
-                  <option value={8}>Beverages</option>
-                  <option value={9}>Condiments & Pickles</option>
+                  <option value={0}>{t('all_categories', 'All Categories')}</option>
+                  <option value={1}>{t('fresh_produce', 'Fresh Produce')}</option>
+                  <option value={2}>{t('herbs_spices', 'Herbs & Spices')}</option>
+                  <option value={3}>{t('oils_fats', 'Oils & Fats')}</option>
+                  <option value={4}>{t('dairy_products', 'Dairy Products')}</option>
+                  <option value={5}>{t('bakery_flour', 'Bakery & Flour')}</option>
+                  <option value={6}>{t('poultry_meat', 'Poultry & Meat')}</option>
+                  <option value={7}>{t('packaging_materials', 'Packaging Materials')}</option>
+                  <option value={8}>{t('beverages', 'Beverages')}</option>
+                  <option value={9}>{t('condiments_pickles', 'Condiments & Pickles')}</option>
                 </select>
               </div>
             </div>
@@ -911,13 +913,13 @@ export default function ProductRequestView() {
                         className="rounded text-teal-600 focus:ring-0"
                       />
                     </th>
-                    <th className="py-2.5 px-3">Description</th>
-                    <th className="py-2.5 px-3">Code</th>
-                    <th className="py-2.5 px-3">Category</th>
-                    <th className="py-2.5 px-3 text-right">Cost</th>
-                    <th className="py-2.5 px-3 text-center">Unit</th>
-                    <th className="py-2.5 px-3 text-center">Qty OH</th>
-                    <th className="py-2.5 px-3 text-center">Action</th>
+                    <th className="py-2.5 px-3">{t('description', 'Description')}</th>
+                    <th className="py-2.5 px-3">{t('code', 'Code')}</th>
+                    <th className="py-2.5 px-3">{t('category', 'Category')}</th>
+                    <th className="py-2.5 px-3 text-right">{t('cost', 'Cost')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('unit', 'Unit')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('qty_oh', 'Qty OH')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -966,7 +968,7 @@ export default function ProductRequestView() {
                               onClick={() => handleAddItemsFromCatalog([cat])}
                               className="px-2.5 py-1 bg-teal-50 hover:bg-teal-600 text-teal-700 hover:text-white rounded text-[11px] font-bold border border-teal-200 transition-colors"
                             >
-                              Add
+                              {t('add', 'Add')}
                             </button>
                           </td>
                         </tr>
@@ -986,7 +988,7 @@ export default function ProductRequestView() {
                   onClick={() => setShowSearchModal(false)}
                   className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={() => {
@@ -1013,7 +1015,7 @@ export default function ProductRequestView() {
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <Eye className="w-5 h-5 text-teal-600" />
-                <h3 className="text-base font-bold text-slate-800">Preview Product Requests</h3>
+                <h3 className="text-base font-bold text-slate-800">{t('preview_product_requests', 'Preview Product Requests')}</h3>
               </div>
               <button
                 onClick={() => setShowPreviewModal(false)}
@@ -1027,15 +1029,15 @@ export default function ProductRequestView() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 text-slate-500 uppercase font-bold sticky top-0 border-b border-slate-200">
                   <tr>
-                    <th className="py-2.5 px-3">PR #</th>
-                    <th className="py-2.5 px-3">Date</th>
-                    <th className="py-2.5 px-3">Requested By</th>
-                    <th className="py-2.5 px-3">Branch</th>
-                    <th className="py-2.5 px-3">Location</th>
-                    <th className="py-2.5 px-3">Status</th>
-                    <th className="py-2.5 px-3">Delivery Date</th>
-                    <th className="py-2.5 px-3 text-center">Items</th>
-                    <th className="py-2.5 px-3 text-center">Action</th>
+                    <th className="py-2.5 px-3">{t('pr', 'PR #')}</th>
+                    <th className="py-2.5 px-3">{t('date', 'Date')}</th>
+                    <th className="py-2.5 px-3">{t('requested_by', 'Requested By')}</th>
+                    <th className="py-2.5 px-3">{t('branch', 'Branch')}</th>
+                    <th className="py-2.5 px-3">{t('location', 'Location')}</th>
+                    <th className="py-2.5 px-3">{t('status', 'Status')}</th>
+                    <th className="py-2.5 px-3">{t('delivery_date', 'Delivery Date')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('items', 'Items')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -1069,7 +1071,7 @@ export default function ProductRequestView() {
                             onClick={() => handleLoadPr(pr)}
                             className="px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-[11px] font-bold shadow-xs"
                           >
-                            Recall
+                            {t('recall', 'Recall')}
                           </button>
                           {pr.STATUS === 'Approved' && (
                             <button
@@ -1078,10 +1080,10 @@ export default function ProductRequestView() {
                                 setShowPreparationModal(true);
                               }}
                               className="px-2 py-1 bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white rounded text-[11px] font-bold border border-emerald-300 transition-colors flex items-center gap-1"
-                              title="Product Req. Preparation Workstation"
+                              title={t('product_req_preparation_workstation', 'Product Req. Preparation Workstation')}
                             >
                               <ClipboardList className="w-3 h-3" />
-                              <span>Prep</span>
+                              <span>{t('prep', 'Prep')}</span>
                             </button>
                           )}
                         </div>
@@ -1097,7 +1099,7 @@ export default function ProductRequestView() {
                 onClick={() => setShowPreviewModal(false)}
                 className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1113,7 +1115,7 @@ export default function ProductRequestView() {
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-base font-bold text-slate-800">Recommended Products for Request</h3>
+                <h3 className="text-base font-bold text-slate-800">{t('recommended_products_for_request', 'Recommended Products for Request')}</h3>
               </div>
               <button
                 onClick={() => setShowRecommendedModal(false)}
@@ -1127,12 +1129,12 @@ export default function ProductRequestView() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 text-slate-500 uppercase font-bold sticky top-0 border-b border-slate-200">
                   <tr>
-                    <th className="py-2.5 px-3 w-10 text-center">Select</th>
-                    <th className="py-2.5 px-3">Description</th>
-                    <th className="py-2.5 px-3">Code</th>
-                    <th className="py-2.5 px-3 text-center">Suggested Qty</th>
-                    <th className="py-2.5 px-3 text-center">Unit</th>
-                    <th className="py-2.5 px-3 text-right">Cost</th>
+                    <th className="py-2.5 px-3 w-10 text-center">{t('select', 'Select')}</th>
+                    <th className="py-2.5 px-3">{t('description', 'Description')}</th>
+                    <th className="py-2.5 px-3">{t('code', 'Code')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('suggested_qty', 'Suggested Qty')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('unit', 'Unit')}</th>
+                    <th className="py-2.5 px-3 text-right">{t('cost', 'Cost')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -1177,7 +1179,7 @@ export default function ProductRequestView() {
                   onClick={() => setShowRecommendedModal(false)}
                   className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={() => {
@@ -1189,7 +1191,7 @@ export default function ProductRequestView() {
                   disabled={selectedRecItemIds.length === 0}
                   className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm disabled:opacity-50"
                 >
-                  Add Items to PR
+                  {t('add_items_to_pr', 'Add Items to PR')}
                 </button>
               </div>
             </div>
@@ -1206,7 +1208,7 @@ export default function ProductRequestView() {
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
-                <h3 className="text-base font-bold text-slate-800">Items Below Minimum Stock</h3>
+                <h3 className="text-base font-bold text-slate-800">{t('items_below_minimum_stock', 'Items Below Minimum Stock')}</h3>
               </div>
               <button
                 onClick={() => setShowBelowMinModal(false)}
@@ -1220,12 +1222,12 @@ export default function ProductRequestView() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 text-slate-500 uppercase font-bold sticky top-0 border-b border-slate-200">
                   <tr>
-                    <th className="py-2.5 px-3 w-10 text-center">Select</th>
-                    <th className="py-2.5 px-3">Description</th>
-                    <th className="py-2.5 px-3">Code</th>
-                    <th className="py-2.5 px-3 text-center">Current Qty OH</th>
-                    <th className="py-2.5 px-3 text-center">Restock Qty</th>
-                    <th className="py-2.5 px-3 text-center">Unit</th>
+                    <th className="py-2.5 px-3 w-10 text-center">{t('select', 'Select')}</th>
+                    <th className="py-2.5 px-3">{t('description', 'Description')}</th>
+                    <th className="py-2.5 px-3">{t('code', 'Code')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('current_qty_oh', 'Current Qty OH')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('restock_qty', 'Restock Qty')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('unit', 'Unit')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -1270,7 +1272,7 @@ export default function ProductRequestView() {
                   onClick={() => setShowBelowMinModal(false)}
                   className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={() => {
@@ -1282,7 +1284,7 @@ export default function ProductRequestView() {
                   disabled={selectedBelowMinIds.length === 0}
                   className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm disabled:opacity-50"
                 >
-                  Add Items to PR
+                  {t('add_items_to_pr', 'Add Items to PR')}
                 </button>
               </div>
             </div>
@@ -1299,7 +1301,7 @@ export default function ProductRequestView() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <BookmarkPlus className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-base font-bold text-slate-800">Store PR Template</h3>
+                <h3 className="text-base font-bold text-slate-800">{t('store_pr_template', 'Store PR Template')}</h3>
               </div>
               <button
                 onClick={() => setShowStoreTemplateModal(false)}
@@ -1316,13 +1318,13 @@ export default function ProductRequestView() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                  Template Name *
+                  {t('template_name', 'Template Name *')}
                 </label>
                 <input
                   type="text"
                   value={templateNameInput}
                   onChange={e => setTemplateNameInput(e.target.value)}
-                  placeholder="e.g., Weekly Produce Standard Kit"
+                  placeholder={t('eg_weekly_produce_standard_kit', 'e.g., Weekly Produce Standard Kit')}
                   className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-teal-500 focus:bg-white"
                 />
               </div>
@@ -1332,13 +1334,13 @@ export default function ProductRequestView() {
                   onClick={() => setShowStoreTemplateModal(false)}
                   className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={handleSaveTemplate}
                   className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm"
                 >
-                  Save Template
+                  {t('save_template', 'Save Template')}
                 </button>
               </div>
             </div>
@@ -1355,7 +1357,7 @@ export default function ProductRequestView() {
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <FolderOpen className="w-5 h-5 text-amber-600" />
-                <h3 className="text-base font-bold text-slate-800">Recall Saved PR Template</h3>
+                <h3 className="text-base font-bold text-slate-800">{t('recall_saved_pr_template', 'Recall Saved PR Template')}</h3>
               </div>
               <button
                 onClick={() => setShowRecallTemplateModal(false)}
@@ -1367,7 +1369,7 @@ export default function ProductRequestView() {
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {templates.length === 0 ? (
-                <div className="p-8 text-center text-slate-400 text-xs">No stored templates found.</div>
+                <div className="p-8 text-center text-slate-400 text-xs">{t('no_stored_templates_found', 'No stored templates found.')}</div>
               ) : (
                 templates.map(tmpl => (
                   <div
@@ -1386,7 +1388,7 @@ export default function ProductRequestView() {
                       onClick={() => handleRecallTemplate(tmpl)}
                       className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-bold shadow-sm"
                     >
-                      Load Template
+                      {t('load_template', 'Load Template')}
                     </button>
                   </div>
                 ))
@@ -1398,7 +1400,7 @@ export default function ProductRequestView() {
                 onClick={() => setShowRecallTemplateModal(false)}
                 className="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1412,7 +1414,7 @@ export default function ProductRequestView() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in">
           <div className="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-6 text-center">
             <FileSpreadsheet className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-800 mb-1">Export Product Request</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-1">{t('export_product_request', 'Export Product Request')}</h3>
             <p className="text-xs text-slate-500 mb-5">
               Export {prNumber} with {items.length} line items to your preferred format.
             </p>
@@ -1445,7 +1447,7 @@ export default function ProductRequestView() {
               onClick={() => setShowExportModal(false)}
               className="mt-4 text-xs text-slate-400 hover:text-slate-600 font-semibold"
             >
-              Cancel
+              {t('cancel', 'Cancel')}
             </button>
           </div>
         </div>
@@ -1466,7 +1468,7 @@ export default function ProductRequestView() {
                   className="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-bold flex items-center gap-1.5"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>Print Document</span>
+                  <span>{t('print_document', 'Print Document')}</span>
                 </button>
                 <button
                   onClick={() => setShowPrintModal(false)}
@@ -1482,7 +1484,7 @@ export default function ProductRequestView() {
               {/* Header */}
               <div className="flex items-start justify-between border-b pb-4 mb-6">
                 <div>
-                  <h2 className="text-xl font-bold tracking-tight text-slate-900">PRODUCT REQUISITION</h2>
+                  <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('product_requisition', 'PRODUCT REQUISITION')}</h2>
                   <p className="text-xs text-slate-500 font-mono mt-0.5">Omega ERP &bull; Operations Center</p>
                 </div>
                 <div className="text-right">
@@ -1494,25 +1496,25 @@ export default function ProductRequestView() {
               {/* Meta information */}
               <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6">
                 <div>
-                  <span className="text-slate-400 font-bold block uppercase text-[10px]">Requested By Branch:</span>
+                  <span className="text-slate-400 font-bold block uppercase text-[10px]">{t('requested_by_branch', 'Requested By Branch:')}</span>
                   <span className="font-bold text-slate-800">
                     {OMEGA_PR_BRANCHES.find(b => b.BRANCHID === branchId)?.BARANCHNAME}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 font-bold block uppercase text-[10px]">To Location:</span>
+                  <span className="text-slate-400 font-bold block uppercase text-[10px]">{t('to_location', 'To Location:')}</span>
                   <span className="font-bold text-slate-800">
                     {availableLocations.find(l => l.LOCATIONID === locationId)?.LOCATIONDESCRIPTION}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 font-bold block uppercase text-[10px]">Requested From:</span>
+                  <span className="text-slate-400 font-bold block uppercase text-[10px]">{t('requested_from', 'Requested From:')}</span>
                   <span className="font-bold text-slate-800">
                     {OMEGA_PR_BRANCHES.find(b => b.BRANCHID === fromBranchId)?.BARANCHNAME}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 font-bold block uppercase text-[10px]">Delivery Target:</span>
+                  <span className="text-slate-400 font-bold block uppercase text-[10px]">{t('delivery_target', 'Delivery Target:')}</span>
                   <span className="font-bold text-slate-800">
                     {deliveryDate} &bull; {deliveryTime}
                   </span>
@@ -1524,11 +1526,11 @@ export default function ProductRequestView() {
                 <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
                   <tr>
                     <th className="py-2 px-3 w-8">#</th>
-                    <th className="py-2 px-3">Description</th>
-                    <th className="py-2 px-3 w-28">Code</th>
-                    <th className="py-2 px-3 w-20 text-center">Qty Req</th>
-                    <th className="py-2 px-3 w-16 text-center">Unit</th>
-                    <th className="py-2 px-3">Remark</th>
+                    <th className="py-2 px-3">{t('description', 'Description')}</th>
+                    <th className="py-2 px-3 w-28">{t('code', 'Code')}</th>
+                    <th className="py-2 px-3 w-20 text-center">{t('qty_req', 'Qty Req')}</th>
+                    <th className="py-2 px-3 w-16 text-center">{t('unit', 'Unit')}</th>
+                    <th className="py-2 px-3">{t('remark', 'Remark')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -1549,15 +1551,15 @@ export default function ProductRequestView() {
               <div className="grid grid-cols-3 gap-6 pt-8 mt-12 border-t border-slate-200 text-center">
                 <div>
                   <div className="h-10 border-b border-slate-300 mb-2"></div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400">Requested By</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400">{t('requested_by', 'Requested By')}</span>
                 </div>
                 <div>
                   <div className="h-10 border-b border-slate-300 mb-2"></div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400">Approved By</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400">{t('approved_by', 'Approved By')}</span>
                 </div>
                 <div>
                   <div className="h-10 border-b border-slate-300 mb-2"></div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400">Received By</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400">{t('received_by', 'Received By')}</span>
                 </div>
               </div>
             </div>
@@ -1577,7 +1579,7 @@ export default function ProductRequestView() {
                   <ClipboardList className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">Product Req. Preparation</h3>
+                  <h3 className="text-base font-bold text-slate-800">{t('product_req_preparation', 'Product Req. Preparation')}</h3>
                   <p className="text-xs text-slate-500">
                     Fulfillment, item picking, and tablet preparation workstation
                   </p>
@@ -1587,15 +1589,15 @@ export default function ProductRequestView() {
                 <Link
                   href="/backoffice/operations?section=product_req_prep"
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-md text-xs font-semibold border border-slate-300 shadow-xs transition"
-                  title="Open full page workstation"
+                  title={t('open_full_page_workstation', 'Open full page workstation')}
                 >
                   <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Open Full Page</span>
+                  <span>{t('open_full_page', 'Open Full Page')}</span>
                 </Link>
                 <button
                   onClick={() => setShowPreparationModal(false)}
                   className="text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-200 transition"
-                  title="Close"
+                  title={t('close', 'Close')}
                 >
                   <X className="w-5 h-5" />
                 </button>

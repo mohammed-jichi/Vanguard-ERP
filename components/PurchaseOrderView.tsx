@@ -962,7 +962,7 @@ export default function PurchaseOrderView() {
                           </td>
                           <td className="py-2.5 px-3 text-center">
                             <button
-                              title="Open"
+                              title={t('open', 'Open')}
                               onClick={() => handleEditOrder(po)}
                               className="w-7 h-7 inline-flex items-center justify-center bg-primary hover:bg-primary text-white rounded text-xs transition cursor-pointer"
                             >
@@ -1041,7 +1041,7 @@ export default function PurchaseOrderView() {
               {/* Supporting Document */}
               <button
                 type="button"
-                title="Supporting Document"
+                title={t('supporting_document', 'Supporting Document')}
                 onClick={() => setShowDocModal(true)}
                 className="h-[32px] px-3 bg-emerald-700 hover:bg-emerald-700 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
@@ -1052,7 +1052,7 @@ export default function PurchaseOrderView() {
               {/* Email PO */}
               <button
                 type="button"
-                title="Email PO"
+                title={t('email_po', 'Email PO')}
                 onClick={handleOpenEmailModal}
                 className="h-[32px] px-3 bg-primary hover:bg-primary/90 text-white text-xs rounded transition flex items-center gap-1.5 cursor-pointer"
               >
@@ -1185,7 +1185,7 @@ export default function PurchaseOrderView() {
                     type="button"
                     onClick={() => setShowSupplierModal(true)}
                     className="h-[34px] px-3 bg-primary hover:bg-primary/90 text-white rounded text-xs transition cursor-pointer"
-                    title="Search Supplier"
+                    title={t('search_supplier', 'Search Supplier')}
                   >
                     <i className="fa fa-search"></i>
                   </button>
@@ -1257,7 +1257,7 @@ export default function PurchaseOrderView() {
                       type="button"
                       onClick={() => setShowLocationModal(true)}
                       className="h-[32px] w-[32px] bg-primary hover:bg-primary/90 text-white rounded text-xs flex items-center justify-center cursor-pointer"
-                      title="Add Location"
+                      title={t('add_location', 'Add Location')}
                     >
                       <i className="fa fa-plus"></i>
                     </button>
@@ -1304,15 +1304,15 @@ export default function PurchaseOrderView() {
                       }}
                       className="w-24 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
-                      <option value="USD">USD</option>
-                      <option value="LL">LL</option>
-                      <option value="EUR">EUR</option>
+                      <option value="USD">{t('usd', 'USD')}</option>
+                      <option value="LL">{t('ll', 'LL')}</option>
+                      <option value="EUR">{t('eur', 'EUR')}</option>
                     </select>
                     <button
                       type="button"
                       onClick={() => setShowCurrencyModal(true)}
                       className="h-[32px] w-[32px] bg-primary hover:bg-primary/90 text-white rounded text-xs flex items-center justify-center cursor-pointer"
-                      title="Add Currency"
+                      title={t('add_currency', 'Add Currency')}
                     >
                       <i className="fa fa-plus"></i>
                     </button>
@@ -1353,7 +1353,7 @@ export default function PurchaseOrderView() {
           {/* DETAILS CARD: PRODUCTS GRID */}
           <div className="bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden mb-3">
             <div className="bg-card border-b border-border px-3.5 py-2 font-semibold text-foreground text-[13px]">
-              Details
+              {t('details', 'Details')}
             </div>
 
             {/* DETAILS TOOLBAR */}
@@ -1542,7 +1542,7 @@ export default function PurchaseOrderView() {
                             type="button"
                             onClick={() => removeItemRow(item.id)}
                             className="text-red-500 hover:text-red-700 p-1"
-                            title="Remove row"
+                            title={t('remove_row', 'Remove row')}
                           >
                             <i className="fa fa-trash-o text-sm"></i>
                           </button>
@@ -1685,7 +1685,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowPreviewList(true)}
                 className="h-[36px] px-4 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-muted-foreground text-[13px] rounded transition cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
             </div>
 
@@ -1792,7 +1792,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowSupplierModal(false)}
                 className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-foreground text-xs rounded"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1841,7 +1841,7 @@ export default function PurchaseOrderView() {
                           }}
                           className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-[11px] font-medium"
                         >
-                          Add
+                          {t('add', 'Add')}
                         </button>
                       </td>
                     </tr>
@@ -1855,7 +1855,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowItemModal(false)}
                 className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-foreground text-xs rounded"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1921,7 +1921,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowEmailModal(false)}
                 className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs rounded"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -1958,7 +1958,7 @@ export default function PurchaseOrderView() {
                   type="text"
                   value={docNameInput}
                   onChange={(e) => setDocNameInput(e.target.value)}
-                  placeholder="e.g. Proforma Invoice / Supplier Quotation #8841"
+                  placeholder={t('eg_proforma_invoice_supplier_quotation', 'e.g. Proforma Invoice / Supplier Quotation #8841')}
                   className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-emerald-700 focus:outline-none"
                 />
               </div>
@@ -1983,7 +1983,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowDocModal(false)}
                 className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs rounded"
               >
-                Close
+                {t('close', 'Close')}
               </button>
               <button
                 type="button"
@@ -1993,7 +1993,7 @@ export default function PurchaseOrderView() {
                 }}
                 className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-bold rounded"
               >
-                Save Document
+                {t('save_document', 'Save Document')}
               </button>
             </div>
           </div>
@@ -2036,7 +2036,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowStoreRecurringModal(false)}
                 className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs rounded"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -2052,7 +2052,7 @@ export default function PurchaseOrderView() {
                 }}
                 className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded"
               >
-                Store Template
+                {t('store_template', 'Store Template')}
               </button>
             </div>
           </div>
@@ -2099,7 +2099,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowRecallRecurringModal(false)}
                 className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs rounded"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -2126,7 +2126,7 @@ export default function PurchaseOrderView() {
                 <label className="font-bold text-gray-700 block mb-1">{t('location_name_req', 'Location Name*:')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Silo C - Raw Oil Tank #4"
+                  placeholder={t('eg_silo_c_raw_oil_tank_4', 'e.g. Silo C - Raw Oil Tank #4')}
                   className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                   id="newLocationName"
                 />
@@ -2138,7 +2138,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowLocationModal(false)}
                 className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -2152,7 +2152,7 @@ export default function PurchaseOrderView() {
                 }}
                 className="px-3 py-1 bg-primary text-white text-xs font-bold rounded"
               >
-                Add Location
+                {t('add_location', 'Add Location')}
               </button>
             </div>
           </div>
@@ -2179,7 +2179,7 @@ export default function PurchaseOrderView() {
                 <label className="font-bold text-gray-700 block mb-1">{t('currency_symbol_label', 'Currency Symbol (e.g. GBP, AED):')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. GBP"
+                  placeholder={t('eg_gbp', 'e.g. GBP')}
                   className="w-full h-8 px-2.5 border border-gray-300 rounded focus:border-primary focus:outline-none"
                   id="newCurSymbol"
                 />
@@ -2200,7 +2200,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowCurrencyModal(false)}
                 className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -2218,7 +2218,7 @@ export default function PurchaseOrderView() {
                 }}
                 className="px-3 py-1 bg-primary text-white text-xs font-bold rounded"
               >
-                Add Currency
+                {t('add_currency', 'Add Currency')}
               </button>
             </div>
           </div>
@@ -2271,7 +2271,7 @@ export default function PurchaseOrderView() {
                 onClick={() => setShowSupplierItemsModal(false)}
                 className="px-4 py-1.5 bg-gray-200 text-gray-700 text-xs rounded"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>

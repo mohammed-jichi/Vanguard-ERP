@@ -15,7 +15,7 @@ interface VanguardSubHeaderProps {
 
 export default function VanguardSubHeader({ activeScreen, onSelectScreen }: VanguardSubHeaderProps) {
   const pathname = usePathname();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   // STRICT REQUIREMENT: ONLY render top sub-header action bar on the absolute root path ('/')
   if (pathname !== '/') {
@@ -60,7 +60,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
       
       {/* LEFT SIDE: RECENTLY VISITED DYNAMIC BREADCRUMBS */}
       <div className="flex items-center gap-2 overflow-x-auto max-w-full text-xs text-gray-700 font-medium">
-        <span className="text-black font-semibold shrink-0">Recently Visited:</span>
+        <span className="text-black font-semibold shrink-0">{t('recently_visited', 'Recently Visited:')}</span>
         {recentlyVisited.map((item, idx) => (
           <React.Fragment key={item.key}>
             {idx > 0 && <span className="text-gray-300 text-[10px] shrink-0">›</span>}
@@ -84,7 +84,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
           <button
             onClick={() => setShowAlertsModal(true)}
             className="bg-rose-500 hover:bg-rose-600 text-white font-bold px-2.5 py-1 rounded-lg shadow-2xs transition-all flex items-center gap-1"
-            title="Click to view active system alerts"
+            title={t('click_to_view_active_system_alerts', 'Click to view active system alerts')}
           >
             <Bell className="w-3.5 h-3.5" />
             <span>Alerts ({alertsCount})</span>
@@ -99,16 +99,16 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
               ? 'text-red-600 font-bold hover:bg-rose-50'
               : 'text-slate-700 font-semibold hover:text-amber-600 hover:bg-gray-100'
           }`}
-          title="End of Month Inventory Closing"
+          title={t('end_of_month_inventory_closing', 'End of Month Inventory Closing')}
         >
-          End of Month
+          {t('end_of_month', 'End of Month')}
         </button>
         
         <button
           onClick={() => onSelectScreen('sales-dash')}
           className="text-gray-700 hover:text-amber-600 px-2 py-1 hover:bg-gray-100 rounded-md transition-colors"
         >
-          Latest Transactions
+          {t('latest_transactions', 'Latest Transactions')}
         </button>
 
         <button
@@ -116,7 +116,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
           className="text-gray-700 hover:text-amber-600 px-2 py-1 hover:bg-gray-100 rounded-md transition-colors flex items-center gap-1"
         >
           <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Check List</span>
+          <span>{t('check_list', 'Check List')}</span>
         </button>
 
         {/* WATCH TUTORIALS POPUP MODAL BUTTON */}
@@ -125,15 +125,15 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
           className="bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 px-2.5 py-1 rounded-lg flex items-center gap-1 transition-all"
         >
           <Video className="w-3.5 h-3.5 text-amber-600" />
-          <span>Watch Tutorials</span>
+          <span>{t('watch_tutorials', 'Watch Tutorials')}</span>
         </button>
 
         {/* CURRENCY RATE DISPLAY & EDIT PENCIL */}
         <div className="bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-lg text-gray-800 flex items-center gap-1.5 font-mono text-[11px]">
-          <span>USD rate: 90,000.00</span>
+          <span>{t('usd_rate_9000000', 'USD rate: 90,000.00')}</span>
           <button
             onClick={() => onSelectScreen('more-currency')}
-            title="Edit official currency rate"
+            title={t('edit_official_currency_rate', 'Edit official currency rate')}
             className="text-amber-600 hover:text-amber-800 p-0.5"
           >
             <Edit2 className="w-3.5 h-3.5" />
@@ -163,10 +163,10 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
         <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 font-sans">
             <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Video className="w-5 h-5 text-amber-600" /> Vanguard ERP Video Guides
+              <Video className="w-5 h-5 text-amber-600" /> {t('vanguard_erp_video_guides', 'Vanguard ERP Video Guides')}
             </h3>
             <p className="text-xs text-gray-500">
-              Learn how to navigate Vanguard ERP, manage olive oil pressing inventory, configure payment types, and run End of Day reports.
+              {t('learn_how_to_navigate_vanguard_erp', 'Learn how to navigate Vanguard ERP, manage olive oil pressing inventory, configure payment types, and run End of Day reports.')}
             </p>
             <div className="space-y-2 text-xs">
               <a href="https://youtube.com" target="_blank" rel="noreferrer" className="block p-3 bg-amber-50 hover:bg-amber-100 rounded-xl border border-amber-200 font-semibold text-amber-950">
@@ -181,7 +181,7 @@ export default function VanguardSubHeader({ activeScreen, onSelectScreen }: Vang
             </div>
             <div className="pt-2 text-right">
               <button onClick={() => setIsTutorialsOpen(false)} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold">
-                Close Video Player
+                {t('close_video_player', 'Close Video Player')}
               </button>
             </div>
           </div>

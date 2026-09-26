@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect } from 'react';
 import { FleetSocialIntegrationService } from '@/lib/fleetSocialIntegrationService';
@@ -13,6 +14,7 @@ interface AssignedRep {
 }
 
 export default function SocialLandingPageOrder() {
+  const { t } = useLanguage();
   const [rep] = useState<AssignedRep>({
     adminCode: 'ADM-REP-01',
     systemCode: 'REP-SO-8492',
@@ -175,8 +177,8 @@ export default function SocialLandingPageOrder() {
       {/* Dev Switcher */}
       <div className="bg-card border border-border text-foreground p-2.5 rounded-xl mb-6 flex items-center justify-between text-xs shadow-xs">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-primary">Environment View:</span>
-          <span>Southern Olive Oil Products S.A.R.L</span>
+          <span className="font-bold text-primary">{t('environment_view', 'Environment View:')}</span>
+          <span>{t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <button
@@ -201,15 +203,15 @@ export default function SocialLandingPageOrder() {
         <div className="max-w-xl mx-auto bg-card rounded-2xl border border-border shadow-md p-6 space-y-5">
           <div className="text-center border-b border-border pb-4">
             <h1 className="text-xl font-bold text-foreground leading-tight">
-              Southern Olive Oil Products S.A.R.L
+              {t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}
             </h1>
             <p className="text-xs text-primary font-bold mt-1">
-              Natural Extra Virgin Olive Oil, Pomegranate Molasses & Traditional Food Preserves
+              {t('natural_extra_virgin_olive_oil', 'Natural Extra Virgin Olive Oil, Pomegranate Molasses & Traditional Food Preserves')}
             </p>
           </div>
 
           <div className="bg-muted/50 border border-border rounded-xl p-4 text-xs space-y-1 text-foreground">
-            <div className="font-bold text-sm text-primary">Exclusive Offer: 17.5L Olive Oil Tin + 2 Pomegranate Molasses</div>
+            <div className="font-bold text-sm text-primary">{t('exclusive_offer_175l_olive_oil_tin_2', 'Exclusive Offer: 17.5L Olive Oil Tin + 2 Pomegranate Molasses')}</div>
             <p>• First Cold Pressed - Low Acidity Guaranteed</p>
             <p>• Fast delivery across all Lebanon regions with flexible payment options</p>
           </div>
@@ -225,26 +227,26 @@ export default function SocialLandingPageOrder() {
               rel="noreferrer"
               className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs transition-colors flex items-center gap-1.5"
             >
-              <span>WhatsApp Direct</span>
+              <span>{t('whatsapp_direct', 'WhatsApp Direct')}</span>
             </a>
           </div>
 
           <div className="relative flex py-1 items-center">
             <div className="flex-grow border-t border-border"></div>
-            <span className="flex-shrink mx-3 text-muted-foreground text-xs font-bold">OR ORDER ONLINE</span>
+            <span className="flex-shrink mx-3 text-muted-foreground text-xs font-bold">{t('or_order_online', 'OR ORDER ONLINE')}</span>
             <div className="flex-grow border-t border-border"></div>
           </div>
 
           {/* Self-Checkout */}
           <form onSubmit={handleCustomerSubmit} className="space-y-3 text-xs">
             <div>
-              <label className="block font-bold text-foreground mb-1">Full Name *</label>
+              <label className="block font-bold text-foreground mb-1">{t('full_name', 'Full Name *')}</label>
               <input
                 type="text"
                 required
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Enter your full name"
+                placeholder={t('enter_your_full_name', 'Enter your full name')}
                 className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs font-medium focus:border-primary focus:outline-none text-foreground"
               />
             </div>
@@ -262,19 +264,19 @@ export default function SocialLandingPageOrder() {
             </div>
 
             <div>
-              <label className="block font-bold text-foreground mb-1">Delivery Address *</label>
+              <label className="block font-bold text-foreground mb-1">{t('delivery_address', 'Delivery Address *')}</label>
               <input
                 type="text"
                 required
                 value={customerAddress}
                 onChange={(e) => setCustomerAddress(e.target.value)}
-                placeholder="Region, Street, Building, Floor"
+                placeholder={t('region_street_building_floor', 'Region, Street, Building, Floor')}
                 className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs font-medium focus:border-primary focus:outline-none text-foreground"
               />
             </div>
 
             <div>
-              <label className="block font-bold text-foreground mb-1">Payment Method *</label>
+              <label className="block font-bold text-foreground mb-1">{t('payment_method', 'Payment Method *')}</label>
               <div className="grid grid-cols-2 gap-2.5 pt-1">
                 <label className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${paymentMethod === 'COD' ? 'border-primary bg-primary/5' : 'border-border'}`}>
                   <span className="font-bold text-foreground">Cash on Delivery (COD)</span>
@@ -288,7 +290,7 @@ export default function SocialLandingPageOrder() {
                 </label>
 
                 <label className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${paymentMethod === 'WHISH' ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                  <span className="font-bold text-foreground">Whish on Delivery</span>
+                  <span className="font-bold text-foreground">{t('whish_on_delivery', 'Whish on Delivery')}</span>
                   <input
                     type="radio"
                     name="payment"
@@ -304,7 +306,7 @@ export default function SocialLandingPageOrder() {
               type="submit"
               className="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl shadow-xs transition-all mt-2 cursor-pointer"
             >
-              Submit Order Now
+              {t('submit_order_now', 'Submit Order Now')}
             </button>
           </form>
         </div>
@@ -315,13 +317,13 @@ export default function SocialLandingPageOrder() {
         <div className="max-w-4xl mx-auto space-y-5">
           <div className="bg-card rounded-2xl border border-border p-4 shadow-xs flex items-center justify-between">
             <div>
-              <div className="text-sm font-bold text-foreground">Social Media Representative Portal</div>
+              <div className="text-sm font-bold text-foreground">{t('social_media_representative_portal', 'Social Media Representative Portal')}</div>
               <div className="text-xs text-muted-foreground mt-0.5">
-                Representative: <span className="font-bold text-primary">{rep.fullName}</span> | Admin Code: <span className="font-mono">{rep.adminCode}</span> | System Code: <span className="font-mono">{rep.systemCode}</span>
+                {t('representative', 'Representative:')} <span className="font-bold text-primary">{rep.fullName}</span> | Admin Code: <span className="font-mono">{rep.adminCode}</span> | System Code: <span className="font-mono">{rep.systemCode}</span>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-[11px] text-muted-foreground">Offer Commission Rate</div>
+              <div className="text-[11px] text-muted-foreground">{t('offer_commission_rate', 'Offer Commission Rate')}</div>
               <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">{rep.commissionOffersPct}%</div>
             </div>
           </div>
@@ -354,7 +356,7 @@ export default function SocialLandingPageOrder() {
 
                     {order.status === 'DELIVERED' && (
                       <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold">
-                        Delivered - Commission Credited ✓
+                        {t('delivered_commission_credited', 'Delivered - Commission Credited ✓')}
                       </span>
                     )}
 
@@ -366,14 +368,14 @@ export default function SocialLandingPageOrder() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
-                    <div><span className="text-muted-foreground">Address:</span> <span className="font-semibold text-foreground">{order.customerAddress}</span></div>
-                    <div><span className="text-muted-foreground">Offer:</span> <span className="font-semibold text-foreground">{order.offerTitle}</span></div>
-                    <div><span className="text-muted-foreground">Payment:</span> <span className="font-semibold font-mono text-foreground">{order.paymentMethod}</span></div>
+                    <div><span className="text-muted-foreground">{t('address', 'Address:')}</span> <span className="font-semibold text-foreground">{order.customerAddress}</span></div>
+                    <div><span className="text-muted-foreground">{t('offer', 'Offer:')}</span> <span className="font-semibold text-foreground">{order.offerTitle}</span></div>
+                    <div><span className="text-muted-foreground">{t('payment', 'Payment:')}</span> <span className="font-semibold font-mono text-foreground">{order.paymentMethod}</span></div>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-border">
                     <div className="text-xs">
-                      <span className="text-muted-foreground">Expected Commission:</span>{' '}
+                      <span className="text-muted-foreground">{t('expected_commission', 'Expected Commission:')}</span>{' '}
                       <span className="font-bold font-mono text-emerald-600 dark:text-emerald-400">${order.commissionPending.toFixed(2)}</span>
                       {order.commissionCredited && <span className="text-emerald-600 dark:text-emerald-400 font-bold ml-1">(Credited ✓)</span>}
                     </div>
@@ -386,14 +388,14 @@ export default function SocialLandingPageOrder() {
                             onClick={() => handleRepApprove(order.id)}
                             className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-colors shadow-xs cursor-pointer"
                           >
-                            Approve Order
+                            {t('approve_order', 'Approve Order')}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleEscalateToManagement(order.id)}
                             className="px-3 py-1.5 border border-destructive/30 text-destructive hover:bg-destructive/10 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
                           >
-                            Simulate 1-Hr Timeout
+                            {t('simulate_1hr_timeout', 'Simulate 1-Hr Timeout')}
                           </button>
                         </>
                       )}
@@ -404,7 +406,7 @@ export default function SocialLandingPageOrder() {
                           onClick={() => handleDriverDelivered(order.id)}
                           className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors shadow-xs cursor-pointer"
                         >
-                          Simulate Driver Delivered
+                          {t('simulate_driver_delivered', 'Simulate Driver Delivered')}
                         </button>
                       )}
                     </div>

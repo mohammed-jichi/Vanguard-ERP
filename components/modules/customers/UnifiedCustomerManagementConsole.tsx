@@ -721,8 +721,8 @@ export default function UnifiedCustomerManagementConsole() {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   <tr className="hover:bg-slate-50">
-                    <td className="py-3 px-3.5 font-bold text-primary">SO-CLI-01</td>
-                    <td className="py-3 px-3.5 font-sans font-bold text-slate-900">Al-Baraka Supermarket S.A.R.L</td>
+                    <td className="py-3 px-3.5 font-bold text-primary">{t('socli01', 'SO-CLI-01')}</td>
+                    <td className="py-3 px-3.5 font-sans font-bold text-slate-900">{t('albaraka_supermarket_sarl', 'Al-Baraka Supermarket S.A.R.L')}</td>
                     <td className="py-3 px-3.5 text-slate-500 text-[11px]">601-992144-01</td>
                     <td className="py-3 px-3.5 text-right text-emerald-600">$450.00</td>
                     <td className="py-3 px-3.5 text-right text-slate-600">$1,000.00</td>
@@ -752,8 +752,8 @@ export default function UnifiedCustomerManagementConsole() {
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50">
-                    <td className="py-3 px-3.5 font-bold text-primary">SO-CLI-02</td>
-                    <td className="py-3 px-3.5 font-sans font-bold text-slate-900">Beirut Gourmet Emporium</td>
+                    <td className="py-3 px-3.5 font-bold text-primary">{t('socli02', 'SO-CLI-02')}</td>
+                    <td className="py-3 px-3.5 font-sans font-bold text-slate-900">{t('beirut_gourmet_emporium', 'Beirut Gourmet Emporium')}</td>
                     <td className="py-3 px-3.5 text-slate-500 text-[11px]">883-102941-02</td>
                     <td className="py-3 px-3.5 text-right text-emerald-600">$1,200.50</td>
                     <td className="py-3 px-3.5 text-right text-slate-600">$2,000.00</td>
@@ -783,8 +783,8 @@ export default function UnifiedCustomerManagementConsole() {
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50">
-                    <td className="py-3 px-3.5 font-bold text-primary">SO-CLI-04</td>
-                    <td className="py-3 px-3.5 font-sans font-bold text-slate-900">Verdun Olive Specialty Boutique</td>
+                    <td className="py-3 px-3.5 font-bold text-primary">{t('socli04', 'SO-CLI-04')}</td>
+                    <td className="py-3 px-3.5 font-sans font-bold text-slate-900">{t('verdun_olive_specialty_boutique', 'Verdun Olive Specialty Boutique')}</td>
                     <td className="py-3 px-3.5 text-slate-500 text-[11px]">912-440182-03</td>
                     <td className="py-3 px-3.5 text-right text-emerald-600">$875.25</td>
                     <td className="py-3 px-3.5 text-right text-slate-400">$0.00</td>
@@ -814,8 +814,8 @@ export default function UnifiedCustomerManagementConsole() {
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50">
-                    <td className="py-3 px-3.5 font-bold text-primary">SO-CLI-05</td>
-                    <td className="py-3 px-3.5 font-sans font-bold text-slate-900">Phoenicia Luxury Resorts S.A.L</td>
+                    <td className="py-3 px-3.5 font-bold text-primary">{t('socli05', 'SO-CLI-05')}</td>
+                    <td className="py-3 px-3.5 font-sans font-bold text-slate-900">{t('phoenicia_luxury_resorts_sal', 'Phoenicia Luxury Resorts S.A.L')}</td>
                     <td className="py-3 px-3.5 text-slate-500 text-[11px]">109-882310-01</td>
                     <td className="py-3 px-3.5 text-right text-slate-400">$0.00</td>
                     <td className="py-3 px-3.5 text-right text-slate-600">$1,420.00</td>
@@ -984,7 +984,7 @@ export default function UnifiedCustomerManagementConsole() {
                   <label className="font-bold text-slate-700 block mb-1">{t('email_address', 'Email Address')}</label>
                   <input
                     type="email"
-                    placeholder="orders@company.com"
+                    placeholder={t('orderscompanycom', 'orders@company.com')}
                     value={newCustomerForm.email}
                     onChange={(e) => setNewCustomerForm({ ...newCustomerForm, email: e.target.value })}
                     className="w-full p-2 border border-slate-300 rounded-lg focus:border-primary focus:outline-none"
@@ -1113,7 +1113,7 @@ export default function UnifiedCustomerManagementConsole() {
                   <label className="font-bold text-slate-700 block mb-1">{t('reference_number', 'Reference / Cheque #')}</label>
                   <input
                     type="text"
-                    placeholder="CHQ-99120"
+                    placeholder={t('chq99120', 'CHQ-99120')}
                     value={newReceiptForm.referenceNo}
                     onChange={(e) => setNewReceiptForm({ ...newReceiptForm, referenceNo: e.target.value })}
                     className="w-full p-2 border border-slate-300 rounded-lg font-mono focus:border-primary focus:outline-none"

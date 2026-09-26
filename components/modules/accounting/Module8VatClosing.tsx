@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 8: VAT Closing & Chart of Accounts Hierarchy
@@ -53,6 +54,7 @@ export function Module8VatClosing({
   onShowToast,
   onPostVatClosingJv
 }: Module8VatClosingProps) {
+  const { t } = useLanguage();
   // Checklist Box State
   const [salesTransferred, setSalesTransferred] = useState(false);
   const [purchasesRecorded, setPurchasesRecorded] = useState(false);
@@ -170,11 +172,11 @@ export function Module8VatClosing({
                 <span>VAT Period Closing &amp; Chart of Accounts Hierarchy</span>
               </h3>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-border">
-                Omega Parity
+                {t('omega_parity', 'Omega Parity')}
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Reconcile input/output VAT balances, verify audit preconditions, and compute quarterly tax liability
+              {t('reconcile_inputoutput_vat_balances', 'Reconcile input/output VAT balances, verify audit preconditions, and compute quarterly tax liability')}
             </p>
           </div>
 
@@ -186,7 +188,7 @@ export function Module8VatClosing({
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
             >
               <Eye className="w-3.5 h-3.5" />
-              <span>Preview VAT Closing</span>
+              <span>{t('preview_vat_closing', 'Preview VAT Closing')}</span>
             </button>
 
             {/* Quick Access to Search Accounts Modal */}
@@ -206,7 +208,7 @@ export function Module8VatClosing({
               className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <Plus className="w-3.5 h-3.5 text-primary" />
-              <span>Add Account / Subclass</span>
+              <span>{t('add_account_subclass', 'Add Account / Subclass')}</span>
             </button>
           </div>
         </div>
@@ -224,7 +226,7 @@ export function Module8VatClosing({
                 onChange={(e) => setSalesTransferred(e.target.checked)}
                 className="rounded border-input text-primary focus:ring-primary h-4 w-4 mt-0.5"
               />
-              <span>All sales related to the selected cycle have been fully transferred to accounting.</span>
+              <span>{t('all_sales_related_to_the_selected_cycle', 'All sales related to the selected cycle have been fully transferred to accounting.')}</span>
             </label>
 
             <label className="flex items-start gap-2 text-foreground cursor-pointer select-none">
@@ -234,7 +236,7 @@ export function Module8VatClosing({
                 onChange={(e) => setPurchasesRecorded(e.target.checked)}
                 className="rounded border-input text-primary focus:ring-primary h-4 w-4 mt-0.5"
               />
-              <span>All purchases and payments related to the selected cycle have been completely recorded in accounting.</span>
+              <span>{t('all_purchases_and_payments_related_to', 'All purchases and payments related to the selected cycle have been completely recorded in accounting.')}</span>
             </label>
           </div>
         </div>
@@ -243,7 +245,7 @@ export function Module8VatClosing({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs font-medium">
           {/* Year: Fixed fiscal year 2026 */}
           <div>
-            <label className="text-muted-foreground mb-1 block">Fiscal Year</label>
+            <label className="text-muted-foreground mb-1 block">{t('fiscal_year', 'Fiscal Year')}</label>
             <input
               type="text"
               readOnly
@@ -254,7 +256,7 @@ export function Module8VatClosing({
 
           {/* VAT Period: Quarterly */}
           <div>
-            <label className="text-muted-foreground mb-1 block">VAT Period</label>
+            <label className="text-muted-foreground mb-1 block">{t('vat_period', 'VAT Period')}</label>
             <input
               type="text"
               readOnly
@@ -265,7 +267,7 @@ export function Module8VatClosing({
 
           {/* Select Quarter: Dropdown (Q1, Q2, Q3, Q4) */}
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Select Quarter</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('select_quarter', 'Select Quarter')}</label>
             <select
               value={quarter}
               onChange={(e) => setQuarter(e.target.value as any)}
@@ -280,7 +282,7 @@ export function Module8VatClosing({
 
           {/* VAT Closing Date */}
           <div>
-            <label className="text-foreground mb-1 block font-semibold">VAT Closing Date</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('vat_closing_date', 'VAT Closing Date')}</label>
             <input
               type="date"
               value={vatClosingDate}
@@ -327,12 +329,12 @@ export function Module8VatClosing({
 
           {/* Notes: Textarea */}
           <div className="sm:col-span-2 md:col-span-4">
-            <label className="text-foreground mb-1 block font-semibold">Notes</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('notes', 'Notes')}</label>
             <textarea
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Enter audit reconciliation notes..."
+              placeholder={t('enter_audit_reconciliation_notes', 'Enter audit reconciliation notes...')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs text-xs"
             />
           </div>
@@ -348,7 +350,7 @@ export function Module8VatClosing({
               ${outputVatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <small className="text-muted-foreground font-mono text-[10px]">
-              Account: #44270000 - Customer Vat*
+              {t('account_44270000_customer_vat', 'Account: #44270000 - Customer Vat*')}
             </small>
           </div>
 
@@ -360,7 +362,7 @@ export function Module8VatClosing({
               ${inputVatAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <small className="text-muted-foreground font-mono text-[10px]">
-              Account: #4426900000 - Vat Deductible*
+              {t('account_4426900000_vat_deductible', 'Account: #4426900000 - Vat Deductible*')}
             </small>
           </div>
 
@@ -372,7 +374,7 @@ export function Module8VatClosing({
               ${netVatPayable.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <small className="text-muted-foreground font-mono text-[10px]">
-              Account: #4411100000 - Vat Payables*
+              {t('account_4411100000_vat_payables', 'Account: #4411100000 - Vat Payables*')}
             </small>
           </div>
         </div>
@@ -406,7 +408,7 @@ export function Module8VatClosing({
                 <span className="font-bold text-emerald-700">${inputVatAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between border-t border-border pt-1.5 text-sm font-bold text-foreground">
-                <span>Net Payable to MoF:</span>
+                <span>{t('net_payable_to_mof', 'Net Payable to MoF:')}</span>
                 <span>${netVatPayable.toFixed(2)}</span>
               </div>
             </div>
@@ -421,14 +423,14 @@ export function Module8VatClosing({
                 onClick={() => setShowVatPreview(false)}
                 className="bg-card hover:bg-muted text-muted-foreground px-4 py-1.5 rounded-lg text-xs font-semibold border border-border cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
               <button
                 type="button"
                 onClick={handleGenerateClosingEntry}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Generate Tax Closing Entry
+                {t('generate_tax_closing_entry', 'Generate Tax Closing Entry')}
               </button>
             </div>
           </div>

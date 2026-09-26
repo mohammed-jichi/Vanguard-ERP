@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -138,6 +139,7 @@ const INITIAL_STOPS: DriverStop[] = [
 ];
 
 export default function VDriverApp() {
+  const { t } = useLanguage();
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
@@ -496,9 +498,9 @@ export default function VDriverApp() {
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h1 className="text-sm font-black tracking-tight text-white">V-Driver Mobile PWA</h1>
+              <h1 className="text-sm font-black tracking-tight text-white">{t('vdriver_mobile_pwa', 'V-Driver Mobile PWA')}</h1>
               <span className="px-1.5 py-0.2 bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold rounded">
-                v2.6
+                {t('v26', 'v2.6')}
               </span>
             </div>
             <p className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
@@ -528,7 +530,7 @@ export default function VDriverApp() {
               onClick={triggerAutoSync}
               disabled={!isOnline || isSyncingQueue}
               className="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg text-[10.5px] font-bold flex items-center gap-1 shadow-sm transition-all"
-              title="Click to sync offline actions now"
+              title={t('click_to_sync_offline_actions_now', 'Click to sync offline actions now')}
             >
               <RefreshCw className={`w-3 h-3 ${isSyncingQueue ? 'animate-spin' : ''}`} />
               <span>Sync ({offlineQueue.length})</span>
@@ -542,7 +544,7 @@ export default function VDriverApp() {
               className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg border border-blue-400 flex items-center gap-1 shadow-md transition-transform active:scale-95"
             >
               <Download className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Install App</span>
+              <span className="hidden sm:inline">{t('install_app', 'Install App')}</span>
             </button>
           )}
 
@@ -550,7 +552,7 @@ export default function VDriverApp() {
             href="/backoffice/fleet"
             className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold border border-slate-700"
           >
-            Hub
+            {t('hub', 'Hub')}
           </Link>
         </div>
       </header>
@@ -574,7 +576,7 @@ export default function VDriverApp() {
       {/* 2. SHIFT STATE & ODOMETER CONTROLLER */}
       <section className="bg-slate-900 border-b border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <span className="text-slate-400 font-bold">Shift:</span>
+          <span className="text-slate-400 font-bold">{t('shift', 'Shift:')}</span>
           <span
             className={`px-3 py-1 rounded-full font-bold text-[11px] border ${
               shiftState === 'ON_DUTY_LOADING'
@@ -601,7 +603,7 @@ export default function VDriverApp() {
             }}
             className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-lg"
           >
-            <Navigation className="w-3.5 h-3.5" /> Start Route Run
+            <Navigation className="w-3.5 h-3.5" /> {t('start_route_run', 'Start Route Run')}
           </button>
         )}
 
@@ -626,8 +628,8 @@ export default function VDriverApp() {
         )}
 
         <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400 bg-slate-950 px-3 py-1 rounded-lg border border-slate-800">
-          <span>Odo: <strong className="text-white">{currentOdometerKm} KM</strong></span>
-          <span>Today: <strong className="text-emerald-400">+{currentOdometerKm - startOdometerKm} KM</strong></span>
+          <span>{t('odo', 'Odo:')} <strong className="text-white">{currentOdometerKm} KM</strong></span>
+          <span>{t('today', 'Today:')} <strong className="text-emerald-400">+{currentOdometerKm - startOdometerKm} KM</strong></span>
         </div>
       </section>
 
@@ -789,12 +791,12 @@ export default function VDriverApp() {
                 {/* Financial Summary */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 font-mono">
-                    <span className="text-[10px] text-slate-500 block uppercase font-bold">Product Price</span>
+                    <span className="text-[10px] text-slate-500 block uppercase font-bold">{t('product_price', 'Product Price')}</span>
                     <strong className="text-lg text-emerald-400 font-bold">${activeStop.productAmountUsd}</strong>
                     <div className="text-xs text-slate-400">({activeStop.productAmountLbp.toLocaleString()} LBP)</div>
                   </div>
                   <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 font-mono">
-                    <span className="text-[10px] text-slate-500 block uppercase font-bold">Delivery Fee</span>
+                    <span className="text-[10px] text-slate-500 block uppercase font-bold">{t('delivery_fee', 'Delivery Fee')}</span>
                     <strong className="text-lg text-blue-400 font-bold">${activeStop.deliveryFeeUsd} USD</strong>
                     <div className="text-xs text-slate-400">Assigned Rep: {activeStop.repName} ({activeStop.repCode})</div>
                   </div>
@@ -809,7 +811,7 @@ export default function VDriverApp() {
                     className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-2 shadow"
                   >
                     <Navigation className="w-4 h-4 text-blue-400" />
-                    <span>Open in Google Maps Navigation</span>
+                    <span>{t('open_in_google_maps_navigation', 'Open in Google Maps Navigation')}</span>
                   </a>
                   <a
                     href={`tel:${activeStop.phone}`}
@@ -835,20 +837,20 @@ export default function VDriverApp() {
                     onClick={() => handleOpenActionModal(activeStop, 'REJECTED')}
                     className="px-5 py-3 bg-rose-800 hover:bg-rose-700 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5"
                   >
-                    <XCircle className="w-4 h-4" /> Reject
+                    <XCircle className="w-4 h-4" /> {t('reject', 'Reject')}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleOpenActionModal(activeStop, 'PENDING')}
                     className="px-4 py-3 bg-amber-700 hover:bg-amber-600 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5"
                   >
-                    <Clock className="w-4 h-4" /> Postpone
+                    <Clock className="w-4 h-4" /> {t('postpone', 'Postpone')}
                   </button>
                 </div>
               </div>
             ) : (
               <div className="h-full flex items-center justify-center text-slate-500 font-mono text-sm">
-                Select a stop from the route list to view details
+                {t('select_a_stop_from_the_route_list_to', 'Select a stop from the route list to view details')}
               </div>
             )}
           </div>
@@ -867,15 +869,15 @@ export default function VDriverApp() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl">
-              <span className="text-[10.5px] text-slate-500 block uppercase font-bold">Total USD Cash in Custody</span>
+              <span className="text-[10.5px] text-slate-500 block uppercase font-bold">{t('total_usd_cash_in_custody', 'Total USD Cash in Custody')}</span>
               <strong className="text-2xl font-mono text-emerald-400 font-bold">${totalCollectedUsd.toFixed(2)}</strong>
             </div>
             <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl">
-              <span className="text-[10.5px] text-slate-500 block uppercase font-bold">Total LBP Cash in Custody</span>
+              <span className="text-[10.5px] text-slate-500 block uppercase font-bold">{t('total_lbp_cash_in_custody', 'Total LBP Cash in Custody')}</span>
               <strong className="text-2xl font-mono text-emerald-400 font-bold">{totalCollectedLbp.toLocaleString()} LBP</strong>
             </div>
             <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl">
-              <span className="text-[10.5px] text-purple-400 block uppercase font-bold">Total Whish Remittances</span>
+              <span className="text-[10.5px] text-purple-400 block uppercase font-bold">{t('total_whish_remittances', 'Total Whish Remittances')}</span>
               <strong className="text-2xl font-mono text-purple-400 font-bold">${totalCollectedWhish.toFixed(2)}</strong>
             </div>
           </div>
@@ -895,7 +897,7 @@ export default function VDriverApp() {
             ))}
             {completedStops.length === 0 && (
               <div className="p-12 text-center text-slate-500 font-mono text-xs border border-dashed border-slate-800 rounded-2xl">
-                No stops completed yet. Completed stops will populate here automatically.
+                {t('no_stops_completed_yet_completed_stops', 'No stops completed yet. Completed stops will populate here automatically.')}
               </div>
             )}
           </div>
@@ -911,7 +913,7 @@ export default function VDriverApp() {
             <div>
               <h2 className="text-sm font-bold text-white">Online Whish Remittance &amp; Settle Custody</h2>
               <p className="text-xs text-slate-400 mt-1">
-                Transfer collected daily cash to Southern Olive Oil S.A.R.L company Whish account to settle custody remotely.
+                {t('transfer_collected_daily_cash_to', 'Transfer collected daily cash to Southern Olive Oil S.A.R.L company Whish account to settle custody remotely.')}
               </p>
             </div>
 
@@ -927,18 +929,18 @@ export default function VDriverApp() {
               </div>
 
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Whish Transfer Reference No:</label>
+                <label className="text-[11px] text-slate-400 block mb-1">{t('whish_transfer_reference_no', 'Whish Transfer Reference No:')}</label>
                 <input
                   type="text"
                   value={reconcileRefNo}
                   onChange={(e) => setReconcileRefNo(e.target.value)}
-                  placeholder="e.g. WHISH-TX-9988124"
+                  placeholder={t('eg_whishtx9988124', 'e.g. WHISH-TX-9988124')}
                   className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-white text-xs"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Attach Whish Receipt Screenshot:</label>
+                <label className="text-[11px] text-slate-400 block mb-1">{t('attach_whish_receipt_screenshot', 'Attach Whish Receipt Screenshot:')}</label>
                 <button
                   type="button"
                   onClick={() => setReconcileProofAttached(!reconcileProofAttached)}
@@ -984,19 +986,19 @@ export default function VDriverApp() {
             <h2 className="text-sm font-bold text-white">Van 01 Telemetry &amp; Offline Queue Health</h2>
             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
               <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <span className="text-slate-500 text-[10px] block">CURRENT ODOMETER</span>
+                <span className="text-slate-500 text-[10px] block">{t('current_odometer', 'CURRENT ODOMETER')}</span>
                 <strong className="text-white text-sm">{currentOdometerKm} KM</strong>
               </div>
               <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <span className="text-slate-500 text-[10px] block">TODAY'S DISTANCE</span>
+                <span className="text-slate-500 text-[10px] block">{t('todays_distance', 'TODAY\'S DISTANCE')}</span>
                 <strong className="text-emerald-400 text-sm">+{currentOdometerKm - startOdometerKm} KM</strong>
               </div>
               <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <span className="text-slate-500 text-[10px] block">OFFLINE QUEUE ITEMS</span>
+                <span className="text-slate-500 text-[10px] block">{t('offline_queue_items', 'OFFLINE QUEUE ITEMS')}</span>
                 <strong className="text-amber-400 text-sm">{offlineQueue.length} Pending</strong>
               </div>
               <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <span className="text-slate-500 text-[10px] block">PWA STATUS</span>
+                <span className="text-slate-500 text-[10px] block">{t('pwa_status', 'PWA STATUS')}</span>
                 <strong className="text-blue-400 text-sm">{isInstalled ? 'Installed' : 'Browser Web Shell'}</strong>
               </div>
             </div>
@@ -1035,7 +1037,7 @@ export default function VDriverApp() {
                 {/* Total Due Banner */}
                 <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex justify-between items-center font-mono">
                   <div>
-                    <span className="text-slate-500 text-[10px] block">TOTAL AMOUNT DUE</span>
+                    <span className="text-slate-500 text-[10px] block">{t('total_amount_due', 'TOTAL AMOUNT DUE')}</span>
                     <strong className="text-base text-emerald-400 font-bold">
                       ${selectedStopForAction.productAmountUsd + selectedStopForAction.deliveryFeeUsd} USD
                     </strong>
@@ -1048,7 +1050,7 @@ export default function VDriverApp() {
 
                 {/* Multi-Currency Payment Split */}
                 <div className="space-y-2 bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
-                  <span className="text-[10px] font-bold text-slate-400 block uppercase">Payment Collected at Door:</span>
+                  <span className="text-[10px] font-bold text-slate-400 block uppercase">{t('payment_collected_at_door', 'Payment Collected at Door:')}</span>
                   <div className="flex items-center justify-between">
                     <span className="text-slate-300">USD Cash ($):</span>
                     <input
@@ -1102,7 +1104,7 @@ export default function VDriverApp() {
                       onClick={clearCanvas}
                       className="text-[10px] text-slate-400 hover:text-rose-400"
                     >
-                      Clear
+                      {t('clear', 'Clear')}
                     </button>
                   </div>
                   <div className="bg-slate-950 border-2 border-dashed border-slate-700 rounded-2xl overflow-hidden touch-none relative">
@@ -1132,22 +1134,22 @@ export default function VDriverApp() {
             {actionType === 'REJECTED' && (
               <div className="space-y-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Reason for Rejection:</label>
+                  <label className="text-[11px] text-slate-400 block mb-1">{t('reason_for_rejection', 'Reason for Rejection:')}</label>
                   <select
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs"
                   >
-                    <option value="Customer not available at location">Customer not available at location</option>
-                    <option value="Customer cancelled order / changed mind">Customer cancelled order / changed mind</option>
-                    <option value="Customer disputed price or total">Customer disputed price or total</option>
-                    <option value="Delivery arrival delayed">Delivery arrival delayed</option>
+                    <option value="Customer not available at location">{t('customer_not_available_at_location', 'Customer not available at location')}</option>
+                    <option value="Customer cancelled order / changed mind">{t('customer_cancelled_order_changed_mind', 'Customer cancelled order / changed mind')}</option>
+                    <option value="Customer disputed price or total">{t('customer_disputed_price_or_total', 'Customer disputed price or total')}</option>
+                    <option value="Delivery arrival delayed">{t('delivery_arrival_delayed', 'Delivery arrival delayed')}</option>
                   </select>
                 </div>
 
                 <div className={`p-3 rounded-xl border ${deliveryFeeRefused ? 'bg-rose-950/40 border-rose-500' : 'bg-slate-950 border-slate-800'}`}>
                   <div className="flex justify-between items-center text-xs">
-                    <span>Mandatory Delivery Fee:</span>
+                    <span>{t('mandatory_delivery_fee', 'Mandatory Delivery Fee:')}</span>
                     <strong className="text-blue-400 font-mono">${selectedStopForAction.deliveryFeeUsd}</strong>
                   </div>
                   <label className="mt-2 flex items-center gap-2 text-[11px] text-rose-400 font-bold cursor-pointer">
@@ -1165,19 +1167,19 @@ export default function VDriverApp() {
             {actionType === 'PENDING' && (
               <div className="space-y-3 text-xs">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Reason for Postponement:</label>
+                  <label className="text-[11px] text-slate-400 block mb-1">{t('reason_for_postponement', 'Reason for Postponement:')}</label>
                   <select
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs"
                   >
-                    <option value="Customer requested rescheduling for tomorrow">Customer requested rescheduling for tomorrow</option>
-                    <option value="Customer phone unreachable / no answer">Customer phone unreachable / no answer</option>
-                    <option value="Route blocked / severe traffic delay">Route blocked / severe traffic delay</option>
+                    <option value="Customer requested rescheduling for tomorrow">{t('customer_requested_rescheduling_for', 'Customer requested rescheduling for tomorrow')}</option>
+                    <option value="Customer phone unreachable / no answer">{t('customer_phone_unreachable_no_answer', 'Customer phone unreachable / no answer')}</option>
+                    <option value="Route blocked / severe traffic delay">{t('route_blocked_severe_traffic_delay', 'Route blocked / severe traffic delay')}</option>
                   </select>
                 </div>
                 <p className="text-[11px] text-amber-300">
-                  This parcel remains on van inventory and will be rescheduled automatically for tomorrow's run.
+                  {t('this_parcel_remains_on_van_inventory', 'This parcel remains on van inventory and will be rescheduled automatically for tomorrow\'s run.')}
                 </p>
               </div>
             )}

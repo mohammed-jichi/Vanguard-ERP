@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import {
@@ -34,6 +35,7 @@ interface PrepRequest extends ProductRequestHeader {
 }
 
 export default function ProductReqPreparationView() {
+  const { t } = useLanguage();
   // Top filter state
   const [prepDate, setPrepDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [fromBranchId, setFromBranchId] = useState<number>(2); // Default Central Kitchen
@@ -185,15 +187,15 @@ export default function ProductReqPreparationView() {
       <div className="bg-white border-b border-border px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">
-            <span>Operations Center</span>
+            <span>{t('operations_center', 'Operations Center')}</span>
             <span>/</span>
-            <span className="text-teal-600 font-bold">Product Req. Preparation</span>
+            <span className="text-teal-600 font-bold">{t('product_req_preparation', 'Product Req. Preparation')}</span>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Product Request Preparation</h1>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{t('product_request_preparation', 'Product Request Preparation')}</h1>
             <span className="bg-amber-50 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1.5">
               <ChefHat className="w-3.5 h-3.5" />
-              <span>Kitchen Prep Workstation</span>
+              <span>{t('kitchen_prep_workstation', 'Kitchen Prep Workstation')}</span>
             </span>
           </div>
         </div>
@@ -204,7 +206,7 @@ export default function ProductReqPreparationView() {
           className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-md text-xs font-semibold border border-slate-300 shadow-sm"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-teal-600' : ''}`} />
-          <span>Refresh Station</span>
+          <span>{t('refresh_station', 'Refresh Station')}</span>
         </button>
       </div>
 
@@ -215,7 +217,7 @@ export default function ProductReqPreparationView() {
             {/* Product Request Date */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                Product Request Date *
+                {t('product_request_date', 'Product Request Date *')}
               </label>
               <div className="relative">
                 <input
@@ -231,7 +233,7 @@ export default function ProductReqPreparationView() {
             {/* Preparation Station / From Branch */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                Preparation Station / From Branch *
+                {t('preparation_station_from_branch', 'Preparation Station / From Branch *')}
               </label>
               <select
                 value={fromBranchId}
@@ -249,7 +251,7 @@ export default function ProductReqPreparationView() {
             {/* By Item Type */}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
-                By Item Type
+                {t('by_item_type', 'By Item Type')}
               </label>
               <select
                 value={selectedItemTypeId}
@@ -272,7 +274,7 @@ export default function ProductReqPreparationView() {
                 className="w-full h-9 bg-emerald-700 hover:bg-emerald-700 text-white rounded-md text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 <Boxes className="w-3.5 h-3.5" />
-                <span>Get Requests</span>
+                <span>{t('get_requests', 'Get Requests')}</span>
               </button>
             </div>
           </div>
@@ -284,9 +286,9 @@ export default function ProductReqPreparationView() {
         {requestsList.length === 0 ? (
           <div className="bg-white rounded-lg border border-border p-12 text-center text-slate-400">
             <ChefHat className="w-12 h-12 text-slate-300 mx-auto mb-3 opacity-60" />
-            <h3 className="text-base font-bold text-slate-700">No Preparation Demands Found</h3>
+            <h3 className="text-base font-bold text-slate-700">{t('no_preparation_demands_found', 'No Preparation Demands Found')}</h3>
             <p className="text-xs text-slate-500 mt-1">
-              There are no pending or approved product requests requiring preparation for the selected date.
+              {t('there_are_no_pending_or_approved', 'There are no pending or approved product requests requiring preparation for the selected date.')}
             </p>
           </div>
         ) : (
@@ -334,16 +336,16 @@ export default function ProductReqPreparationView() {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-card text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-border">
                       <tr>
-                        <th className="py-2.5 px-3 w-16 text-center">Status</th>
-                        <th className="py-2.5 px-3">Item Description</th>
-                        <th className="py-2.5 px-3 w-28">Code</th>
-                        <th className="py-2.5 px-3 w-24 text-center">Unit</th>
-                        <th className="py-2.5 px-3 w-24 text-center">Qty Req</th>
-                        <th className="py-2.5 px-3 w-24 text-center">Qty OH</th>
+                        <th className="py-2.5 px-3 w-16 text-center">{t('status', 'Status')}</th>
+                        <th className="py-2.5 px-3">{t('item_description', 'Item Description')}</th>
+                        <th className="py-2.5 px-3 w-28">{t('code', 'Code')}</th>
+                        <th className="py-2.5 px-3 w-24 text-center">{t('unit', 'Unit')}</th>
+                        <th className="py-2.5 px-3 w-24 text-center">{t('qty_req', 'Qty Req')}</th>
+                        <th className="py-2.5 px-3 w-24 text-center">{t('qty_oh', 'Qty OH')}</th>
                         <th className="py-2.5 px-3 w-28 text-center bg-teal-50/60 text-teal-800">
-                          Qty App
+                          {t('qty_app', 'Qty App')}
                         </th>
-                        <th className="py-2.5 px-3 w-24 text-center">Processed</th>
+                        <th className="py-2.5 px-3 w-24 text-center">{t('processed', 'Processed')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -359,11 +361,11 @@ export default function ProductReqPreparationView() {
                             {it.isPrepared ? (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                                 <Check className="w-3 h-3" />
-                                <span>Ready</span>
+                                <span>{t('ready', 'Ready')}</span>
                               </span>
                             ) : (
                               <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
-                                Pending
+                                {t('pending', 'Pending')}
                               </span>
                             )}
                           </td>
@@ -442,7 +444,7 @@ export default function ProductReqPreparationView() {
                       className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 rounded text-xs font-semibold border border-slate-300 shadow-sm flex items-center gap-1"
                     >
                       <Printer className="w-3.5 h-3.5 text-slate-500" />
-                      <span>Print Ticket</span>
+                      <span>{t('print_ticket', 'Print Ticket')}</span>
                     </button>
 
                     <button
@@ -450,7 +452,7 @@ export default function ProductReqPreparationView() {
                       className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white rounded text-xs font-bold shadow-sm flex items-center gap-1"
                     >
                       <Save className="w-3.5 h-3.5" />
-                      <span>Save</span>
+                      <span>{t('save', 'Save')}</span>
                     </button>
                   </div>
                 </div>
@@ -474,7 +476,7 @@ export default function ProductReqPreparationView() {
                   className="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-bold flex items-center gap-1"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>Print</span>
+                  <span>{t('print', 'Print')}</span>
                 </button>
                 <button
                   onClick={() => setPrintingPr(null)}
@@ -487,26 +489,26 @@ export default function ProductReqPreparationView() {
 
             <div className="p-6 font-mono text-xs text-slate-900 space-y-4">
               <div className="text-center border-b pb-3">
-                <h3 className="text-base font-bold">KITCHEN PREPARATION TICKET</h3>
-                <p className="text-[11px] text-slate-500">Omega ERP Operations</p>
+                <h3 className="text-base font-bold">{t('kitchen_preparation_ticket', 'KITCHEN PREPARATION TICKET')}</h3>
+                <p className="text-[11px] text-slate-500">{t('omega_erp_operations', 'Omega ERP Operations')}</p>
                 <div className="text-lg font-extrabold text-teal-700 mt-1">{printingPr.REQUESTNB}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-2.5 rounded">
                 <div>
-                  <span className="text-slate-400 block text-[9px]">TARGET DESTINATION:</span>
+                  <span className="text-slate-400 block text-[9px]">{t('target_destination', 'TARGET DESTINATION:')}</span>
                   <span className="font-bold">{printingPr.TOBRANCH}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[9px]">PREP STATION:</span>
+                  <span className="text-slate-400 block text-[9px]">{t('prep_station', 'PREP STATION:')}</span>
                   <span className="font-bold">{printingPr.FROMBRANCHNAME}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[9px]">DELIVERY TIME:</span>
+                  <span className="text-slate-400 block text-[9px]">{t('delivery_time', 'DELIVERY TIME:')}</span>
                   <span className="font-bold">{printingPr.DELIVERYDATE}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[9px]">ITEMS COUNT:</span>
+                  <span className="text-slate-400 block text-[9px]">{t('items_count', 'ITEMS COUNT:')}</span>
                   <span className="font-bold">{printingPr.items.length} items</span>
                 </div>
               </div>
@@ -515,9 +517,9 @@ export default function ProductReqPreparationView() {
                 <thead className="bg-slate-100 font-bold border-b">
                   <tr>
                     <th className="p-1.5 w-6">#</th>
-                    <th className="p-1.5">Item</th>
-                    <th className="p-1.5 w-16 text-center">To Prep</th>
-                    <th className="p-1.5 w-12 text-center">Unit</th>
+                    <th className="p-1.5">{t('item', 'Item')}</th>
+                    <th className="p-1.5 w-16 text-center">{t('to_prep', 'To Prep')}</th>
+                    <th className="p-1.5 w-12 text-center">{t('unit', 'Unit')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -533,7 +535,7 @@ export default function ProductReqPreparationView() {
               </table>
 
               <div className="pt-4 border-t text-center text-[10px] text-slate-400">
-                Prepared By Cook Signature: _______________________
+                {t('prepared_by_cook_signature_____________', 'Prepared By Cook Signature: _______________________')}
               </div>
             </div>
           </div>

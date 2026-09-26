@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 2: Accounting Purchases & Expenses Console
@@ -135,6 +136,7 @@ export function Module2PurchasesExpenses({
   onShowToast,
   onPostVoucherToJv
 }: Module2PurchasesExpensesProps) {
+  const { t } = useLanguage();
   // Current date helper
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
@@ -898,12 +900,12 @@ export function Module2PurchasesExpenses({
               )}
               {voucherStatus === 'DRAFT' && (
                 <span className="bg-muted text-muted-foreground border border-border text-[10px] font-bold px-2.5 py-0.5 rounded-full">
-                  Draft
+                  {t('draft', 'Draft')}
                 </span>
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Record supplier purchase bills, operational expenditures, and recurring payment orders
+              {t('record_supplier_purchase_bills', 'Record supplier purchase bills, operational expenditures, and recurring payment orders')}
             </p>
           </div>
 
@@ -924,7 +926,7 @@ export function Module2PurchasesExpenses({
               className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <Eye className="w-3.5 h-3.5 text-muted-foreground" />
-              <span>Preview</span>
+              <span>{t('preview', 'Preview')}</span>
             </button>
 
             {/* Actions Dropdown: Recall Recurring */}
@@ -934,7 +936,7 @@ export function Module2PurchasesExpenses({
                 onClick={() => setShowActionsDropdown((prev) => !prev)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
               >
-                <span>Actions</span>
+                <span>{t('actions', 'Actions')}</span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${
                     showActionsDropdown ? 'rotate-180' : ''
@@ -953,7 +955,7 @@ export function Module2PurchasesExpenses({
                     className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted font-medium text-foreground transition-colors cursor-pointer flex items-center gap-2"
                   >
                     <RotateCcw className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>Recall Recurring</span>
+                    <span>{t('recall_recurring', 'Recall Recurring')}</span>
                   </button>
                 </div>
               )}
@@ -965,7 +967,7 @@ export function Module2PurchasesExpenses({
               className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <LinkIcon className="w-3.5 h-3.5 text-primary" />
-              <span>Supporting Document</span>
+              <span>{t('supporting_document', 'Supporting Document')}</span>
             </button>
           </div>
         </div>
@@ -974,7 +976,7 @@ export function Module2PurchasesExpenses({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5 text-xs font-medium">
           {/* Date* */}
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Date *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('date', 'Date *')}</label>
             <input
               type="date"
               value={date}
@@ -986,7 +988,7 @@ export function Module2PurchasesExpenses({
 
           {/* Currency* */}
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Currency *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('currency', 'Currency *')}</label>
             <select
               value={currency}
               disabled={isExpenseLocked}
@@ -1002,17 +1004,17 @@ export function Module2PurchasesExpenses({
 
           {/* Type* */}
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Type *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('type', 'Type *')}</label>
             <select
               value={type}
               disabled={isExpenseLocked}
               onChange={(e) => setType(e.target.value)}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
             >
-              <option value="Expense Voucher">Expense Voucher</option>
-              <option value="Purchase Voucher">Purchase Voucher</option>
-              <option value="Raw Materials Procurement">Raw Materials Procurement</option>
-              <option value="Operating Overhead">Operating Overhead</option>
+              <option value="Expense Voucher">{t('expense_voucher', 'Expense Voucher')}</option>
+              <option value="Purchase Voucher">{t('purchase_voucher', 'Purchase Voucher')}</option>
+              <option value="Raw Materials Procurement">{t('raw_materials_procurement', 'Raw Materials Procurement')}</option>
+              <option value="Operating Overhead">{t('operating_overhead', 'Operating Overhead')}</option>
             </select>
           </div>
 
@@ -1026,32 +1028,32 @@ export function Module2PurchasesExpenses({
                 onChange={(e) => setEnterPaymentDetails(e.target.checked)}
                 className="rounded border-input text-primary focus:ring-primary h-4 w-4 disabled:cursor-not-allowed"
               />
-              <span>Enter Payment Details</span>
+              <span>{t('enter_payment_details', 'Enter Payment Details')}</span>
             </label>
           </div>
 
           {/* Description* */}
           <div className="sm:col-span-2 md:col-span-2">
-            <label className="text-foreground mb-1 block font-semibold">Description *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('description', 'Description *')}</label>
             <textarea
               rows={2}
               value={description}
               disabled={isExpenseLocked}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Multi-line purchase description, delivery notes, or supplier memo..."
+              placeholder={t('multiline_purchase_description_delivery', 'Multi-line purchase description, delivery notes, or supplier memo...')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs disabled:bg-muted disabled:cursor-not-allowed"
             />
           </div>
 
           {/* Internal Remark */}
           <div className="sm:col-span-2 md:col-span-2">
-            <label className="text-muted-foreground mb-1 block font-medium">Internal Remark</label>
+            <label className="text-muted-foreground mb-1 block font-medium">{t('internal_remark', 'Internal Remark')}</label>
             <textarea
               rows={2}
               value={internalRemark}
               disabled={isExpenseLocked}
               onChange={(e) => setInternalRemark(e.target.value)}
-              placeholder="Internal audit notes, budget code, or approval tracking..."
+              placeholder={t('internal_audit_notes_budget_code_or', 'Internal audit notes, budget code, or approval tracking...')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs disabled:bg-muted disabled:cursor-not-allowed"
             />
           </div>
@@ -1066,16 +1068,16 @@ export function Module2PurchasesExpenses({
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-2.5">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-primary" />
-                <span className="text-xs font-bold text-foreground">Inline Payment Execution</span>
+                <span className="text-xs font-bold text-foreground">{t('inline_payment_execution', 'Inline Payment Execution')}</span>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
-                  Multi-Disbursement
+                  {t('multidisbursement', 'Multi-Disbursement')}
                 </span>
               </div>
 
               {/* Live Metrics: Total Disbursed & Status Difference Indicator */}
               <div className="flex items-center gap-3 text-xs font-medium">
                 <div>
-                  <span className="text-muted-foreground text-[11px]">Total Disbursed: </span>
+                  <span className="text-muted-foreground text-[11px]">{t('total_disbursed', 'Total Disbursed:')} </span>
                   <span className="font-mono font-bold text-foreground">${totalPaymentsUSD.toFixed(2)}</span>
                 </div>
 
@@ -1105,8 +1107,7 @@ export function Module2PurchasesExpenses({
                     <span className="font-bold">Unclosed Case (Pending Settlement)</span>
                     <p className="text-[11px] text-amber-700 mt-0.5">
                       Expense bills (${totalUSD.toFixed(2)}) exceed advance disbursement (${totalPaymentsUSD.toFixed(2)}).
-                      Difference of <strong className="font-mono font-bold">${paymentDifference.toFixed(2)}</strong> is pending cash settlement.
-                      Original advance line is sealed. Click <strong className="font-bold text-amber-950">+</strong> on row controls to disburse remaining amount.
+                      Difference of <strong className="font-mono font-bold">${paymentDifference.toFixed(2)}</strong> {t('is_pending_cash_settlement_original', 'is pending cash settlement. Original advance line is sealed. Click')} <strong className="font-bold text-amber-950">+</strong> {t('on_row_controls_to_disburse_remaining', 'on row controls to disburse remaining amount.')}
                     </p>
                   </div>
                 </div>
@@ -1133,7 +1134,7 @@ export function Module2PurchasesExpenses({
                   </div>
                 </div>
                 <span className="bg-emerald-500/20 text-emerald-900 border border-emerald-500/40 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                  Audit Sealed
+                  {t('audit_sealed', 'Audit Sealed')}
                 </span>
               </div>
             )}
@@ -1144,13 +1145,13 @@ export function Module2PurchasesExpenses({
                 <thead>
                   <tr className="bg-muted text-foreground font-semibold border-b border-border">
                     <th className="p-2.5 w-10 text-center">#</th>
-                    <th className="p-2.5 w-44">Payment Method</th>
-                    <th className="p-2.5 min-w-[240px]">Disbursing Account</th>
-                    <th className="p-2.5 w-32 text-right">Amount Paid</th>
-                    <th className="p-2.5 w-36">Cheque / Wire Ref #</th>
-                    <th className="p-2.5 w-32">Payment Date</th>
-                    <th className="p-2.5 w-36">Department</th>
-                    <th className="p-2.5 w-16 text-center">Action</th>
+                    <th className="p-2.5 w-44">{t('payment_method', 'Payment Method')}</th>
+                    <th className="p-2.5 min-w-[240px]">{t('disbursing_account', 'Disbursing Account')}</th>
+                    <th className="p-2.5 w-32 text-right">{t('amount_paid', 'Amount Paid')}</th>
+                    <th className="p-2.5 w-36">{t('cheque_wire_ref', 'Cheque / Wire Ref #')}</th>
+                    <th className="p-2.5 w-32">{t('payment_date', 'Payment Date')}</th>
+                    <th className="p-2.5 w-36">{t('department', 'Department')}</th>
+                    <th className="p-2.5 w-16 text-center">{t('action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -1181,10 +1182,10 @@ export function Module2PurchasesExpenses({
                             }
                             className="w-full bg-card border border-input rounded-md p-1.5 text-foreground text-xs shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
                           >
-                            <option value="Cash">Cash</option>
-                            <option value="Wire Transfer">Wire Transfer</option>
-                            <option value="Commercial Bank Check">Commercial Bank Check</option>
-                            <option value="Credit Card">Credit Card</option>
+                            <option value="Cash">{t('cash', 'Cash')}</option>
+                            <option value="Wire Transfer">{t('wire_transfer', 'Wire Transfer')}</option>
+                            <option value="Commercial Bank Check">{t('commercial_bank_check', 'Commercial Bank Check')}</option>
+                            <option value="Credit Card">{t('credit_card', 'Credit Card')}</option>
                           </select>
                         </td>
 
@@ -1245,7 +1246,7 @@ export function Module2PurchasesExpenses({
                             onChange={(e) =>
                               handleUpdatePaymentRow(pIdx, 'refNumber', e.target.value)
                             }
-                            placeholder="Optional ref..."
+                            placeholder={t('optional_ref', 'Optional ref...')}
                             className="w-full bg-card border border-input rounded-md p-1.5 text-foreground text-xs shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
                           />
                         </td>
@@ -1273,10 +1274,10 @@ export function Module2PurchasesExpenses({
                             }
                             className="w-full bg-card border border-input rounded-md p-1.5 text-foreground text-xs shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
                           >
-                            <option value="Main Department">Main Department</option>
-                            <option value="Mill Operations">Mill Operations</option>
-                            <option value="Administration">Administration</option>
-                            <option value="Commercial Sales">Commercial Sales</option>
+                            <option value="Main Department">{t('main_department', 'Main Department')}</option>
+                            <option value="Mill Operations">{t('mill_operations', 'Mill Operations')}</option>
+                            <option value="Administration">{t('administration', 'Administration')}</option>
+                            <option value="Commercial Sales">{t('commercial_sales', 'Commercial Sales')}</option>
                             <option value="Utilities & Power">Utilities &amp; Power</option>
                           </select>
                         </td>
@@ -1288,7 +1289,7 @@ export function Module2PurchasesExpenses({
                               type="button"
                               onClick={handleAddPaymentRow}
                               disabled={isPaymentLocked}
-                              title="Append Payment Row"
+                              title={t('append_payment_row', 'Append Payment Row')}
                               className="bg-primary hover:bg-primary/90 disabled:opacity-40 text-primary-foreground p-1 rounded transition-colors cursor-pointer disabled:cursor-not-allowed shadow-xs"
                             >
                               <Plus className="w-3.5 h-3.5" />
@@ -1297,7 +1298,7 @@ export function Module2PurchasesExpenses({
                               type="button"
                               onClick={() => handleDeletePaymentRow(pIdx)}
                               disabled={rowIsLocked}
-                              title="Delete Payment Row"
+                              title={t('delete_payment_row', 'Delete Payment Row')}
                               className="text-muted-foreground hover:text-destructive disabled:opacity-40 p-1 rounded transition-colors cursor-pointer disabled:cursor-not-allowed"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -1324,7 +1325,7 @@ export function Module2PurchasesExpenses({
             {isExpenseLocked && (
               <span className="bg-muted text-muted-foreground border border-border text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
                 <Lock className="w-3 h-3" />
-                <span>Locked For Audit</span>
+                <span>{t('locked_for_audit', 'Locked For Audit')}</span>
               </span>
             )}
           </h4>
@@ -1333,7 +1334,7 @@ export function Module2PurchasesExpenses({
         {/* A. FIXED PURCHASE / SUPPLIER ROW ("Purchase From:") */}
         <div className="bg-muted/40 border border-border rounded-lg p-3 space-y-2">
           <div className="text-xs font-bold text-primary flex items-center gap-1.5">
-            <span>Purchase From:</span>
+            <span>{t('purchase_from', 'Purchase From:')}</span>
             <span className="text-[11px] font-normal text-muted-foreground">
               (Supplier / Creditor Control Account)
             </span>
@@ -1352,7 +1353,7 @@ export function Module2PurchasesExpenses({
                   title="Quick-Add New Supplier Account (#40110...)"
                 >
                   <Plus className="w-2.5 h-2.5" />
-                  <span>New Supplier</span>
+                  <span>{t('new_supplier', 'New Supplier')}</span>
                 </button>
               </div>
               <div className="flex items-center gap-1">
@@ -1398,43 +1399,43 @@ export function Module2PurchasesExpenses({
 
             {/* Department */}
             <div>
-              <label className="text-muted-foreground mb-0.5 block text-[11px]">Department</label>
+              <label className="text-muted-foreground mb-0.5 block text-[11px]">{t('department', 'Department')}</label>
               <select
                 value={purchaseDept}
                 disabled={isExpenseLocked}
                 onChange={(e) => setPurchaseDept(e.target.value)}
                 className="w-full bg-card border border-input rounded-md p-1.5 text-foreground shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
               >
-                <option value="Main Department">Main Department</option>
-                <option value="Mill Operations">Mill Operations</option>
-                <option value="Administration">Administration</option>
-                <option value="Commercial Sales">Commercial Sales</option>
+                <option value="Main Department">{t('main_department', 'Main Department')}</option>
+                <option value="Mill Operations">{t('mill_operations', 'Mill Operations')}</option>
+                <option value="Administration">{t('administration', 'Administration')}</option>
+                <option value="Commercial Sales">{t('commercial_sales', 'Commercial Sales')}</option>
                 <option value="Utilities & Power">Utilities &amp; Power</option>
               </select>
             </div>
 
             {/* Description */}
             <div>
-              <label className="text-muted-foreground mb-0.5 block text-[11px]">Description</label>
+              <label className="text-muted-foreground mb-0.5 block text-[11px]">{t('description', 'Description')}</label>
               <input
                 type="text"
                 value={purchaseDesc}
                 disabled={isExpenseLocked}
                 onChange={(e) => setPurchaseDesc(e.target.value)}
-                placeholder="Purchase details..."
+                placeholder={t('purchase_details', 'Purchase details...')}
                 className="w-full bg-card border border-input rounded-md p-1.5 text-foreground shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
               />
             </div>
 
             {/* Ref / Invoice # */}
             <div>
-              <label className="text-muted-foreground mb-0.5 block text-[11px]">Ref / Invoice #</label>
+              <label className="text-muted-foreground mb-0.5 block text-[11px]">{t('ref_invoice', 'Ref / Invoice #')}</label>
               <input
                 type="text"
                 value={purchaseRef}
                 disabled={isExpenseLocked}
                 onChange={(e) => setPurchaseRef(e.target.value)}
-                placeholder="e.g. BILL-9921"
+                placeholder={t('eg_bill9921', 'e.g. BILL-9921')}
                 className="w-full bg-card border border-input rounded-md p-1.5 text-foreground shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
               />
             </div>
@@ -1444,10 +1445,10 @@ export function Module2PurchasesExpenses({
         {/* B. DYNAMIC EXPENSE ALLOCATION ROWS ("Expense Account Breakdown:") */}
         <div className="space-y-2.5">
           <div className="text-xs font-bold text-foreground flex items-center justify-between">
-            <span>Expense Account Breakdown:</span>
+            <span>{t('expense_account_breakdown', 'Expense Account Breakdown:')}</span>
             {isExpenseLocked && (
               <span className="text-[11px] text-muted-foreground font-normal">
-                Receipts recorded and sealed against modifications
+                {t('receipts_recorded_and_sealed_against', 'Receipts recorded and sealed against modifications')}
               </span>
             )}
           </div>
@@ -1468,17 +1469,17 @@ export function Module2PurchasesExpenses({
                 <div className="md:col-span-2">
                   <div className="flex items-center justify-between mb-0.5">
                     <label className="text-muted-foreground block text-[11px]">
-                      Expense / Asset Account:
+                      {t('expense_asset_account', 'Expense / Asset Account:')}
                     </label>
                     <button
                       type="button"
                       onClick={() => setQuickAddModal({ isOpen: true, presetType: 'EXPENSE_OR_ASSET', targetIndex: idx })}
                       disabled={isExpenseLocked}
                       className="text-[10px] text-primary hover:underline font-bold flex items-center gap-0.5 cursor-pointer disabled:opacity-50"
-                      title="Quick-Add Expense or Asset Account"
+                      title={t('quickadd_expense_or_asset_account', 'Quick-Add Expense or Asset Account')}
                     >
                       <Plus className="w-2.5 h-2.5" />
-                      <span>New Account</span>
+                      <span>{t('new_account', 'New Account')}</span>
                     </button>
                   </div>
                   <div className="flex items-center gap-1">
@@ -1511,7 +1512,7 @@ export function Module2PurchasesExpenses({
 
                 {/* Amount */}
                 <div>
-                  <label className="text-muted-foreground mb-0.5 block text-[11px]">Amount</label>
+                  <label className="text-muted-foreground mb-0.5 block text-[11px]">{t('amount', 'Amount')}</label>
                   <input
                     type="number"
                     value={row.amount || ''}
@@ -1527,30 +1528,30 @@ export function Module2PurchasesExpenses({
 
                 {/* Department */}
                 <div>
-                  <label className="text-muted-foreground mb-0.5 block text-[11px]">Department</label>
+                  <label className="text-muted-foreground mb-0.5 block text-[11px]">{t('department', 'Department')}</label>
                   <select
                     value={row.department}
                     disabled={isExpenseLocked}
                     onChange={(e) => handleUpdateExpenseRow(idx, 'department', e.target.value)}
                     className="w-full bg-card border border-input rounded-md p-1.5 text-foreground shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
                   >
-                    <option value="Main Department">Main Department</option>
-                    <option value="Mill Operations">Mill Operations</option>
-                    <option value="Administration">Administration</option>
-                    <option value="Commercial Sales">Commercial Sales</option>
+                    <option value="Main Department">{t('main_department', 'Main Department')}</option>
+                    <option value="Mill Operations">{t('mill_operations', 'Mill Operations')}</option>
+                    <option value="Administration">{t('administration', 'Administration')}</option>
+                    <option value="Commercial Sales">{t('commercial_sales', 'Commercial Sales')}</option>
                     <option value="Utilities & Power">Utilities &amp; Power</option>
                   </select>
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="text-muted-foreground mb-0.5 block text-[11px]">Description</label>
+                  <label className="text-muted-foreground mb-0.5 block text-[11px]">{t('description', 'Description')}</label>
                   <input
                     type="text"
                     value={row.description}
                     disabled={isExpenseLocked}
                     onChange={(e) => handleUpdateExpenseRow(idx, 'description', e.target.value)}
-                    placeholder="Expense line note..."
+                    placeholder={t('expense_line_note', 'Expense line note...')}
                     className="w-full bg-card border border-input rounded-md p-1.5 text-foreground shadow-2xs disabled:bg-muted disabled:cursor-not-allowed"
                   />
                 </div>
@@ -1562,7 +1563,7 @@ export function Module2PurchasesExpenses({
                     value={row.refInvoice}
                     disabled={isExpenseLocked}
                     onChange={(e) => handleUpdateExpenseRow(idx, 'refInvoice', e.target.value)}
-                    placeholder="Ref#"
+                    placeholder={t('ref', 'Ref#')}
                     className="w-20 bg-card border border-input rounded-md p-1.5 text-foreground shadow-2xs text-xs disabled:bg-muted disabled:cursor-not-allowed"
                   />
 
@@ -1583,7 +1584,7 @@ export function Module2PurchasesExpenses({
                     type="button"
                     onClick={() => handleDeleteExpenseRow(idx)}
                     disabled={isExpenseLocked}
-                    title="Delete Row"
+                    title={t('delete_row', 'Delete Row')}
                     className="text-muted-foreground hover:text-destructive disabled:opacity-40 p-1.5 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -1600,7 +1601,7 @@ export function Module2PurchasesExpenses({
         <div className="bg-muted p-4 rounded-xl border border-border flex flex-wrap items-center justify-between gap-4">
           {/* Left Side: Total Voucher Value */}
           <div>
-            <span className="text-xs text-muted-foreground block font-medium">Total Voucher Value:</span>
+            <span className="text-xs text-muted-foreground block font-medium">{t('total_voucher_value', 'Total Voucher Value:')}</span>
             <div className="text-base font-bold font-mono text-foreground flex items-center gap-4">
               <span className="text-emerald-700">Total: {totalUSD.toFixed(2)} $</span>
               <span className="text-muted-foreground text-xs">{totalLBP.toLocaleString()} LBP</span>
@@ -1615,7 +1616,7 @@ export function Module2PurchasesExpenses({
               onClick={handleClearForm}
               className="bg-card hover:bg-destructive/10 text-destructive border border-destructive/40 px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
             >
-              Clear
+              {t('clear', 'Clear')}
             </button>
 
             {/* Store As Recurring: Saves template */}
@@ -1624,7 +1625,7 @@ export function Module2PurchasesExpenses({
               onClick={handleStoreAsRecurring}
               className="bg-sky-700 hover:bg-sky-800 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
             >
-              Store As Recurring
+              {t('store_as_recurring', 'Store As Recurring')}
             </button>
 
             {/* Save: Saves as draft */}
@@ -1668,7 +1669,7 @@ export function Module2PurchasesExpenses({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Eye className="w-4 h-4 text-primary" />
-                <span>Preview Expense</span>
+                <span>{t('preview_expense', 'Preview Expense')}</span>
               </h4>
               <button
                 type="button"
@@ -1687,7 +1688,7 @@ export function Module2PurchasesExpenses({
                   type="text"
                   value={previewSearch}
                   onChange={(e) => setPreviewSearch(e.target.value)}
-                  placeholder="Search payee, reference, description..."
+                  placeholder={t('search_payee_reference_description', 'Search payee, reference, description...')}
                   className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                 />
               </div>
@@ -1697,10 +1698,10 @@ export function Module2PurchasesExpenses({
                 onChange={(e) => setPreviewFilter(e.target.value as any)}
                 className="bg-card border border-input rounded-lg p-1.5 text-foreground shadow-2xs"
               >
-                <option value="Show All">Show All</option>
-                <option value="Pending Settlement">Pending Settlement</option>
-                <option value="Posted">Posted</option>
-                <option value="Unposted">Unposted</option>
+                <option value="Show All">{t('show_all', 'Show All')}</option>
+                <option value="Pending Settlement">{t('pending_settlement', 'Pending Settlement')}</option>
+                <option value="Posted">{t('posted', 'Posted')}</option>
+                <option value="Unposted">{t('unposted', 'Unposted')}</option>
               </select>
             </div>
 
@@ -1709,17 +1710,17 @@ export function Module2PurchasesExpenses({
               <table className="w-full text-left text-xs">
                 <thead className="sticky top-0 bg-muted border-b border-border text-foreground font-semibold">
                   <tr>
-                    <th className="p-2.5">Payee</th>
-                    <th className="p-2.5">Reference</th>
-                    <th className="p-2.5">Date</th>
-                    <th className="p-2.5">EV</th>
-                    <th className="p-2.5">Date Of EV</th>
+                    <th className="p-2.5">{t('payee', 'Payee')}</th>
+                    <th className="p-2.5">{t('reference', 'Reference')}</th>
+                    <th className="p-2.5">{t('date', 'Date')}</th>
+                    <th className="p-2.5">{t('ev', 'EV')}</th>
+                    <th className="p-2.5">{t('date_of_ev', 'Date Of EV')}</th>
                     <th className="p-2.5 text-right">Amount ($)</th>
-                    <th className="p-2.5 min-w-[170px]">Description</th>
-                    <th className="p-2.5">Entered By</th>
-                    <th className="p-2.5">Department</th>
-                    <th className="p-2.5 text-center">Status</th>
-                    <th className="p-2.5 text-right">Action</th>
+                    <th className="p-2.5 min-w-[170px]">{t('description', 'Description')}</th>
+                    <th className="p-2.5">{t('entered_by', 'Entered By')}</th>
+                    <th className="p-2.5">{t('department', 'Department')}</th>
+                    <th className="p-2.5 text-center">{t('status', 'Status')}</th>
+                    <th className="p-2.5 text-right">{t('action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -1753,15 +1754,15 @@ export function Module2PurchasesExpenses({
                         <td className="p-2.5 text-center">
                           {r.status === 'UNCLOSED_PENDING_SETTLEMENT' ? (
                             <span className="bg-amber-500/15 text-amber-800 border border-amber-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
-                              <AlertCircle className="w-3 h-3 text-amber-600" /> Pending
+                              <AlertCircle className="w-3 h-3 text-amber-600" /> {t('pending', 'Pending')}
                             </span>
                           ) : r.status === 'FULLY_CLOSED_RECONCILED' ? (
                             <span className="bg-emerald-500/15 text-emerald-800 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Reconciled
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> {t('reconciled', 'Reconciled')}
                             </span>
                           ) : (
                             <span className="bg-muted text-muted-foreground border border-border px-2 py-0.5 rounded-full text-[10px] font-bold">
-                              Draft
+                              {t('draft', 'Draft')}
                             </span>
                           )}
                         </td>
@@ -1771,7 +1772,7 @@ export function Module2PurchasesExpenses({
                             onClick={() => handleLoadVoucherForReconciliation(r)}
                             className="bg-primary hover:bg-primary/90 text-primary-foreground px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 ml-auto transition-colors cursor-pointer shadow-xs"
                           >
-                            <span>Open</span>
+                            <span>{t('open', 'Open')}</span>
                             <ArrowRight className="w-3 h-3" />
                           </button>
                         </td>
@@ -1787,7 +1788,7 @@ export function Module2PurchasesExpenses({
                 onClick={() => setShowPreviewModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1801,7 +1802,7 @@ export function Module2PurchasesExpenses({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <RotateCcw className="w-4 h-4 text-primary" />
-                <span>Expense Recurring</span>
+                <span>{t('expense_recurring', 'Expense Recurring')}</span>
               </h4>
               <button
                 type="button"
@@ -1813,15 +1814,15 @@ export function Module2PurchasesExpenses({
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Select a stored recurring purchase/expense template to automatically populate the console grid.
+              {t('select_a_stored_recurring', 'Select a stored recurring purchase/expense template to automatically populate the console grid.')}
             </p>
 
             <div className="overflow-y-auto rounded-lg border border-border max-h-64">
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted border-b border-border text-foreground font-semibold sticky top-0">
                   <tr>
-                    <th className="p-2.5">Description</th>
-                    <th className="p-2.5 text-right w-24">Action</th>
+                    <th className="p-2.5">{t('description', 'Description')}</th>
+                    <th className="p-2.5 text-right w-24">{t('action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -1843,7 +1844,7 @@ export function Module2PurchasesExpenses({
                           onClick={() => handleRecallTemplate(tpl)}
                           className="bg-primary hover:bg-primary/90 text-primary-foreground px-2.5 py-1 rounded text-[11px] font-semibold transition-colors cursor-pointer shadow-xs"
                         >
-                          Load
+                          {t('load', 'Load')}
                         </button>
                       </td>
                     </tr>
@@ -1858,7 +1859,7 @@ export function Module2PurchasesExpenses({
                 onClick={() => setShowRecurringModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1872,7 +1873,7 @@ export function Module2PurchasesExpenses({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <LinkIcon className="w-4 h-4 text-primary" />
-                <span>Supporting Document</span>
+                <span>{t('supporting_document', 'Supporting Document')}</span>
               </h4>
               <button
                 type="button"
@@ -1888,7 +1889,7 @@ export function Module2PurchasesExpenses({
             </p>
 
             <div>
-              <label className="text-xs font-semibold text-foreground mb-1 block">Document Url</label>
+              <label className="text-xs font-semibold text-foreground mb-1 block">{t('document_url', 'Document Url')}</label>
               <input
                 type="url"
                 value={supportingDocUrl}
@@ -1904,7 +1905,7 @@ export function Module2PurchasesExpenses({
                 onClick={() => setShowSupportingDocModal(false)}
                 className="bg-card hover:bg-muted text-foreground px-4 py-2 rounded-lg text-xs font-semibold border border-border transition-colors cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -1914,7 +1915,7 @@ export function Module2PurchasesExpenses({
                 }}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
               >
-                Save
+                {t('save', 'Save')}
               </button>
             </div>
           </div>

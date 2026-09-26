@@ -582,7 +582,7 @@ export default function Sidebar({
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
                   <span>{t('purchases', '3. Purchasing & Procurement')}</span>
-                  <span className="bg-amber-100 text-amber-800 text-[9px] px-1 py-0.2 rounded font-bold">PO</span>
+                  <span className="bg-amber-100 text-amber-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('po', 'PO')}</span>
                 </span>
               )}
             </div>
@@ -628,7 +628,7 @@ export default function Sidebar({
               <Link href="/backoffice/customers?section=aged" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('customer_aged_receivables', 'Customer Aged Receivables')}</Link>
               <Link href="/customer-insights" className="w-full text-start p-1.5 hover:text-blue-700 bg-blue-50/60 hover:bg-blue-100 rounded transition-colors font-bold text-blue-700 flex items-center justify-between block">
                 <span>{t('customer_insights', 'Customer Insights')}</span>
-                <span className="text-[9px] bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded font-black">AI CRM</span>
+                <span className="text-[9px] bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded font-black">{t('ai_crm', 'AI CRM')}</span>
               </Link>
               <Link href="/schedule" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('tasks_appointments', 'Tasks and Appointments')}</Link>
               <Link href="/sales-manager-dashboard" target="_blank" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('sales_team_performance', 'Sales Team Performance')}</Link>
@@ -1181,7 +1181,7 @@ export default function Sidebar({
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
                   <span>{t('supersonic_fleet', '9. Supersonic Fleet / V-Driver')}</span>
-                  <span className="bg-blue-100 text-primary text-[9px] px-1 py-0.2 rounded font-bold">PRO</span>
+                  <span className="bg-blue-100 text-primary text-[9px] px-1 py-0.2 rounded font-bold">{t('pro', 'PRO')}</span>
                 </span>
               )}
             </div>
@@ -1193,7 +1193,7 @@ export default function Sidebar({
               <Link href="/backoffice/fleet" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('fleet_dashboard', 'Fleet Dashboard')}</Link>
               <Link href="/backoffice/fleet?tab=reports" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
                 <span>{t('fleet_reports', 'Fleet Reports')}</span>
-                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">REP</span>
+                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">{t('rep', 'REP')}</span>
               </Link>
               <Link href="/backoffice/fleet?tab=dispatch" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('active_dispatches', 'Active Dispatches')}</Link>
               <Link href="/backoffice/fleet?tab=vendors" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('driver_management', 'Driver Management')}</Link>
@@ -1202,7 +1202,7 @@ export default function Sidebar({
               <Link href="/backoffice/fleet?tab=accounting" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('driver_settlements', 'Driver Settlements')}</Link>
               <Link href="/vtrack" className="w-full text-start p-1.5 text-blue-700 bg-blue-50/70 hover:bg-blue-100 rounded flex items-center justify-between font-bold transition-colors mt-1 block">
                 <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-blue-600" /> {t('vtrack_geographics', 'V-Track Geographics')}</span>
-                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-black">ACTIVE</span>
+                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-black">{t('active', 'ACTIVE')}</span>
               </Link>
             </div>
           )}
@@ -1226,7 +1226,7 @@ export default function Sidebar({
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
                   <span>{t('social_crm', '10. V-Connect (Social CRM)')}</span>
-                  <span className="bg-cyan-100 text-cyan-800 text-[9px] px-1 py-0.2 rounded font-bold">CONNECT</span>
+                  <span className="bg-cyan-100 text-cyan-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('connect', 'CONNECT')}</span>
                 </span>
               )}
             </div>
@@ -1242,11 +1242,11 @@ export default function Sidebar({
                   <Target className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
                   <span>{t('lead_pipeline_acquisition', 'Lead Pipeline & Acquisition')}</span>
                 </span>
-                <span className="text-[9px] bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded font-bold">LEADS</span>
+                <span className="text-[9px] bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded font-bold">{t('leads', 'LEADS')}</span>
               </Link>
               <Link href="/backoffice/social-crm?tab=reports" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between block">
                 <span>{t('reports_hub', 'Reports Hub')}</span>
-                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">REP</span>
+                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">{t('rep', 'REP')}</span>
               </Link>
               <Link href="/backoffice/social-crm?tab=inbox" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('omnichannel_inbox', 'Omnichannel Inbox')}</Link>
               <Link href="/backoffice/social-crm?tab=campaigns" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('campaign_analytics', 'Campaign Analytics')}</Link>
@@ -1273,7 +1273,7 @@ export default function Sidebar({
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
                   <span>{t('pressing_mill_nav', '11. Pressing Mill Engine')}</span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">MILL</span>
+                  <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('mill', 'MILL')}</span>
                 </span>
               )}
             </div>
@@ -1404,7 +1404,7 @@ export default function Sidebar({
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
                   <span>{t('online_orders', '12. V-Store (Online Storefront)')}</span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">WEB</span>
+                  <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('web', 'WEB')}</span>
                 </span>
               )}
             </div>
@@ -1415,7 +1415,7 @@ export default function Sidebar({
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
               <Link href="/backoffice/online-orders" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded font-semibold text-emerald-700 flex items-center justify-between">
                 <span>{t('online_orders', 'Online Orders')}</span>
-                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">LIVE</span>
+                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">{t('live', 'LIVE')}</span>
               </Link>
               <Link href="/landing" target="_blank" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded text-slate-700 flex items-center justify-between">
                 <span>{t('customer_storefront', 'Customer Storefront')}</span>

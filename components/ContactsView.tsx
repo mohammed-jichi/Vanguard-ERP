@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import {
@@ -157,6 +158,7 @@ export const INITIAL_CONTACTS: CRMContact[] = [
 ];
 
 export default function ContactsView() {
+  const { t } = useLanguage();
   // Contacts data state synced with localStorage
   const [contacts, setContacts] = useState<CRMContact[]>(INITIAL_CONTACTS);
   
@@ -404,7 +406,7 @@ export default function ContactsView() {
             <span className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-black font-extrabold text-xs">
               Ω
             </span>
-            <span className="text-white tracking-widest font-semibold text-xs uppercase">Omega Software</span>
+            <span className="text-white tracking-widest font-semibold text-xs uppercase">{t('omega_software', 'Omega Software')}</span>
           </div>
         </div>
 
@@ -413,24 +415,24 @@ export default function ContactsView() {
         </div>
 
         <div className="flex items-center gap-3 text-zinc-300">
-          <Link href="/" title="Home" className="hover:text-white p-1">
+          <Link href="/" title={t('home', 'Home')} className="hover:text-white p-1">
             <Home className="w-3.5 h-3.5" />
           </Link>
-          <button type="button" title="Messages" className="hover:text-white p-1">
+          <button type="button" title={t('messages', 'Messages')} className="hover:text-white p-1">
             <Mail className="w-3.5 h-3.5" />
           </button>
-          <button type="button" title="Settings" className="hover:text-white p-1">
+          <button type="button" title={t('settings', 'Settings')} className="hover:text-white p-1">
             <Settings className="w-3.5 h-3.5" />
           </button>
-          <button type="button" title="Help" className="hover:text-white p-1">
+          <button type="button" title={t('help', 'Help')} className="hover:text-white p-1">
             <HelpCircle className="w-3.5 h-3.5" />
           </button>
           <div className="flex items-center gap-1.5 pl-2 border-l border-zinc-700 cursor-pointer hover:text-white">
             <User className="w-3.5 h-3.5" />
-            <span className="text-xs">Jichi Mohammed</span>
+            <span className="text-xs">{t('jichi_mohammed', 'Jichi Mohammed')}</span>
             <ChevronDown className="w-3 h-3 text-zinc-400" />
           </div>
-          <button type="button" title="Apps" className="hover:text-white p-1 ml-1">
+          <button type="button" title={t('apps', 'Apps')} className="hover:text-white p-1 ml-1">
             <Grid className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -442,25 +444,25 @@ export default function ContactsView() {
       <div className="flex-1 flex">
         {/* Slim Omega Sidebar (Matching Left Bar in Screenshot 1) */}
         <aside className="w-12 bg-white border-r border-slate-200 flex flex-col items-center py-3 gap-4 text-slate-500 shadow-2xs select-none">
-          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Navigation Menu">
+          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('navigation_menu', 'Navigation Menu')}>
             <span className="text-base font-bold">≡</span>
           </button>
-          <Link href="/" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title="Home">
+          <Link href="/" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title={t('home', 'Home')}>
             <Home className="w-4 h-4" />
           </Link>
-          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Cart / Orders">
+          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('cart_orders', 'Cart / Orders')}>
             <span className="text-xs font-bold text-amber-600">🛒</span>
           </button>
-          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Forms">
+          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('forms', 'Forms')}>
             <span className="text-xs font-bold text-slate-600">📋</span>
           </button>
-          <Link href="/contacts" className="p-2 bg-blue-50 text-blue-600 rounded" title="Contacts / CRM">
+          <Link href="/contacts" className="p-2 bg-blue-50 text-blue-600 rounded" title={t('contacts_crm', 'Contacts / CRM')}>
             <User className="w-4 h-4" />
           </Link>
-          <Link href="/quotations" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Quotations Workstation">
+          <Link href="/quotations" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('quotations_workstation', 'Quotations Workstation')}>
             <span className="text-xs font-bold text-slate-600">📄</span>
           </Link>
-          <Link href="/my-sales" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="My Sales Dashboard">
+          <Link href="/my-sales" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('my_sales_dashboard', 'My Sales Dashboard')}>
             <TrendingUp className="w-4 h-4 text-emerald-600" />
           </Link>
         </aside>
@@ -477,11 +479,11 @@ export default function ContactsView() {
 
           {/* Title & Breadcrumb */}
           <div className="mb-4">
-            <h1 className="text-xl font-bold text-primary">Contacts</h1>
+            <h1 className="text-xl font-bold text-primary">{t('contacts', 'Contacts')}</h1>
             <div className="text-[11px] text-slate-500 mt-0.5">
-              <Link href="/" className="text-blue-600 hover:underline">Home</Link>
+              <Link href="/" className="text-blue-600 hover:underline">{t('home', 'Home')}</Link>
               <span className="mx-1 text-slate-400">/</span>
-              <span>Contacts</span>
+              <span>{t('contacts', 'Contacts')}</span>
             </div>
           </div>
 
@@ -493,7 +495,7 @@ export default function ContactsView() {
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder={t('search', 'Search...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full bg-white border border-slate-300 rounded pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
@@ -514,10 +516,10 @@ export default function ContactsView() {
                 <Link
                   href="/my-sales"
                   className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
-                  title="Go to Sales Rep Dashboard"
+                  title={t('go_to_sales_rep_dashboard', 'Go to Sales Rep Dashboard')}
                 >
                   <TrendingUp className="w-3.5 h-3.5 text-cyan-300" />
-                  <span>My Sales</span>
+                  <span>{t('my_sales', 'My Sales')}</span>
                 </Link>
 
                 {/* + New Button (Screenshot 2: Opens New Contact modal) */}
@@ -525,10 +527,10 @@ export default function ContactsView() {
                   type="button"
                   onClick={handleOpenCreate}
                   className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
-                  title="Create New Contact"
+                  title={t('create_new_contact', 'Create New Contact')}
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>New</span>
+                  <span>{t('new', 'New')}</span>
                 </button>
               </div>
             </div>
@@ -542,9 +544,9 @@ export default function ContactsView() {
                   onChange={(e) => setSelectedBrand(e.target.value)}
                   className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-700 shadow-2xs focus:outline-none focus:border-blue-500 cursor-pointer"
                 >
-                  <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub</option>
-                  <option value="Beirut Main Branch">Beirut Main Branch</option>
-                  <option value="Sidon Regional Hub">Sidon Regional Hub</option>
+                  <option value="Zeit w zaytoun ljanoub">{t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}</option>
+                  <option value="Beirut Main Branch">{t('beirut_main_branch', 'Beirut Main Branch')}</option>
+                  <option value="Sidon Regional Hub">{t('sidon_regional_hub', 'Sidon Regional Hub')}</option>
                 </select>
               </div>
 
@@ -601,7 +603,7 @@ export default function ContactsView() {
                   className="bg-primary hover:bg-primary text-white text-xs font-semibold px-4 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                 >
                   <Filter className="w-3.5 h-3.5" />
-                  <span>Filter</span>
+                  <span>{t('filter', 'Filter')}</span>
                 </button>
 
                 {/* Reset / Refresh Button */}
@@ -615,7 +617,7 @@ export default function ContactsView() {
                     showNotification('Filters reset.');
                   }}
                   className="bg-white border border-slate-300 hover:bg-slate-100 text-slate-600 p-1.5 rounded shadow-2xs transition-colors cursor-pointer"
-                  title="Reset Filters"
+                  title={t('reset_filters', 'Reset Filters')}
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                 </button>
@@ -632,24 +634,24 @@ export default function ContactsView() {
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-600 font-semibold text-[11px] whitespace-nowrap">
                     <th className="py-2.5 px-3"># ⇅</th>
-                    <th className="py-2.5 px-3">First Name ⇅</th>
-                    <th className="py-2.5 px-3">Last Name ⇅</th>
-                    <th className="py-2.5 px-3">Company ⇅</th>
-                    <th className="py-2.5 px-3">Source ⇅</th>
-                    <th className="py-2.5 px-3">Lead Status ⇅</th>
-                    <th className="py-2.5 px-3">Stage ⇅</th>
-                    <th className="py-2.5 px-3">Sales Owner ⇅</th>
-                    <th className="py-2.5 px-3">Phone ⇅</th>
-                    <th className="py-2.5 px-3">Date Created ⇅</th>
-                    <th className="py-2.5 px-3">Created By ⇅</th>
-                    <th className="py-2.5 px-3 text-center">Actions</th>
+                    <th className="py-2.5 px-3">{t('first_name', 'First Name ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('last_name', 'Last Name ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('company', 'Company ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('source', 'Source ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('lead_status', 'Lead Status ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('stage', 'Stage ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('sales_owner', 'Sales Owner ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('phone', 'Phone ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('date_created', 'Date Created ⇅')}</th>
+                    <th className="py-2.5 px-3">{t('created_by', 'Created By ⇅')}</th>
+                    <th className="py-2.5 px-3 text-center">{t('actions', 'Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
                   {filteredContacts.length === 0 ? (
                     <tr>
                       <td colSpan={12} className="py-8 text-center text-slate-400">
-                        No contacts found matching the filters.
+                        {t('no_contacts_found_matching_the_filters', 'No contacts found matching the filters.')}
                       </td>
                     </tr>
                   ) : (
@@ -683,7 +685,7 @@ export default function ContactsView() {
                               type="button"
                               onClick={() => handleOpenEdit(c)}
                               className="w-6 h-6 bg-primary hover:bg-blue-700 text-white rounded flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
-                              title="Edit Contact"
+                              title={t('edit_contact', 'Edit Contact')}
                             >
                               <Edit2 className="w-3 h-3" />
                             </button>
@@ -693,7 +695,7 @@ export default function ContactsView() {
                               type="button"
                               onClick={() => setDeletingContact(c)}
                               className="w-6 h-6 bg-destructive hover:bg-rose-700 text-white rounded flex items-center justify-center cursor-pointer transition-colors shadow-2xs"
-                              title="Delete Contact"
+                              title={t('delete_contact', 'Delete Contact')}
                             >
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -758,13 +760,13 @@ export default function ContactsView() {
               {/* Profile Section */}
               <div className="border border-slate-200 rounded p-4 relative pt-5">
                 <span className="absolute -top-2.5 left-3 bg-white px-1.5 text-[11px] font-semibold text-slate-600">
-                  Profile
+                  {t('profile', 'Profile')}
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   {/* Brand* */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Brand*</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('brand', 'Brand*')}</label>
                     <input
                       type="text"
                       value={formData.brand}
@@ -779,33 +781,33 @@ export default function ContactsView() {
 
                   {/* First Name* */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">First Name*</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('first_name', 'First Name*')}</label>
                     <input
                       type="text"
                       value={formData.firstName}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                       className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-blue-500"
                       required
-                      placeholder="Enter first name"
+                      placeholder={t('enter_first_name', 'Enter first name')}
                     />
                   </div>
 
                   {/* Last Name* */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Last Name*</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('last_name', 'Last Name*')}</label>
                     <input
                       type="text"
                       value={formData.lastName}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                       className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-blue-500"
                       required
-                      placeholder="Enter last name"
+                      placeholder={t('enter_last_name', 'Enter last name')}
                     />
                   </div>
 
                   {/* Phone* with Flag */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Phone*</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('phone', 'Phone*')}</label>
                     <div className="flex">
                       <div className="flex items-center gap-1 bg-slate-50 border border-r-0 border-slate-300 rounded-l px-2 py-1 text-xs text-slate-700 select-none">
                         <span>🇱🇧</span>
@@ -816,7 +818,7 @@ export default function ContactsView() {
                         type="tel"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="Enter phone number"
+                        placeholder={t('enter_phone_number', 'Enter phone number')}
                         className="w-full bg-white border border-slate-300 rounded-r px-2.5 py-1.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-blue-500"
                         required
                       />
@@ -825,19 +827,19 @@ export default function ContactsView() {
 
                   {/* Company */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Company</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('company', 'Company')}</label>
                     <input
                       type="text"
                       value={formData.company}
                       onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                       className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-blue-500"
-                      placeholder="Enter company name"
+                      placeholder={t('enter_company_name', 'Enter company name')}
                     />
                   </div>
 
                   {/* Country* */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Country*</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('country', 'Country*')}</label>
                     <select
                       value={formData.country}
                       onChange={(e) => setFormData({ ...formData, country: e.target.value })}
@@ -853,19 +855,19 @@ export default function ContactsView() {
 
                   {/* Email* */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Email*</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('email', 'Email*')}</label>
                     <input
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-blue-500"
-                      placeholder="Enter email address"
+                      placeholder={t('enter_email_address', 'Enter email address')}
                     />
                   </div>
 
                   {/* Other Phone */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Other Phone</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('other_phone', 'Other Phone')}</label>
                     <div className="flex">
                       <div className="flex items-center gap-1 bg-slate-50 border border-r-0 border-slate-300 rounded-l px-2 py-1 text-xs text-slate-700 select-none">
                         <span>🇱🇧</span>
@@ -876,7 +878,7 @@ export default function ContactsView() {
                         type="tel"
                         value={formData.otherPhone}
                         onChange={(e) => setFormData({ ...formData, otherPhone: e.target.value })}
-                        placeholder="Enter other phone number"
+                        placeholder={t('enter_other_phone_number', 'Enter other phone number')}
                         className="w-full bg-white border border-slate-300 rounded-r px-2.5 py-1.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-blue-500"
                       />
                     </div>
@@ -887,13 +889,13 @@ export default function ContactsView() {
               {/* Lead Management Section */}
               <div className="border border-slate-200 rounded p-4 relative pt-5">
                 <span className="absolute -top-2.5 left-3 bg-white px-1.5 text-[11px] font-semibold text-slate-600">
-                  Lead Management
+                  {t('lead_management', 'Lead Management')}
                 </span>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-3.5">
                   {/* Lead Source* */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Lead Source*</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('lead_source', 'Lead Source*')}</label>
                     <select
                       value={formData.source}
                       onChange={(e) => setFormData({ ...formData, source: e.target.value })}
@@ -907,7 +909,7 @@ export default function ContactsView() {
 
                   {/* Lead Status */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Lead Status</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('lead_status', 'Lead Status')}</label>
                     <select
                       value={formData.leadStatus}
                       onChange={(e) => setFormData({ ...formData, leadStatus: e.target.value })}
@@ -921,7 +923,7 @@ export default function ContactsView() {
 
                   {/* Pipeline Stage */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Pipeline Stage</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('pipeline_stage', 'Pipeline Stage')}</label>
                     <select
                       value={formData.pipelineStage}
                       onChange={(e) => setFormData({ ...formData, pipelineStage: e.target.value })}
@@ -937,7 +939,7 @@ export default function ContactsView() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-3.5">
                   {/* Expected Value */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Expected Value</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('expected_value', 'Expected Value')}</label>
                     <input
                       type="number"
                       step="0.01"
@@ -949,7 +951,7 @@ export default function ContactsView() {
 
                   {/* Expected Close Date */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Expected Close Date</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('expected_close_date', 'Expected Close Date')}</label>
                     <input
                       type="date"
                       value={formData.expectedCloseDate}
@@ -960,7 +962,7 @@ export default function ContactsView() {
 
                   {/* Next Action At */}
                   <div>
-                    <label className="block text-[11px] text-slate-600 font-medium mb-1">Next Action At</label>
+                    <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('next_action_at', 'Next Action At')}</label>
                     <input
                       type="datetime-local"
                       value={formData.nextActionAt}
@@ -972,25 +974,25 @@ export default function ContactsView() {
 
                 {/* External Lead ID */}
                 <div className="mb-3.5">
-                  <label className="block text-[11px] text-slate-600 font-medium mb-1">External Lead ID</label>
+                  <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('external_lead_id', 'External Lead ID')}</label>
                   <input
                     type="text"
                     value={formData.externalLeadId}
                     onChange={(e) => setFormData({ ...formData, externalLeadId: e.target.value })}
                     className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-blue-500"
-                    placeholder="e.g. WA-70569641"
+                    placeholder={t('eg_wa70569641', 'e.g. WA-70569641')}
                   />
                 </div>
 
                 {/* Notes */}
                 <div>
-                  <label className="block text-[11px] text-slate-600 font-medium mb-1">Notes</label>
+                  <label className="block text-[11px] text-slate-600 font-medium mb-1">{t('notes', 'Notes')}</label>
                   <textarea
                     rows={3}
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-blue-500 resize-y"
-                    placeholder="Enter notes..."
+                    placeholder={t('enter_notes', 'Enter notes...')}
                   />
                 </div>
               </div>
@@ -1002,7 +1004,7 @@ export default function ContactsView() {
                   className="bg-primary hover:bg-primary text-white text-xs font-semibold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -1016,9 +1018,9 @@ export default function ContactsView() {
       {deletingContact && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl border border-slate-200 max-w-sm w-full p-4 animate-in fade-in">
-            <h3 className="text-sm font-bold text-slate-800 mb-2">Delete Contact</h3>
+            <h3 className="text-sm font-bold text-slate-800 mb-2">{t('delete_contact', 'Delete Contact')}</h3>
             <p className="text-xs text-slate-600 mb-4">
-              Are you sure you want to delete <span className="font-semibold text-rose-700">{deletingContact.firstName} {deletingContact.lastName}</span>? This action cannot be undone.
+              {t('are_you_sure_you_want_to_delete', 'Are you sure you want to delete')} <span className="font-semibold text-rose-700">{deletingContact.firstName} {deletingContact.lastName}</span>? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-2 text-xs">
               <button
@@ -1026,14 +1028,14 @@ export default function ContactsView() {
                 onClick={() => setDeletingContact(null)}
                 className="px-3 py-1.5 border border-slate-300 rounded text-slate-600 hover:bg-slate-50 cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleDeleteConfirm}
                 className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded font-medium cursor-pointer"
               >
-                Delete
+                {t('delete', 'Delete')}
               </button>
             </div>
           </div>

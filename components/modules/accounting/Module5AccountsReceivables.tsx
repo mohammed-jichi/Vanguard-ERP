@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 5: Accounts Receivables (AR Aging & CRM Station)
@@ -48,6 +49,7 @@ export function Module5AccountsReceivables({
   onShowToast,
   onOpenReceiptWithCustomer
 }: Module5AccountsReceivablesProps) {
+  const { t } = useLanguage();
   const [customers, setCustomers] = useState<ARAgingItem[]>(() => INITIAL_AR_AGING);
   const [selectedCustomerCodes, setSelectedCustomerCodes] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -227,7 +229,7 @@ export function Module5AccountsReceivables({
               <span>Accounts Receivables (AR Aging &amp; CRM Station)</span>
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Aging schedule analysis, credit control, money collection promise tracking, and customer profiles
+              {t('aging_schedule_analysis_credit_control', 'Aging schedule analysis, credit control, money collection promise tracking, and customer profiles')}
             </p>
           </div>
 
@@ -274,7 +276,7 @@ export function Module5AccountsReceivables({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
+                placeholder={t('search', 'Search...')}
                 className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               />
             </div>
@@ -287,13 +289,13 @@ export function Module5AccountsReceivables({
                 onChange={(e) => setShowZeroBalances(e.target.checked)}
                 className="rounded border-input text-primary focus:ring-primary h-4 w-4"
               />
-              <span>Show 0 Balances</span>
+              <span>{t('show_0_balances', 'Show 0 Balances')}</span>
             </label>
           </div>
 
           {/* Total Amount Indicator */}
           <div className="bg-muted px-4 py-2 rounded-xl border border-border">
-            <span className="text-muted-foreground text-[11px] block">Total Receivables:</span>
+            <span className="text-muted-foreground text-[11px] block">{t('total_receivables', 'Total Receivables:')}</span>
             <span className="font-mono text-base font-bold text-emerald-700">
               Total Amount: ${totalAmountUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
@@ -324,7 +326,7 @@ export function Module5AccountsReceivables({
                   }}
                 >
                   <div className="flex items-center gap-1">
-                    <span>Customer</span>
+                    <span>{t('customer', 'Customer')}</span>
                     <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
                   </div>
                 </th>
@@ -348,22 +350,22 @@ export function Module5AccountsReceivables({
                   }}
                 >
                   <div className="flex items-center gap-1">
-                    <span>Last Payment Date</span>
+                    <span>{t('last_payment_date', 'Last Payment Date')}</span>
                     <ArrowUpDown className="w-3 h-3 text-muted-foreground" />
                   </div>
                 </th>
                 <th className="p-2.5 text-right">30 Days</th>
                 <th className="p-2.5 text-right">60 Days</th>
                 <th className="p-2.5 text-right">90 Days</th>
-                <th className="p-2.5 text-right text-destructive">Over Due</th>
-                <th className="p-2.5 text-center min-w-[160px]">Actions</th>
+                <th className="p-2.5 text-right text-destructive">{t('over_due', 'Over Due')}</th>
+                <th className="p-2.5 text-center min-w-[160px]">{t('actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border font-medium">
               {filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="p-8 text-center text-muted-foreground">
-                    No Receivables Found!
+                    {t('no_receivables_found', 'No Receivables Found!')}
                   </td>
                 </tr>
               ) : (
@@ -423,7 +425,7 @@ export function Module5AccountsReceivables({
                           <button
                             type="button"
                             onClick={() => setStatementModalCustomer(cust)}
-                            title="Send Statement Of Account"
+                            title={t('send_statement_of_account', 'Send Statement Of Account')}
                             className="text-muted-foreground hover:text-primary p-1 rounded hover:bg-muted transition-colors cursor-pointer"
                           >
                             <Send className="w-3.5 h-3.5" />
@@ -435,7 +437,7 @@ export function Module5AccountsReceivables({
                             onClick={() => {
                               if (typeof window !== 'undefined') window.print();
                             }}
-                            title="Print Statement Report"
+                            title={t('print_statement_report', 'Print Statement Report')}
                             className="text-muted-foreground hover:text-foreground p-1 rounded hover:bg-muted transition-colors cursor-pointer"
                           >
                             <Printer className="w-3.5 h-3.5" />
@@ -451,7 +453,7 @@ export function Module5AccountsReceivables({
                                 onShowToast(`Opened Accounting Receipt for ${cust.customerName}.`);
                               }
                             }}
-                            title="Open Accounting Receipt"
+                            title={t('open_accounting_receipt', 'Open Accounting Receipt')}
                             className="text-muted-foreground hover:text-emerald-700 p-1 rounded hover:bg-muted transition-colors cursor-pointer"
                           >
                             <FileText className="w-3.5 h-3.5" />
@@ -461,7 +463,7 @@ export function Module5AccountsReceivables({
                           <button
                             type="button"
                             onClick={() => setMoneyColCustomer(cust)}
-                            title="Money Collection Promise"
+                            title={t('money_collection_promise', 'Money Collection Promise')}
                             className="text-emerald-600 hover:text-emerald-700 p-1 rounded hover:bg-emerald-50 transition-colors cursor-pointer"
                           >
                             <DollarSign className="w-3.5 h-3.5 font-bold" />
@@ -475,7 +477,7 @@ export function Module5AccountsReceivables({
                               setCustForm({ ...cust });
                               setNewCustomerModalOpen(true);
                             }}
-                            title="View / Edit Customer Profile"
+                            title={t('view_edit_customer_profile', 'View / Edit Customer Profile')}
                             className="text-muted-foreground hover:text-primary p-1 rounded hover:bg-muted transition-colors cursor-pointer"
                           >
                             <Info className="w-3.5 h-3.5" />
@@ -502,7 +504,7 @@ export function Module5AccountsReceivables({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Send className="w-4 h-4 text-primary" />
-                <span>Send Statement Of Account</span>
+                <span>{t('send_statement_of_account', 'Send Statement Of Account')}</span>
               </h4>
               <button
                 type="button"
@@ -517,7 +519,7 @@ export function Module5AccountsReceivables({
               {/* From (Source email dropdown + Tooltip) */}
               <div>
                 <div className="flex items-center gap-1 mb-1">
-                  <label className="text-foreground font-semibold">From:</label>
+                  <label className="text-foreground font-semibold">{t('from', 'From:')}</label>
                   <span
                     className="text-muted-foreground cursor-help"
                     title="Source emails are defined in Settings / Company Info / Email Setting, only admins can add, edit or delete the source emails."
@@ -538,7 +540,7 @@ export function Module5AccountsReceivables({
 
               {/* To Account (Read-only customer account name) */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">To Account:</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('to_account', 'To Account:')}</label>
                 <input
                   type="text"
                   readOnly
@@ -554,21 +556,21 @@ export function Module5AccountsReceivables({
                   type="text"
                   value={otherEmails}
                   onChange={(e) => setOtherEmails(e.target.value)}
-                  placeholder="finance-team@client.com, accountant@client.com"
+                  placeholder={t('financeteamclientcom_accountantclientcom', 'finance-team@client.com, accountant@client.com')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                 />
               </div>
 
               {/* Receivable Template */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Receivable Template:</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('receivable_template', 'Receivable Template:')}</label>
                 <select
                   value={statementTemplate}
                   onChange={(e) => setStatementTemplate(e.target.value)}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                 >
                   <option>Standard Overdue Notice &amp; Ledger Statement</option>
-                  <option>Monthly Commercial Statement of Account</option>
+                  <option>{t('monthly_commercial_statement_of_account', 'Monthly Commercial Statement of Account')}</option>
                   <option>Urgent Payment Demand (Overdue &gt; 60 Days)</option>
                 </select>
               </div>
@@ -578,8 +580,8 @@ export function Module5AccountsReceivables({
                 <table className="w-full text-left text-xs">
                   <thead className="bg-muted border-b border-border text-foreground font-semibold">
                     <tr>
-                      <th className="p-2">Recipient</th>
-                      <th className="p-2 text-right">Status</th>
+                      <th className="p-2">{t('recipient', 'Recipient')}</th>
+                      <th className="p-2 text-right">{t('status', 'Status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -587,7 +589,7 @@ export function Module5AccountsReceivables({
                       <td className="p-2 text-foreground font-mono">
                         {statementModalCustomer.email || 'billing@client-firm.lb'}
                       </td>
-                      <td className="p-2 text-right text-emerald-700 font-bold">Ready to Dispatch</td>
+                      <td className="p-2 text-right text-emerald-700 font-bold">{t('ready_to_dispatch', 'Ready to Dispatch')}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -601,7 +603,7 @@ export function Module5AccountsReceivables({
                 onClick={() => setStatementModalCustomer(null)}
                 className="bg-card hover:bg-muted text-muted-foreground px-4 py-1.5 rounded-lg text-xs font-semibold border border-border cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -612,7 +614,7 @@ export function Module5AccountsReceivables({
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>Send</span>
+                <span>{t('send', 'Send')}</span>
               </button>
             </div>
           </div>
@@ -627,11 +629,11 @@ export function Module5AccountsReceivables({
               <div>
                 <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-emerald-600" />
-                  <span>Money Collection Workstation</span>
+                  <span>{t('money_collection_workstation', 'Money Collection Workstation')}</span>
                 </h4>
                 {/* Header: Displays Account Name & Account Number (Read-only) */}
                 <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-                  Account: <strong className="text-foreground">{moneyColCustomer.customerName}</strong> (#{moneyColCustomer.accountCode})
+                  {t('account', 'Account:')} <strong className="text-foreground">{moneyColCustomer.customerName}</strong> (#{moneyColCustomer.accountCode})
                 </p>
               </div>
               <button
@@ -647,21 +649,21 @@ export function Module5AccountsReceivables({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Type* (N/A by default, Amount Ready, Call Him Back) */}
                 <div>
-                  <label className="text-foreground mb-1 block font-semibold">Type *</label>
+                  <label className="text-foreground mb-1 block font-semibold">{t('type', 'Type *')}</label>
                   <select
                     value={colType}
                     onChange={(e) => setColType(e.target.value as any)}
                     className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                   >
-                    <option value="N/A">N/A</option>
-                    <option value="Amount Ready">Amount Ready</option>
-                    <option value="Call Him Back">Call Him Back</option>
+                    <option value="N/A">{t('na', 'N/A')}</option>
+                    <option value="Amount Ready">{t('amount_ready', 'Amount Ready')}</option>
+                    <option value="Call Him Back">{t('call_him_back', 'Call Him Back')}</option>
                   </select>
                 </div>
 
                 {/* Date Promised* */}
                 <div>
-                  <label className="text-foreground mb-1 block font-semibold">Date Promised *</label>
+                  <label className="text-foreground mb-1 block font-semibold">{t('date_promised', 'Date Promised *')}</label>
                   <input
                     type="date"
                     value={colDatePromised}
@@ -673,12 +675,12 @@ export function Module5AccountsReceivables({
 
               {/* Remarks (Textarea) */}
               <div>
-                <label className="text-foreground mb-1 block font-semibold">Remarks</label>
+                <label className="text-foreground mb-1 block font-semibold">{t('remarks', 'Remarks')}</label>
                 <textarea
                   rows={2}
                   value={colRemarks}
                   onChange={(e) => setColRemarks(e.target.value)}
-                  placeholder="Record customer commitment details, promised cheque numbers, collector notes..."
+                  placeholder={t('record_customer_commitment_details', 'Record customer commitment details, promised cheque numbers, collector notes...')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs"
                 />
               </div>
@@ -689,22 +691,22 @@ export function Module5AccountsReceivables({
                   onClick={handleSaveCollection}
                   className="bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
                 >
-                  Save Collection Note
+                  {t('save_collection_note', 'Save Collection Note')}
                 </button>
               </div>
 
               {/* History Log Grid: Date Created | Type | Remark | Date Promised | By User */}
               <div className="pt-2">
-                <label className="font-semibold text-foreground mb-1.5 block">History Log:</label>
+                <label className="font-semibold text-foreground mb-1.5 block">{t('history_log', 'History Log:')}</label>
                 <div className="overflow-y-auto max-h-48 rounded-lg border border-border">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-muted border-b border-border text-foreground font-semibold">
                       <tr>
-                        <th className="p-2">Date Created</th>
-                        <th className="p-2">Type</th>
-                        <th className="p-2 min-w-[160px]">Remark</th>
-                        <th className="p-2">Date Promised</th>
-                        <th className="p-2">By User</th>
+                        <th className="p-2">{t('date_created', 'Date Created')}</th>
+                        <th className="p-2">{t('type', 'Type')}</th>
+                        <th className="p-2 min-w-[160px]">{t('remark', 'Remark')}</th>
+                        <th className="p-2">{t('date_promised', 'Date Promised')}</th>
+                        <th className="p-2">{t('by_user', 'By User')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -739,7 +741,7 @@ export function Module5AccountsReceivables({
                 onClick={() => setMoneyColCustomer(null)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -758,11 +760,11 @@ export function Module5AccountsReceivables({
                   <span>{editingCustomer ? 'Edit Customer Profile' : 'New Customer (Full Profile)'}</span>
                 </h4>
                 <div className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-3">
-                  <span>Company: <strong>Southern Olive Oil Products S.A.R.L</strong></span>
+                  <span>{t('company', 'Company:')} <strong>{t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}</strong></span>
                   <span>|</span>
-                  <span>Account: <strong>{custForm.customerName || 'Trade Receivable'}</strong></span>
+                  <span>{t('account', 'Account:')} <strong>{custForm.customerName || 'Trade Receivable'}</strong></span>
                   <span>|</span>
-                  <span>Account #: <strong>{custForm.accountCode || '41110-AUTO'}</strong></span>
+                  <span>{t('account', 'Account #:')} <strong>{custForm.accountCode || '41110-AUTO'}</strong></span>
                 </div>
               </div>
               <button
@@ -785,7 +787,7 @@ export function Module5AccountsReceivables({
                     : 'bg-muted text-muted-foreground hover:text-foreground'
                 }`}
               >
-                Tab 1: Info
+                {t('tab_1_info', 'Tab 1: Info')}
               </button>
               <button
                 type="button"
@@ -796,7 +798,7 @@ export function Module5AccountsReceivables({
                     : 'bg-muted text-muted-foreground hover:text-foreground'
                 }`}
               >
-                Tab 2: More
+                {t('tab_2_more', 'Tab 2: More')}
               </button>
             </div>
 
@@ -807,24 +809,24 @@ export function Module5AccountsReceivables({
                 <div className="space-y-4">
                   {/* Profile Section */}
                   <div className="bg-muted/40 p-3.5 rounded-xl border border-border space-y-3">
-                    <span className="font-bold text-foreground block">Profile Section</span>
+                    <span className="font-bold text-foreground block">{t('profile_section', 'Profile Section')}</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       <div>
-                        <label className="text-foreground mb-1 block font-semibold">Title *</label>
+                        <label className="text-foreground mb-1 block font-semibold">{t('title', 'Title *')}</label>
                         <select
                           value={custForm.title}
                           onChange={(e) => setCustForm({ ...custForm, title: e.target.value })}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         >
-                          <option value="Mr.">Mr.</option>
-                          <option value="Ms.">Ms.</option>
-                          <option value="Dr.">Dr.</option>
-                          <option value="Eng.">Eng.</option>
+                          <option value="Mr.">{t('mr', 'Mr.')}</option>
+                          <option value="Ms.">{t('ms', 'Ms.')}</option>
+                          <option value="Dr.">{t('dr', 'Dr.')}</option>
+                          <option value="Eng.">{t('eng', 'Eng.')}</option>
                         </select>
                       </div>
 
                       <div>
-                        <label className="text-foreground mb-1 block font-semibold">First Name *</label>
+                        <label className="text-foreground mb-1 block font-semibold">{t('first_name', 'First Name *')}</label>
                         <input
                           type="text"
                           value={custForm.firstName || ''}
@@ -834,7 +836,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-foreground mb-1 block font-semibold">Last Name *</label>
+                        <label className="text-foreground mb-1 block font-semibold">{t('last_name', 'Last Name *')}</label>
                         <input
                           type="text"
                           value={custForm.lastName || ''}
@@ -844,7 +846,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Company</label>
+                        <label className="text-muted-foreground mb-1 block">{t('company', 'Company')}</label>
                         <input
                           type="text"
                           value={custForm.company || ''}
@@ -854,7 +856,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Commercial Name</label>
+                        <label className="text-muted-foreground mb-1 block">{t('commercial_name', 'Commercial Name')}</label>
                         <input
                           type="text"
                           value={custForm.commercialName || ''}
@@ -865,7 +867,7 @@ export function Module5AccountsReceivables({
 
                       <div>
                         <label className="text-foreground mb-1 block font-semibold flex items-center justify-between">
-                          <span>Group *</span>
+                          <span>{t('group', 'Group *')}</span>
                           <button
                             type="button"
                             onClick={() => onShowToast('Add customer group modal opened.')}
@@ -879,10 +881,10 @@ export function Module5AccountsReceivables({
                           onChange={(e) => setCustForm({ ...custForm, group: e.target.value })}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         >
-                          <option>Wholesale Key Accounts</option>
-                          <option>Regional Distributors</option>
+                          <option>{t('wholesale_key_accounts', 'Wholesale Key Accounts')}</option>
+                          <option>{t('regional_distributors', 'Regional Distributors')}</option>
                           <option>Hotels &amp; Restaurants (HORECA)</option>
-                          <option>Gourmet Delicatessen</option>
+                          <option>{t('gourmet_delicatessen', 'Gourmet Delicatessen')}</option>
                           <option>Dining &amp; Catering</option>
                         </select>
                       </div>
@@ -891,7 +893,7 @@ export function Module5AccountsReceivables({
 
                   {/* Contacts Section: Mobile* (+961), Email, Landline, Contact Person */}
                   <div className="bg-muted/40 p-3.5 rounded-xl border border-border space-y-3">
-                    <span className="font-bold text-foreground block">Contacts Section</span>
+                    <span className="font-bold text-foreground block">{t('contacts_section', 'Contacts Section')}</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                       <div>
                         <label className="text-foreground mb-1 block font-semibold">Mobile * (Prefix +961)</label>
@@ -905,18 +907,18 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Email</label>
+                        <label className="text-muted-foreground mb-1 block">{t('email', 'Email')}</label>
                         <input
                           type="email"
                           value={custForm.email || ''}
                           onChange={(e) => setCustForm({ ...custForm, email: e.target.value })}
-                          placeholder="client@domain.lb"
+                          placeholder={t('clientdomainlb', 'client@domain.lb')}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         />
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Landline</label>
+                        <label className="text-muted-foreground mb-1 block">{t('landline', 'Landline')}</label>
                         <input
                           type="text"
                           value={custForm.landline || ''}
@@ -927,12 +929,12 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Contact Person</label>
+                        <label className="text-muted-foreground mb-1 block">{t('contact_person', 'Contact Person')}</label>
                         <input
                           type="text"
                           value={custForm.contactPerson || ''}
                           onChange={(e) => setCustForm({ ...custForm, contactPerson: e.target.value })}
-                          placeholder="Managing representative..."
+                          placeholder={t('managing_representative', 'Managing representative...')}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         />
                       </div>
@@ -941,10 +943,10 @@ export function Module5AccountsReceivables({
 
                   {/* Address Section: Street, Building, Floor, City, State, Country*, Near, Zip, Zone, Lat, Lng, Remark */}
                   <div className="bg-muted/40 p-3.5 rounded-xl border border-border space-y-3">
-                    <span className="font-bold text-foreground block">Address Section</span>
+                    <span className="font-bold text-foreground block">{t('address_section', 'Address Section')}</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Street</label>
+                        <label className="text-muted-foreground mb-1 block">{t('street', 'Street')}</label>
                         <input
                           type="text"
                           value={custForm.street || ''}
@@ -954,7 +956,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Building</label>
+                        <label className="text-muted-foreground mb-1 block">{t('building', 'Building')}</label>
                         <input
                           type="text"
                           value={custForm.building || ''}
@@ -964,7 +966,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Floor</label>
+                        <label className="text-muted-foreground mb-1 block">{t('floor', 'Floor')}</label>
                         <input
                           type="text"
                           value={custForm.floor || ''}
@@ -994,21 +996,21 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-foreground mb-1 block font-semibold">Country *</label>
+                        <label className="text-foreground mb-1 block font-semibold">{t('country', 'Country *')}</label>
                         <select
                           value={custForm.country}
                           onChange={(e) => setCustForm({ ...custForm, country: e.target.value })}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         >
-                          <option value="Lebanon">Lebanon</option>
-                          <option value="United Arab Emirates">United Arab Emirates</option>
-                          <option value="Saudi Arabia">Saudi Arabia</option>
-                          <option value="Cyprus">Cyprus</option>
+                          <option value="Lebanon">{t('lebanon', 'Lebanon')}</option>
+                          <option value="United Arab Emirates">{t('united_arab_emirates', 'United Arab Emirates')}</option>
+                          <option value="Saudi Arabia">{t('saudi_arabia', 'Saudi Arabia')}</option>
+                          <option value="Cyprus">{t('cyprus', 'Cyprus')}</option>
                         </select>
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Near / Landmark</label>
+                        <label className="text-muted-foreground mb-1 block">{t('near_landmark', 'Near / Landmark')}</label>
                         <input
                           type="text"
                           value={custForm.near || ''}
@@ -1018,7 +1020,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Zip / Postal Code</label>
+                        <label className="text-muted-foreground mb-1 block">{t('zip_postal_code', 'Zip / Postal Code')}</label>
                         <input
                           type="text"
                           value={custForm.zipCode || ''}
@@ -1033,13 +1035,13 @@ export function Module5AccountsReceivables({
                           type="text"
                           value={custForm.zone || ''}
                           onChange={(e) => setCustForm({ ...custForm, zone: e.target.value })}
-                          placeholder="Zone Code..."
+                          placeholder={t('zone_code', 'Zone Code...')}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         />
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Lat</label>
+                        <label className="text-muted-foreground mb-1 block">{t('lat', 'Lat')}</label>
                         <input
                           type="number"
                           step="0.0001"
@@ -1050,7 +1052,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Lng</label>
+                        <label className="text-muted-foreground mb-1 block">{t('lng', 'Lng')}</label>
                         <input
                           type="number"
                           step="0.0001"
@@ -1061,12 +1063,12 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Remark</label>
+                        <label className="text-muted-foreground mb-1 block">{t('remark', 'Remark')}</label>
                         <input
                           type="text"
                           value={custForm.remark1 || ''}
                           onChange={(e) => setCustForm({ ...custForm, remark1: e.target.value })}
-                          placeholder="Delivery instructions..."
+                          placeholder={t('delivery_instructions', 'Delivery instructions...')}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         />
                       </div>
@@ -1080,23 +1082,23 @@ export function Module5AccountsReceivables({
                 <div className="space-y-4">
                   {/* Billing Section: Automatic Discount, Discount %, Credit Limit, Daily Limit, Selling Price Level, Contact Person, Account Number, VAT Account Number */}
                   <div className="bg-muted/40 p-3.5 rounded-xl border border-border space-y-3">
-                    <span className="font-bold text-foreground block">Billing Section</span>
+                    <span className="font-bold text-foreground block">{t('billing_section', 'Billing Section')}</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Automatic Discount</label>
+                        <label className="text-muted-foreground mb-1 block">{t('automatic_discount', 'Automatic Discount')}</label>
                         <select
                           value={custForm.discountType}
                           onChange={(e) => setCustForm({ ...custForm, discountType: e.target.value as any })}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         >
-                          <option value="Null">Null</option>
-                          <option value="DISCOUNT">DISCOUNT</option>
-                          <option value="DISCOUNT 100%">DISCOUNT 100%</option>
+                          <option value="Null">{t('null', 'Null')}</option>
+                          <option value="DISCOUNT">{t('discount', 'DISCOUNT')}</option>
+                          <option value="DISCOUNT 100%">{t('discount_100', 'DISCOUNT 100%')}</option>
                         </select>
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Discount %</label>
+                        <label className="text-muted-foreground mb-1 block">{t('discount', 'Discount %')}</label>
                         <input
                           type="number"
                           value={custForm.discountPercent || 0}
@@ -1126,22 +1128,22 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Selling Price Level</label>
+                        <label className="text-muted-foreground mb-1 block">{t('selling_price_level', 'Selling Price Level')}</label>
                         <select
                           value={custForm.sellingPriceLevel}
                           onChange={(e) => setCustForm({ ...custForm, sellingPriceLevel: Number(e.target.value) })}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs"
                         >
-                          <option value={1}>Level 1 - Wholesale Tier</option>
-                          <option value={2}>Level 2 - Commercial Distributor</option>
-                          <option value={3}>Level 3 - HORECA Contract</option>
-                          <option value={4}>Level 4 - Standard Retail</option>
+                          <option value={1}>{t('level_1_wholesale_tier', 'Level 1 - Wholesale Tier')}</option>
+                          <option value={2}>{t('level_2_commercial_distributor', 'Level 2 - Commercial Distributor')}</option>
+                          <option value={3}>{t('level_3_horeca_contract', 'Level 3 - HORECA Contract')}</option>
+                          <option value={4}>{t('level_4_standard_retail', 'Level 4 - Standard Retail')}</option>
                         </select>
                       </div>
 
                       <div>
                         <label className="text-muted-foreground mb-1 block flex items-center justify-between">
-                          <span>Account Number</span>
+                          <span>{t('account_number', 'Account Number')}</span>
                           <RefreshCw
                             className="w-3 h-3 text-muted-foreground hover:text-primary cursor-pointer"
                             onClick={() => onShowToast('Refreshed Account Sequence Number.')}
@@ -1156,12 +1158,12 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div className="md:col-span-2">
-                        <label className="text-muted-foreground mb-1 block">VAT Account Number</label>
+                        <label className="text-muted-foreground mb-1 block">{t('vat_account_number', 'VAT Account Number')}</label>
                         <input
                           type="text"
                           value={custForm.vatAccountNumber || ''}
                           onChange={(e) => setCustForm({ ...custForm, vatAccountNumber: e.target.value })}
-                          placeholder="e.g. 44270-08812"
+                          placeholder={t('eg_4427008812', 'e.g. 44270-08812')}
                           className="w-full bg-card border border-input rounded-lg p-2 text-foreground font-mono shadow-2xs"
                         />
                       </div>
@@ -1173,7 +1175,7 @@ export function Module5AccountsReceivables({
                     <span className="font-bold text-foreground block">Remarks Section (6 Fields)</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Remark</label>
+                        <label className="text-muted-foreground mb-1 block">{t('remark', 'Remark')}</label>
                         <input
                           type="text"
                           value={custForm.remark1 || ''}
@@ -1183,7 +1185,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Remark 2</label>
+                        <label className="text-muted-foreground mb-1 block">{t('remark_2', 'Remark 2')}</label>
                         <input
                           type="text"
                           value={custForm.remark2 || ''}
@@ -1193,7 +1195,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Remark 3</label>
+                        <label className="text-muted-foreground mb-1 block">{t('remark_3', 'Remark 3')}</label>
                         <input
                           type="text"
                           value={custForm.remark3 || ''}
@@ -1203,7 +1205,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Remark 4</label>
+                        <label className="text-muted-foreground mb-1 block">{t('remark_4', 'Remark 4')}</label>
                         <input
                           type="text"
                           value={custForm.remark4 || ''}
@@ -1213,7 +1215,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Note</label>
+                        <label className="text-muted-foreground mb-1 block">{t('note', 'Note')}</label>
                         <input
                           type="text"
                           value={custForm.note || ''}
@@ -1223,7 +1225,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Website</label>
+                        <label className="text-muted-foreground mb-1 block">{t('website', 'Website')}</label>
                         <input
                           type="text"
                           value={custForm.website || ''}
@@ -1237,10 +1239,10 @@ export function Module5AccountsReceivables({
 
                   {/* Membership Section: Code, Card/Code Expiry Date, Membership #, Birthday */}
                   <div className="bg-muted/40 p-3.5 rounded-xl border border-border space-y-3">
-                    <span className="font-bold text-foreground block">Membership Section</span>
+                    <span className="font-bold text-foreground block">{t('membership_section', 'Membership Section')}</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Code</label>
+                        <label className="text-muted-foreground mb-1 block">{t('code', 'Code')}</label>
                         <input
                           type="text"
                           value={custForm.membershipCode || ''}
@@ -1250,7 +1252,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Card/Code Expiry Date</label>
+                        <label className="text-muted-foreground mb-1 block">{t('cardcode_expiry_date', 'Card/Code Expiry Date')}</label>
                         <input
                           type="date"
                           value={custForm.membershipExpiry || ''}
@@ -1260,7 +1262,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Membership #</label>
+                        <label className="text-muted-foreground mb-1 block">{t('membership', 'Membership #')}</label>
                         <input
                           type="text"
                           value={custForm.membershipNumber || ''}
@@ -1270,7 +1272,7 @@ export function Module5AccountsReceivables({
                       </div>
 
                       <div>
-                        <label className="text-muted-foreground mb-1 block">Birthday</label>
+                        <label className="text-muted-foreground mb-1 block">{t('birthday', 'Birthday')}</label>
                         <input
                           type="date"
                           value={custForm.birthday || ''}
@@ -1283,10 +1285,10 @@ export function Module5AccountsReceivables({
 
                   {/* Image Section: Thumbnail preview (`no-image`) with Select image and Remove buttons */}
                   <div className="bg-muted/40 p-3.5 rounded-xl border border-border space-y-3">
-                    <span className="font-bold text-foreground block">Image Section</span>
+                    <span className="font-bold text-foreground block">{t('image_section', 'Image Section')}</span>
                     <div className="flex items-center gap-4">
                       <div className="w-20 h-20 bg-card border border-border rounded-xl flex items-center justify-center text-muted-foreground text-[11px] font-mono shadow-2xs">
-                        no-image
+                        {t('noimage', 'no-image')}
                       </div>
                       <div className="space-y-2">
                         <button
@@ -1294,14 +1296,14 @@ export function Module5AccountsReceivables({
                           onClick={() => onShowToast('Image selected from file system.')}
                           className="bg-card hover:bg-muted text-foreground border border-border px-3 py-1.5 rounded-lg text-xs font-semibold block transition-colors cursor-pointer"
                         >
-                          Select image
+                          {t('select_image', 'Select image')}
                         </button>
                         <button
                           type="button"
                           onClick={() => onShowToast('Image removed.')}
                           className="bg-card hover:bg-destructive/10 text-destructive border border-destructive/30 px-3 py-1.5 rounded-lg text-xs font-semibold block transition-colors cursor-pointer"
                         >
-                          Remove
+                          {t('remove', 'Remove')}
                         </button>
                       </div>
                     </div>
@@ -1317,14 +1319,14 @@ export function Module5AccountsReceivables({
                 onClick={() => setNewCustomerModalOpen(false)}
                 className="bg-card hover:bg-muted text-muted-foreground px-4 py-2 rounded-lg text-xs font-semibold border border-border cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleSaveNewCustomer}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Save
+                {t('save', 'Save')}
               </button>
             </div>
           </div>

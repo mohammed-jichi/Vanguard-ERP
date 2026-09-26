@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTenant } from '@/lib/TenantContext';
@@ -246,6 +247,7 @@ const INITIAL_RECURRING: RecurringTransfer[] = [
 ];
 
 export default function TransfersView() {
+  const { t } = useLanguage();
   // Currency Toggle (LBP / USD)
   const [activeCurrency, setActiveCurrency] = useState<'USD' | 'LBP'>('USD');
   const currSymbol = activeCurrency === 'USD' ? '$' : 'LBP';
@@ -711,15 +713,15 @@ export default function TransfersView() {
           {/* Report Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-slate-700">Format:</span>
+              <span className="text-xs font-bold text-slate-700">{t('format', 'Format:')}</span>
               <select
                 value={reportExportType}
                 onChange={(e) => setReportExportType(e.target.value)}
                 className="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary"
               >
                 <option value="html">Preview (HTML)</option>
-                <option value="pdf">PDF Document</option>
-                <option value="csv">CSV Spreadsheet</option>
+                <option value="pdf">{t('pdf_document', 'PDF Document')}</option>
+                <option value="csv">{t('csv_spreadsheet', 'CSV Spreadsheet')}</option>
               </select>
 
               <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 cursor-pointer ml-4">
@@ -729,7 +731,7 @@ export default function TransfersView() {
                   onChange={(e) => setReportShowCost(e.target.checked)}
                   className="rounded text-primary focus:ring-0"
                 />
-                <span>Show Cost</span>
+                <span>{t('show_cost', 'Show Cost')}</span>
               </label>
             </div>
 
@@ -739,21 +741,21 @@ export default function TransfersView() {
                 className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-sm transition"
               >
                 <FileText className="w-3.5 h-3.5" />
-                <span>Generate</span>
+                <span>{t('generate', 'Generate')}</span>
               </button>
               <button
                 onClick={() => window.print()}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg shadow-sm transition"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print</span>
+                <span>{t('print', 'Print')}</span>
               </button>
               <button
                 onClick={() => setRequisitionReportView(false)}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg shadow-sm transition"
               >
                 <X className="w-3.5 h-3.5" />
-                <span>Close</span>
+                <span>{t('close', 'Close')}</span>
               </button>
             </div>
           </div>
@@ -763,13 +765,13 @@ export default function TransfersView() {
             {/* Header */}
             <div className="flex justify-between items-start border-b-2 border-primary pb-4">
               <div>
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">VANGUARD ARTISAN FOODS SAL</h1>
-                <p className="text-xs text-slate-600 font-medium">Operations Center • Inter-Branch Logistics & Inventory Transfer</p>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">Commercial Registry: 1049281 • VAT: 601-829103</p>
+                <h1 className="text-xl font-black text-slate-900 tracking-tight">{t('vanguard_artisan_foods_sal', 'VANGUARD ARTISAN FOODS SAL')}</h1>
+                <p className="text-xs text-slate-600 font-medium">{t('operations_center_interbranch_logistics', 'Operations Center • Inter-Branch Logistics & Inventory Transfer')}</p>
+                <p className="text-xs text-slate-500 font-mono mt-0.5">{t('commercial_registry_1049281_vat', 'Commercial Registry: 1049281 • VAT: 601-829103')}</p>
               </div>
               <div className="text-right">
                 <span className="inline-block px-3 py-1 rounded bg-primary text-white text-xs font-black tracking-wider uppercase">
-                  TRANSFER NOTE
+                  {t('transfer_note', 'TRANSFER NOTE')}
                 </span>
                 <p className="text-sm font-mono font-bold text-slate-800 mt-1">{transferNumber}</p>
                 <p className="text-xs text-slate-500 font-mono">Date: {transferDate}</p>
@@ -798,12 +800,12 @@ export default function TransfersView() {
               <table className="w-full text-left text-xs border-collapse bg-white border border-slate-200">
                 <thead>
                   <tr className="bg-primary text-white text-[11px] font-bold">
-                    <th className="py-2 px-3">Code</th>
-                    <th className="py-2 px-3">Description</th>
-                    <th className="py-2 px-3">Barcode</th>
-                    <th className="py-2 px-3 text-right">Qty Transferred</th>
-                    <th className="py-2 px-3 text-right">Qty Received</th>
-                    <th className="py-2 px-3">Unit</th>
+                    <th className="py-2 px-3">{t('code', 'Code')}</th>
+                    <th className="py-2 px-3">{t('description', 'Description')}</th>
+                    <th className="py-2 px-3">{t('barcode', 'Barcode')}</th>
+                    <th className="py-2 px-3 text-right">{t('qty_transferred', 'Qty Transferred')}</th>
+                    <th className="py-2 px-3 text-right">{t('qty_received', 'Qty Received')}</th>
+                    <th className="py-2 px-3">{t('unit', 'Unit')}</th>
                     {reportShowCost && (
                       <>
                         <th className="py-2 px-3 text-right">Unit Cost ({currSymbol})</th>
@@ -836,7 +838,7 @@ export default function TransfersView() {
                 </tbody>
                 <tfoot className="bg-slate-100 font-bold border-t-2 border-slate-300">
                   <tr>
-                    <td colSpan={3} className="py-2.5 px-3 text-right uppercase text-slate-700">Totals:</td>
+                    <td colSpan={3} className="py-2.5 px-3 text-right uppercase text-slate-700">{t('totals', 'Totals:')}</td>
                     <td className="py-2.5 px-3 text-right font-mono text-slate-900 font-black">{totalQtyTransfered.toLocaleString()}</td>
                     <td className="py-2.5 px-3 text-right font-mono text-emerald-700 font-black">{totalQtyReceived.toLocaleString()}</td>
                     <td></td>
@@ -855,19 +857,19 @@ export default function TransfersView() {
             {/* Signatures */}
             <div className="grid grid-cols-3 gap-8 pt-8 border-t border-slate-300 text-center text-xs">
               <div>
-                <p className="font-bold text-slate-800">Prepared & Approved By</p>
+                <p className="font-bold text-slate-800">{t('prepared_approved_by', 'Prepared & Approved By')}</p>
                 <div className="h-12 border-b border-dashed border-slate-400 mt-2"></div>
-                <p className="text-[10px] text-slate-500 mt-1">Warehouse Supervisor Signature</p>
+                <p className="text-[10px] text-slate-500 mt-1">{t('warehouse_supervisor_signature', 'Warehouse Supervisor Signature')}</p>
               </div>
               <div>
-                <p className="font-bold text-slate-800">Driver / Dispatcher</p>
+                <p className="font-bold text-slate-800">{t('driver_dispatcher', 'Driver / Dispatcher')}</p>
                 <div className="h-12 border-b border-dashed border-slate-400 mt-2"></div>
-                <p className="text-[10px] text-slate-500 mt-1">Carrier / Truck Vehicle License</p>
+                <p className="text-[10px] text-slate-500 mt-1">{t('carrier_truck_vehicle_license', 'Carrier / Truck Vehicle License')}</p>
               </div>
               <div>
-                <p className="font-bold text-slate-800">Received & Confirmed By</p>
+                <p className="font-bold text-slate-800">{t('received_confirmed_by', 'Received & Confirmed By')}</p>
                 <div className="h-12 border-b border-dashed border-slate-400 mt-2"></div>
-                <p className="text-[10px] text-slate-500 mt-1">Destination Branch Manager</p>
+                <p className="text-[10px] text-slate-500 mt-1">{t('destination_branch_manager', 'Destination Branch Manager')}</p>
               </div>
             </div>
           </div>
@@ -882,7 +884,7 @@ export default function TransfersView() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xl">🔄</span>
-                <h1 className="text-base font-bold text-slate-900">Transfers & Stock Requisitions</h1>
+                <h1 className="text-base font-bold text-slate-900">{t('transfers_stock_requisitions', 'Transfers & Stock Requisitions')}</h1>
                 {isReversed && (
                   <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs font-bold border border-red-200">
                     ( Reversed )
@@ -890,7 +892,7 @@ export default function TransfersView() {
                 )}
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Operations / Actions / Transfers • Inter-Branch Movements & Requisition Fulfillment
+                {t('operations_actions_transfers', 'Operations / Actions / Transfers • Inter-Branch Movements & Requisition Fulfillment')}
               </p>
             </div>
 
@@ -901,7 +903,7 @@ export default function TransfersView() {
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-xs transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>New</span>
+                <span>{t('new', 'New')}</span>
               </button>
 
               {/* Actions Dropdown */}
@@ -910,7 +912,7 @@ export default function TransfersView() {
                   onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg shadow-xs transition cursor-pointer"
                 >
-                  <span>Actions</span>
+                  <span>{t('actions', 'Actions')}</span>
                   <ChevronDown className="w-3.5 h-3.5" />
                 </button>
 
@@ -924,7 +926,7 @@ export default function TransfersView() {
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-100 font-medium text-left"
                     >
                       <Search className="w-3.5 h-3.5 text-primary" />
-                      <span>Preview Transfers</span>
+                      <span>{t('preview_transfers', 'Preview Transfers')}</span>
                     </button>
                     <button
                       onClick={() => {
@@ -934,14 +936,14 @@ export default function TransfersView() {
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-100 font-medium text-left"
                     >
                       <Plus className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Add Location</span>
+                      <span>{t('add_location', 'Add Location')}</span>
                     </button>
                     <button
                       onClick={handleOpenReport}
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-100 font-medium text-left"
                     >
                       <Printer className="w-3.5 h-3.5 text-slate-700" />
-                      <span>Print / Report</span>
+                      <span>{t('print_report', 'Print / Report')}</span>
                     </button>
                     <div className="my-1 border-t border-slate-100"></div>
                     <button
@@ -952,7 +954,7 @@ export default function TransfersView() {
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-100 font-medium text-left"
                     >
                       <Archive className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Store Transfer</span>
+                      <span>{t('store_transfer', 'Store Transfer')}</span>
                     </button>
                     <button
                       onClick={() => {
@@ -962,14 +964,14 @@ export default function TransfersView() {
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-100 font-medium text-left"
                     >
                       <History className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Recall Transfer</span>
+                      <span>{t('recall_transfer', 'Recall Transfer')}</span>
                     </button>
                     <button
                       onClick={handleReverseTransfer}
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-100 font-medium text-left"
                     >
                       <Undo className="w-3.5 h-3.5 text-red-600" />
-                      <span>Reverse Transfer</span>
+                      <span>{t('reverse_transfer', 'Reverse Transfer')}</span>
                     </button>
                     <button
                       onClick={() => {
@@ -1002,7 +1004,7 @@ export default function TransfersView() {
                     activeCurrency === 'LBP' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  LBP
+                  {t('lbp', 'LBP')}
                 </button>
               </div>
             </div>
@@ -1011,7 +1013,7 @@ export default function TransfersView() {
           {/* CARD 1: TRANSFER HEADER (Date, Number, From Branch/Location, To Branch/Location) */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
             <div className="bg-primary text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between">
-              <span>Transfer / Requisition Details</span>
+              <span>{t('transfer_requisition_details', 'Transfer / Requisition Details')}</span>
               <span className="text-[11px] text-blue-200 font-mono">{transferNumber}</span>
             </div>
 
@@ -1019,7 +1021,7 @@ export default function TransfersView() {
               {/* Left Column: Date & Transfer Number & PR Number */}
               <div className="md:col-span-4 space-y-3.5 md:border-r md:border-slate-200 md:pr-6">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Transfer Date *</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('transfer_date', 'Transfer Date *')}</label>
                   <input
                     type="date"
                     value={transferDate}
@@ -1031,9 +1033,9 @@ export default function TransfersView() {
                 <div>
                   <div className="flex justify-between items-center mb-1">
                     <div className="flex items-center gap-1.5">
-                      <label className="font-bold text-slate-700">Transfer Number</label>
+                      <label className="font-bold text-slate-700">{t('transfer_number', 'Transfer Number')}</label>
                       <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-300">
-                        Auto Generated
+                        {t('auto_generated', 'Auto Generated')}
                       </span>
                     </div>
                     {fromReqNo && (
@@ -1045,7 +1047,7 @@ export default function TransfersView() {
                       type="text"
                       value={transferNumber}
                       readOnly
-                      title="Transfer number is automatically generated"
+                      title={t('transfer_number_is_automatically', 'Transfer number is automatically generated')}
                       className="w-full bg-slate-100/90 border border-slate-300 rounded-lg pl-3 pr-8 py-1.5 text-slate-900 font-mono font-bold cursor-not-allowed select-all focus:outline-none shadow-inner"
                     />
                     <button
@@ -1056,7 +1058,7 @@ export default function TransfersView() {
                         showToast(`Regenerated Transfer #: ${newNum}`);
                       }}
                       className="absolute right-2 top-2 text-slate-400 hover:text-primary transition cursor-pointer"
-                      title="Regenerate Transfer Number"
+                      title={t('regenerate_transfer_number', 'Regenerate Transfer Number')}
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                     </button>
@@ -1068,7 +1070,7 @@ export default function TransfersView() {
                   <label className="block font-bold text-slate-700 mb-1">Product Request # (Optional)</label>
                   <input
                     type="text"
-                    placeholder="PR Reference..."
+                    placeholder={t('pr_reference', 'PR Reference...')}
                     value={prNumber}
                     onChange={(e) => setPrNumber(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-mono focus:outline-none focus:border-primary"
@@ -1080,32 +1082,32 @@ export default function TransfersView() {
               <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Source Branch */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">From Branch</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('from_branch', 'From Branch')}</label>
                   <select
                     value={fromBranch}
                     onChange={(e) => setFromBranch(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="Main Branch">Main Branch</option>
+                    <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
                   </select>
                 </div>
 
                 {/* Source Location with [+] Add Location button */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">From Location</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('from_location', 'From Location')}</label>
                   <div className="flex items-center gap-1.5">
                     <select
                       value={fromLocation}
                       onChange={(e) => setFromLocation(e.target.value)}
                       className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                     >
-                      <option value="All Locations">All Locations</option>
-                      <option value="Choueifat Main Facility">Choueifat Main Facility</option>
+                      <option value="All Locations">{t('all_locations', 'All Locations')}</option>
+                      <option value="Choueifat Main Facility">{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
                     </select>
                     <button
                       onClick={() => setAddLocationModalOpen(true)}
                       className="p-2 bg-primary hover:bg-primary/90 text-white rounded-lg shadow-2xs transition"
-                      title="Add Location"
+                      title={t('add_location', 'Add Location')}
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -1132,26 +1134,26 @@ export default function TransfersView() {
 
                 {/* Destination Branch */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">To Branch</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('to_branch', 'To Branch')}</label>
                   <select
                     value={toBranch}
                     onChange={(e) => setToBranch(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="Main Branch">Main Branch</option>
+                    <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
                   </select>
                 </div>
 
                 {/* Destination Location */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">To Location</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('to_location', 'To Location')}</label>
                   <select
                     value={toLocation}
                     onChange={(e) => setToLocation(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="All Locations">All Locations</option>
-                    <option value="Choueifat Main Facility">Choueifat Main Facility</option>
+                    <option value="All Locations">{t('all_locations', 'All Locations')}</option>
+                    <option value="Choueifat Main Facility">{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
                   </select>
                 </div>
               </div>
@@ -1161,7 +1163,7 @@ export default function TransfersView() {
           {/* CARD 2: TRANSFER DETAILS (Items Search, Import, Dynamic Table with Cost Filters, Save/Post) */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
             <div className="bg-primary text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between">
-              <span>Transfer Items & Cargo Manifest</span>
+              <span>{t('transfer_items_cargo_manifest', 'Transfer Items & Cargo Manifest')}</span>
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-1 font-medium cursor-pointer">
                   <input
@@ -1170,7 +1172,7 @@ export default function TransfersView() {
                     onChange={(e) => setShowBarcode(e.target.checked)}
                     className="rounded text-primary"
                   />
-                  <span>Barcode</span>
+                  <span>{t('barcode', 'Barcode')}</span>
                 </label>
                 <label className="flex items-center gap-1 font-medium cursor-pointer">
                   <input
@@ -1179,7 +1181,7 @@ export default function TransfersView() {
                     onChange={(e) => setHideCost(e.target.checked)}
                     className="rounded text-primary"
                   />
-                  <span>Hide Cost</span>
+                  <span>{t('hide_cost', 'Hide Cost')}</span>
                 </label>
               </div>
             </div>
@@ -1192,7 +1194,7 @@ export default function TransfersView() {
                     <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
                     <input
                       type="text"
-                      placeholder="Type item name/code & press Enter..."
+                      placeholder={t('type_item_namecode_press_enter', 'Type item name/code & press Enter...')}
                       value={searchItemVal}
                       onChange={(e) => setSearchItemVal(e.target.value)}
                       onKeyDown={(e) => {
@@ -1208,10 +1210,10 @@ export default function TransfersView() {
                     type="button"
                     onClick={() => handleOpenSearchModal(searchItemVal)}
                     className="flex items-center gap-1 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg shadow-2xs transition cursor-pointer"
-                    title="Search Inventory Items"
+                    title={t('search_inventory_items', 'Search Inventory Items')}
                   >
                     <Search className="w-3.5 h-3.5" />
-                    <span>Search</span>
+                    <span>{t('search', 'Search')}</span>
                   </button>
                 </div>
 
@@ -1222,7 +1224,7 @@ export default function TransfersView() {
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 shadow-2xs transition cursor-pointer"
                   >
                     <Boxes className="w-3.5 h-3.5 text-primary" />
-                    <span>Browse Inventory Items</span>
+                    <span>{t('browse_inventory_items', 'Browse Inventory Items')}</span>
                   </button>
                   <button
                     onClick={() => setImportModalOpen(true)}
@@ -1239,26 +1241,26 @@ export default function TransfersView() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold">
-                      <th className="py-2.5 px-3">Code</th>
-                      <th className="py-2.5 px-3">Description</th>
-                      {showBarcode && <th className="py-2.5 px-3">Barcode</th>}
-                      <th className="py-2.5 px-3 text-right">Qty Transfered</th>
-                      {previewReq && <th className="py-2.5 px-3 text-right text-emerald-700">Qty Received</th>}
-                      <th className="py-2.5 px-3">Unit</th>
+                      <th className="py-2.5 px-3">{t('code', 'Code')}</th>
+                      <th className="py-2.5 px-3">{t('description', 'Description')}</th>
+                      {showBarcode && <th className="py-2.5 px-3">{t('barcode', 'Barcode')}</th>}
+                      <th className="py-2.5 px-3 text-right">{t('qty_transfered', 'Qty Transfered')}</th>
+                      {previewReq && <th className="py-2.5 px-3 text-right text-emerald-700">{t('qty_received', 'Qty Received')}</th>}
+                      <th className="py-2.5 px-3">{t('unit', 'Unit')}</th>
                       {!hideCost && (
                         <>
                           <th className="py-2.5 px-3 text-right font-black">Unit Cost ({currSymbol})</th>
                           <th className="py-2.5 px-3 text-right font-black">Avg. Cost ({currSymbol})</th>
                         </>
                       )}
-                      <th className="py-2.5 px-3 text-right text-slate-500">Qty OH</th>
+                      <th className="py-2.5 px-3 text-right text-slate-500">{t('qty_oh', 'Qty OH')}</th>
                       {!hideCost && (
                         <>
                           <th className="py-2.5 px-3 text-right font-black">Total U.Cost ({currSymbol})</th>
                           <th className="py-2.5 px-3 text-right font-black">Total Avg. Cost ({currSymbol})</th>
                         </>
                       )}
-                      <th className="py-2.5 px-3 text-center">Actions</th>
+                      <th className="py-2.5 px-3 text-center">{t('actions', 'Actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium">
@@ -1322,7 +1324,7 @@ export default function TransfersView() {
                                 className={`p-1.5 rounded transition ${
                                   row.showRemark || row.remark ? 'bg-blue-100 text-primary' : 'hover:bg-slate-200 text-slate-500'
                                 }`}
-                                title="Remark & Expiration"
+                                title={t('remark_expiration', 'Remark & Expiration')}
                               >
                                 <MessageSquare className="w-3.5 h-3.5" />
                               </button>
@@ -1335,7 +1337,7 @@ export default function TransfersView() {
                                     ? 'bg-emerald-100 text-emerald-800 font-bold'
                                     : 'hover:bg-slate-200 text-slate-500'
                                 }`}
-                                title="Serial Numbers"
+                                title={t('serial_numbers', 'Serial Numbers')}
                               >
                                 <Barcode className="w-3.5 h-3.5" />
                               </button>
@@ -1344,7 +1346,7 @@ export default function TransfersView() {
                               <button
                                 onClick={() => removeItem(row.id)}
                                 className="p-1.5 hover:bg-red-50 text-red-600 rounded transition"
-                                title="Remove Item"
+                                title={t('remove_item', 'Remove Item')}
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -1358,17 +1360,17 @@ export default function TransfersView() {
                             <td colSpan={12} className="p-2.5">
                               <div className="flex flex-wrap items-center gap-4">
                                 <div className="flex items-center gap-2 flex-1 min-w-[240px]">
-                                  <span className="font-bold text-slate-700">Remark:</span>
+                                  <span className="font-bold text-slate-700">{t('remark', 'Remark:')}</span>
                                   <input
                                     type="text"
-                                    placeholder="Enter item dispatch note or handling instructions..."
+                                    placeholder={t('enter_item_dispatch_note_or_handling', 'Enter item dispatch note or handling instructions...')}
                                     value={row.remark}
                                     onChange={(e) => updateItem(row.id, 'remark', e.target.value)}
                                     className="flex-1 bg-white border border-slate-300 rounded px-2.5 py-1 text-slate-800 focus:outline-none focus:border-primary"
                                   />
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-slate-700">Exp. Date:</span>
+                                  <span className="font-bold text-slate-700">{t('exp_date', 'Exp. Date:')}</span>
                                   <input
                                     type="date"
                                     value={row.expDate}
@@ -1391,11 +1393,11 @@ export default function TransfersView() {
                 {/* Stats */}
                 <div className="flex items-center gap-4 text-xs">
                   <div>
-                    <span className="text-slate-500">Items: </span>
+                    <span className="text-slate-500">{t('items', 'Items:')} </span>
                     <span className="font-bold text-slate-800">{totalItemsCount}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500">Total Qty Transferred: </span>
+                    <span className="text-slate-500">{t('total_qty_transferred', 'Total Qty Transferred:')} </span>
                     <span className="font-bold text-primary font-mono">{totalQtyTransfered.toLocaleString()}</span>
                   </div>
                   {!hideCost && (
@@ -1414,7 +1416,7 @@ export default function TransfersView() {
                         onClick={() => handleSaveTransfer(false)}
                         className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm transition"
                       >
-                        Save
+                        {t('save', 'Save')}
                       </button>
                       <button
                         onClick={() => handleSaveTransfer(true)}
@@ -1429,19 +1431,19 @@ export default function TransfersView() {
                         onClick={() => handleSaveTransfer(false)}
                         className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm transition"
                       >
-                        Save
+                        {t('save', 'Save')}
                       </button>
                       <button
                         onClick={handlePostCurrentTransfer}
                         className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-sm transition"
                       >
-                        Post
+                        {t('post', 'Post')}
                       </button>
                       <button
                         onClick={handleDeleteCurrentTransfer}
                         className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg shadow-sm transition"
                       >
-                        Delete
+                        {t('delete', 'Delete')}
                       </button>
                     </>
                   )}
@@ -1480,7 +1482,7 @@ export default function TransfersView() {
                   <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Search by Req #, Branch, Destination..."
+                    placeholder={t('search_by_req_branch_destination', 'Search by Req #, Branch, Destination...')}
                     value={previewSearchText}
                     onChange={(e) => setPreviewSearchText(e.target.value)}
                     className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-primary"
@@ -1493,8 +1495,8 @@ export default function TransfersView() {
                     onChange={(e) => setPreviewBranchFilter(e.target.value)}
                     className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-primary"
                   >
-                    <option value="ALL">All Branches</option>
-                    <option value="Main Branch">Main Branch</option>
+                    <option value="ALL">{t('all_branches', 'All Branches')}</option>
+                    <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
                   </select>
                 </div>
 
@@ -1504,10 +1506,10 @@ export default function TransfersView() {
                     onChange={(e) => setPreviewStatusFilter(e.target.value)}
                     className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-primary"
                   >
-                    <option value="ALL">All Statuses</option>
-                    <option value="POSTED">Posted</option>
-                    <option value="UNPOSTED">Unposted</option>
-                    <option value="IN_TRANSIT">In-Transit</option>
+                    <option value="ALL">{t('all_statuses', 'All Statuses')}</option>
+                    <option value="POSTED">{t('posted', 'Posted')}</option>
+                    <option value="UNPOSTED">{t('unposted', 'Unposted')}</option>
+                    <option value="IN_TRANSIT">{t('intransit', 'In-Transit')}</option>
                   </select>
                 </div>
 
@@ -1517,9 +1519,9 @@ export default function TransfersView() {
                     onChange={(e) => setPreviewItemTypeFilter(e.target.value)}
                     className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 focus:outline-none focus:border-primary"
                   >
-                    <option value="ALL">All Item Types</option>
-                    <option value="INVENTORY">Inventory Items</option>
-                    <option value="RAW">Raw Materials</option>
+                    <option value="ALL">{t('all_item_types', 'All Item Types')}</option>
+                    <option value="INVENTORY">{t('inventory_items', 'Inventory Items')}</option>
+                    <option value="RAW">{t('raw_materials', 'Raw Materials')}</option>
                     <option value="PACKAGING">Bottles &amp; Packaging</option>
                   </select>
                 </div>
@@ -1535,7 +1537,7 @@ export default function TransfersView() {
                       onChange={(e) => setMultiplePosting(e.target.checked)}
                       className="rounded text-emerald-600 focus:ring-0"
                     />
-                    <span>Multiple Posting</span>
+                    <span>{t('multiple_posting', 'Multiple Posting')}</span>
                   </label>
 
                   <label className="flex items-center gap-1.5 font-medium text-slate-700 cursor-pointer">
@@ -1545,7 +1547,7 @@ export default function TransfersView() {
                       onChange={(e) => setAllDates(e.target.checked)}
                       className="rounded text-primary focus:ring-0"
                     />
-                    <span>All Dates</span>
+                    <span>{t('all_dates', 'All Dates')}</span>
                   </label>
 
                   {!allDates && (
@@ -1556,7 +1558,7 @@ export default function TransfersView() {
                         onChange={(e) => setFromDate(e.target.value)}
                         className="bg-white border border-slate-300 rounded px-2.5 py-1 text-slate-800 font-mono"
                       />
-                      <span className="text-slate-500">to</span>
+                      <span className="text-slate-500">{t('to', 'to')}</span>
                       <input
                         type="date"
                         value={toDate}
@@ -1574,14 +1576,14 @@ export default function TransfersView() {
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow-sm transition"
                     >
                       <Tag className="w-3.5 h-3.5" />
-                      <span>Post Selected Transactions</span>
+                      <span>{t('post_selected_transactions', 'Post Selected Transactions')}</span>
                     </button>
                   )}
                   <button
                     onClick={() => showToast('Applied transfer filters.')}
                     className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-sm transition"
                   >
-                    Filter
+                    {t('filter', 'Filter')}
                   </button>
                 </div>
               </div>
@@ -1589,29 +1591,29 @@ export default function TransfersView() {
               {/* Row 3: From Branch & To Branch specific selects */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-slate-200">
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-600 font-bold whitespace-nowrap">From Branch:</span>
+                  <span className="text-slate-600 font-bold whitespace-nowrap">{t('from_branch', 'From Branch:')}</span>
                   <select
                     value={fromBranchFilter}
                     onChange={(e) => setFromBranchFilter(e.target.value)}
                     className="flex-1 bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-slate-800"
                   >
-                    <option value="ALL">All Source Branches</option>
-                    <option value="Marjeyoun Press Mill & Silos">Marjeyoun Press Mill & Silos</option>
-                    <option value="Beirut Central Distribution Depot">Beirut Central Distribution Depot</option>
-                    <option value="Saida Coastal Logistics Hub">Saida Coastal Logistics Hub</option>
+                    <option value="ALL">{t('all_source_branches', 'All Source Branches')}</option>
+                    <option value="Marjeyoun Press Mill & Silos">{t('marjeyoun_press_mill_silos', 'Marjeyoun Press Mill & Silos')}</option>
+                    <option value="Beirut Central Distribution Depot">{t('beirut_central_distribution_depot', 'Beirut Central Distribution Depot')}</option>
+                    <option value="Saida Coastal Logistics Hub">{t('saida_coastal_logistics_hub', 'Saida Coastal Logistics Hub')}</option>
                   </select>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-600 font-bold whitespace-nowrap">To Branch:</span>
+                  <span className="text-slate-600 font-bold whitespace-nowrap">{t('to_branch', 'To Branch:')}</span>
                   <select
                     value={toBranchFilter}
                     onChange={(e) => setToBranchFilter(e.target.value)}
                     className="flex-1 bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-slate-800"
                   >
-                    <option value="ALL">All Destination Branches</option>
-                    <option value="Beirut Central Distribution Depot">Beirut Central Distribution Depot</option>
-                    <option value="Choueifat POS Store Front & Showroom">Choueifat POS Store Front & Showroom</option>
-                    <option value="Marjeyoun Press Mill & Silos">Marjeyoun Press Mill & Silos</option>
+                    <option value="ALL">{t('all_destination_branches', 'All Destination Branches')}</option>
+                    <option value="Beirut Central Distribution Depot">{t('beirut_central_distribution_depot', 'Beirut Central Distribution Depot')}</option>
+                    <option value="Choueifat POS Store Front & Showroom">{t('choueifat_pos_store_front_showroom', 'Choueifat POS Store Front & Showroom')}</option>
+                    <option value="Marjeyoun Press Mill & Silos">{t('marjeyoun_press_mill_silos', 'Marjeyoun Press Mill & Silos')}</option>
                   </select>
                 </div>
               </div>
@@ -1623,17 +1625,17 @@ export default function TransfersView() {
                 <thead>
                   <tr className="bg-primary text-white font-bold">
                     {multiplePosting && <th className="py-2.5 px-3 w-8"></th>}
-                    <th className="py-2.5 px-3">Date</th>
-                    <th className="py-2.5 px-3">Req. #</th>
+                    <th className="py-2.5 px-3">{t('date', 'Date')}</th>
+                    <th className="py-2.5 px-3">{t('req', 'Req. #')}</th>
                     <th className="py-2.5 px-3">Source (Branch / Loc)</th>
                     <th className="py-2.5 px-3">Destination (Branch / Loc)</th>
-                    <th className="py-2.5 px-3 text-center">Status</th>
+                    <th className="py-2.5 px-3 text-center">{t('status', 'Status')}</th>
                     <th className="py-2.5 px-3 text-right">Total Cost ({currSymbol})</th>
                     <th className="py-2.5 px-3 text-center">
                       <button
                         onClick={handleDeleteAllUnposted}
                         className="p-1 hover:bg-red-600 text-white rounded transition"
-                        title="Delete All Unposted Transfers"
+                        title={t('delete_all_unposted_transfers', 'Delete All Unposted Transfers')}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1696,7 +1698,7 @@ export default function TransfersView() {
                           <button
                             onClick={() => handleLoadTransfer(row)}
                             className="p-1.5 bg-primary hover:bg-primary/90 text-white rounded transition shadow-2xs"
-                            title="Load into Editor"
+                            title={t('load_into_editor', 'Load into Editor')}
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
@@ -1706,7 +1708,7 @@ export default function TransfersView() {
                             <button
                               onClick={() => handlePostFromPreview(row.id)}
                               className="p-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded transition shadow-2xs"
-                              title="Post Transfer"
+                              title={t('post_transfer', 'Post Transfer')}
                             >
                               <Tag className="w-3.5 h-3.5" />
                             </button>
@@ -1716,7 +1718,7 @@ export default function TransfersView() {
                           <button
                             onClick={() => handleDeleteFromPreview(row.id)}
                             className="p-1.5 bg-red-600 hover:bg-red-700 text-white rounded transition shadow-2xs"
-                            title="Delete Transfer"
+                            title={t('delete_transfer', 'Delete Transfer')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -1727,7 +1729,7 @@ export default function TransfersView() {
                   {filteredSavedTransfers.length === 0 && (
                     <tr>
                       <td colSpan={8} className="py-8 text-center text-slate-400 italic">
-                        No transfer records match your current filter parameters.
+                        {t('no_transfer_records_match_your_current', 'No transfer records match your current filter parameters.')}
                       </td>
                     </tr>
                   )}
@@ -1742,7 +1744,7 @@ export default function TransfersView() {
                 onClick={() => setPreviewModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg transition"
               >
-                Close Registry
+                {t('close_registry', 'Close Registry')}
               </button>
             </div>
           </div>
@@ -1756,7 +1758,7 @@ export default function TransfersView() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-md overflow-hidden">
             <div className="bg-primary text-white p-3.5 flex items-center justify-between">
-              <h3 className="font-bold text-sm">Store Requisition / Transfer Template</h3>
+              <h3 className="font-bold text-sm">{t('store_requisition_transfer_template', 'Store Requisition / Transfer Template')}</h3>
               <button onClick={() => setStoreModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
@@ -1764,11 +1766,11 @@ export default function TransfersView() {
             <div className="p-4 space-y-4 text-xs">
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
-                  Enter a description for this stored requisition:
+                  {t('enter_a_description_for_this_stored', 'Enter a description for this stored requisition:')}
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Weekly EVOO 750ml Depot Replenishment"
+                  placeholder={t('eg_weekly_evoo_750ml_depot_replenishment', 'e.g. Weekly EVOO 750ml Depot Replenishment')}
                   value={storeDescription}
                   onChange={(e) => setStoreDescription(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-900 focus:outline-none focus:border-primary"
@@ -1779,13 +1781,13 @@ export default function TransfersView() {
                   onClick={() => setStoreModalOpen(false)}
                   className="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={handleSaveStoredRequisition}
                   className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-sm"
                 >
-                  Save Template
+                  {t('save_template', 'Save Template')}
                 </button>
               </div>
             </div>
@@ -1800,7 +1802,7 @@ export default function TransfersView() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
             <div className="bg-primary text-white p-3.5 flex items-center justify-between">
-              <h3 className="font-bold text-sm">Recall Stored / Recurring Transfers</h3>
+              <h3 className="font-bold text-sm">{t('recall_stored_recurring_transfers', 'Recall Stored / Recurring Transfers')}</h3>
               <button onClick={() => setRecallModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
@@ -1810,7 +1812,7 @@ export default function TransfersView() {
                 <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search stored templates..."
+                  placeholder={t('search_stored_templates', 'Search stored templates...')}
                   value={recallSearchText}
                   onChange={(e) => setRecallSearchText(e.target.value)}
                   className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:border-primary"
@@ -1820,11 +1822,11 @@ export default function TransfersView() {
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold">
-                    <th className="py-2 px-3">Date</th>
-                    <th className="py-2 px-3">Req Description</th>
-                    <th className="py-2 px-3">Source</th>
-                    <th className="py-2 px-3">Destination</th>
-                    <th className="py-2 px-3 text-center">Action</th>
+                    <th className="py-2 px-3">{t('date', 'Date')}</th>
+                    <th className="py-2 px-3">{t('req_description', 'Req Description')}</th>
+                    <th className="py-2 px-3">{t('source', 'Source')}</th>
+                    <th className="py-2 px-3">{t('destination', 'Destination')}</th>
+                    <th className="py-2 px-3 text-center">{t('action', 'Action')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
@@ -1846,7 +1848,7 @@ export default function TransfersView() {
                                 showToast(`Recalled template: ${rec.description}`);
                               }}
                               className="p-1 bg-primary hover:bg-primary/90 text-white rounded"
-                              title="Load Stored Requisition"
+                              title={t('load_stored_requisition', 'Load Stored Requisition')}
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -1856,7 +1858,7 @@ export default function TransfersView() {
                                 showToast('Template removed.');
                               }}
                               className="p-1 bg-red-600 hover:bg-red-700 text-white rounded"
-                              title="Delete Template"
+                              title={t('delete_template', 'Delete Template')}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1872,7 +1874,7 @@ export default function TransfersView() {
                 onClick={() => setRecallModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold rounded-lg"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>
@@ -1886,7 +1888,7 @@ export default function TransfersView() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-md overflow-hidden text-xs">
             <div className="bg-primary text-white p-3.5 flex items-center justify-between">
-              <h3 className="font-bold text-sm">Import Transfer Items</h3>
+              <h3 className="font-bold text-sm">{t('import_transfer_items', 'Import Transfer Items')}</h3>
               <button onClick={() => setImportModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
@@ -1939,14 +1941,14 @@ export default function TransfersView() {
                   onClick={() => setImportModalOpen(false)}
                   className="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={handleStartImport}
                   disabled={!importFile}
                   className="px-4 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-bold rounded-lg shadow-sm"
                 >
-                  Import Items
+                  {t('import_items', 'Import Items')}
                 </button>
               </div>
             </div>
@@ -1962,7 +1964,7 @@ export default function TransfersView() {
           <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-xl overflow-hidden flex flex-col text-xs">
             <div className="bg-primary text-white p-3.5 flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-sm">Items Serial Numbers</h3>
+                <h3 className="font-bold text-sm">{t('items_serial_numbers', 'Items Serial Numbers')}</h3>
                 <p className="text-[11px] text-slate-300">{activeSerialItem?.description}</p>
               </div>
               <button onClick={() => setSerialModalOpen(false)} className="text-slate-300 hover:text-white">
@@ -1973,7 +1975,7 @@ export default function TransfersView() {
             <div className="p-4 grid grid-cols-2 gap-4">
               {/* Available Serials */}
               <div className="border border-slate-200 rounded-lg p-3 space-y-2">
-                <p className="font-bold text-slate-800 border-b pb-1">Available Serial Numbers</p>
+                <p className="font-bold text-slate-800 border-b pb-1">{t('available_serial_numbers', 'Available Serial Numbers')}</p>
                 <div className="space-y-1 max-h-48 overflow-y-auto font-mono">
                   {availableSerials.map((sn) => (
                     <div
@@ -1986,14 +1988,14 @@ export default function TransfersView() {
                     </div>
                   ))}
                   {availableSerials.length === 0 && (
-                    <p className="text-slate-400 italic text-[11px]">No serials available.</p>
+                    <p className="text-slate-400 italic text-[11px]">{t('no_serials_available', 'No serials available.')}</p>
                   )}
                 </div>
               </div>
 
               {/* Selected Serials */}
               <div className="border border-slate-200 rounded-lg p-3 space-y-2">
-                <p className="font-bold text-emerald-800 border-b pb-1">Selected Serial Numbers</p>
+                <p className="font-bold text-emerald-800 border-b pb-1">{t('selected_serial_numbers', 'Selected Serial Numbers')}</p>
                 <div className="space-y-1 max-h-48 overflow-y-auto font-mono">
                   {selectedSerials.map((sn) => (
                     <div
@@ -2006,7 +2008,7 @@ export default function TransfersView() {
                     </div>
                   ))}
                   {selectedSerials.length === 0 && (
-                    <p className="text-slate-400 italic text-[11px]">Click available serial to add.</p>
+                    <p className="text-slate-400 italic text-[11px]">{t('click_available_serial_to_add', 'Click available serial to add.')}</p>
                   )}
                 </div>
               </div>
@@ -2017,13 +2019,13 @@ export default function TransfersView() {
                 onClick={() => setSerialModalOpen(false)}
                 className="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 onClick={handleSaveSerials}
                 className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-sm"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>
@@ -2037,7 +2039,7 @@ export default function TransfersView() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl border-2 border-border w-full max-w-md overflow-hidden text-xs">
             <div className="bg-primary text-white p-3.5 flex items-center justify-between">
-              <h3 className="font-bold text-sm">Add Warehouse / Branch Location</h3>
+              <h3 className="font-bold text-sm">{t('add_warehouse_branch_location', 'Add Warehouse / Branch Location')}</h3>
               <button onClick={() => setAddLocationModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
@@ -2045,24 +2047,24 @@ export default function TransfersView() {
 
             <div className="p-4 space-y-3.5">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Branch</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('branch', 'Branch')}</label>
                 <select
                   value={newLocationBranch}
                   onChange={(e) => setNewLocationBranch(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-900"
                 >
-                  <option value="Marjeyoun Press Mill & Silos">Marjeyoun Press Mill & Silos</option>
-                  <option value="Beirut Central Distribution Depot">Beirut Central Distribution Depot</option>
-                  <option value="Choueifat POS Store Front & Showroom">Choueifat POS Store Front & Showroom</option>
-                  <option value="Saida Coastal Logistics Hub">Saida Coastal Logistics Hub</option>
+                  <option value="Marjeyoun Press Mill & Silos">{t('marjeyoun_press_mill_silos', 'Marjeyoun Press Mill & Silos')}</option>
+                  <option value="Beirut Central Distribution Depot">{t('beirut_central_distribution_depot', 'Beirut Central Distribution Depot')}</option>
+                  <option value="Choueifat POS Store Front & Showroom">{t('choueifat_pos_store_front_showroom', 'Choueifat POS Store Front & Showroom')}</option>
+                  <option value="Saida Coastal Logistics Hub">{t('saida_coastal_logistics_hub', 'Saida Coastal Logistics Hub')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Location Code</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('location_code', 'Location Code')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. LOC-SL-03"
+                  placeholder={t('eg_locsl03', 'e.g. LOC-SL-03')}
                   value={newLocationCode}
                   onChange={(e) => setNewLocationCode(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-900 focus:outline-none focus:border-primary"
@@ -2070,10 +2072,10 @@ export default function TransfersView() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Location Description *</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('location_description', 'Location Description *')}</label>
                 <input
                   type="text"
-                  placeholder="e.g. Silo Tank #4 Bottling Line"
+                  placeholder={t('eg_silo_tank_4_bottling_line', 'e.g. Silo Tank #4 Bottling Line')}
                   value={newLocationName}
                   onChange={(e) => setNewLocationName(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-900 focus:outline-none focus:border-primary"
@@ -2085,14 +2087,14 @@ export default function TransfersView() {
                   onClick={() => setAddLocationModalOpen(false)}
                   className="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={handleSaveLocation}
                   disabled={!newLocationName.trim()}
                   className="px-4 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-bold rounded-lg shadow-sm"
                 >
-                  Save Location
+                  {t('save_location', 'Save Location')}
                 </button>
               </div>
             </div>

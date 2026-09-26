@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
@@ -24,6 +25,7 @@ interface ToastState {
 }
 
 export default function CurrencySetupView() {
+  const { t } = useLanguage();
   const [currencies, setCurrencies] = useState<OmegaCurrency[]>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -280,16 +282,16 @@ export default function CurrencySetupView() {
       {/* PAGE HEADER */}
       <div className="px-6 pt-5 pb-3">
         <h1 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
-          Currency Setup
+          {t('currency_setup', 'Currency Setup')}
         </h1>
         <ul className="flex items-center gap-1.5 text-xs text-slate-500">
           <li>
             <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
-              Home
+              {t('home', 'Home')}
             </Link>
           </li>
           <li>/</li>
-          <li className="text-slate-800 font-medium">Currency Setup</li>
+          <li className="text-slate-800 font-medium">{t('currency_setup', 'Currency Setup')}</li>
         </ul>
       </div>
 
@@ -303,7 +305,7 @@ export default function CurrencySetupView() {
               <div className="col-span-10 md:col-span-4 relative">
                 <input
                   type="search"
-                  placeholder="Search..."
+                  placeholder={t('search', 'Search...')}
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
                   className="w-full text-xs font-normal bg-white border border-slate-300 rounded py-2 pl-9 pr-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
@@ -319,7 +321,7 @@ export default function CurrencySetupView() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>New</span>
+                  <span>{t('new', 'New')}</span>
                 </button>
               </div>
             </div>
@@ -335,18 +337,18 @@ export default function CurrencySetupView() {
                     className="py-2.5 px-4 font-semibold cursor-pointer hover:bg-slate-50 transition-colors select-none"
                   >
                     <div className="flex items-center gap-1">
-                      <span>Description</span>
+                      <span>{t('description', 'Description')}</span>
                       <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th style={{ width: '140px' }} className="py-2.5 px-4 font-semibold text-center">
-                    Type
+                    {t('type', 'Type')}
                   </th>
                   <th style={{ width: '160px' }} className="py-2.5 px-4 font-semibold text-end">
                     Rate (POS / BackOffice)
                   </th>
                   <th style={{ width: '110px' }} className="py-2.5 px-4 font-semibold text-end">
-                    Actions
+                    {t('actions', 'Actions')}
                   </th>
                 </tr>
               </thead>
@@ -354,7 +356,7 @@ export default function CurrencySetupView() {
                 {filteredList.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="py-8 text-center text-slate-400 font-medium">
-                      No currencies found.
+                      {t('no_currencies_found', 'No currencies found.')}
                     </td>
                   </tr>
                 ) : (
@@ -374,12 +376,12 @@ export default function CurrencySetupView() {
                       <td className="py-2.5 px-4 text-center">
                         {row.maincurrency === 1 && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                            MAIN
+                            {t('main', 'MAIN')}
                           </span>
                         )}
                         {row.maincurrency === 2 && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                            SECOND
+                            {t('second', 'SECOND')}
                           </span>
                         )}
                         {row.maincurrency === 3 && (
@@ -397,7 +399,7 @@ export default function CurrencySetupView() {
                           <button
                             type="button"
                             onClick={() => openEditModal(row)}
-                            title="Edit Currency"
+                            title={t('edit_currency', 'Edit Currency')}
                             className="p-1 rounded bg-primary hover:bg-primary text-white transition-colors cursor-pointer"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -405,7 +407,7 @@ export default function CurrencySetupView() {
                           <button
                             type="button"
                             onClick={() => setDeleteTarget(row)}
-                            title="Delete Currency"
+                            title={t('delete_currency', 'Delete Currency')}
                             className="p-1 rounded bg-destructive hover:bg-destructive text-white transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -422,7 +424,7 @@ export default function CurrencySetupView() {
           {/* FOOTER PAGINATOR INFO */}
           <div className="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
             <span>Showing {filteredList.length} of {currencies.length} currencies</span>
-            <span className="font-mono text-[11px]">Page 1 of 1</span>
+            <span className="font-mono text-[11px]">{t('page_1_of_1', 'Page 1 of 1')}</span>
           </div>
         </div>
       </div>
@@ -435,7 +437,7 @@ export default function CurrencySetupView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden animate-scaleUp">
             {/* Modal Header */}
             <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between">
-              <h2 className="text-sm font-semibold tracking-wide">New Currency</h2>
+              <h2 className="text-sm font-semibold tracking-wide">{t('new_currency', 'New Currency')}</h2>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
@@ -450,7 +452,7 @@ export default function CurrencySetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Description <span className="text-rose-600">*</span>
+                    {t('description', 'Description')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -458,20 +460,20 @@ export default function CurrencySetupView() {
                     autoFocus
                     value={newDesc}
                     onChange={(e) => setNewDesc(e.target.value)}
-                    placeholder="e.g. SAR, QAR, GBP..."
+                    placeholder={t('eg_sar_qar_gbp', 'e.g. SAR, QAR, GBP...')}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Symbol <span className="text-rose-600">*</span>
+                    {t('symbol', 'Symbol')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={newSymbol}
                     onChange={(e) => setNewSymbol(e.target.value)}
-                    placeholder="e.g. SR, QR, £..."
+                    placeholder={t('eg_sr_qr', 'e.g. SR, QR, £...')}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
@@ -480,7 +482,7 @@ export default function CurrencySetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    POS Rate <span className="text-rose-600">*</span>
+                    {t('pos_rate', 'POS Rate')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="number"
@@ -488,13 +490,13 @@ export default function CurrencySetupView() {
                     required
                     value={newPosRate}
                     onChange={(e) => setNewPosRate(e.target.value)}
-                    placeholder="e.g. 24000"
+                    placeholder={t('eg_24000', 'e.g. 24000')}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    BackOffice Rate <span className="text-rose-600">*</span>
+                    {t('backoffice_rate', 'BackOffice Rate')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="number"
@@ -502,7 +504,7 @@ export default function CurrencySetupView() {
                     required
                     value={newBackRate}
                     onChange={(e) => setNewBackRate(e.target.value)}
-                    placeholder="e.g. 24000"
+                    placeholder={t('eg_24000', 'e.g. 24000')}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
@@ -511,7 +513,7 @@ export default function CurrencySetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Decimal Number <span className="text-rose-600">*</span>
+                    {t('decimal_number', 'Decimal Number')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="number"
@@ -525,7 +527,7 @@ export default function CurrencySetupView() {
                 </div>
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Inv. Decimal Number
+                    {t('inv_decimal_number', 'Inv. Decimal Number')}
                   </label>
                   <input
                     type="number"
@@ -545,14 +547,14 @@ export default function CurrencySetupView() {
                   onClick={() => setShowAddModal(false)}
                   className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -569,15 +571,15 @@ export default function CurrencySetupView() {
             {/* Modal Header */}
             <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold tracking-wide">Edit Currency</h2>
+                <h2 className="text-sm font-semibold tracking-wide">{t('edit_currency', 'Edit Currency')}</h2>
                 {editingRow.maincurrency === 1 && (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500 text-white">
-                    Main Currency
+                    {t('main_currency', 'Main Currency')}
                   </span>
                 )}
                 {editingRow.maincurrency === 2 && (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-white">
-                    Second Currency
+                    {t('second_currency', 'Second Currency')}
                   </span>
                 )}
               </div>
@@ -594,7 +596,7 @@ export default function CurrencySetupView() {
             <form onSubmit={handleSaveEdit} className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-3">
-                  <label className="block text-slate-700 font-semibold mb-1">ID</label>
+                  <label className="block text-slate-700 font-semibold mb-1">{t('id', 'ID')}</label>
                   <input
                     type="text"
                     disabled
@@ -604,7 +606,7 @@ export default function CurrencySetupView() {
                 </div>
                 <div className="col-span-9">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Description <span className="text-rose-600">*</span>
+                    {t('description', 'Description')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -619,7 +621,7 @@ export default function CurrencySetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Symbol <span className="text-rose-600">*</span>
+                    {t('symbol', 'Symbol')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -631,7 +633,7 @@ export default function CurrencySetupView() {
                 </div>
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Symbol SC <span className="text-rose-600">*</span>
+                    {t('symbol_sc', 'Symbol SC')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -645,7 +647,7 @@ export default function CurrencySetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    BackOffice Rate <span className="text-rose-600">*</span>
+                    {t('backoffice_rate', 'BackOffice Rate')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="number"
@@ -658,7 +660,7 @@ export default function CurrencySetupView() {
                 </div>
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    POS Rate <span className="text-rose-600">*</span>
+                    {t('pos_rate', 'POS Rate')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="number"
@@ -674,7 +676,7 @@ export default function CurrencySetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Decimal Number <span className="text-rose-600">*</span>
+                    {t('decimal_number', 'Decimal Number')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="number"
@@ -688,7 +690,7 @@ export default function CurrencySetupView() {
                 </div>
                 <div className="col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Inv. Decimal Number
+                    {t('inv_decimal_number', 'Inv. Decimal Number')}
                   </label>
                   <input
                     type="number"
@@ -708,14 +710,14 @@ export default function CurrencySetupView() {
                   onClick={() => { setShowEditModal(false); setEditingRow(null); }}
                   className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -731,7 +733,7 @@ export default function CurrencySetupView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden animate-scaleUp">
             <div className="p-5">
               <p className="text-sm font-medium text-slate-800">
-                Are you sure that you want to delete this currency?
+                {t('are_you_sure_that_you_want_to_delete', 'Are you sure that you want to delete this currency?')}
               </p>
               <div className="mt-2 text-xs text-slate-500 font-mono">
                 #{deleteTarget.ID} - {deleteTarget.DESCRIPTION} ({deleteTarget.SYNBOL})
@@ -743,14 +745,14 @@ export default function CurrencySetupView() {
                 onClick={() => setDeleteTarget(null)}
                 className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-200 transition-colors font-medium cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
                 className="px-4 py-1.5 bg-primary hover:bg-primary text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>

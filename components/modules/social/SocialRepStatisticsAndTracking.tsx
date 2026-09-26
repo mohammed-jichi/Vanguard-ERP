@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState } from 'react';
 import {
@@ -94,6 +95,7 @@ const SAMPLE_TRACKING_ORDERS: TrackingOrder[] = [
 ];
 
 export default function SocialRepStatisticsAndTracking() {
+  const { t } = useLanguage();
   // Navigation Tabs
   const [activeTab, setActiveTab] = useState<'statistics' | 'live_tracking'>('statistics');
 
@@ -138,7 +140,7 @@ export default function SocialRepStatisticsAndTracking() {
             </h1>
           </div>
           <p className="text-xs text-muted-foreground mt-0.5 font-medium">
-            Vanguard ERP - Track delivered, in-transit, pending, and cancelled social orders
+            {t('vanguard_erp_track_delivered_intransit', 'Vanguard ERP - Track delivered, in-transit, pending, and cancelled social orders')}
           </p>
         </div>
 
@@ -166,7 +168,7 @@ export default function SocialRepStatisticsAndTracking() {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Statistics Dashboard
+              {t('statistics_dashboard', 'Statistics Dashboard')}
             </button>
 
             <button
@@ -178,7 +180,7 @@ export default function SocialRepStatisticsAndTracking() {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Live Fleet Tracking
+              {t('live_fleet_tracking', 'Live Fleet Tracking')}
             </button>
           </div>
         </div>
@@ -192,7 +194,7 @@ export default function SocialRepStatisticsAndTracking() {
           
           {/* Period Selector Buttons */}
           <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium">
-            <span className="text-muted-foreground mr-1">Period:</span>
+            <span className="text-muted-foreground mr-1">{t('period', 'Period:')}</span>
             {[
               { id: 'today', label: 'Today' },
               { id: 'yesterday', label: 'Yesterday' },
@@ -226,7 +228,7 @@ export default function SocialRepStatisticsAndTracking() {
           {/* Management Mode: Rep Selector */}
           {isManagementView && (
             <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-foreground">Sales Rep:</label>
+              <label className="text-xs font-medium text-foreground">{t('sales_rep', 'Sales Rep:')}</label>
               <select
                 value={selectedRepCode}
                 onChange={(e) => setSelectedRepCode(e.target.value)}
@@ -245,7 +247,7 @@ export default function SocialRepStatisticsAndTracking() {
         {periodFilter === 'custom' && (
           <div className="flex items-center gap-3 pt-2 border-t border-border/60 text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-medium text-muted-foreground">From Date:</span>
+              <span className="font-medium text-muted-foreground">{t('from_date', 'From Date:')}</span>
               <input
                 type="date"
                 value={fromDate}
@@ -254,7 +256,7 @@ export default function SocialRepStatisticsAndTracking() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-medium text-muted-foreground">To Date:</span>
+              <span className="font-medium text-muted-foreground">{t('to_date', 'To Date:')}</span>
               <input
                 type="date"
                 value={toDate}
@@ -277,42 +279,42 @@ export default function SocialRepStatisticsAndTracking() {
             
             {/* Total Orders */}
             <div className="bg-card p-3.5 rounded-xl border border-border shadow-xs text-center space-y-1">
-              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Total Orders</div>
+              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{t('total_orders', 'Total Orders')}</div>
               <div className="text-xl font-bold font-mono text-foreground">{totalOrdersCount}</div>
-              <div className="text-[10px] text-muted-foreground">Social Inquiries</div>
+              <div className="text-[10px] text-muted-foreground">{t('social_inquiries', 'Social Inquiries')}</div>
             </div>
 
             {/* Delivered */}
             <div className="bg-card p-3.5 rounded-xl border border-emerald-200 shadow-xs text-center space-y-1 bg-emerald-50/20">
-              <div className="text-[11px] font-semibold text-emerald-800 uppercase tracking-wide">Delivered</div>
+              <div className="text-[11px] font-semibold text-emerald-800 uppercase tracking-wide">{t('delivered', 'Delivered')}</div>
               <div className="text-xl font-bold font-mono text-emerald-700">{deliveredCount}</div>
-              <div className="text-[10px] text-emerald-700 font-medium">Fully Collected</div>
+              <div className="text-[10px] text-emerald-700 font-medium">{t('fully_collected', 'Fully Collected')}</div>
             </div>
 
             {/* In Transit */}
             <div className="bg-card p-3.5 rounded-xl border border-blue-200 shadow-xs text-center space-y-1 bg-blue-50/20">
-              <div className="text-[11px] font-semibold text-blue-800 uppercase tracking-wide">In Transit</div>
+              <div className="text-[11px] font-semibold text-blue-800 uppercase tracking-wide">{t('in_transit', 'In Transit')}</div>
               <div className="text-xl font-bold font-mono text-blue-700">{inTransitCount}</div>
-              <div className="text-[10px] text-blue-700 font-medium">With Courier</div>
+              <div className="text-[10px] text-blue-700 font-medium">{t('with_courier', 'With Courier')}</div>
             </div>
 
             {/* Pending / Postponed */}
             <div className="bg-card p-3.5 rounded-xl border border-amber-200 shadow-xs text-center space-y-1 bg-amber-50/20">
-              <div className="text-[11px] font-semibold text-amber-800 uppercase tracking-wide">Pending</div>
+              <div className="text-[11px] font-semibold text-amber-800 uppercase tracking-wide">{t('pending', 'Pending')}</div>
               <div className="text-xl font-bold font-mono text-amber-700">{pendingCount}</div>
-              <div className="text-[10px] text-amber-700 font-medium">Rescheduled</div>
+              <div className="text-[10px] text-amber-700 font-medium">{t('rescheduled', 'Rescheduled')}</div>
             </div>
 
             {/* Cancelled */}
             <div className="bg-card p-3.5 rounded-xl border border-rose-200 shadow-xs text-center space-y-1 bg-rose-50/20">
-              <div className="text-[11px] font-semibold text-rose-800 uppercase tracking-wide">Cancelled</div>
+              <div className="text-[11px] font-semibold text-rose-800 uppercase tracking-wide">{t('cancelled', 'Cancelled')}</div>
               <div className="text-xl font-bold font-mono text-rose-700">{cancelledCount}</div>
-              <div className="text-[10px] text-rose-700 font-medium">With Cause Stated</div>
+              <div className="text-[10px] text-rose-700 font-medium">{t('with_cause_stated', 'With Cause Stated')}</div>
             </div>
 
             {/* Commissions */}
             <div className="bg-card p-3.5 rounded-xl border border-border shadow-xs text-center space-y-1 col-span-2 md:col-span-1">
-              <div className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Earned Commission</div>
+              <div className="text-[11px] font-semibold text-foreground uppercase tracking-wide">{t('earned_commission', 'Earned Commission')}</div>
               <div className="text-xl font-bold font-mono text-emerald-700">${earnedCommission.toFixed(2)}</div>
               <div className="text-[10px] text-muted-foreground">+ ${pendingCommission.toFixed(2)} Pending</div>
             </div>
@@ -322,20 +324,20 @@ export default function SocialRepStatisticsAndTracking() {
           {/* Detailed Performance Table (Vanguard Style) */}
           <div className="bg-card rounded-xl border border-border shadow-xs p-4 space-y-3">
             <h3 className="text-xs font-bold text-foreground uppercase tracking-wide border-b border-border/60 pb-2">
-              Representative Orders Ledger & Delivery Status
+              {t('representative_orders_ledger_delivery', 'Representative Orders Ledger & Delivery Status')}
             </h3>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse font-sans">
                 <thead>
                   <tr className="border-b border-border bg-muted/50 text-muted-foreground font-semibold uppercase tracking-wider text-[11px]">
-                    <th className="py-2.5 px-3">Order ID</th>
-                    <th className="py-2.5 px-3">Customer & Contact</th>
-                    <th className="py-2.5 px-3">Package / Offer Details</th>
+                    <th className="py-2.5 px-3">{t('order_id', 'Order ID')}</th>
+                    <th className="py-2.5 px-3">{t('customer_contact', 'Customer & Contact')}</th>
+                    <th className="py-2.5 px-3">{t('package_offer_details', 'Package / Offer Details')}</th>
                     <th className="py-2.5 px-3 text-right">Amount ($)</th>
                     <th className="py-2.5 px-3 text-right">Commission ($)</th>
-                    <th className="py-2.5 px-3 text-center">Status</th>
-                    <th className="py-2.5 px-3">Remarks / Reason</th>
+                    <th className="py-2.5 px-3 text-center">{t('status', 'Status')}</th>
+                    <th className="py-2.5 px-3">{t('remarks_reason', 'Remarks / Reason')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60 font-medium text-xs">
@@ -353,16 +355,16 @@ export default function SocialRepStatisticsAndTracking() {
                       </td>
                       <td className="py-2.5 px-3 text-center">
                         {ord.status === 'DELIVERED' && (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10.5px] font-bold">Delivered ✓</span>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10.5px] font-bold">{t('delivered', 'Delivered ✓')}</span>
                         )}
                         {ord.status === 'IN_TRANSIT' && (
-                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10.5px] font-bold">In Transit 🚗</span>
+                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10.5px] font-bold">{t('in_transit', 'In Transit 🚗')}</span>
                         )}
                         {ord.status === 'PENDING' && (
-                          <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10.5px] font-bold">Pending ⏳</span>
+                          <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10.5px] font-bold">{t('pending', 'Pending ⏳')}</span>
                         )}
                         {ord.status === 'CANCELLED' && (
-                          <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold">Cancelled ✕</span>
+                          <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold">{t('cancelled', 'Cancelled ✕')}</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-muted-foreground text-[11px]">
@@ -386,9 +388,9 @@ export default function SocialRepStatisticsAndTracking() {
         <div className="bg-card rounded-xl border border-border shadow-xs p-4 space-y-3">
           <div className="flex items-center justify-between border-b border-border/60 pb-2">
             <h3 className="text-xs font-bold text-foreground uppercase tracking-wide">
-              Active Field Deliveries & Live Fleet Tracking
+              {t('active_field_deliveries_live_fleet', 'Active Field Deliveries & Live Fleet Tracking')}
             </h3>
-            <span className="text-xs text-muted-foreground font-mono">SuperSonic Dispatch Dispatcher</span>
+            <span className="text-xs text-muted-foreground font-mono">{t('supersonic_dispatch_dispatcher', 'SuperSonic Dispatch Dispatcher')}</span>
           </div>
 
           <div className="space-y-3">
@@ -414,7 +416,7 @@ export default function SocialRepStatisticsAndTracking() {
 
                 <div className="flex flex-wrap items-center justify-between pt-2 border-t border-border/60 text-xs text-muted-foreground">
                   <div>
-                    <span>Assigned Courier: </span>
+                    <span>{t('assigned_courier', 'Assigned Courier:')} </span>
                     <span className="font-bold text-foreground">{order.driverName || 'Pending Courier Assignment'}</span>
                     {order.driverPhone && <span className="font-mono text-muted-foreground ml-1">({order.driverPhone})</span>}
                   </div>
@@ -426,7 +428,7 @@ export default function SocialRepStatisticsAndTracking() {
                       className="px-3 py-1.5 bg-primary hover:bg-slate-800 text-primary-foreground text-xs font-medium rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
                       <MapPin size={13} />
-                      <span>View Live GPS Location</span>
+                      <span>{t('view_live_gps_location', 'View Live GPS Location')}</span>
                     </button>
                   )}
 
@@ -476,7 +478,7 @@ export default function SocialRepStatisticsAndTracking() {
 
               <div className="w-full h-48 bg-muted/40 rounded-xl border border-border flex flex-col items-center justify-center text-muted-foreground space-y-2 font-mono">
                 <Navigation size={28} className="text-primary animate-pulse" />
-                <div className="text-xs font-bold text-foreground">Active Corridor Route Coordinates</div>
+                <div className="text-xs font-bold text-foreground">{t('active_corridor_route_coordinates', 'Active Corridor Route Coordinates')}</div>
                 <div className="text-[11px] text-muted-foreground">
                   Lat: {selectedLiveOrder.driverLocation?.lat}, Lng: {selectedLiveOrder.driverLocation?.lng}
                 </div>
@@ -488,7 +490,7 @@ export default function SocialRepStatisticsAndTracking() {
                   onClick={() => setSelectedLiveOrder(null)}
                   className="px-4 py-2 bg-primary text-primary-foreground hover:bg-slate-800 rounded-lg font-medium text-xs shadow-xs cursor-pointer"
                 >
-                  Close Live Tracker
+                  {t('close_live_tracker', 'Close Live Tracker')}
                 </button>
               </div>
             </div>

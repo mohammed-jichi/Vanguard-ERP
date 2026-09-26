@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 7: Bank Reconciliation Workstation
@@ -39,6 +40,7 @@ export function Module7BankReconciliation({
   accounts,
   onShowToast
 }: Module7BankReconciliationProps) {
+  const { t } = useLanguage();
   // Workflow Step: 'SETUP' (Step 1) or 'GRID' (Step 2)
   const [step, setStep] = useState<'SETUP' | 'GRID'>('SETUP');
 
@@ -158,21 +160,21 @@ export function Module7BankReconciliation({
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                 <FileCheck className="w-4 h-4 text-primary" />
-                <span>Bank Reconciliation Workstation: Step 1 Setup</span>
+                <span>{t('bank_reconciliation_workstation_step_1', 'Bank Reconciliation Workstation: Step 1 Setup')}</span>
               </h3>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-border">
-                Omega Workflow
+                {t('omega_workflow', 'Omega Workflow')}
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Enter target bank statement parameters and ending book value to begin transaction matching
+              {t('enter_target_bank_statement_parameters', 'Enter target bank statement parameters and ending book value to begin transaction matching')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs font-medium">
             {/* Account: Bank account lookup */}
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Account *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('account', 'Account *')}</label>
               <select
                 value={selectedBankAccountId}
                 onChange={(e) => setSelectedBankAccountId(e.target.value)}
@@ -188,7 +190,7 @@ export function Module7BankReconciliation({
 
             {/* Currency: Auto-populated base currency */}
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Currency</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('currency', 'Currency')}</label>
               <input
                 type="text"
                 readOnly
@@ -199,7 +201,7 @@ export function Module7BankReconciliation({
 
             {/* Beginning Date & Ending Date* */}
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Beginning Date</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('beginning_date', 'Beginning Date')}</label>
               <input
                 type="date"
                 value={beginningDate}
@@ -209,7 +211,7 @@ export function Module7BankReconciliation({
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Ending Date *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('ending_date', 'Ending Date *')}</label>
               <input
                 type="date"
                 value={endingDate}
@@ -244,12 +246,12 @@ export function Module7BankReconciliation({
 
             {/* Reconciliation Description* */}
             <div className="sm:col-span-2 md:col-span-3">
-              <label className="text-foreground mb-1 block font-semibold">Reconciliation Description *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('reconciliation_description', 'Reconciliation Description *')}</label>
               <input
                 type="text"
                 value={reconDescription}
                 onChange={(e) => setReconDescription(e.target.value)}
-                placeholder="e.g. September 2026 Monthly Bank Audit & Settlement"
+                placeholder={t('eg_september_2026_monthly_bank_audit', 'e.g. September 2026 Monthly Bank Audit & Settlement')}
                 className="w-full bg-card border border-input rounded-lg p-2 text-foreground shadow-2xs text-xs"
               />
             </div>
@@ -262,7 +264,7 @@ export function Module7BankReconciliation({
               onClick={() => setShowStartConfirm(true)}
               className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer shadow-xs"
             >
-              <span>Start Reconciling</span>
+              <span>{t('start_reconciling', 'Start Reconciling')}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -278,9 +280,9 @@ export function Module7BankReconciliation({
                 ?
               </div>
               <div>
-                <h4 className="font-bold text-sm text-foreground">Initiate Bank Reconciliation</h4>
+                <h4 className="font-bold text-sm text-foreground">{t('initiate_bank_reconciliation', 'Initiate Bank Reconciliation')}</h4>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Are you sure you want to start reconciling?
+                  {t('are_you_sure_you_want_to_start', 'Are you sure you want to start reconciling?')}
                 </p>
               </div>
             </div>
@@ -297,7 +299,7 @@ export function Module7BankReconciliation({
                 onClick={() => setShowStartConfirm(false)}
                 className="bg-card hover:bg-muted text-muted-foreground px-4 py-1.5 rounded-lg text-xs font-semibold border border-border cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -325,7 +327,7 @@ export function Module7BankReconciliation({
             {/* Card 1: Ending Balance [Value] (Bank icon) */}
             <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex items-center justify-between">
               <div>
-                <span className="text-muted-foreground text-[11px] block">Ending Balance</span>
+                <span className="text-muted-foreground text-[11px] block">{t('ending_balance', 'Ending Balance')}</span>
                 <span className="text-lg font-bold font-mono text-foreground">
                   ${endingValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
@@ -338,7 +340,7 @@ export function Module7BankReconciliation({
             {/* Card 2: Accounting: Cleared Balance [Value] (Ledger icon) */}
             <div className="bg-card border border-border rounded-xl p-4 shadow-xs flex items-center justify-between">
               <div>
-                <span className="text-muted-foreground text-[11px] block">Accounting: Cleared Balance</span>
+                <span className="text-muted-foreground text-[11px] block">{t('accounting_cleared_balance', 'Accounting: Cleared Balance')}</span>
                 <span className="text-lg font-bold font-mono text-foreground">
                   ${clearedBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
@@ -357,13 +359,13 @@ export function Module7BankReconciliation({
               }`}
             >
               <div>
-                <span className="text-muted-foreground text-[11px] block">Difference</span>
+                <span className="text-muted-foreground text-[11px] block">{t('difference', 'Difference')}</span>
                 <span className="text-lg font-bold font-mono">
                   ${difference.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
                 {isZeroDiff && (
                   <span className="text-[10px] text-emerald-700 font-bold block">
-                    Exact Parity Match!
+                    {t('exact_parity_match', 'Exact Parity Match!')}
                   </span>
                 )}
               </div>
@@ -386,7 +388,7 @@ export function Module7BankReconciliation({
                 onClick={() => setStep('SETUP')}
                 className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs"
               >
-                Main Setup
+                {t('main_setup', 'Main Setup')}
               </button>
 
               {/* Import Bank Statement dropdown (4 formats) */}
@@ -397,7 +399,7 @@ export function Module7BankReconciliation({
                   className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
                   <Upload className="w-3.5 h-3.5 text-primary" />
-                  <span>Import Bank Statement</span>
+                  <span>{t('import_bank_statement', 'Import Bank Statement')}</span>
                   <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
                 </button>
 
@@ -455,7 +457,7 @@ export function Module7BankReconciliation({
                 onClick={() => setShowSaveLaterConfirm(true)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs"
               >
-                Save For Later...
+                {t('save_for_later', 'Save For Later...')}
               </button>
 
               {/* Reconcil (Green button, triggers commit confirmation) */}
@@ -466,7 +468,7 @@ export function Module7BankReconciliation({
                 className="bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white px-5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:cursor-not-allowed shadow-xs"
               >
                 <Check className="w-4 h-4" />
-                <span>Reconcil</span>
+                <span>{t('reconcil', 'Reconcil')}</span>
               </button>
             </div>
           </div>
@@ -481,13 +483,13 @@ export function Module7BankReconciliation({
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="bg-muted text-foreground font-semibold border-b border-border">
-                    <th className="p-2.5">Date</th>
-                    <th className="p-2.5 min-w-[200px]">Description</th>
-                    <th className="p-2.5">Payee / Customer</th>
+                    <th className="p-2.5">{t('date', 'Date')}</th>
+                    <th className="p-2.5 min-w-[200px]">{t('description', 'Description')}</th>
+                    <th className="p-2.5">{t('payee_customer', 'Payee / Customer')}</th>
                     <th className="p-2.5 text-right">Payment ($)</th>
                     <th className="p-2.5 text-right">Deposit ($)</th>
-                    <th className="p-2.5 min-w-[160px]">Remark</th>
-                    <th className="p-2.5 text-center w-20">Clear / Match</th>
+                    <th className="p-2.5 min-w-[160px]">{t('remark', 'Remark')}</th>
+                    <th className="p-2.5 text-center w-20">{t('clear_match', 'Clear / Match')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -547,7 +549,7 @@ export function Module7BankReconciliation({
 
             {/* File pickers: Select file, Change */}
             <div className="bg-muted p-3.5 rounded-xl border border-border space-y-2 text-xs">
-              <span className="font-semibold text-foreground block">Select Bank CSV Statement:</span>
+              <span className="font-semibold text-foreground block">{t('select_bank_csv_statement', 'Select Bank CSV Statement:')}</span>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -557,7 +559,7 @@ export function Module7BankReconciliation({
                   }}
                   className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs"
                 >
-                  Select file
+                  {t('select_file', 'Select file')}
                 </button>
                 <span className="text-muted-foreground font-mono text-[11px]">
                   {csvFileSelected ? 'blom_bank_sep_2026.csv (48.2 KB)' : 'No file chosen'}
@@ -568,7 +570,7 @@ export function Module7BankReconciliation({
                     onClick={() => setCsvFileSelected(false)}
                     className="text-primary hover:underline text-xs cursor-pointer"
                   >
-                    Change
+                    {t('change', 'Change')}
                   </button>
                 )}
               </div>
@@ -588,74 +590,74 @@ export function Module7BankReconciliation({
                 }}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Get CSV Fields
+                {t('get_csv_fields', 'Get CSV Fields')}
               </button>
             </div>
 
             {/* Field Mapper: Date, Description, Deposit, Withdraw, Balance selectors */}
             {csvFieldsRetrieved && (
               <div className="border border-border rounded-xl p-3.5 space-y-3 text-xs animate-fadeIn">
-                <span className="font-bold text-foreground block">Map CSV Headers to Ledger Fields:</span>
+                <span className="font-bold text-foreground block">{t('map_csv_headers_to_ledger_fields', 'Map CSV Headers to Ledger Fields:')}</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-medium">
                   <div>
-                    <label className="text-muted-foreground mb-1 block">Date Field</label>
+                    <label className="text-muted-foreground mb-1 block">{t('date_field', 'Date Field')}</label>
                     <select
                       value={csvMapDate}
                       onChange={(e) => setCsvMapDate(e.target.value)}
                       className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground shadow-2xs font-mono"
                     >
-                      <option value="Transaction_Date">Transaction_Date</option>
-                      <option value="Booking_Date">Booking_Date</option>
-                      <option value="Value_Date">Value_Date</option>
+                      <option value="Transaction_Date">{t('transaction_date', 'Transaction_Date')}</option>
+                      <option value="Booking_Date">{t('booking_date', 'Booking_Date')}</option>
+                      <option value="Value_Date">{t('value_date', 'Value_Date')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-muted-foreground mb-1 block">Description Field</label>
+                    <label className="text-muted-foreground mb-1 block">{t('description_field', 'Description Field')}</label>
                     <select
                       value={csvMapDesc}
                       onChange={(e) => setCsvMapDesc(e.target.value)}
                       className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground shadow-2xs font-mono"
                     >
-                      <option value="Description_Memo">Description_Memo</option>
-                      <option value="Narration">Narration</option>
-                      <option value="Details">Details</option>
+                      <option value="Description_Memo">{t('description_memo', 'Description_Memo')}</option>
+                      <option value="Narration">{t('narration', 'Narration')}</option>
+                      <option value="Details">{t('details', 'Details')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-muted-foreground mb-1 block">Deposit Field</label>
+                    <label className="text-muted-foreground mb-1 block">{t('deposit_field', 'Deposit Field')}</label>
                     <select
                       value={csvMapDeposit}
                       onChange={(e) => setCsvMapDeposit(e.target.value)}
                       className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground shadow-2xs font-mono"
                     >
-                      <option value="Credit_Deposit">Credit_Deposit</option>
-                      <option value="Inward">Inward</option>
+                      <option value="Credit_Deposit">{t('credit_deposit', 'Credit_Deposit')}</option>
+                      <option value="Inward">{t('inward', 'Inward')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-muted-foreground mb-1 block">Withdraw Field</label>
+                    <label className="text-muted-foreground mb-1 block">{t('withdraw_field', 'Withdraw Field')}</label>
                     <select
                       value={csvMapWithdraw}
                       onChange={(e) => setCsvMapWithdraw(e.target.value)}
                       className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground shadow-2xs font-mono"
                     >
-                      <option value="Debit_Withdraw">Debit_Withdraw</option>
-                      <option value="Outward">Outward</option>
+                      <option value="Debit_Withdraw">{t('debit_withdraw', 'Debit_Withdraw')}</option>
+                      <option value="Outward">{t('outward', 'Outward')}</option>
                     </select>
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="text-muted-foreground mb-1 block">Balance Field</label>
+                    <label className="text-muted-foreground mb-1 block">{t('balance_field', 'Balance Field')}</label>
                     <select
                       value={csvMapBalance}
                       onChange={(e) => setCsvMapBalance(e.target.value)}
                       className="w-full bg-card border border-input rounded-lg p-1.5 text-foreground shadow-2xs font-mono"
                     >
-                      <option value="Running_Balance">Running_Balance</option>
-                      <option value="Cumulative">Cumulative</option>
+                      <option value="Running_Balance">{t('running_balance', 'Running_Balance')}</option>
+                      <option value="Cumulative">{t('cumulative', 'Cumulative')}</option>
                     </select>
                   </div>
                 </div>
@@ -669,7 +671,7 @@ export function Module7BankReconciliation({
                 onClick={() => setActiveImportFormat(null)}
                 className="bg-card hover:bg-muted text-muted-foreground px-4 py-1.5 rounded-lg text-xs font-semibold border border-border cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -677,7 +679,7 @@ export function Module7BankReconciliation({
                 onClick={handleExecuteCsvImport}
                 className="bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white px-5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer disabled:cursor-not-allowed shadow-xs"
               >
-                Import Bank Statement
+                {t('import_bank_statement', 'Import Bank Statement')}
               </button>
             </div>
           </div>
@@ -709,14 +711,14 @@ export function Module7BankReconciliation({
             </p>
 
             <div className="bg-muted p-3.5 rounded-xl border border-border space-y-2 text-xs">
-              <span className="font-semibold text-foreground block">Choose File:</span>
+              <span className="font-semibold text-foreground block">{t('choose_file', 'Choose File:')}</span>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => onShowToast(`Attached bank_statement_feed.${activeImportFormat.toLowerCase()}`)}
                   className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-2xs"
                 >
-                  Select file
+                  {t('select_file', 'Select file')}
                 </button>
                 <span className="text-muted-foreground font-mono text-[11px]">
                   bank_statement_feed.{activeImportFormat.toLowerCase()}
@@ -726,7 +728,7 @@ export function Module7BankReconciliation({
                   onClick={() => onShowToast('File selection cleared.')}
                   className="text-primary hover:underline text-xs cursor-pointer"
                 >
-                  Change
+                  {t('change', 'Change')}
                 </button>
               </div>
             </div>
@@ -737,14 +739,14 @@ export function Module7BankReconciliation({
                 onClick={() => setActiveImportFormat(null)}
                 className="bg-card hover:bg-muted text-muted-foreground px-4 py-1.5 rounded-lg text-xs font-semibold border border-border cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={() => handleExecuteStructuredImport(activeImportFormat)}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Import Bank Statement
+                {t('import_bank_statement', 'Import Bank Statement')}
               </button>
             </div>
           </div>
@@ -760,9 +762,9 @@ export function Module7BankReconciliation({
                 ✓
               </div>
               <div>
-                <h4 className="font-bold text-sm text-foreground">Finalize Reconciliation</h4>
+                <h4 className="font-bold text-sm text-foreground">{t('finalize_reconciliation', 'Finalize Reconciliation')}</h4>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Difference is 0.00. Are you sure you want to commit and close this reconciliation?
+                  {t('difference_is_000_are_you_sure_you_want', 'Difference is 0.00. Are you sure you want to commit and close this reconciliation?')}
                 </p>
               </div>
             </div>
@@ -773,7 +775,7 @@ export function Module7BankReconciliation({
                 onClick={() => setShowCommitConfirm(false)}
                 className="bg-card hover:bg-muted text-muted-foreground px-4 py-1.5 rounded-lg text-xs font-semibold border border-border cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -796,9 +798,9 @@ export function Module7BankReconciliation({
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
           <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-md p-5 space-y-4">
             <div>
-              <h4 className="font-bold text-sm text-foreground">Save Reconciliation Progress</h4>
+              <h4 className="font-bold text-sm text-foreground">{t('save_reconciliation_progress', 'Save Reconciliation Progress')}</h4>
               <p className="text-xs text-muted-foreground mt-1">
-                Are you sure you want to save this reconciliation? All cleared checkmarks and progress will be preserved.
+                {t('are_you_sure_you_want_to_save_this', 'Are you sure you want to save this reconciliation? All cleared checkmarks and progress will be preserved.')}
               </p>
             </div>
 
@@ -808,7 +810,7 @@ export function Module7BankReconciliation({
                 onClick={() => setShowSaveLaterConfirm(false)}
                 className="bg-card hover:bg-muted text-muted-foreground px-4 py-1.5 rounded-lg text-xs font-semibold border border-border cursor-pointer"
               >
-                No, Keep Editing
+                {t('no_keep_editing', 'No, Keep Editing')}
               </button>
               <button
                 type="button"
@@ -819,7 +821,7 @@ export function Module7BankReconciliation({
                 }}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shadow-xs"
               >
-                Yes, Save For Later
+                {t('yes_save_for_later', 'Yes, Save For Later')}
               </button>
             </div>
           </div>

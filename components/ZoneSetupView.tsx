@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
@@ -29,6 +30,7 @@ interface ToastState {
 }
 
 export default function ZoneSetupView() {
+  const { t } = useLanguage();
   const { currentTenant } = useTenant();
   const [zones, setZones] = useState<OmegaCallCenterZone[]>(INITIAL_ZONES);
 
@@ -383,16 +385,16 @@ export default function ZoneSetupView() {
       {/* PAGE HEADER */}
       <div className="px-6 pt-5 pb-3">
         <h1 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
-          Call Center Zone Setup
+          {t('call_center_zone_setup', 'Call Center Zone Setup')}
         </h1>
         <ul className="flex items-center gap-1.5 text-xs text-slate-500">
           <li>
             <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
-              Home
+              {t('home', 'Home')}
             </Link>
           </li>
           <li>/</li>
-          <li className="text-slate-800 font-medium">Call Center Zone Setup</li>
+          <li className="text-slate-800 font-medium">{t('call_center_zone_setup', 'Call Center Zone Setup')}</li>
         </ul>
       </div>
 
@@ -406,7 +408,7 @@ export default function ZoneSetupView() {
               <div className="col-span-12 md:col-span-4 relative">
                 <input
                   type="search"
-                  placeholder="Search..."
+                  placeholder={t('search', 'Search...')}
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
                   className="w-full text-xs font-normal bg-white border border-slate-300 rounded py-2 pl-9 pr-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
@@ -421,7 +423,7 @@ export default function ZoneSetupView() {
                   onChange={(e) => setSelectedBranchId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                   className="w-full text-xs font-normal bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer"
                 >
-                  <option value="all">All Branches</option>
+                  <option value="all">{t('all_branches', 'All Branches')}</option>
                   {OMEGA_BRANCHES.map(b => (
                     <option key={b.BRANCHID} value={b.BRANCHID}>
                       {b.BARANCHNAME}
@@ -438,7 +440,7 @@ export default function ZoneSetupView() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>New</span>
+                  <span>{t('new', 'New')}</span>
                 </button>
               </div>
             </div>
@@ -464,7 +466,7 @@ export default function ZoneSetupView() {
                     className="py-2.5 px-4 font-semibold cursor-pointer hover:bg-slate-50 transition-colors select-none"
                   >
                     <div className="flex items-center gap-1">
-                      <span>Zone</span>
+                      <span>{t('zone', 'Zone')}</span>
                       <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
@@ -474,7 +476,7 @@ export default function ZoneSetupView() {
                     className="py-2.5 px-4 font-semibold cursor-pointer hover:bg-slate-50 transition-colors select-none"
                   >
                     <div className="flex items-center gap-1">
-                      <span>Area Code</span>
+                      <span>{t('area_code', 'Area Code')}</span>
                       <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
@@ -484,15 +486,15 @@ export default function ZoneSetupView() {
                     className="py-2.5 px-4 font-semibold cursor-pointer hover:bg-slate-50 transition-colors select-none"
                   >
                     <div className="flex items-center gap-1">
-                      <span>Branch</span>
+                      <span>{t('branch', 'Branch')}</span>
                       <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th style={{ width: '130px' }} className="py-2.5 px-4 font-semibold text-center">
-                    Linked Cities
+                    {t('linked_cities', 'Linked Cities')}
                   </th>
                   <th style={{ width: '110px' }} className="py-2.5 px-4 font-semibold text-end">
-                    Actions
+                    {t('actions', 'Actions')}
                   </th>
                 </tr>
               </thead>
@@ -500,7 +502,7 @@ export default function ZoneSetupView() {
                 {filteredZones.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
-                      No call center zones found.
+                      {t('no_call_center_zones_found', 'No call center zones found.')}
                     </td>
                   </tr>
                 ) : (
@@ -535,7 +537,7 @@ export default function ZoneSetupView() {
                           <button
                             type="button"
                             onClick={() => openEditModal(row)}
-                            title="Edit Zone"
+                            title={t('edit_zone', 'Edit Zone')}
                             className="p-1 rounded bg-primary hover:bg-primary text-white transition-colors cursor-pointer"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -543,7 +545,7 @@ export default function ZoneSetupView() {
                           <button
                             type="button"
                             onClick={() => setDeleteTarget(row)}
-                            title="Delete Zone"
+                            title={t('delete_zone', 'Delete Zone')}
                             className="p-1 rounded bg-destructive hover:bg-destructive text-white transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -560,7 +562,7 @@ export default function ZoneSetupView() {
           {/* FOOTER PAGINATOR INFO */}
           <div className="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
             <span>Showing {filteredZones.length} of {zones.length} zones</span>
-            <span className="font-mono text-[11px]">Page 1 of 1</span>
+            <span className="font-mono text-[11px]">{t('page_1_of_1', 'Page 1 of 1')}</span>
           </div>
         </div>
       </div>
@@ -573,7 +575,7 @@ export default function ZoneSetupView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden animate-scaleUp">
             {/* Modal Header */}
             <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between">
-              <h2 className="text-sm font-semibold tracking-wide">New Call Center Zone</h2>
+              <h2 className="text-sm font-semibold tracking-wide">{t('new_call_center_zone', 'New Call Center Zone')}</h2>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
@@ -588,7 +590,7 @@ export default function ZoneSetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-12 md:col-span-4">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Zone <span className="text-rose-600">*</span>
+                    {t('zone', 'Zone')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -596,25 +598,25 @@ export default function ZoneSetupView() {
                     autoFocus
                     value={newZoneName}
                     onChange={(e) => setNewZoneName(e.target.value)}
-                    placeholder="e.g. Beirut Central"
+                    placeholder={t('eg_beirut_central', 'e.g. Beirut Central')}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
                 <div className="col-span-12 md:col-span-4">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Area Code <span className="text-rose-600">*</span>
+                    {t('area_code', 'Area Code')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={newAreaCode}
                     onChange={(e) => setNewAreaCode(e.target.value)}
-                    placeholder="e.g. 01"
+                    placeholder={t('eg_01', 'e.g. 01')}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
                 <div className="col-span-12 md:col-span-4">
-                  <label className="block text-slate-700 font-semibold mb-1">Branch</label>
+                  <label className="block text-slate-700 font-semibold mb-1">{t('branch', 'Branch')}</label>
                   <select
                     value={newBranchId}
                     onChange={(e) => setNewBranchId(Number(e.target.value))}
@@ -631,22 +633,22 @@ export default function ZoneSetupView() {
 
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-12 md:col-span-6">
-                  <label className="block text-slate-700 font-semibold mb-1">Branch Printer Name</label>
+                  <label className="block text-slate-700 font-semibold mb-1">{t('branch_printer_name', 'Branch Printer Name')}</label>
                   <input
                     type="text"
                     value={newPrinterName}
                     onChange={(e) => setNewPrinterName(e.target.value)}
-                    placeholder="e.g. Cashier Thermal"
+                    placeholder={t('eg_cashier_thermal', 'e.g. Cashier Thermal')}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
                 <div className="col-span-12 md:col-span-6">
-                  <label className="block text-slate-700 font-semibold mb-1">Delivery Charge Item ID</label>
+                  <label className="block text-slate-700 font-semibold mb-1">{t('delivery_charge_item_id', 'Delivery Charge Item ID')}</label>
                   <input
                     type="text"
                     value={newDeliveryCharge}
                     onChange={(e) => setNewDeliveryCharge(e.target.value)}
-                    placeholder="e.g. 3.00"
+                    placeholder={t('eg_300', 'e.g. 3.00')}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
@@ -659,14 +661,14 @@ export default function ZoneSetupView() {
                   onClick={() => setShowAddModal(false)}
                   className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -682,7 +684,7 @@ export default function ZoneSetupView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden animate-scaleUp">
             {/* Modal Header */}
             <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between">
-              <h2 className="text-sm font-semibold tracking-wide">Edit Call Center Zone</h2>
+              <h2 className="text-sm font-semibold tracking-wide">{t('edit_call_center_zone', 'Edit Call Center Zone')}</h2>
               <button
                 type="button"
                 onClick={() => { setShowEditModal(false); setEditingZone(null); }}
@@ -702,14 +704,14 @@ export default function ZoneSetupView() {
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1e40af] hover:bg-primary/90 text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <MapPin className="w-3.5 h-3.5" />
-                  <span>Link Cities To Zone</span>
+                  <span>{t('link_cities_to_zone', 'Link Cities To Zone')}</span>
                 </button>
               </div>
 
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-12 md:col-span-4">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Zone <span className="text-rose-600">*</span>
+                    {t('zone', 'Zone')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -721,7 +723,7 @@ export default function ZoneSetupView() {
                 </div>
                 <div className="col-span-12 md:col-span-4">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Area Code <span className="text-rose-600">*</span>
+                    {t('area_code', 'Area Code')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -733,7 +735,7 @@ export default function ZoneSetupView() {
                 </div>
                 <div className="col-span-12 md:col-span-4">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Branch <span className="text-rose-600">*</span>
+                    {t('branch', 'Branch')} <span className="text-rose-600">*</span>
                   </label>
                   <select
                     value={editBranchId}
@@ -751,7 +753,7 @@ export default function ZoneSetupView() {
 
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-12 md:col-span-6">
-                  <label className="block text-slate-700 font-semibold mb-1">Branch Printer Name</label>
+                  <label className="block text-slate-700 font-semibold mb-1">{t('branch_printer_name', 'Branch Printer Name')}</label>
                   <input
                     type="text"
                     value={editPrinterName}
@@ -760,7 +762,7 @@ export default function ZoneSetupView() {
                   />
                 </div>
                 <div className="col-span-12 md:col-span-6">
-                  <label className="block text-slate-700 font-semibold mb-1">Delivery Charge Item ID</label>
+                  <label className="block text-slate-700 font-semibold mb-1">{t('delivery_charge_item_id', 'Delivery Charge Item ID')}</label>
                   <input
                     type="text"
                     value={editDeliveryCharge}
@@ -777,14 +779,14 @@ export default function ZoneSetupView() {
                   onClick={() => { setShowEditModal(false); setEditingZone(null); }}
                   className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -801,7 +803,7 @@ export default function ZoneSetupView() {
             {/* Modal Header */}
             <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-semibold tracking-wide">Link Cities To Zone</h2>
+                <h2 className="text-sm font-semibold tracking-wide">{t('link_cities_to_zone', 'Link Cities To Zone')}</h2>
                 <span className="text-xs text-blue-300 font-mono">({editingZone.ZONE})</span>
               </div>
               <button
@@ -820,7 +822,7 @@ export default function ZoneSetupView() {
                 <div className="relative flex-1">
                   <input
                     type="search"
-                    placeholder="Search cities..."
+                    placeholder={t('search_cities', 'Search cities...')}
                     value={citySearch}
                     onChange={(e) => setCitySearch(e.target.value)}
                     className="w-full text-xs bg-white border border-slate-300 rounded py-2 pl-9 pr-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
@@ -829,7 +831,7 @@ export default function ZoneSetupView() {
                 </div>
                 <button
                   type="submit"
-                  title="Save Cities"
+                  title={t('save_cities', 'Save Cities')}
                   className="p-2 bg-primary hover:bg-primary text-white rounded transition-colors cursor-pointer"
                 >
                   <Save className="w-4 h-4" />
@@ -876,14 +878,14 @@ export default function ZoneSetupView() {
                     onClick={() => setShowCitiesModal(false)}
                     className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
                   >
-                    Cancel
+                    {t('cancel', 'Cancel')}
                   </button>
                   <button
                     type="submit"
                     className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
-                    <span>Save</span>
+                    <span>{t('save', 'Save')}</span>
                   </button>
                 </div>
               </div>
@@ -900,7 +902,7 @@ export default function ZoneSetupView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden animate-scaleUp">
             <div className="p-5">
               <p className="text-sm font-medium text-slate-800">
-                Do you want to delete this call center zone ?
+                {t('do_you_want_to_delete_this_call_center', 'Do you want to delete this call center zone ?')}
               </p>
               <div className="mt-2 text-xs text-slate-500 font-mono">
                 #{deleteTarget.ID} - {deleteTarget.ZONE} ({deleteTarget.BARANCHNAME})
@@ -912,14 +914,14 @@ export default function ZoneSetupView() {
                 onClick={() => setDeleteTarget(null)}
                 className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-200 transition-colors font-medium cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
                 className="px-4 py-1.5 bg-primary hover:bg-primary text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>

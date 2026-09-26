@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
@@ -25,6 +26,7 @@ interface ToastState {
 }
 
 export default function VatExemptionReasonsView() {
+  const { t } = useLanguage();
   const { currentTenant } = useTenant();
   const [reasons, setReasons] = useState<OmegaVatExemptionReason[]>(INITIAL_VAT_EXEMPTIONS);
 
@@ -214,16 +216,16 @@ export default function VatExemptionReasonsView() {
       {/* PAGE HEADER */}
       <div className="px-6 pt-5 pb-3">
         <h1 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
-          Vat Exemption Reasons
+          {t('vat_exemption_reasons', 'Vat Exemption Reasons')}
         </h1>
         <ul className="flex items-center gap-1.5 text-xs text-slate-500">
           <li>
             <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
-              Home
+              {t('home', 'Home')}
             </Link>
           </li>
           <li>/</li>
-          <li className="text-slate-800 font-medium">Vat Exemption Reasons</li>
+          <li className="text-slate-800 font-medium">{t('vat_exemption_reasons', 'Vat Exemption Reasons')}</li>
         </ul>
       </div>
 
@@ -237,7 +239,7 @@ export default function VatExemptionReasonsView() {
               <div className="col-span-12 md:col-span-6 relative">
                 <input
                   type="search"
-                  placeholder="Search..."
+                  placeholder={t('search', 'Search...')}
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
                   className="w-full text-xs font-normal bg-white border border-slate-300 rounded py-2 pl-9 pr-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
@@ -253,7 +255,7 @@ export default function VatExemptionReasonsView() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>New</span>
+                  <span>{t('new', 'New')}</span>
                 </button>
               </div>
             </div>
@@ -268,10 +270,10 @@ export default function VatExemptionReasonsView() {
                     #
                   </th>
                   <th className="py-2.5 px-4 font-semibold">
-                    Vat Exemption Reason
+                    {t('vat_exemption_reason', 'Vat Exemption Reason')}
                   </th>
                   <th className="py-2.5 px-4 font-semibold text-end" style={{ width: '110px' }}>
-                    Actions
+                    {t('actions', 'Actions')}
                   </th>
                 </tr>
               </thead>
@@ -279,7 +281,7 @@ export default function VatExemptionReasonsView() {
                 {filteredList.length === 0 ? (
                   <tr>
                     <td colSpan={3} className="py-8 text-center text-slate-400 font-medium">
-                      No vat exemption reasons found.
+                      {t('no_vat_exemption_reasons_found', 'No vat exemption reasons found.')}
                     </td>
                   </tr>
                 ) : (
@@ -299,7 +301,7 @@ export default function VatExemptionReasonsView() {
                           <button
                             type="button"
                             onClick={() => openEditModal(row)}
-                            title="Edit Reason"
+                            title={t('edit_reason', 'Edit Reason')}
                             className="p-1 rounded bg-primary hover:bg-primary text-white transition-colors cursor-pointer"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -307,7 +309,7 @@ export default function VatExemptionReasonsView() {
                           <button
                             type="button"
                             onClick={() => setDeleteTarget(row)}
-                            title="Delete Reason"
+                            title={t('delete_reason', 'Delete Reason')}
                             className="p-1 rounded bg-destructive hover:bg-destructive text-white transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -324,7 +326,7 @@ export default function VatExemptionReasonsView() {
           {/* FOOTER PAGINATOR INFO */}
           <div className="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
             <span>Showing {filteredList.length} of {reasons.length} records</span>
-            <span className="font-mono text-[11px]">Page 1 of 1</span>
+            <span className="font-mono text-[11px]">{t('page_1_of_1', 'Page 1 of 1')}</span>
           </div>
         </div>
       </div>
@@ -353,7 +355,7 @@ export default function VatExemptionReasonsView() {
             <form onSubmit={handleSave} className="p-5 space-y-4 text-xs">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">
-                  Vat Exemption Reason Description <span className="text-rose-600">*</span>
+                  {t('vat_exemption_reason_description', 'Vat Exemption Reason Description')} <span className="text-rose-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -373,14 +375,14 @@ export default function VatExemptionReasonsView() {
                   onClick={() => setShowModifyModal(false)}
                   className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -396,7 +398,7 @@ export default function VatExemptionReasonsView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden animate-scaleUp">
             <div className="p-5">
               <p className="text-sm font-medium text-slate-800">
-                Are you sure you want to delete this Vat Exemption reason ?
+                {t('are_you_sure_you_want_to_delete_this', 'Are you sure you want to delete this Vat Exemption reason ?')}
               </p>
               <div className="mt-2 text-xs text-slate-500 font-mono">
                 #{deleteTarget.ID} - {deleteTarget.VATEXEMPTIONREASON}
@@ -408,14 +410,14 @@ export default function VatExemptionReasonsView() {
                 onClick={() => setDeleteTarget(null)}
                 className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-200 transition-colors font-medium cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
                 className="px-4 py-1.5 bg-primary hover:bg-primary text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>

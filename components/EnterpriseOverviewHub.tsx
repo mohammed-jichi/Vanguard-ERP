@@ -39,7 +39,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 export default function EnterpriseOverviewHub() {
   const { currentTenant } = useTenant();
-  const { language, dir } = useLanguage();
+  const { language, dir, t } = useLanguage();
   const isAr = language === 'ar';
 
   const isModuleActive = (moduleId: string): boolean => {
@@ -645,8 +645,8 @@ export default function EnterpriseOverviewHub() {
                   <Share2 className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-cyan-900 leading-tight">V-Connect</div>
-                  <div className="text-[10px] text-slate-500 font-medium">Social CRM & WhatsApp</div>
+                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-cyan-900 leading-tight">{t('vconnect', 'V-Connect')}</div>
+                  <div className="text-[10px] text-slate-500 font-medium">{t('social_crm_whatsapp', 'Social CRM & WhatsApp')}</div>
                 </div>
               </div>
               <ExternalLink className="w-3.5 h-3.5 text-cyan-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -663,8 +663,8 @@ export default function EnterpriseOverviewHub() {
                   <Smartphone className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-blue-900 leading-tight">V-Driver</div>
-                  <div className="text-[10px] text-slate-500 font-medium">Driver & Fleet PWA</div>
+                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-blue-900 leading-tight">{t('vdriver', 'V-Driver')}</div>
+                  <div className="text-[10px] text-slate-500 font-medium">{t('driver_fleet_pwa', 'Driver & Fleet PWA')}</div>
                 </div>
               </div>
               <ExternalLink className="w-3.5 h-3.5 text-blue-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -681,8 +681,8 @@ export default function EnterpriseOverviewHub() {
                   <ShoppingCart className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-emerald-900 leading-tight">V-POS</div>
-                  <div className="text-[10px] text-slate-500 font-medium">Touch Counter Sales</div>
+                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-emerald-900 leading-tight">{t('vpos', 'V-POS')}</div>
+                  <div className="text-[10px] text-slate-500 font-medium">{t('touch_counter_sales', 'Touch Counter Sales')}</div>
                 </div>
               </div>
               <ExternalLink className="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -699,8 +699,8 @@ export default function EnterpriseOverviewHub() {
                   <Store className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-amber-900 leading-tight">V-Store</div>
-                  <div className="text-[10px] text-slate-500 font-medium">Storefront / B2B Web</div>
+                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-amber-900 leading-tight">{t('vstore', 'V-Store')}</div>
+                  <div className="text-[10px] text-slate-500 font-medium">{t('storefront_b2b_web', 'Storefront / B2B Web')}</div>
                 </div>
               </div>
               <ExternalLink className="w-3.5 h-3.5 text-amber-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

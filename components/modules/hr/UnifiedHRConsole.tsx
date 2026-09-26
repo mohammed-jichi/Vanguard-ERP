@@ -859,7 +859,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                   <span>{t('payroll_computation_matrix', 'Payroll Computation & Disbursal Matrix')}</span>
                 </h3>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono">
-                  CYCLE: AUG-2026
+                  {t('cycle_aug2026', 'CYCLE: AUG-2026')}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -1019,7 +1019,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                   type="text"
                   value={newEmpName}
                   onChange={(e) => setNewEmpName(e.target.value)}
-                  placeholder="e.g. Marwan Chahine"
+                  placeholder={t('eg_marwan_chahine', 'e.g. Marwan Chahine')}
                   className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-semibold"
                   required
                 />
@@ -1032,7 +1032,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                     type="text"
                     value={newEmpNationalId}
                     onChange={(e) => setNewEmpNationalId(e.target.value)}
-                    placeholder="e.g. 1004928172"
+                    placeholder={t('eg_1004928172', 'e.g. 1004928172')}
                     className="w-full bg-card border border-input rounded-lg p-2 text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                     required
                   />
@@ -1055,7 +1055,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                     type="text"
                     value={newEmpTitle}
                     onChange={(e) => setNewEmpTitle(e.target.value)}
-                    placeholder="e.g. Maintenance Engineer"
+                    placeholder={t('eg_maintenance_engineer', 'e.g. Maintenance Engineer')}
                     className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
                   />
                 </div>
@@ -1119,10 +1119,10 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                     onChange={(e) => setNewEmpTerminal(e.target.value)}
                     className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-semibold"
                   >
-                    <option value="Choueifat Bio-01">Choueifat Bio-01</option>
-                    <option value="Choueifat Bio-02">Choueifat Bio-02</option>
-                    <option value="Nabatieh Bio-01">Nabatieh Bio-01</option>
-                    <option value="Remote / Mobile GPS">Remote / Mobile GPS</option>
+                    <option value="Choueifat Bio-01">{t('choueifat_bio01', 'Choueifat Bio-01')}</option>
+                    <option value="Choueifat Bio-02">{t('choueifat_bio02', 'Choueifat Bio-02')}</option>
+                    <option value="Nabatieh Bio-01">{t('nabatieh_bio01', 'Nabatieh Bio-01')}</option>
+                    <option value="Remote / Mobile GPS">{t('remote_mobile_gps', 'Remote / Mobile GPS')}</option>
                   </select>
                 </div>
               </div>
@@ -1174,7 +1174,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
-                    A4
+                    {t('a4', 'A4')}
                   </button>
                   <button
                     type="button"
@@ -1223,15 +1223,15 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                         {t('company_tagline', 'Central Pressing, Packaging & Distribution Facility - Choueifat')}
                       </p>
                       <p className="text-[10px] text-slate-500 font-mono">
-                        Tax ID: 22901-601 • Reg: Baabda 10420 • MOF Cert: Active
+                        {t('tax_id_22901601_reg_baabda_10420_mof', 'Tax ID: 22901-601 • Reg: Baabda 10420 • MOF Cert: Active')}
                       </p>
                     </div>
                     <div className="text-right">
                       <span className="bg-slate-900 text-white font-mono font-bold text-xs px-2.5 py-1 rounded">
-                        PAYSLIP AUG-2026
+                        {t('payslip_aug2026', 'PAYSLIP AUG-2026')}
                       </span>
                       <p className="text-[10.5px] text-slate-500 mt-1 font-mono">
-                        Date: 2026-08-31
+                        {t('date_20260831', 'Date: 2026-08-31')}
                       </p>
                     </div>
                   </div>
@@ -1320,7 +1320,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                       <span className="text-xl font-black font-mono">${netUsd.toFixed(2)} USD</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] text-emerald-700 block font-semibold">Equivalent at 89,500 LBP:</span>
+                      <span className="text-[10px] text-emerald-700 block font-semibold">{t('equivalent_at_89500_lbp', 'Equivalent at 89,500 LBP:')}</span>
                       <span className="text-base font-bold font-mono">{netLbp.toLocaleString()} L.L.</span>
                     </div>
                   </div>
@@ -1341,7 +1341,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                   <div className="text-center border-b border-dashed border-slate-400 pb-2">
                     <p className="font-bold text-xs">{t('company_short_name', 'SOUTHERN OLIVE OIL')}</p>
                     <p className="text-[10px]">{t('payroll_voucher_receipt', 'PAYROLL VOUCHER (THERMAL)')}</p>
-                    <p className="text-[9.5px]">DATE: 2026-08-31 • TRM-01</p>
+                    <p className="text-[9.5px]">{t('date_20260831_trm01', 'DATE: 2026-08-31 • TRM-01')}</p>
                   </div>
                   <div>
                     <p>EMP: #{emp.id} - {emp.name}</p>
@@ -1349,12 +1349,12 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
                     <p>DEPT: {emp.dept}</p>
                   </div>
                   <div className="border-t border-b border-dashed border-slate-400 py-1.5 space-y-1">
-                    <div className="flex justify-between"><span>BASIC:</span><span>${emp.basicSalary.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span>{t('basic', 'BASIC:')}</span><span>${emp.basicSalary.toFixed(2)}</span></div>
                     <div className="flex justify-between"><span>OT ({emp.overtimeHours}h):</span><span>+${overtimePay.toFixed(2)}</span></div>
-                    <div className="flex justify-between"><span>TRANSPORT:</span><span>+${emp.transportAllowance.toFixed(2)}</span></div>
-                    <div className="flex justify-between"><span>BONUS:</span><span>+${emp.bonus.toFixed(2)}</span></div>
-                    <div className="flex justify-between font-bold"><span>GROSS:</span><span>${gross.toFixed(2)}</span></div>
-                    <div className="flex justify-between text-red-600"><span>CNSS 3%:</span><span>-${nssfDeduction.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span>{t('transport', 'TRANSPORT:')}</span><span>+${emp.transportAllowance.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span>{t('bonus', 'BONUS:')}</span><span>+${emp.bonus.toFixed(2)}</span></div>
+                    <div className="flex justify-between font-bold"><span>{t('gross', 'GROSS:')}</span><span>${gross.toFixed(2)}</span></div>
+                    <div className="flex justify-between text-red-600"><span>{t('cnss_3', 'CNSS 3%:')}</span><span>-${nssfDeduction.toFixed(2)}</span></div>
                   </div>
                   <div className="text-center font-bold text-sm pt-1">
                     <p>NET: ${netUsd.toFixed(2)} USD</p>

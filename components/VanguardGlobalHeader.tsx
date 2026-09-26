@@ -225,7 +225,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               }}
             />
             <span className="font-black tracking-widest text-white text-lg md:text-xl font-sans uppercase group-hover:text-amber-400 transition-colors">
-              VANGUARD ERP
+              {t('vanguard_erp', 'VANGUARD ERP')}
             </span>
           </a>
         </div>
@@ -233,16 +233,16 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
         {/* CENTER: TENANT LICENSE AND NAME (FORCE PURE WHITE TEXT FOR HIGH CONTRAST) */}
         <a
           href="/backoffice/license"
-          title="Vanguard ERP Authorized Enterprise License - View Certificate"
+          title={t('vanguard_erp_authorized_enterprise', 'Vanguard ERP Authorized Enterprise License - View Certificate')}
           className="hidden md:flex items-center gap-2.5 bg-[#252538] hover:bg-[#2d2d44] border border-[#373752] hover:border-amber-500/50 px-4 py-1.5 rounded-full text-xs shadow-inner transition-colors cursor-pointer"
         >
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span className="font-mono text-white font-black text-sm" style={{ color: '#ffffff' }}>001</span>
           <span className="text-white font-bold" style={{ color: '#ffffff' }}>-</span>
-          <span className="font-semibold text-white tracking-wide" style={{ color: '#ffffff' }}>Southern Olive Oil Products S.A.R.L</span>
+          <span className="font-semibold text-white tracking-wide" style={{ color: '#ffffff' }}>{t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}</span>
           <span className="text-[11px] text-emerald-300 font-bold bg-emerald-950/70 border border-emerald-500/40 px-2.5 py-0.5 rounded-full shadow-2xs flex items-center gap-1">
             <ShieldCheck className="w-3 h-3 text-emerald-400" />
-            LICENSED & UNLOCKED
+            {t('licensed_unlocked', 'LICENSED & UNLOCKED')}
           </span>
         </a>
 
@@ -252,7 +252,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           {/* HOME ICON */}
           <button
             onClick={() => onSelectScreen('grid-dash')}
-            title="Home Dashboard"
+            title={t('home_dashboard', 'Home Dashboard')}
             className="p-2 hover:bg-[#252538] text-amber-400 hover:text-amber-300 rounded-xl transition-colors"
           >
             <Home className="w-4.5 h-4.5 text-amber-400" />
@@ -264,7 +264,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               setIsQuickMenuOpen(true);
               setQuickMenuTab('alerts');
             }}
-            title="Internal Operational Notifications"
+            title={t('internal_operational_notifications', 'Internal Operational Notifications')}
             className="p-2 hover:bg-[#252538] text-amber-400 hover:text-amber-300 rounded-xl transition-colors relative"
           >
             <Bell className="w-4.5 h-4.5 text-amber-400" />
@@ -279,7 +279,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           <div className="relative">
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              title="System Settings"
+              title={t('system_settings', 'System Settings')}
               className={`p-2 rounded-xl transition-colors ${
                 isSettingsOpen ? 'bg-amber-500 text-slate-950 font-bold' : 'hover:bg-[#252538] text-amber-400 hover:text-amber-300'
               }`}
@@ -298,8 +298,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       <SettingsIcon className="w-4 h-4 text-amber-600" />
                     </div>
                     <div>
-                      <h3 className="font-extrabold text-sm text-slate-900">System Settings</h3>
-                      <p className="text-[11px] text-slate-600 font-medium">Enterprise core configuration, accounting parameters, and sales control rules</p>
+                      <h3 className="font-extrabold text-sm text-slate-900">{t('system_settings', 'System Settings')}</h3>
+                      <p className="text-[11px] text-slate-600 font-medium">{t('enterprise_core_configuration', 'Enterprise core configuration, accounting parameters, and sales control rules')}</p>
                     </div>
                   </div>
                   <button
@@ -318,14 +318,14 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     {/* GENERAL */}
                     <div>
                       <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
-                        General
+                        {t('general', 'General')}
                       </h4>
                       <div className="space-y-0.5">
                         <button
                           onClick={() => { onSelectScreen('settings'); setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors flex items-center justify-between"
                         >
-                          <span>Company Information</span>
+                          <span>{t('company_information', 'Company Information')}</span>
                         </button>
                         <a
                           href="/backoffice/license"
@@ -334,17 +334,17 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                         >
                           <span className="flex items-center gap-1.5">
                             <Award className="w-3.5 h-3.5 text-amber-500" />
-                            <span>License & Activation Certificate</span>
+                            <span>{t('license_activation_certificate', 'License & Activation Certificate')}</span>
                           </span>
                           <span className="text-[9px] font-black text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">
-                            ACTIVE
+                            {t('active', 'ACTIVE')}
                           </span>
                         </a>
                         <button
                           onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors flex items-center justify-between"
                         >
-                          <span>Email Templates</span>
+                          <span>{t('email_templates', 'Email Templates')}</span>
                         </button>
                       </div>
                     </div>
@@ -352,32 +352,32 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     {/* ACCOUNTING */}
                     <div>
                       <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
-                        Accounting
+                        {t('accounting', 'Accounting')}
                       </h4>
                       <div className="space-y-0.5">
                         <button
                           onClick={() => { onSelectScreen('acc-coa'); setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          Company Configuration
+                          {t('company_configuration', 'Company Configuration')}
                         </button>
                         <button
                           onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          Recalculate Accounts Balances
+                          {t('recalculate_accounts_balances', 'Recalculate Accounts Balances')}
                         </button>
                         <button
                           onClick={() => { onSelectScreen('acc-aux-rates'); setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          Difference of Exchange
+                          {t('difference_of_exchange', 'Difference of Exchange')}
                         </button>
                         <button
                           onClick={() => { onSelectScreen('acc-vat'); setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          End of Year
+                          {t('end_of_year', 'End of Year')}
                         </button>
                       </div>
                     </div>
@@ -388,26 +388,26 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     {/* SALES CONTROL */}
                     <div>
                       <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
-                        Sales Control
+                        {t('sales_control', 'Sales Control')}
                       </h4>
                       <div className="space-y-0.5">
                         <button
                           onClick={() => { onSelectScreen('sales-setup-screen'); setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          General Configuration
+                          {t('general_configuration', 'General Configuration')}
                         </button>
                         <button
                           onClick={() => { onSelectScreen('hr-orgsetup-permissions'); setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          Employee Configuration
+                          {t('employee_configuration', 'Employee Configuration')}
                         </button>
                         <button
                           onClick={() => { onSelectScreen('hr-attendancelog'); setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          Employee Attendance
+                          {t('employee_attendance', 'Employee Attendance')}
                         </button>
                       </div>
                     </div>
@@ -415,20 +415,20 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     {/* ACCOUNTING INTERFACE */}
                     <div>
                       <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
-                        Accounting Interface
+                        {t('accounting_interface', 'Accounting Interface')}
                       </h4>
                       <div className="space-y-0.5">
                         <button
                           onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          Accounting Link
+                          {t('accounting_link', 'Accounting Link')}
                         </button>
                         <button
                           onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          Transfer to Accounting
+                          {t('transfer_to_accounting', 'Transfer to Accounting')}
                         </button>
                       </div>
                     </div>
@@ -438,20 +438,20 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <div className="space-y-5">
                     <div>
                       <h4 className="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-1.5 mb-2">
-                        Inventory
+                        {t('inventory', 'Inventory')}
                       </h4>
                       <div className="space-y-0.5">
                         <button
                           onClick={() => { onSelectScreen('inventory'); setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          General Configuration
+                          {t('general_configuration', 'General Configuration')}
                         </button>
                         <button
                           onClick={() => { setIsSettingsOpen(false); }}
                           className="w-full text-left px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-amber-700 hover:bg-amber-50/80 rounded-xl transition-colors"
                         >
-                          Recalculate
+                          {t('recalculate', 'Recalculate')}
                         </button>
                       </div>
                     </div>
@@ -483,7 +483,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 M
               </div>
               <span className="font-bold text-xs text-white hidden sm:inline">
-                Mohammed
+                {t('mohammed', 'Mohammed')}
               </span>
               <ChevronDown className="w-3 h-3 text-amber-400" />
             </button>
@@ -493,10 +493,10 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <div className={`absolute right-0 mt-2 w-60 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-semibold ${language === 'ar' ? 'dir-ltr text-right' : 'dir-ltr text-left'}`}>
                 <div className="p-2 border-b border-gray-100">
                   <p className="text-gray-900 font-bold">
-                    Mohammed
+                    {t('mohammed', 'Mohammed')}
                   </p>
                   <p className="text-[10px] text-gray-500 font-medium">
-                    Southern Olive Oil Products S.A.R.L
+                    {t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}
                   </p>
                 </div>
 
@@ -562,7 +562,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
                       <Truck className="w-3.5 h-3.5 text-blue-600" />
-                      V-Track Cloud
+                      {t('vtrack_cloud', 'V-Track Cloud')}
                     </span>
                     <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
                       {t('active', 'ACTIVE')}
@@ -645,7 +645,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <div className="bg-slate-950 text-white p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <LayoutGrid className="w-5 h-5 text-amber-400" />
-                <h3 className="font-black text-sm">Vanguard Quick Menu</h3>
+                <h3 className="font-black text-sm">{t('vanguard_quick_menu', 'Vanguard Quick Menu')}</h3>
               </div>
               <button onClick={() => setIsQuickMenuOpen(false)} className="text-gray-400 hover:text-white p-1">
                 <X className="w-5 h-5" />
@@ -665,7 +665,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   onClick={() => setQuickMenuTab('updates')}
                   className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'updates' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
                 >
-                  Latest Updates
+                  {t('latest_updates', 'Latest Updates')}
                 </button>
                 <button
                   onClick={() => setQuickMenuTab('alerts')}
@@ -677,13 +677,13 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   onClick={() => setQuickMenuTab('activities')}
                   className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'activities' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
                 >
-                  Last Activities
+                  {t('last_activities', 'Last Activities')}
                 </button>
                 <button
                   onClick={() => setQuickMenuTab('help')}
                   className={`p-3 text-center border-b-2 shrink-0 transition-colors ${quickMenuTab === 'help' ? 'border-amber-500 text-amber-700 bg-white font-black' : 'border-transparent text-gray-600 hover:text-gray-900'}`}
                 >
-                  Help
+                  {t('help', 'Help')}
                 </button>
               </div>
 
@@ -705,10 +705,10 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 <div className="space-y-3">
                   <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-2xl">
                     <span className="text-[10px] text-amber-800 font-black uppercase tracking-wider block">
-                      Vanguard Standalone Apps Suite
+                      {t('vanguard_standalone_apps_suite', 'Vanguard Standalone Apps Suite')}
                     </span>
                     <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-relaxed">
-                      Launch dedicated client-facing portals and driver PWAs in standalone external windows.
+                      {t('launch_dedicated_clientfacing_portals', 'Launch dedicated client-facing portals and driver PWAs in standalone external windows.')}
                     </p>
                   </div>
 
@@ -781,43 +781,43 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 <div className="space-y-3">
                   <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-2xl">
                     <span className="text-[10px] text-amber-800 font-black uppercase tracking-wider block">
-                      Published Platform Release Notes
+                      {t('published_platform_release_notes', 'Published Platform Release Notes')}
                     </span>
                     <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-relaxed">
-                      Official platform-wide version releases, changelogs, and engine deployments.
+                      {t('official_platformwide_version_releases', 'Official platform-wide version releases, changelogs, and engine deployments.')}
                     </p>
                   </div>
 
                   <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-1">
-                    <span className="text-[10px] text-amber-700 font-bold font-mono uppercase tracking-wider">v2026.8.26 Release</span>
-                    <h5 className="font-black text-amber-950 text-xs">Vanguard ERP Accounting & UOM Engine</h5>
+                    <span className="text-[10px] text-amber-700 font-bold font-mono uppercase tracking-wider">{t('v2026826_release', 'v2026.8.26 Release')}</span>
+                    <h5 className="font-black text-amber-950 text-xs">{t('vanguard_erp_accounting_uom_engine', 'Vanguard ERP Accounting & UOM Engine')}</h5>
                     <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
                       Integrated 18 multi-unit conversions (Tanks, Drums, Gallons, Liters, Kilos) with dynamic landed cost calculations.
                     </p>
                   </div>
 
                   <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-2xl space-y-1">
-                    <span className="text-[10px] text-emerald-600 font-bold font-mono uppercase tracking-wider">v2026.8.20 Release</span>
-                    <h5 className="font-black text-gray-900 text-xs">SuperSonic Driver Fleet Real-Time GPS Tracking</h5>
+                    <span className="text-[10px] text-emerald-600 font-bold font-mono uppercase tracking-wider">{t('v2026820_release', 'v2026.8.20 Release')}</span>
+                    <h5 className="font-black text-gray-900 text-xs">{t('supersonic_driver_fleet_realtime_gps', 'SuperSonic Driver Fleet Real-Time GPS Tracking')}</h5>
                     <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
-                      Enabled live driver mobile dispatching and automated proof of delivery receipt generation.
+                      {t('enabled_live_driver_mobile_dispatching', 'Enabled live driver mobile dispatching and automated proof of delivery receipt generation.')}
                     </p>
                   </div>
 
                   {showMoreUpdates && (
                     <div className="space-y-3 animate-in fade-in duration-200">
                       <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
-                        <span className="text-[10px] text-sky-600 font-bold font-mono uppercase tracking-wider">v2026.8.10 Release</span>
-                        <h5 className="font-black text-slate-900 text-xs">POS Touch Terminal Multi-Currency Checkout</h5>
+                        <span className="text-[10px] text-sky-600 font-bold font-mono uppercase tracking-wider">{t('v2026810_release', 'v2026.8.10 Release')}</span>
+                        <h5 className="font-black text-slate-900 text-xs">{t('pos_touch_terminal_multicurrency', 'POS Touch Terminal Multi-Currency Checkout')}</h5>
                         <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
-                          Dual cash drawer support handling simultaneous LBP and USD cash change logic.
+                          {t('dual_cash_drawer_support_handling', 'Dual cash drawer support handling simultaneous LBP and USD cash change logic.')}
                         </p>
                       </div>
                       <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
-                        <span className="text-[10px] text-indigo-600 font-bold font-mono uppercase tracking-wider">v2026.8.01 Release</span>
-                        <h5 className="font-black text-slate-900 text-xs">Social CRM & Customer WhatsApp Integration</h5>
+                        <span className="text-[10px] text-indigo-600 font-bold font-mono uppercase tracking-wider">{t('v2026801_release', 'v2026.8.01 Release')}</span>
+                        <h5 className="font-black text-slate-900 text-xs">{t('social_crm_customer_whatsapp_integration', 'Social CRM & Customer WhatsApp Integration')}</h5>
                         <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
-                          Automated WhatsApp invoice PDF dispatching directly to registered customer numbers.
+                          {t('automated_whatsapp_invoice_pdf', 'Automated WhatsApp invoice PDF dispatching directly to registered customer numbers.')}
                         </p>
                       </div>
                     </div>
@@ -837,7 +837,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 <div className="space-y-3">
                   <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-2xl">
                     <span className="text-[10px] text-blue-800 font-black uppercase tracking-wider block">
-                      Internal Tenant Operational Notifications
+                      {t('internal_tenant_operational', 'Internal Tenant Operational Notifications')}
                     </span>
                     <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-relaxed">
                       Active operational notifications, unposted reconciliations, and workflow exceptions for {currentTenant?.name || 'Active Tenant'}.
@@ -859,15 +859,15 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                         }}
                         className="rounded border-gray-300 text-amber-600 focus:ring-amber-500 w-3.5 h-3.5"
                       />
-                      <span className="text-[10px] font-semibold text-gray-500">Include Archived</span>
+                      <span className="text-[10px] font-semibold text-gray-500">{t('include_archived', 'Include Archived')}</span>
                     </label>
                   </div>
 
                   {dynamicAlerts.length === 0 ? (
                     <div className="p-6 bg-gray-50 border border-gray-200 rounded-2xl text-center space-y-2">
                       <Bell className="w-6 h-6 text-gray-400 mx-auto" />
-                      <p className="font-semibold text-gray-600 text-xs">No active alerts right now.</p>
-                      <p className="text-[10px] text-gray-400">All vouchers, reconciliations, and workflows are in balance.</p>
+                      <p className="font-semibold text-gray-600 text-xs">{t('no_active_alerts_right_now', 'No active alerts right now.')}</p>
+                      <p className="text-[10px] text-gray-400">{t('all_vouchers_reconciliations_and', 'All vouchers, reconciliations, and workflows are in balance.')}</p>
                     </div>
                   ) : (
                     <div className="space-y-2.5">
@@ -914,7 +914,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                                 onClick={(e) => handleDismissAlert(alt.id, e)}
                                 className="text-[10px] font-semibold text-gray-400 hover:text-gray-700 hover:underline px-1.5 py-0.5 cursor-pointer"
                               >
-                                Dismiss
+                                {t('dismiss', 'Dismiss')}
                               </button>
                             )}
                           </div>
@@ -930,8 +930,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 <div className="space-y-3 text-[11px]">
                   {dynamicActivities.length === 0 ? (
                     <div className="p-6 bg-gray-50 border border-gray-200 rounded-2xl text-center space-y-1 text-gray-500">
-                      <p className="font-semibold text-xs">No recent operational activities recorded.</p>
-                      <p className="text-[10px] text-gray-400">Database audit trail will appear here as vouchers are saved and posted.</p>
+                      <p className="font-semibold text-xs">{t('no_recent_operational_activities', 'No recent operational activities recorded.')}</p>
+                      <p className="text-[10px] text-gray-400">{t('database_audit_trail_will_appear_here', 'Database audit trail will appear here as vouchers are saved and posted.')}</p>
                     </div>
                   ) : (
                     (showMoreActivities ? dynamicActivities : dynamicActivities.slice(0, 4)).map((act) => (
@@ -978,7 +978,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow-sm transition-all"
                     >
-                      <ExternalLink className="w-3.5 h-3.5" /> Go to Support Center
+                      <ExternalLink className="w-3.5 h-3.5" /> {t('go_to_support_center', 'Go to Support Center')}
                     </a>
                   </div>
 
@@ -996,7 +996,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       rel="noreferrer"
                       className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-2 rounded-xl text-xs shadow-sm transition-all"
                     >
-                      <MessageSquare className="w-3.5 h-3.5" /> Open WhatsApp Chat
+                      <MessageSquare className="w-3.5 h-3.5" /> {t('open_whatsapp_chat', 'Open WhatsApp Chat')}
                     </a>
                   </div>
 
@@ -1019,7 +1019,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   {/* QUICK TIPS & DOWNLOADS */}
                   <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
                     <h4 className="font-black text-slate-900 text-sm">
-                      Quick Tips & Downloads
+                      {t('quick_tips_downloads', 'Quick Tips & Downloads')}
                     </h4>
                     <div className="space-y-1.5 pt-1 text-[11px]">
                       <button
@@ -1027,7 +1027,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                         onClick={() => {}}
                         className="w-full flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600 cursor-pointer"
                       >
-                        <span>Vanguard POS Desktop Terminal v4.2</span>
+                        <span>{t('vanguard_pos_desktop_terminal_v42', 'Vanguard POS Desktop Terminal v4.2')}</span>
                         <Download className="w-3.5 h-3.5 text-amber-600" />
                       </button>
                       <button
@@ -1035,7 +1035,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                         onClick={() => {}}
                         className="w-full flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600 cursor-pointer"
                       >
-                        <span>Vanguard Thermal Invoice Print Agent</span>
+                        <span>{t('vanguard_thermal_invoice_print_agent', 'Vanguard Thermal Invoice Print Agent')}</span>
                         <Download className="w-3.5 h-3.5 text-amber-600" />
                       </button>
                     </div>
@@ -1058,7 +1058,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 bg-slate-50/50">
               <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
                 <Mail className="w-5 h-5 text-amber-500" />
-                <span>Inbox</span>
+                <span>{t('inbox', 'Inbox')}</span>
               </h3>
               <button
                 onClick={() => setIsInboxOpen(false)}
@@ -1075,12 +1075,12 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-1.5 cursor-pointer font-bold text-slate-700 select-none">
                   <input type="checkbox" className="rounded text-amber-500 border-slate-300 focus:ring-amber-500" />
-                  <span>All</span>
+                  <span>{t('all', 'All')}</span>
                 </label>
                 <button
                   type="button"
                   onClick={() => {}}
-                  title="Refresh Inbox"
+                  title={t('refresh_inbox', 'Refresh Inbox')}
                   className="p-1.5 text-slate-600 hover:text-amber-600 hover:bg-slate-200/60 rounded-lg transition-colors border border-slate-200 bg-white shadow-2xs cursor-pointer"
                 >
                   <RefreshCw className="w-4 h-4" />
@@ -1089,7 +1089,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <button
                     className="flex items-center gap-1 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-bold hover:bg-slate-100 transition-colors shadow-2xs"
                   >
-                    <span>More</span>
+                    <span>{t('more', 'More')}</span>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                   </button>
                 </div>
@@ -1100,7 +1100,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Search Message.."
+                  placeholder={t('search_message', 'Search Message..')}
                   className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 transition-colors font-medium shadow-2xs"
                 />
               </div>
@@ -1109,14 +1109,14 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <div className="flex items-center gap-1">
                 <button
                   disabled
-                  title="Previous Page"
+                  title={t('previous_page', 'Previous Page')}
                   className="p-1.5 text-slate-300 bg-white border border-slate-200 rounded-lg cursor-not-allowed shadow-2xs"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   disabled
-                  title="Next Page"
+                  title={t('next_page', 'Next Page')}
                   className="p-1.5 text-slate-300 bg-white border border-slate-200 rounded-lg cursor-not-allowed shadow-2xs"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -1132,30 +1132,30 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-extrabold uppercase tracking-wider text-[11px]">
                     <th className="py-3 px-6 cursor-pointer select-none">
                       <div className="flex items-center gap-1">
-                        <span>Title</span>
+                        <span>{t('title', 'Title')}</span>
                         <span className="text-slate-400 text-[10px]">▲▼</span>
                       </div>
                     </th>
                     <th className="py-3 px-6 cursor-pointer select-none">
                       <div className="flex items-center gap-1">
-                        <span>Message</span>
+                        <span>{t('message', 'Message')}</span>
                         <span className="text-slate-400 text-[10px]">▲▼</span>
                       </div>
                     </th>
                     <th className="py-3 px-6 cursor-pointer select-none">
                       <div className="flex items-center gap-1">
-                        <span>Status</span>
+                        <span>{t('status', 'Status')}</span>
                         <span className="text-slate-400 text-[10px]">▲▼</span>
                       </div>
                     </th>
                     <th className="py-3 px-6 cursor-pointer select-none">
                       <div className="flex items-center gap-1">
-                        <span>Time</span>
+                        <span>{t('time', 'Time')}</span>
                         <span className="text-slate-400 text-[10px]">▲▼</span>
                       </div>
                     </th>
                     <th className="py-3 px-6 text-right select-none">
-                      <span>Action</span>
+                      <span>{t('action', 'Action')}</span>
                     </th>
                   </tr>
                 </thead>
@@ -1164,7 +1164,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     <tr>
                       <td colSpan={5} className="py-20 text-center text-slate-400 font-semibold text-sm">
                         <Mail className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                        No Messages in Inbox
+                        {t('no_messages_in_inbox', 'No Messages in Inbox')}
                       </td>
                     </tr>
                   ) : (
@@ -1202,7 +1202,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                             onClick={() => setIsInboxOpen(false)}
                             className="text-xs font-black text-amber-700 hover:text-amber-900 hover:underline inline-flex items-center gap-1"
                           >
-                            <span>Review</span> →
+                            <span>{t('review', 'Review')}</span> →
                           </a>
                         </td>
                       </tr>
@@ -1219,13 +1219,13 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   className="text-xs font-black text-amber-800 hover:text-amber-950 hover:underline flex items-center gap-1.5"
                 >
                   <Mail className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Open Full Operations & Approval Inbox Console →</span>
+                  <span>{t('open_full_operations_approval_inbox', 'Open Full Operations & Approval Inbox Console →')}</span>
                 </a>
                 <button
                   onClick={() => setIsInboxOpen(false)}
                   className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition-colors"
                 >
-                  Close
+                  {t('close', 'Close')}
                 </button>
               </div>
             </div>
@@ -1240,7 +1240,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl font-sans dir-ltr">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="font-black text-gray-900 text-base flex items-center gap-2">
-                <CheckSquare className="w-5 h-5 text-emerald-600" /> Shift Tasks Checklist
+                <CheckSquare className="w-5 h-5 text-emerald-600" /> {t('shift_tasks_checklist', 'Shift Tasks Checklist')}
               </h3>
               <button onClick={() => setIsChecklistOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X className="w-5 h-5" />
@@ -1249,19 +1249,19 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <div className="space-y-2 text-xs font-bold text-gray-700">
               <label className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200">
                 <input type="checkbox" defaultChecked className="rounded text-amber-600" />
-                <span>Reconcile cash drawer balance with daily Z-Report</span>
+                <span>{t('reconcile_cash_drawer_balance_with', 'Reconcile cash drawer balance with daily Z-Report')}</span>
               </label>
               <label className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200">
                 <input type="checkbox" defaultChecked className="rounded text-amber-600" />
-                <span>Test acidity ratio for olive oil holding tanks</span>
+                <span>{t('test_acidity_ratio_for_olive_oil', 'Test acidity ratio for olive oil holding tanks')}</span>
               </label>
               <label className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200">
                 <input type="checkbox" className="rounded text-amber-600" />
-                <span>Send dispatch notifications to SuperSonic drivers</span>
+                <span>{t('send_dispatch_notifications_to', 'Send dispatch notifications to SuperSonic drivers')}</span>
               </label>
             </div>
             <div className="pt-2 flex justify-end">
-              <button onClick={() => setIsChecklistOpen(false)} className="bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs">Save & Close</button>
+              <button onClick={() => setIsChecklistOpen(false)} className="bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs">{t('save_close', 'Save & Close')}</button>
             </div>
           </div>
         </div>
@@ -1273,7 +1273,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-2xl p-6 space-y-4 shadow-2xl font-sans dir-ltr">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="font-black text-gray-900 text-base flex items-center gap-2">
-                <Video className="w-5 h-5 text-amber-600" /> Vanguard ERP Video Tutorials
+                <Video className="w-5 h-5 text-amber-600" /> {t('vanguard_erp_video_tutorials', 'Vanguard ERP Video Tutorials')}
               </h3>
               <button onClick={() => setIsTutorialsOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
                 <X className="w-5 h-5" />
@@ -1283,14 +1283,14 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <iframe
                 className="w-full h-full"
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0"
-                title="Vanguard ERP Tutorials"
+                title={t('vanguard_erp_tutorials', 'Vanguard ERP Tutorials')}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
             </div>
             <div className="pt-2 flex justify-between items-center text-xs font-bold text-gray-500">
-              <span>Watch tutorials for olive press and live POS cashier</span>
-              <button onClick={() => setIsTutorialsOpen(false)} className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs">Close Video</button>
+              <span>{t('watch_tutorials_for_olive_press_and', 'Watch tutorials for olive press and live POS cashier')}</span>
+              <button onClick={() => setIsTutorialsOpen(false)} className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs">{t('close_video', 'Close Video')}</button>
             </div>
           </div>
         </div>

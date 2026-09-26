@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState } from 'react';
 
@@ -15,6 +16,7 @@ export default function SocialRepFormModal({
   onSaveSuccess,
   isManagerRole = false,
 }: SocialRepFormModalProps) {
+  const { t } = useLanguage();
   // Personal Info
   const [firstName, setFirstName] = useState('');
   const [fatherName, setFatherName] = useState('');
@@ -128,32 +130,32 @@ export default function SocialRepFormModal({
             <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide">1. Full Legal Name</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">First Name *</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('first_name', 'First Name *')}</label>
                 <input
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="First name"
+                  placeholder={t('first_name', 'First name')}
                   className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">Middle / Father's Name *</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('middle_fathers_name', 'Middle / Father\'s Name *')}</label>
                 <input
                   type="text"
                   value={fatherName}
                   onChange={(e) => setFatherName(e.target.value)}
-                  placeholder="Middle name"
+                  placeholder={t('middle_name', 'Middle name')}
                   className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">Last / Family Name *</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('last_family_name', 'Last / Family Name *')}</label>
                 <input
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Last name"
+                  placeholder={t('last_name', 'Last name')}
                   className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
@@ -165,7 +167,7 @@ export default function SocialRepFormModal({
             <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide">2. Contact Numbers</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">Primary Mobile Phone *</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('primary_mobile_phone', 'Primary Mobile Phone *')}</label>
                 <input
                   type="text"
                   value={personalPhone}
@@ -175,7 +177,7 @@ export default function SocialRepFormModal({
                 />
               </div>
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">WhatsApp / Social Business Number *</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('whatsapp_social_business_number', 'WhatsApp / Social Business Number *')}</label>
                 <input
                   type="text"
                   value={socialPhone}
@@ -192,59 +194,59 @@ export default function SocialRepFormModal({
             <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide">3. Address & Territory</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-2.5">
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">Governorate / Region</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('governorate_region', 'Governorate / Region')}</label>
                 <select
                   value={region}
                   onChange={(e) => setRegion(e.target.value)}
                   className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 >
-                  <option value="Beirut">Beirut</option>
-                  <option value="Mount Lebanon">Mount Lebanon</option>
-                  <option value="South Lebanon">South Lebanon</option>
-                  <option value="Nabatieh">Nabatieh</option>
-                  <option value="North Lebanon">North Lebanon</option>
-                  <option value="Bekaa">Bekaa</option>
+                  <option value="Beirut">{t('beirut', 'Beirut')}</option>
+                  <option value="Mount Lebanon">{t('mount_lebanon', 'Mount Lebanon')}</option>
+                  <option value="South Lebanon">{t('south_lebanon', 'South Lebanon')}</option>
+                  <option value="Nabatieh">{t('nabatieh', 'Nabatieh')}</option>
+                  <option value="North Lebanon">{t('north_lebanon', 'North Lebanon')}</option>
+                  <option value="Bekaa">{t('bekaa', 'Bekaa')}</option>
                 </select>
               </div>
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">City / Town</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('city_town', 'City / Town')}</label>
                 <input
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="City"
+                  placeholder={t('city', 'City')}
                   className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">Street Address</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('street_address', 'Street Address')}</label>
                 <input
                   type="text"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
-                  placeholder="Street"
+                  placeholder={t('street', 'Street')}
                   className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">Building / Complex</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('building_complex', 'Building / Complex')}</label>
                 <input
                   type="text"
                   value={building}
                   onChange={(e) => setBuilding(e.target.value)}
-                  placeholder="Building name"
+                  placeholder={t('building_name', 'Building name')}
                   className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">Floor / Unit</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('floor_unit', 'Floor / Unit')}</label>
                 <input
                   type="text"
                   value={floor}
                   onChange={(e) => setFloor(e.target.value)}
-                  placeholder="Floor or Apt"
+                  placeholder={t('floor_or_apt', 'Floor or Apt')}
                   className="w-full px-2.5 py-1.5 border border-border rounded-lg bg-card text-foreground font-medium focus:border-primary focus:outline-none"
                 />
               </div>
@@ -256,12 +258,12 @@ export default function SocialRepFormModal({
             <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide">4. Identification & Codes</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block font-medium text-muted-foreground mb-1">Admin Assigned Code *</label>
+                <label className="block font-medium text-muted-foreground mb-1">{t('admin_assigned_code', 'Admin Assigned Code *')}</label>
                 <input
                   type="text"
                   value={adminCode}
                   onChange={(e) => setAdminCode(e.target.value)}
-                  placeholder="e.g. ADM-REP-01"
+                  placeholder={t('eg_admrep01', 'e.g. ADM-REP-01')}
                   className="w-full px-2.5 py-1.5 bg-card border border-border rounded-lg font-bold text-primary focus:outline-none focus:border-primary"
                 />
               </div>
@@ -292,7 +294,7 @@ export default function SocialRepFormModal({
 
             <div className="space-y-2">
               <div>
-                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">Facebook Page URL</label>
+                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">{t('facebook_page_url', 'Facebook Page URL')}</label>
                 <input
                   type="text"
                   value={facebookLink}
@@ -303,7 +305,7 @@ export default function SocialRepFormModal({
               </div>
 
               <div>
-                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">Instagram Profile URL</label>
+                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">{t('instagram_profile_url', 'Instagram Profile URL')}</label>
                 <input
                   type="text"
                   value={instagramLink}
@@ -314,7 +316,7 @@ export default function SocialRepFormModal({
               </div>
 
               <div>
-                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">TikTok Channel URL</label>
+                <label className="block text-[11px] font-medium text-muted-foreground mb-0.5">{t('tiktok_channel_url', 'TikTok Channel URL')}</label>
                 <input
                   type="text"
                   value={tiktokLink}
@@ -398,21 +400,21 @@ export default function SocialRepFormModal({
 
         {/* Modal Footer */}
         <div className="bg-muted border-t border-border px-5 py-3 flex items-center justify-between">
-          <span className="text-[11px] text-muted-foreground font-mono">Vanguard ERP Personnel Ledger</span>
+          <span className="text-[11px] text-muted-foreground font-mono">{t('vanguard_erp_personnel_ledger', 'Vanguard ERP Personnel Ledger')}</span>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onClose}
               className="px-4 py-2 border border-border bg-card rounded-lg text-foreground font-semibold hover:bg-muted transition-colors cursor-pointer"
             >
-              Cancel
+              {t('cancel', 'Cancel')}
             </button>
             <button
               type="button"
               onClick={handleSave}
               className="px-5 py-2 bg-primary hover:bg-slate-800 text-primary-foreground font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
             >
-              Save Representative
+              {t('save_representative', 'Save Representative')}
             </button>
           </div>
         </div>

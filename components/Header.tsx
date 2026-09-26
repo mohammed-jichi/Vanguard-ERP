@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
@@ -6,6 +7,7 @@ import { Crown, LogOut, UserCheck, Settings, Globe } from 'lucide-react';
 import { useTenant } from '../lib/TenantContext';
 
 export default function Header() {
+  const { t } = useLanguage();
   const { currentTenant } = useTenant();
   const router = useRouter();
 
@@ -20,10 +22,10 @@ export default function Header() {
         />
         <div>
           <h1 className="font-black text-xl text-amber-400 tracking-wide flex items-center gap-2">
-            VANGUARD ERP SYSTEM
+            {t('vanguard_erp_system', 'VANGUARD ERP SYSTEM')}
           </h1>
           <p className="text-xs text-slate-300 font-semibold">
-            Enterprise Resource Planning System
+            {t('enterprise_resource_planning_system', 'Enterprise Resource Planning System')}
           </p>
         </div>
       </div>

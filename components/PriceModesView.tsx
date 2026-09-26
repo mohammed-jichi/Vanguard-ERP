@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -23,6 +24,7 @@ interface ToastState {
 }
 
 export default function PriceModesView() {
+  const { t } = useLanguage();
   const [modes, setModes] = useState<OmegaPriceMode[]>(INITIAL_PRICE_MODES);
   const [selectedBranchId, setSelectedBranchId] = useState<number>(1);
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -157,13 +159,13 @@ export default function PriceModesView() {
       <div className="max-w-7xl mx-auto space-y-4">
         {/* Title and Breadcrumb */}
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Modes</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">{t('modes', 'Modes')}</h1>
           <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 mt-1">
             <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
-              Home
+              {t('home', 'Home')}
             </Link>
             <span>/</span>
-            <span className="text-slate-800 font-semibold">Modes</span>
+            <span className="text-slate-800 font-semibold">{t('modes', 'Modes')}</span>
           </nav>
         </div>
 
@@ -172,7 +174,7 @@ export default function PriceModesView() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="w-full sm:w-80">
               <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
-                Branch Selection
+                {t('branch_selection', 'Branch Selection')}
               </label>
               <select
                 value={selectedBranchId}
@@ -188,7 +190,7 @@ export default function PriceModesView() {
             </div>
 
             <div className="text-xs text-slate-500 italic hidden md:block">
-              Time scheduled price shifts automate happy hour, night pricing, and dynamic margins.
+              {t('time_scheduled_price_shifts_automate', 'Time scheduled price shifts automate happy hour, night pricing, and dynamic margins.')}
             </div>
           </div>
         </div>
@@ -199,7 +201,7 @@ export default function PriceModesView() {
             <table className="w-full text-left text-sm text-slate-700 divide-y divide-slate-200">
               <thead className="bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wider select-none">
                 <tr>
-                  <th className="px-4 py-3.5 min-w-[200px]">Description</th>
+                  <th className="px-4 py-3.5 min-w-[200px]">{t('description', 'Description')}</th>
                   {days.map(d => (
                     <th key={d.dayKey} className="px-3 py-3.5 text-center min-w-[115px]">
                       <div className="flex items-center justify-center gap-1">
@@ -235,7 +237,7 @@ export default function PriceModesView() {
                                 onChange={e => handleToggleDisableAll(idx, e.target.checked)}
                                 className="w-4 h-4 text-blue-600 rounded border-slate-300"
                               />
-                              <span>Disable All</span>
+                              <span>{t('disable_all', 'Disable All')}</span>
                             </label>
                           )}
                         </div>
@@ -273,7 +275,7 @@ export default function PriceModesView() {
                                     onChange={e => handleToggleDayDisable(idx, d.dayKey, e.target.checked)}
                                     className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300"
                                   />
-                                  <span className="text-[10px]">Off</span>
+                                  <span className="text-[10px]">{t('off', 'Off')}</span>
                                 </label>
                               )}
                             </div>
@@ -301,7 +303,7 @@ export default function PriceModesView() {
                           onClick={handleSave}
                           className="flex-1 sm:flex-none px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
                         >
-                          <Save className="w-4 h-4" /> Save
+                          <Save className="w-4 h-4" /> {t('save', 'Save')}
                         </button>
 
                         <button
@@ -310,7 +312,7 @@ export default function PriceModesView() {
                           onClick={handleSaveAllBranches}
                           className="flex-1 sm:flex-none px-4 py-2 bg-primary hover:bg-primary text-white rounded-md text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
                         >
-                          <Save className="w-4 h-4" /> Save For All Branches
+                          <Save className="w-4 h-4" /> {t('save_for_all_branches', 'Save For All Branches')}
                         </button>
                       </div>
                     </div>

@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -130,6 +131,7 @@ const CORRIDORS = [
 ];
 
 export default function SalesRepMobileApp() {
+  const { t } = useLanguage();
   // PWA Prompt
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
@@ -329,9 +331,9 @@ export default function SalesRepMobileApp() {
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h1 className="text-sm font-bold tracking-tight text-foreground">Sales Rep Mobile Workspace</h1>
+              <h1 className="text-sm font-bold tracking-tight text-foreground">{t('sales_rep_mobile_workspace', 'Sales Rep Mobile Workspace')}</h1>
               <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-[10px] font-mono font-bold rounded">
-                Omnichannel
+                {t('omnichannel', 'Omnichannel')}
               </span>
             </div>
             <p className="text-[11px] text-muted-foreground font-mono flex items-center gap-1">
@@ -362,7 +364,7 @@ export default function SalesRepMobileApp() {
               className="px-3 py-1 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg border border-border flex items-center gap-1 shadow-xs transition-transform active:scale-95"
             >
               <Download className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Install PWA</span>
+              <span className="hidden sm:inline">{t('install_pwa', 'Install PWA')}</span>
             </button>
           )}
 
@@ -370,7 +372,7 @@ export default function SalesRepMobileApp() {
             href="/backoffice/social-crm"
             className="px-2.5 py-1 bg-muted hover:bg-muted/80 text-foreground rounded-lg text-xs font-bold border border-border"
           >
-            Hub
+            {t('hub', 'Hub')}
           </Link>
         </div>
       </header>
@@ -404,7 +406,7 @@ export default function SalesRepMobileApp() {
                   filterMode === 'ALL' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'
                 }`}
               >
-                All
+                {t('all', 'All')}
               </button>
               <button
                 onClick={() => setFilterMode('URGENT')}
@@ -412,7 +414,7 @@ export default function SalesRepMobileApp() {
                   filterMode === 'URGENT' ? 'bg-destructive text-destructive-foreground' : 'bg-muted text-muted-foreground hover:text-foreground'
                 }`}
               >
-                Urgent SLA
+                {t('urgent_sla', 'Urgent SLA')}
               </button>
               <button
                 onClick={() => setFilterMode('APPROVED')}
@@ -420,7 +422,7 @@ export default function SalesRepMobileApp() {
                   filterMode === 'APPROVED' ? 'bg-emerald-600 text-white' : 'bg-muted text-muted-foreground hover:text-foreground'
                 }`}
               >
-                Queued
+                {t('queued', 'Queued')}
               </button>
             </div>
           </div>
@@ -466,12 +468,12 @@ export default function SalesRepMobileApp() {
                   )}
                   {chat.status === 'APPROVED' && (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
-                      Queued to Fleet
+                      {t('queued_to_fleet', 'Queued to Fleet')}
                     </span>
                   )}
                   {chat.status === 'ESCALATED' && (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-destructive/20 text-destructive border border-destructive/50">
-                      Escalated to Management
+                      {t('escalated_to_management', 'Escalated to Management')}
                     </span>
                   )}
                 </div>
@@ -534,7 +536,7 @@ export default function SalesRepMobileApp() {
                 <div className="bg-card border border-border p-3 rounded-2xl rounded-tl-none max-w-[80%] text-xs shadow-xs text-foreground">
                   <div className="font-bold text-primary mb-1">{activeChat.customerName}</div>
                   <p className="text-foreground/90">{activeChat.lastMessage}</p>
-                  <div className="text-[10px] text-muted-foreground font-mono mt-1 text-right">Just now</div>
+                  <div className="text-[10px] text-muted-foreground font-mono mt-1 text-right">{t('just_now', 'Just now')}</div>
                 </div>
 
                 {activeChat.status === 'APPROVED' && (
@@ -562,7 +564,7 @@ export default function SalesRepMobileApp() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                     <div>
-                      <label className="text-[10.5px] text-muted-foreground block mb-1">Product Offer:</label>
+                      <label className="text-[10.5px] text-muted-foreground block mb-1">{t('product_offer', 'Product Offer:')}</label>
                       <input
                         type="text"
                         disabled
@@ -572,7 +574,7 @@ export default function SalesRepMobileApp() {
                     </div>
 
                     <div>
-                      <label className="text-[10.5px] text-muted-foreground block mb-1">Quantity:</label>
+                      <label className="text-[10.5px] text-muted-foreground block mb-1">{t('quantity', 'Quantity:')}</label>
                       <input
                         type="number"
                         min={1}
@@ -583,7 +585,7 @@ export default function SalesRepMobileApp() {
                     </div>
 
                     <div>
-                      <label className="text-[10.5px] text-muted-foreground block mb-1">Delivery Corridor:</label>
+                      <label className="text-[10.5px] text-muted-foreground block mb-1">{t('delivery_corridor', 'Delivery Corridor:')}</label>
                       <select
                         value={composerCorridor}
                         onChange={(e) => setComposerCorridor(Number(e.target.value))}
@@ -600,7 +602,7 @@ export default function SalesRepMobileApp() {
 
                   <div className="flex justify-between items-center pt-2 border-t border-border text-xs">
                     <div className="font-mono">
-                      <span className="text-muted-foreground">Estimated Total: </span>
+                      <span className="text-muted-foreground">{t('estimated_total', 'Estimated Total:')} </span>
                       <strong className="text-emerald-600 dark:text-emerald-400 text-sm">
                         ${(activeChat.orderDraft ? activeChat.orderDraft.unitPriceUsd * composerQuantity : 100) + (activeChat.orderDraft?.deliveryFeeUsd || 4.0)} USD
                       </strong>
@@ -612,7 +614,7 @@ export default function SalesRepMobileApp() {
                         onClick={() => setShowOrderDrawer(false)}
                         className="px-3 py-1.5 bg-muted text-foreground border border-border rounded-xl text-xs font-bold"
                       >
-                        Cancel
+                        {t('cancel', 'Cancel')}
                       </button>
                       <button
                         type="button"
@@ -634,7 +636,7 @@ export default function SalesRepMobileApp() {
                   type="text"
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Type quick reply to customer..."
+                  placeholder={t('type_quick_reply_to_customer', 'Type quick reply to customer...')}
                   className="flex-1 px-3 py-2 bg-background border border-input rounded-xl text-xs text-foreground focus:outline-none focus:border-primary"
                 />
                 <button
@@ -647,13 +649,13 @@ export default function SalesRepMobileApp() {
                   className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-bold flex items-center gap-1"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>Send</span>
+                  <span>{t('send', 'Send')}</span>
                 </button>
               </div>
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-muted-foreground font-mono text-sm">
-              Select a customer chat to begin
+              {t('select_a_customer_chat_to_begin', 'Select a customer chat to begin')}
             </div>
           )}
         </div>

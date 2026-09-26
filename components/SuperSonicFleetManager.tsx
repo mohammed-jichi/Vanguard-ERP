@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Southern Olive Oil Products S.A.R.L (منتوجات زيت وزيتون الجنوب ش.م.م) وزيتون الجنوب ش.م.م)
@@ -94,6 +95,7 @@ export default function SuperSonicFleetManager({
   currentUserRole = 'Supersonic Management',
   onBack
 }: SuperSonicFleetManagerProps) {
+  const { t } = useLanguage();
 
   // 1. DRIVER PROFILE & SHIFT TELEMETRY STATE
   const [driverProfile, setDriverProfile] = useState<DriverProfile>({
@@ -514,7 +516,7 @@ ${trackingLink}`;
           </div>
           <div>
             <h1 className="text-xl md:text-2xl font-black text-white tracking-wide">
-              SuperSonic Dispatch & Fleet - منتوجات زيت وزيتون الجنوب
+              {t('supersonic_dispatch_fleet', 'SuperSonic Dispatch & Fleet - منتوجات زيت وزيتون الجنوب')}
             </h1>
             <p className="text-xs text-emerald-400/90 font-medium">
               نظام التوجيه واللوجستيات الرقمية والإثبات الإلكتروني للتسليم (Digital POD Engine)
@@ -897,10 +899,10 @@ ${trackingLink}`;
               <div className="w-16 h-16 bg-rose-500/20 border-2 border-rose-500/60 rounded-full flex items-center justify-center mx-auto text-rose-400">
                 <ShieldAlert className="w-8 h-8" />
               </div>
-              <h2 className="text-xl font-black text-white">Access Denied -- صلاحية غير مخوّلة</h2>
+              <h2 className="text-xl font-black text-white">{t('access_denied', 'Access Denied -- صلاحية غير مخوّلة')}</h2>
               <p className="text-xs text-rose-200/90 leading-relaxed">
                 عذراً! لا تملك الصلاحية الكافية لعرض أو تعديل ملفات السائقين والعمولات.
-                الوصول محصور حصرياً بـ <strong>Super Admin</strong> و <strong>Supersonic Management</strong>.
+                الوصول محصور حصرياً بـ <strong>{t('super_admin', 'Super Admin')}</strong> و <strong>{t('supersonic_management', 'Supersonic Management')}</strong>.
               </p>
               <span className="inline-block bg-rose-900/60 border border-rose-700 text-rose-300 text-xs px-3 py-1 rounded-full font-mono font-bold">
                 Role: {currentUserRole}
@@ -1117,7 +1119,7 @@ ${trackingLink}`;
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  V-Driver Sync: Live
+                  {t('vdriver_sync_live', 'V-Driver Sync: Live')}
                 </span>
               </div>
             </div>

@@ -1089,13 +1089,13 @@ export default function ReorderGuideView() {
             ========================================================================= */}
         <div className="flex items-center gap-2 mb-2 relative group">
           <h1 className="text-[20px] font-bold text-foreground flex items-center gap-2">
-            <span>Reorder Guide</span>
+            <span>{t('reorder_guide', 'Reorder Guide')}</span>
             <div className="relative cursor-pointer inline-flex items-center text-slate-500 hover:text-primary">
               <Info className="w-4 h-4" />
               <div className="absolute left-6 top-0 hidden group-hover:block z-50 w-80 p-3 bg-white text-slate-700 text-xs rounded-lg shadow-xl border border-slate-200 leading-relaxed pointer-events-none">
-                The Reorder Guide helps you restock your inventory by recommending optimal reorder quantities based on minimum stock levels, sales history, or a combination of both.
+                {t('the_reorder_guide_helps_you_restock', 'The Reorder Guide helps you restock your inventory by recommending optimal reorder quantities based on minimum stock levels, sales history, or a combination of both.')}
                 <br /><br />
-                Items without sales history are not recommended. Review recommendations, add to cart, and create purchase orders or request quotations directly from suppliers.
+                {t('items_without_sales_history_are_not', 'Items without sales history are not recommended. Review recommendations, add to cart, and create purchase orders or request quotations directly from suppliers.')}
               </div>
             </div>
           </h1>
@@ -1110,7 +1110,7 @@ export default function ReorderGuideView() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search for product description, code or barcode..."
+                placeholder={t('search_for_product_description_code_or', 'Search for product description, code or barcode...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyFilter()}
@@ -1164,11 +1164,11 @@ export default function ReorderGuideView() {
               className="h-[34px] px-4 bg-primary hover:bg-primary/90 text-white text-xs font-semibold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
             >
               <Filter className="w-3.5 h-3.5" />
-              <span>Filter</span>
+              <span>{t('filter', 'Filter')}</span>
             </button>
             <button
               onClick={handleClearFilter}
-              title="Clear Filters"
+              title={t('clear_filters', 'Clear Filters')}
               className="h-[34px] w-[34px] bg-destructive hover:bg-destructive text-white text-xs rounded flex items-center justify-center transition shadow-sm cursor-pointer"
             >
               <X className="w-4 h-4" />
@@ -1186,7 +1186,7 @@ export default function ReorderGuideView() {
             className="h-[34px] px-3.5 bg-[#5cb85c] hover:bg-[#449d44] text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New</span>
+            <span>{t('new', 'New')}</span>
           </button>
 
           {/* Preview Button */}
@@ -1195,7 +1195,7 @@ export default function ReorderGuideView() {
             className="h-[34px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
           >
             <Search className="w-3.5 h-3.5" />
-            <span>Preview</span>
+            <span>{t('preview', 'Preview')}</span>
           </button>
 
           {/* Save Button */}
@@ -1204,7 +1204,7 @@ export default function ReorderGuideView() {
             className="h-[34px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>Save</span>
+            <span>{t('save', 'Save')}</span>
           </button>
 
           {/* Actions Dropdown Button */}
@@ -1213,7 +1213,7 @@ export default function ReorderGuideView() {
               type="button"
               className="h-[34px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer"
             >
-              <span>Actions</span>
+              <span>{t('actions', 'Actions')}</span>
               <ChevronDown className="w-3 h-3" />
             </button>
             <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-md shadow-xl py-1 hidden group-hover/actions:block z-50">
@@ -1222,7 +1222,7 @@ export default function ReorderGuideView() {
                 className="w-full text-left px-3 py-2 text-xs text-slate-700 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
               >
                 <Sliders className="w-3.5 h-3.5 text-primary" />
-                <span>Settings</span>
+                <span>{t('settings', 'Settings')}</span>
               </button>
               <button
                 onClick={() => setHideCarousel(!hideCarousel)}
@@ -1238,7 +1238,7 @@ export default function ReorderGuideView() {
             4. RECOMMENDED QTY TO ORDER OPTIONS ROW (Screenshot Row 3)
             ========================================================================= */}
         <div className="flex flex-wrap items-center gap-4 py-2 text-xs text-foreground font-medium">
-          <span className="font-bold text-slate-700">Recommended Qty to order based on:</span>
+          <span className="font-bold text-slate-700">{t('recommended_qty_to_order_based_on', 'Recommended Qty to order based on:')}</span>
 
           <label className="flex items-center gap-1.5 cursor-pointer select-none">
             <input
@@ -1247,7 +1247,7 @@ export default function ReorderGuideView() {
               onChange={(e) => setMinStockEnabled(e.target.checked)}
               className="w-3.5 h-3.5 rounded text-primary focus:ring-0"
             />
-            <span className="font-semibold">Minimum Stock</span>
+            <span className="font-semibold">{t('minimum_stock', 'Minimum Stock')}</span>
           </label>
 
           <label className="flex items-center gap-1.5 cursor-pointer select-none">
@@ -1257,7 +1257,7 @@ export default function ReorderGuideView() {
               onChange={(e) => setSalesHistoryEnabled(e.target.checked)}
               className="w-3.5 h-3.5 rounded text-primary focus:ring-0"
             />
-            <span className="font-semibold">Based on Sales History</span>
+            <span className="font-semibold">{t('based_on_sales_history', 'Based on Sales History')}</span>
           </label>
 
           {salesHistoryEnabled && (
@@ -1286,7 +1286,7 @@ export default function ReorderGuideView() {
             className="h-[32px] px-3.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm cursor-pointer ml-auto sm:ml-0"
           >
             <RotateCw className={`w-3.5 h-3.5 ${isGeneratingPlan ? 'animate-spin' : ''}`} />
-            <span>Generate Reorder Plan</span>
+            <span>{t('generate_reorder_plan', 'Generate Reorder Plan')}</span>
           </button>
         </div>
 
@@ -1390,11 +1390,11 @@ export default function ReorderGuideView() {
                   onClick={() => setIsMaxStockModalOpen(true)}
                   className="text-[11px] text-primary hover:underline font-semibold cursor-pointer"
                 >
-                  Update Max Stock
+                  {t('update_max_stock', 'Update Max Stock')}
                 </button>
                 <button
                   onClick={handleAddAllSelectedToCart}
-                  title="Add selected items to cart"
+                  title={t('add_selected_items_to_cart', 'Add selected items to cart')}
                   className="w-6 h-6 bg-primary hover:bg-primary/90 text-white rounded-full flex items-center justify-center transition shadow-2xs cursor-pointer"
                 >
                   <ArrowRightCircle className="w-4 h-4" />
@@ -1413,19 +1413,19 @@ export default function ReorderGuideView() {
                         checked={allSelected}
                         onChange={(e) => handleToggleSelectAll(e.target.checked)}
                         className="rounded text-primary"
-                        title="Select All"
+                        title={t('select_all', 'Select All')}
                       />
                     </th>
-                    <th className="py-2 px-2">Product Description</th>
-                    <th className="py-2 px-2 w-16 text-right">Qty OH</th>
-                    <th className="py-2 px-2 w-14">Unit</th>
-                    <th className="py-2 px-2 w-28 text-red-600 font-bold">QTY to Order</th>
-                    <th className="py-2 px-2 w-32">Supplier</th>
+                    <th className="py-2 px-2">{t('product_description', 'Product Description')}</th>
+                    <th className="py-2 px-2 w-16 text-right">{t('qty_oh', 'Qty OH')}</th>
+                    <th className="py-2 px-2 w-14">{t('unit', 'Unit')}</th>
+                    <th className="py-2 px-2 w-28 text-red-600 font-bold">{t('qty_to_order', 'QTY to Order')}</th>
+                    <th className="py-2 px-2 w-32">{t('supplier', 'Supplier')}</th>
                     <th className="py-2 px-2 w-20 text-right">
                       <button
                         onClick={() => setShowCategoryGroupHeader(!showCategoryGroupHeader)}
                         className="text-slate-500 hover:text-slate-800"
-                        title="Toggle Group Headers"
+                        title={t('toggle_group_headers', 'Toggle Group Headers')}
                       >
                         {showCategoryGroupHeader ? (
                           <ChevronDown className="w-4 h-4 inline" />
@@ -1440,7 +1440,7 @@ export default function ReorderGuideView() {
                   {Object.keys(groupedProducts).length === 0 ? (
                     <tr>
                       <td colSpan={7} className="py-8 text-center text-slate-400 italic">
-                        No recommended items found matching current filters.
+                        {t('no_recommended_items_found_matching', 'No recommended items found matching current filters.')}
                       </td>
                     </tr>
                   ) : (
@@ -1513,21 +1513,21 @@ export default function ReorderGuideView() {
                                 <div className="flex items-center justify-end gap-1">
                                   <button
                                     onClick={() => handleExcludeProduct(prod.id)}
-                                    title="Exclude Item from calculation"
+                                    title={t('exclude_item_from_calculation', 'Exclude Item from calculation')}
                                     className="p-1 text-slate-400 hover:text-red-600 transition"
                                   >
                                     <Ban className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleOpenHistory(prod)}
-                                    title="View Purchase History & Performance"
+                                    title={t('view_purchase_history_performance', 'View Purchase History & Performance')}
                                     className="p-1 text-slate-400 hover:text-primary transition"
                                   >
                                     <History className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleAddToCart(prod)}
-                                    title="Add to Shopping Cart"
+                                    title={t('add_to_shopping_cart', 'Add to Shopping Cart')}
                                     className="p-1 text-primary hover:text-[#286090] transition"
                                   >
                                     <ArrowRightCircle className="w-4 h-4" />
@@ -1549,7 +1549,7 @@ export default function ReorderGuideView() {
           <div className="lg:col-span-6 bg-white border border-border rounded-sm shadow-2xs overflow-hidden flex flex-col">
             {/* Header */}
             <div className="bg-muted px-3 py-2 flex items-center justify-between border-b border-border">
-              <span className="text-xs font-bold text-slate-800">Shopping Cart</span>
+              <span className="text-xs font-bold text-slate-800">{t('shopping_cart', 'Shopping Cart')}</span>
               {cartTotalBeforeTax > 0 && (
                 <span className="text-xs font-bold text-slate-900">
                   Total Before Tax: {cartTotalBeforeTax.toLocaleString()} LBP
@@ -1563,10 +1563,10 @@ export default function ReorderGuideView() {
                 /* Empty Cart State (Matching Screenshot) */
                 <div className="border border-slate-200 rounded overflow-hidden">
                   <div className="bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 border-b border-slate-200">
-                    No items added yet
+                    {t('no_items_added_yet', 'No items added yet')}
                   </div>
                   <div className="p-4 text-xs text-slate-600 bg-white">
-                    Select products to create a purchase order or a quotation
+                    {t('select_products_to_create_a_purchase', 'Select products to create a purchase order or a quotation')}
                   </div>
                 </div>
               ) : (
@@ -1592,17 +1592,17 @@ export default function ReorderGuideView() {
                               onClick={() => handleOpenPO(sId)}
                               className="px-2.5 py-1 bg-primary hover:bg-primary/90 text-white text-[11px] font-bold rounded shadow-2xs transition"
                             >
-                              Create PO
+                              {t('create_po', 'Create PO')}
                             </button>
                             <button
                               onClick={() => handleOpenQuotation(supplierData.supplierName)}
                               className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold rounded shadow-2xs transition"
                             >
-                              Request Quotation
+                              {t('request_quotation', 'Request Quotation')}
                             </button>
                             <button
                               onClick={() => handleRemoveSupplierFromCart(sId)}
-                              title="Delete section"
+                              title={t('delete_section', 'Delete section')}
                               className="p-1 text-red-600 hover:text-red-800"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -1614,12 +1614,12 @@ export default function ReorderGuideView() {
                         <table className="w-full text-left text-xs border-collapse">
                           <thead className="bg-background text-slate-600 font-semibold border-b border-slate-100">
                             <tr>
-                              <th className="py-1.5 px-2">Product Description</th>
-                              {showProductCode && <th className="py-1.5 px-2">Code</th>}
-                              <th className="py-1.5 px-2 w-24 text-center text-red-600">QTY</th>
-                              <th className="py-1.5 px-2 w-16">Unit</th>
-                              <th className="py-1.5 px-2 w-20 text-right">Cost/Unit</th>
-                              <th className="py-1.5 px-2 w-24">Group</th>
+                              <th className="py-1.5 px-2">{t('product_description', 'Product Description')}</th>
+                              {showProductCode && <th className="py-1.5 px-2">{t('code', 'Code')}</th>}
+                              <th className="py-1.5 px-2 w-24 text-center text-red-600">{t('qty', 'QTY')}</th>
+                              <th className="py-1.5 px-2 w-16">{t('unit', 'Unit')}</th>
+                              <th className="py-1.5 px-2 w-20 text-right">{t('costunit', 'Cost/Unit')}</th>
+                              <th className="py-1.5 px-2 w-24">{t('group', 'Group')}</th>
                               <th className="py-1.5 px-2 w-8"></th>
                             </tr>
                           </thead>
@@ -1666,7 +1666,7 @@ export default function ReorderGuideView() {
                                   <button
                                     onClick={() => handleRemoveCartItem(cartItem.product.id)}
                                     className="text-red-500 hover:text-red-700"
-                                    title="Remove item"
+                                    title={t('remove_item', 'Remove item')}
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -1689,7 +1689,7 @@ export default function ReorderGuideView() {
                     className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center gap-1.5 transition shadow-sm"
                   >
                     <Save className="w-4 h-4" />
-                    <span>Save Cart</span>
+                    <span>{t('save_cart', 'Save Cart')}</span>
                   </button>
                 </div>
               )}
@@ -1705,7 +1705,7 @@ export default function ReorderGuideView() {
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl max-w-md w-full overflow-hidden border border-slate-300 animate-in fade-in zoom-in-95">
             <div className="bg-[#f5f5f5] px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-800">Reorder Guide Settings</h2>
+              <h2 className="text-sm font-bold text-slate-800">{t('reorder_guide_settings', 'Reorder Guide Settings')}</h2>
               <button
                 onClick={() => setIsSettingsOpen(false)}
                 className="text-slate-400 hover:text-slate-700"
@@ -1721,7 +1721,7 @@ export default function ReorderGuideView() {
                   onChange={(e) => setShowProductCode(e.target.checked)}
                   className="rounded text-primary"
                 />
-                <span className="font-semibold">Show Product Code</span>
+                <span className="font-semibold">{t('show_product_code', 'Show Product Code')}</span>
               </label>
 
               <label className="flex items-center gap-2 cursor-pointer">
@@ -1731,7 +1731,7 @@ export default function ReorderGuideView() {
                   onChange={(e) => setHideGroupHeader(e.target.checked)}
                   className="rounded text-primary"
                 />
-                <span className="font-semibold">Hide Group Header</span>
+                <span className="font-semibold">{t('hide_group_header', 'Hide Group Header')}</span>
               </label>
 
               <label className="flex items-center gap-2 cursor-pointer">
@@ -1741,12 +1741,12 @@ export default function ReorderGuideView() {
                   onChange={(e) => setUpdateRecommendedQtyForFuture(e.target.checked)}
                   className="rounded text-primary"
                 />
-                <span className="font-semibold">Update the product's recommended quantity for future orders</span>
+                <span className="font-semibold">{t('update_the_products_recommended', 'Update the product\'s recommended quantity for future orders')}</span>
               </label>
 
               <div className="pt-2 border-t border-slate-100">
                 <label className="block font-bold text-slate-800 mb-1">
-                  Default Quantity
+                  {t('default_quantity', 'Default Quantity')}
                 </label>
                 <input
                   type="number"
@@ -1765,13 +1765,13 @@ export default function ReorderGuideView() {
                   onClick={() => setIsSettingsOpen(false)}
                   className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-semibold text-xs"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={handleSaveSettings}
                   className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-xs shadow-sm"
                 >
-                  Save
+                  {t('save', 'Save')}
                 </button>
               </div>
             </div>
@@ -1786,7 +1786,7 @@ export default function ReorderGuideView() {
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-300 animate-in fade-in zoom-in-95">
             <div className="bg-[#f5f5f5] px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-800">Preview Shopping Carts</h2>
+              <h2 className="text-sm font-bold text-slate-800">{t('preview_shopping_carts', 'Preview Shopping Carts')}</h2>
               <button
                 onClick={() => setIsPreviewOpen(false)}
                 className="text-slate-400 hover:text-slate-700"
@@ -1800,13 +1800,13 @@ export default function ReorderGuideView() {
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
                   {/* Branch selector */}
                   <div className="sm:col-span-4">
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">Branch</label>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('branch', 'Branch')}</label>
                     <select
                       value={previewBranchId}
                       onChange={(e) => setPreviewBranchId(Number(e.target.value))}
                       className="w-full h-8 px-2 bg-white border border-slate-300 rounded text-xs text-slate-800 focus:outline-none focus:border-primary"
                     >
-                      <option value={0}>All Branches</option>
+                      <option value={0}>{t('all_branches', 'All Branches')}</option>
                       {SEED_BRANCHES.map((b) => (
                         <option key={b.id} value={b.id}>
                           {b.name}
@@ -1817,7 +1817,7 @@ export default function ReorderGuideView() {
 
                   {/* From Date */}
                   <div className="sm:col-span-3">
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">From Date</label>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('from_date', 'From Date')}</label>
                     <input
                       type="date"
                       value={previewFromDate}
@@ -1831,7 +1831,7 @@ export default function ReorderGuideView() {
 
                   {/* To Date */}
                   <div className="sm:col-span-3">
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">To Date</label>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('to_date', 'To Date')}</label>
                     <input
                       type="date"
                       value={previewToDate}
@@ -1849,19 +1849,19 @@ export default function ReorderGuideView() {
                       type="button"
                       onClick={handleApplyPreviewFilter}
                       className="h-8 px-3 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded flex items-center justify-center gap-1 shadow-2xs transition cursor-pointer flex-1"
-                      title="Apply Filters"
+                      title={t('apply_filters', 'Apply Filters')}
                     >
                       <Filter className="w-3.5 h-3.5" />
-                      <span>Filter</span>
+                      <span>{t('filter', 'Filter')}</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleClearPreviewFilter}
                       className="h-8 px-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded flex items-center justify-center gap-1 transition cursor-pointer"
-                      title="Clear / Reset Filters"
+                      title={t('clear_reset_filters', 'Clear / Reset Filters')}
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
-                      <span>Clear</span>
+                      <span>{t('clear', 'Clear')}</span>
                     </button>
                   </div>
                 </div>
@@ -1870,7 +1870,7 @@ export default function ReorderGuideView() {
                 {(appliedPreviewFilters.fromDate || appliedPreviewFilters.toDate || appliedPreviewFilters.branchId !== 0) && (
                   <div className="flex items-center justify-between pt-1.5 border-t border-slate-200 text-[11px] text-slate-500">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="font-semibold text-slate-700">Filter Applied:</span>
+                      <span className="font-semibold text-slate-700">{t('filter_applied', 'Filter Applied:')}</span>
                       {appliedPreviewFilters.fromDate && (
                         <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-mono">
                           From: {appliedPreviewFilters.fromDate}
@@ -1898,10 +1898,10 @@ export default function ReorderGuideView() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-muted text-slate-700 font-bold border-b border-slate-200">
                     <tr>
-                      <th className="py-2 px-2.5 w-16">ID</th>
-                      <th className="py-2 px-2 w-28">Date</th>
-                      <th className="py-2 px-2">Branch</th>
-                      <th className="py-2 px-2 text-right w-28">Actions</th>
+                      <th className="py-2 px-2.5 w-16">{t('id', 'ID')}</th>
+                      <th className="py-2 px-2 w-28">{t('date', 'Date')}</th>
+                      <th className="py-2 px-2">{t('branch', 'Branch')}</th>
+                      <th className="py-2 px-2 text-right w-28">{t('actions', 'Actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1910,14 +1910,14 @@ export default function ReorderGuideView() {
                         <td colSpan={4} className="py-8 text-center text-slate-500">
                           <div className="flex flex-col items-center justify-center gap-1.5">
                             <AlertCircle className="w-5 h-5 text-slate-400" />
-                            <p className="font-semibold text-xs text-slate-700">No shopping carts found matching your filter criteria</p>
-                            <p className="text-[11px] text-slate-400">Try selecting a different date range or clearing filters.</p>
+                            <p className="font-semibold text-xs text-slate-700">{t('no_shopping_carts_found_matching_your', 'No shopping carts found matching your filter criteria')}</p>
+                            <p className="text-[11px] text-slate-400">{t('try_selecting_a_different_date_range_or', 'Try selecting a different date range or clearing filters.')}</p>
                             <button
                               type="button"
                               onClick={handleClearPreviewFilter}
                               className="mt-1 text-blue-600 hover:text-blue-800 hover:underline text-xs font-semibold cursor-pointer"
                             >
-                              Reset Filters
+                              {t('reset_filters', 'Reset Filters')}
                             </button>
                           </div>
                         </td>
@@ -1946,7 +1946,7 @@ export default function ReorderGuideView() {
                                       setPreviewExpandedRow(isExpanded ? null : row.id)
                                     }
                                     className="p-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-600 text-[10px]"
-                                    title="Details"
+                                    title={t('details', 'Details')}
                                   >
                                     {isExpanded ? '-' : '+'}
                                   </button>
@@ -1957,9 +1957,9 @@ export default function ReorderGuideView() {
                                       showToast(`Cart #${row.reorderId} loaded into workstation`);
                                     }}
                                     className="px-2 py-0.5 bg-primary hover:bg-primary/90 text-white rounded text-[10px] font-semibold"
-                                    title="Load Cart"
+                                    title={t('load_cart', 'Load Cart')}
                                   >
-                                    Open
+                                    {t('open', 'Open')}
                                   </button>
                                 </div>
                               </td>
@@ -2000,7 +2000,7 @@ export default function ReorderGuideView() {
                   onClick={() => setIsPreviewOpen(false)}
                   className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded font-semibold text-xs"
                 >
-                  Close
+                  {t('close', 'Close')}
                 </button>
               </div>
             </div>
@@ -2019,7 +2019,7 @@ export default function ReorderGuideView() {
                 <h2 className="text-sm font-bold text-slate-800">
                   {historyProduct.description}
                 </h2>
-                <p className="text-[11px] text-slate-500 font-semibold">Performance & Procurement History</p>
+                <p className="text-[11px] text-slate-500 font-semibold">{t('performance_procurement_history', 'Performance & Procurement History')}</p>
               </div>
               <button
                 onClick={() => setIsHistoryOpen(false)}
@@ -2032,9 +2032,9 @@ export default function ReorderGuideView() {
               {/* Toolbar with Tabs */}
               <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-slate-600">Branch:</span>
+                  <span className="text-[11px] font-bold text-slate-600">{t('branch', 'Branch:')}</span>
                   <span className="font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                    Zeit w zaytoun ljanoub
+                    {t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -2047,7 +2047,7 @@ export default function ReorderGuideView() {
                     }`}
                   >
                     <LineChart className="w-3.5 h-3.5" />
-                    <span>Dashboard</span>
+                    <span>{t('dashboard', 'Dashboard')}</span>
                   </button>
                   <button
                     onClick={() => setHistoryActiveTab('grid')}
@@ -2058,7 +2058,7 @@ export default function ReorderGuideView() {
                     }`}
                   >
                     <TableIcon className="w-3.5 h-3.5" />
-                    <span>Data Grid</span>
+                    <span>{t('data_grid', 'Data Grid')}</span>
                   </button>
                 </div>
               </div>
@@ -2066,19 +2066,19 @@ export default function ReorderGuideView() {
               {/* 4 Stat KPI Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div className="p-2.5 bg-slate-50 rounded border border-slate-200 text-center">
-                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Lead Time</span>
+                  <span className="block text-[10px] text-slate-500 font-bold uppercase">{t('lead_time', 'Lead Time')}</span>
                   <span className="text-base font-black text-slate-800">{historyProduct.leadTimeDays} Days</span>
                 </div>
                 <div className="p-2.5 bg-slate-50 rounded border border-slate-200 text-center">
-                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Max Level</span>
+                  <span className="block text-[10px] text-slate-500 font-bold uppercase">{t('max_level', 'Max Level')}</span>
                   <span className="text-base font-black text-slate-800">{historyProduct.maxStock}</span>
                 </div>
                 <div className="p-2.5 bg-slate-50 rounded border border-slate-200 text-center">
-                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Min Level</span>
+                  <span className="block text-[10px] text-slate-500 font-bold uppercase">{t('min_level', 'Min Level')}</span>
                   <span className="text-base font-black text-slate-800">{historyProduct.minStock}</span>
                 </div>
                 <div className="p-2.5 bg-blue-50 rounded border border-blue-200 text-center">
-                  <span className="block text-[10px] text-primary font-bold uppercase">Recommended</span>
+                  <span className="block text-[10px] text-primary font-bold uppercase">{t('recommended', 'Recommended')}</span>
                   <span className="text-base font-black text-primary">{historyProduct.recommendedQty}</span>
                 </div>
               </div>
@@ -2089,17 +2089,17 @@ export default function ReorderGuideView() {
                   <h4 className="font-bold text-slate-800 text-xs">Purchase Per Month (Historical)</h4>
                   <div className="grid grid-cols-4 gap-2 text-center text-xs">
                     <div className="bg-slate-50 p-2 rounded border border-slate-200">
-                      <div className="text-slate-400 text-[10px]">June 2026</div>
+                      <div className="text-slate-400 text-[10px]">{t('june_2026', 'June 2026')}</div>
                       <div className="font-bold text-slate-800">45 {historyProduct.unit}</div>
                       <div className="text-slate-500 text-[10px]">{(45 * historyProduct.unitCost).toLocaleString()} LBP</div>
                     </div>
                     <div className="bg-slate-50 p-2 rounded border border-slate-200">
-                      <div className="text-slate-400 text-[10px]">July 2026</div>
+                      <div className="text-slate-400 text-[10px]">{t('july_2026', 'July 2026')}</div>
                       <div className="font-bold text-slate-800">60 {historyProduct.unit}</div>
                       <div className="text-slate-500 text-[10px]">{(60 * historyProduct.unitCost).toLocaleString()} LBP</div>
                     </div>
                     <div className="bg-slate-50 p-2 rounded border border-slate-200">
-                      <div className="text-slate-400 text-[10px]">August 2026</div>
+                      <div className="text-slate-400 text-[10px]">{t('august_2026', 'August 2026')}</div>
                       <div className="font-bold text-slate-800">30 {historyProduct.unit}</div>
                       <div className="text-slate-500 text-[10px]">{(30 * historyProduct.unitCost).toLocaleString()} LBP</div>
                     </div>
@@ -2116,27 +2116,27 @@ export default function ReorderGuideView() {
                   <table className="w-full text-left text-xs border-collapse">
                     <thead className="bg-muted text-slate-700 font-bold border-b border-slate-200">
                       <tr>
-                        <th className="py-2 px-2">Month</th>
-                        <th className="py-2 px-2 text-center">Qty Purchased</th>
-                        <th className="py-2 px-2">Unit</th>
+                        <th className="py-2 px-2">{t('month', 'Month')}</th>
+                        <th className="py-2 px-2 text-center">{t('qty_purchased', 'Qty Purchased')}</th>
+                        <th className="py-2 px-2">{t('unit', 'Unit')}</th>
                         <th className="py-2 px-2 text-right">Total Amount (LBP)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       <tr>
-                        <td className="py-2 px-2 font-medium">June 2026</td>
+                        <td className="py-2 px-2 font-medium">{t('june_2026', 'June 2026')}</td>
                         <td className="py-2 px-2 text-center font-mono">45.00</td>
                         <td className="py-2 px-2 text-slate-500">{historyProduct.unit}</td>
                         <td className="py-2 px-2 text-right font-mono font-bold">{(45 * historyProduct.unitCost).toLocaleString()}</td>
                       </tr>
                       <tr>
-                        <td className="py-2 px-2 font-medium">July 2026</td>
+                        <td className="py-2 px-2 font-medium">{t('july_2026', 'July 2026')}</td>
                         <td className="py-2 px-2 text-center font-mono">60.00</td>
                         <td className="py-2 px-2 text-slate-500">{historyProduct.unit}</td>
                         <td className="py-2 px-2 text-right font-mono font-bold">{(60 * historyProduct.unitCost).toLocaleString()}</td>
                       </tr>
                       <tr>
-                        <td className="py-2 px-2 font-medium">August 2026</td>
+                        <td className="py-2 px-2 font-medium">{t('august_2026', 'August 2026')}</td>
                         <td className="py-2 px-2 text-center font-mono">30.00</td>
                         <td className="py-2 px-2 text-slate-500">{historyProduct.unit}</td>
                         <td className="py-2 px-2 text-right font-mono font-bold">{(30 * historyProduct.unitCost).toLocaleString()}</td>
@@ -2151,7 +2151,7 @@ export default function ReorderGuideView() {
                   onClick={() => setIsHistoryOpen(false)}
                   className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded font-semibold text-xs"
                 >
-                  Close
+                  {t('close', 'Close')}
                 </button>
               </div>
             </div>
@@ -2166,7 +2166,7 @@ export default function ReorderGuideView() {
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl max-w-md w-full overflow-hidden border border-slate-300 animate-in fade-in zoom-in-95">
             <div className="bg-[#f5f5f5] px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-800">Create Purchase Order</h2>
+              <h2 className="text-sm font-bold text-slate-800">{t('create_purchase_order', 'Create Purchase Order')}</h2>
               <button
                 onClick={() => setIsPOModalOpen(false)}
                 className="text-slate-400 hover:text-slate-700"
@@ -2176,7 +2176,7 @@ export default function ReorderGuideView() {
             </div>
             <div className="p-4 space-y-3.5 text-xs text-slate-700">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Target Supplier</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('target_supplier', 'Target Supplier')}</label>
                 <input
                   type="text"
                   disabled
@@ -2186,15 +2186,15 @@ export default function ReorderGuideView() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Receiving Branch</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('receiving_branch', 'Receiving Branch')}</label>
                 <select className="w-full h-8 px-2 border border-slate-300 rounded text-xs">
-                  <option>Zeit w zaytoun ljanoub</option>
-                  <option>Choueifat Main Facility</option>
+                  <option>{t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}</option>
+                  <option>{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
                 </select>
               </div>
 
               <div className="p-2.5 bg-blue-50 border border-blue-100 rounded text-[11px] text-blue-900 leading-relaxed">
-                This will create a new PO document populated with all items from this supplier in your Shopping Cart.
+                {t('this_will_create_a_new_po_document', 'This will create a new PO document populated with all items from this supplier in your Shopping Cart.')}
               </div>
 
               <div className="pt-2 flex justify-end gap-2">
@@ -2202,14 +2202,14 @@ export default function ReorderGuideView() {
                   onClick={() => setIsPOModalOpen(false)}
                   className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-semibold text-xs"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={handleConfirmCreatePO}
                   className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-xs shadow-sm flex items-center gap-1.5"
                 >
                   <FileText className="w-3.5 h-3.5" />
-                  <span>Create PO Now</span>
+                  <span>{t('create_po_now', 'Create PO Now')}</span>
                 </button>
               </div>
             </div>
@@ -2237,13 +2237,13 @@ export default function ReorderGuideView() {
             <div className="p-4 space-y-3 text-xs">
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="font-bold text-slate-700">To Email*</label>
+                  <label className="font-bold text-slate-700">{t('to_email', 'To Email*')}</label>
                   <div className="flex gap-2 text-[11px] text-primary">
                     <button type="button" onClick={() => setShowCc(!showCc)} className="hover:underline">
-                      Cc
+                      {t('cc', 'Cc')}
                     </button>
                     <button type="button" onClick={() => setShowBcc(!showBcc)} className="hover:underline">
-                      Bcc
+                      {t('bcc', 'Bcc')}
                     </button>
                   </div>
                 </div>
@@ -2257,12 +2257,12 @@ export default function ReorderGuideView() {
 
               {showCc && (
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Cc</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('cc', 'Cc')}</label>
                   <input
                     type="email"
                     value={emailCc}
                     onChange={(e) => setEmailCc(e.target.value)}
-                    placeholder="finance@vanguard.com"
+                    placeholder={t('financevanguardcom', 'finance@vanguard.com')}
                     className="w-full h-8 px-2 border border-slate-300 rounded focus:border-primary"
                   />
                 </div>
@@ -2270,19 +2270,19 @@ export default function ReorderGuideView() {
 
               {showBcc && (
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Bcc</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('bcc', 'Bcc')}</label>
                   <input
                     type="email"
                     value={emailBcc}
                     onChange={(e) => setEmailBcc(e.target.value)}
-                    placeholder="audit@vanguard.com"
+                    placeholder={t('auditvanguardcom', 'audit@vanguard.com')}
                     className="w-full h-8 px-2 border border-slate-300 rounded focus:border-primary"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">From</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('from', 'From')}</label>
                 <input
                   type="text"
                   value={emailFrom}
@@ -2292,7 +2292,7 @@ export default function ReorderGuideView() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Subject</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('subject', 'Subject')}</label>
                 <input
                   type="text"
                   value={emailSubject}
@@ -2302,7 +2302,7 @@ export default function ReorderGuideView() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Message</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('message', 'Message')}</label>
                 <textarea
                   rows={5}
                   value={emailMessage}
@@ -2316,14 +2316,14 @@ export default function ReorderGuideView() {
                   onClick={() => setIsQuotationModalOpen(false)}
                   className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-semibold text-xs"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={handleSendQuotationEmail}
                   className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-xs shadow-sm flex items-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>Send Quotation Email</span>
+                  <span>{t('send_quotation_email', 'Send Quotation Email')}</span>
                 </button>
               </div>
             </div>
@@ -2338,7 +2338,7 @@ export default function ReorderGuideView() {
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full overflow-hidden border border-slate-300 animate-in fade-in zoom-in-95">
             <div className="bg-[#f5f5f5] px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-800">Update Item's Max Stock</h2>
+              <h2 className="text-sm font-bold text-slate-800">{t('update_items_max_stock', 'Update Item\'s Max Stock')}</h2>
               <button
                 onClick={() => setIsMaxStockModalOpen(false)}
                 className="text-slate-400 hover:text-slate-700"
@@ -2348,15 +2348,15 @@ export default function ReorderGuideView() {
             </div>
             <div className="p-4 space-y-3 text-xs">
               <p className="text-slate-600 text-xs">
-                Adjust the Maximum Stock Thresholds for items in Zeit w zaytoun ljanoub to fine-tune automatic reorder calculation:
+                {t('adjust_the_maximum_stock_thresholds_for', 'Adjust the Maximum Stock Thresholds for items in Zeit w zaytoun ljanoub to fine-tune automatic reorder calculation:')}
               </p>
               <div className="overflow-x-auto max-h-64 border border-slate-200 rounded">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-muted text-slate-700 font-bold border-b border-slate-200">
                     <tr>
-                      <th className="py-2 px-2">Description</th>
-                      <th className="py-2 px-2 text-right w-20">Min</th>
-                      <th className="py-2 px-2 text-right w-24">Max</th>
+                      <th className="py-2 px-2">{t('description', 'Description')}</th>
+                      <th className="py-2 px-2 text-right w-20">{t('min', 'Min')}</th>
+                      <th className="py-2 px-2 text-right w-24">{t('max', 'Max')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -2382,7 +2382,7 @@ export default function ReorderGuideView() {
                   onClick={() => setIsMaxStockModalOpen(false)}
                   className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-semibold text-xs"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={() => {
@@ -2391,7 +2391,7 @@ export default function ReorderGuideView() {
                   }}
                   className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded font-bold text-xs shadow-sm"
                 >
-                  Save Changes
+                  {t('save_changes', 'Save Changes')}
                 </button>
               </div>
             </div>

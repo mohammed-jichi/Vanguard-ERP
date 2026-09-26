@@ -171,7 +171,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                     <span>{t('customer_insights', 'Customer Insights')}</span>
                   </h1>
                   <p className="text-xs font-semibold text-slate-500 mt-1">
-                    Your customers are your most valuable asset, know them well.
+                    {t('your_customers_are_your_most_valuable', 'Your customers are your most valuable asset, know them well.')}
                   </p>
                 </div>
 
@@ -284,7 +284,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                 </div>
                 <div className="flex items-baseline justify-between pt-1">
                   <div>
-                    <span className="text-2xl font-black text-purple-700 font-mono block">LBP 985.4M</span>
+                    <span className="text-2xl font-black text-purple-700 font-mono block">{t('lbp_9854m', 'LBP 985.4M')}</span>
                     <span className="text-[11px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md mt-1 inline-block">
                       {t('avg_account_clv', 'Avg Account CLV')}
                     </span>
@@ -383,7 +383,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <button
                     onClick={() => triggerRefreshToast('Data Quality')}
                     className="p-1 text-slate-400 hover:text-blue-600 transition-colors"
-                    title="Refresh Data Quality"
+                    title={t('refresh_data_quality', 'Refresh Data Quality')}
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                   </button>
@@ -427,7 +427,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <button
                     onClick={() => triggerRefreshToast('Financial Value')}
                     className="p-1 text-slate-400 hover:text-emerald-600 transition-colors"
-                    title="Refresh Financial Value"
+                    title={t('refresh_financial_value', 'Refresh Financial Value')}
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                   </button>
@@ -485,7 +485,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <button
                     onClick={() => triggerRefreshToast('Customer Voice')}
                     className="p-1 text-slate-400 hover:text-purple-600 transition-colors"
-                    title="Refresh Customer Voice"
+                    title={t('refresh_customer_voice', 'Refresh Customer Voice')}
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                   </button>
@@ -562,7 +562,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                     <button
                       onClick={() => triggerRefreshToast('Top Buyers')}
                       className="p-1 text-slate-400 hover:text-amber-500 transition-colors"
-                      title="Recalculate & Refresh"
+                      title={t('recalculate_refresh', 'Recalculate & Refresh')}
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                     </button>
@@ -638,7 +638,7 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                   <button
                     onClick={() => triggerRefreshToast('Marketing Reach')}
                     className="p-1 text-slate-400 hover:text-indigo-600 transition-colors"
-                    title="Refresh Marketing Reach"
+                    title={t('refresh_marketing_reach', 'Refresh Marketing Reach')}
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                   </button>
@@ -697,14 +697,14 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                     <button
                       onClick={() => triggerRefreshToast('At-Risk Customers')}
                       className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
-                      title="Refresh At-Risk List"
+                      title={t('refresh_atrisk_list', 'Refresh At-Risk List')}
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={handleExportAtRiskExcel}
                       className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[10px] flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
-                      title="Export At-Risk List as Excel CSV"
+                      title={t('export_atrisk_list_as_excel_csv', 'Export At-Risk List as Excel CSV')}
                     >
                       <Download className="w-3 h-3 text-white" />
                       <span>{t('excel', 'Excel')}</span>

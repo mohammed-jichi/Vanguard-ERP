@@ -639,7 +639,7 @@ export default function SocialMediaManagementHub({
             <button
               type="button"
               onClick={onBack}
-              title="Return to Dashboard"
+              title={t('return_to_dashboard', 'Return to Dashboard')}
               className="p-2 bg-card hover:bg-muted border border-border rounded-xl text-foreground hover:text-primary transition-colors shadow-2xs cursor-pointer"
             >
               ←
@@ -847,7 +847,7 @@ export default function SocialMediaManagementHub({
                   </div>
                   <div className="bg-primary text-primary-foreground p-3 rounded-2xl rounded-tr-none max-w-[80%] ml-auto text-xs shadow-2xs">
                     <div className="font-bold text-amber-300 mb-1">{selectedChat.assignedRep} ({t('sales_rep_label', 'Sales Rep')})</div>
-                    <p>Hello! The 17.5L Extra Virgin Olive Oil cold-pressed tin is $110, with delivery available to Beirut.</p>
+                    <p>{t('hello_the_175l_extra_virgin_olive_oil', 'Hello! The 17.5L Extra Virgin Olive Oil cold-pressed tin is $110, with delivery available to Beirut.')}</p>
                     <div className="text-[9px] text-slate-200 font-mono mt-1 text-right">12:47 PM ✓✓</div>
                   </div>
                 </div>
@@ -1081,7 +1081,7 @@ export default function SocialMediaManagementHub({
                                   <button
                                     type="button"
                                     onClick={() => handleApproveOrder(ord.id)}
-                                    title="Approve Order & Reserve Physical Inventory"
+                                    title={t('approve_order_reserve_physical_inventory', 'Approve Order & Reserve Physical Inventory')}
                                     className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-[10.5px] shadow-2xs transition-colors cursor-pointer"
                                   >
                                     {t('btn_approve_reserve', '✓ Approve & Reserve')}
@@ -1089,7 +1089,7 @@ export default function SocialMediaManagementHub({
                                   <button
                                     type="button"
                                     onClick={() => handleEscalateOrder(ord.id)}
-                                    title="Escalate to Management"
+                                    title={t('escalate_to_management', 'Escalate to Management')}
                                     className="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold rounded text-[10.5px] transition-colors cursor-pointer"
                                   >
                                     {t('btn_escalate', '⚠️ Escalate')}
@@ -1097,7 +1097,7 @@ export default function SocialMediaManagementHub({
                                   <button
                                     type="button"
                                     onClick={() => handleRejectOrder(ord.id)}
-                                    title="Reject Order"
+                                    title={t('reject_order', 'Reject Order')}
                                     className="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold rounded text-[10.5px] transition-colors cursor-pointer"
                                   >
                                     ✕
@@ -1280,7 +1280,7 @@ export default function SocialMediaManagementHub({
         <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 className="text-sm font-bold text-slate-800">{t('support_agents_perf_title', 'Support Agents Performance')}</h2>
-            <span className="text-xs text-slate-500 font-mono">Southern Olive Oil Products S.A.R.L</span>
+            <span className="text-xs text-slate-500 font-mono">{t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
@@ -1482,7 +1482,7 @@ export default function SocialMediaManagementHub({
               <button onClick={() => setShowScheduleModal(false)} className="text-muted-foreground hover:text-foreground font-bold cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleCreateOutboundSchedule} className="p-5 space-y-4 text-xs max-h-[80vh] overflow-y-auto custom-scrollbar">
-              <div><label className="block font-bold text-foreground mb-1">{t('title_req', 'Title *')}</label><input type="text" required value={itemTitle} onChange={(e) => setItemTitle(e.target.value)} placeholder="Title..." className="w-full px-3 py-2 border border-border bg-background rounded-lg font-bold" /></div>
+              <div><label className="block font-bold text-foreground mb-1">{t('title_req', 'Title *')}</label><input type="text" required value={itemTitle} onChange={(e) => setItemTitle(e.target.value)} placeholder={t('title', 'Title...')} className="w-full px-3 py-2 border border-border bg-background rounded-lg font-bold" /></div>
               
               <div className="bg-muted/40 border-2 border-dashed border-border p-4 rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
@@ -1522,7 +1522,7 @@ export default function SocialMediaManagementHub({
             </div>
             <div className="p-4 space-y-3 text-xs">
               <div><label className="block font-bold text-foreground mb-0.5">{t('shortcut_tag_lbl', 'Shortcut Tag')}</label><input type="text" value={newShortcut} onChange={(e) => setNewShortcut(e.target.value)} placeholder="/shortcut" className="w-full px-2.5 py-1.5 border border-border bg-background rounded font-mono font-bold text-primary" /></div>
-              <div><label className="block font-bold text-foreground mb-0.5">{t('message_text_lbl', 'Message Text')}</label><textarea rows={3} value={newCannedText} onChange={(e) => setNewCannedText(e.target.value)} placeholder="Type reply..." className="w-full px-2.5 py-1.5 border border-border bg-background rounded" /></div>
+              <div><label className="block font-bold text-foreground mb-0.5">{t('message_text_lbl', 'Message Text')}</label><textarea rows={3} value={newCannedText} onChange={(e) => setNewCannedText(e.target.value)} placeholder={t('type_reply', 'Type reply...')} className="w-full px-2.5 py-1.5 border border-border bg-background rounded" /></div>
               <div className="flex justify-end gap-2 pt-2 border-t border-border"><button onClick={() => setShowNewCannedModal(false)} className="px-3 py-1.5 border border-border rounded font-bold cursor-pointer hover:bg-muted">{t('cancel_btn', 'Cancel')}</button><button onClick={handleAddNewCannedReply} className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl cursor-pointer">{t('save_btn', 'Save')}</button></div>
             </div>
           </div>
@@ -1700,7 +1700,7 @@ export default function SocialMediaManagementHub({
                   🛡️ Trigger Execution: <code className="font-mono">process_vanguard_invoice_stock()</code>
                 </span>
                 <p className="text-emerald-700 text-[11px]">
-                  Confirming this POD will officially relieve the reserved stock (<code className="font-mono">qty_reserved</code>), deduct physical inventory (<code className="font-mono">vanguard_stock</code>), insert an audit record in <code className="font-mono">stock_ledger</code>, and generate an immutable <code className="font-mono">delivery_notes</code> entry.
+                  Confirming this POD will officially relieve the reserved stock (<code className="font-mono">{t('qty_reserved', 'qty_reserved')}</code>), deduct physical inventory (<code className="font-mono">{t('vanguard_stock', 'vanguard_stock')}</code>), insert an audit record in <code className="font-mono">{t('stock_ledger', 'stock_ledger')}</code>, and generate an immutable <code className="font-mono">{t('delivery_notes', 'delivery_notes')}</code> {t('entry', 'entry.')}
                 </p>
               </div>
 
@@ -1765,7 +1765,7 @@ export default function SocialMediaManagementHub({
                   type="text"
                   value={podNotes}
                   onChange={(e) => setPodNotes(e.target.value)}
-                  placeholder="e.g., Delivered to reception, cash counted..."
+                  placeholder={t('eg_delivered_to_reception_cash_counted', 'e.g., Delivered to reception, cash counted...')}
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl"
                 />
               </div>

@@ -364,6 +364,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Custom Dark Tooltip for LineCharts & Single BarCharts (Daily Summary, Hourly, Weekdays)
   const DarkLineTooltip = ({ active, payload, label }: any) => {
+  const { t } = useLanguage();
     if (!active || !payload || !payload.length) return null;
     const activePayload = payload.filter((p: any) => !p.hide);
     if (!activePayload.length) return null;
@@ -389,6 +390,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Custom Dark Tooltip for Yearly Revenue Stacked BarChart
   const YearlyRevenueTooltip = ({ active, payload, label }: any) => {
+  const { t } = useLanguage();
     if (!active || !payload || !payload.length) return null;
     const activePayload = payload.filter((p: any) => !p.hide);
     if (!activePayload.length) return null;
@@ -414,6 +416,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Custom White Tooltip for Monthly Category Comparison Stacked BarChart
   const CategoryComparisonTooltip = ({ active, payload, label }: any) => {
+  const { t } = useLanguage();
     if (!active || !payload || !payload.length) return null;
     const activePayload = payload.filter((p: any) => !p.hide);
     if (!activePayload.length) return null;
@@ -439,6 +442,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Custom White Tooltip for Employee Monthly Sales Stacked BarChart
   const EmployeeComparisonTooltip = ({ active, payload, label }: any) => {
+  const { t } = useLanguage();
     if (!active || !payload || !payload.length) return null;
     const activePayload = payload.filter((p: any) => !p.hide);
     if (!activePayload.length) return null;
@@ -478,6 +482,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Custom Tooltip for Monthly Revenue BarChart
   const MonthlyRevenueTooltip = ({ active, payload, label }: any) => {
+  const { t } = useLanguage();
     if (!active || !payload || !payload.length) return null;
     const monthVal = payload[0];
     return (
@@ -494,6 +499,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Reusable Widget Card Component (Centered Title Header with Hover Lift)
   const WidgetCard = ({ id, title, className = '', children }: { id: string; title: string; className?: string; children: React.ReactNode }) => {
+  const { t } = useLanguage();
     return (
       <div className={`bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 transition-all duration-300 hover:-translate-y-[2px] hover:shadow-md flex flex-col justify-between ${className}`}>
         <div className="relative flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
@@ -504,14 +510,14 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           <div className="flex items-center gap-1">
             <button
               onClick={() => setExpandedWidget(id)}
-              title="Expand Chart Fullscreen"
+              title={t('expand_chart_fullscreen', 'Expand Chart Fullscreen')}
               className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
             >
               <Maximize2 className="w-4 h-4" />
             </button>
             <button
               onClick={() => alert(`Options for ${title}`)}
-              title="Widget Options"
+              title={t('widget_options', 'Widget Options')}
               className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
             >
               <MoreVertical className="w-4 h-4" />
@@ -527,6 +533,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
   // Custom Dark Tooltip for All Pie Slices (Category, Division, Group, Department, Discount, Void, User, Payment, Customers)
   const PieSliceTooltip = ({ active, payload }: any) => {
+  const { t } = useLanguage();
     if (!active || !payload || !payload.length) return null;
     const item = payload[0];
     if (!item) return null;
@@ -582,6 +589,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
     labelKey?: string;
     className?: string;
   }) => {
+  const { t } = useLanguage();
     const activeData = data.filter((item) => {
       const key = getItemKey(item, labelKey);
       return !hiddenPieItems.includes(key);
@@ -615,7 +623,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </ResponsiveContainer>
             ) : (
               <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-200 rounded-xl p-4">
-                All slices hidden. Click table rows below to restore.
+                {t('all_slices_hidden_click_table_rows', 'All slices hidden. Click table rows below to restore.')}
               </div>
             )}
           </div>
@@ -640,7 +648,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       className={`even:bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer ${
                         isHidden ? 'opacity-40 grayscale line-through' : ''
                       }`}
-                      title="Click to toggle slice on/off"
+                      title={t('click_to_toggle_slice_onoff', 'Click to toggle slice on/off')}
                     >
                       <td className="py-3 px-4 flex items-center gap-2.5 font-normal">
                         <span
@@ -761,7 +769,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           {/* THREE ICON BUTTONS */}
           <button
             onClick={() => setIsEodModalOpen(true)}
-            title="Clock / Last EOD"
+            title={t('clock_last_eod', 'Clock / Last EOD')}
             className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs cursor-pointer"
           >
             <Clock className="w-4 h-4" />
@@ -769,7 +777,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
 
           <button
             onClick={handleRecalculate}
-            title="Refresh / Recalculate"
+            title={t('refresh_recalculate', 'Refresh / Recalculate')}
             className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${recalculating ? 'animate-spin text-blue-600' : ''}`} />
@@ -779,7 +787,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             href="/sales-report"
             target="_blank"
             rel="noopener noreferrer"
-            title="BarChart / Reports"
+            title={t('barchart_reports', 'BarChart / Reports')}
             className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors shadow-2xs flex items-center justify-center"
           >
             <BarChart3 className="w-4 h-4" />
@@ -902,10 +910,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-base font-extrabold text-slate-900">
-                    Consolidated Multi-Branch Fleet Breakdown
+                    {t('consolidated_multibranch_fleet_breakdown', 'Consolidated Multi-Branch Fleet Breakdown')}
                   </h2>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 border border-blue-200">
-                    All 6 Branches in One Place
+                    {t('all_6_branches_in_one_place', 'All 6 Branches in One Place')}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -915,7 +923,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-                Enterprise Target Attainment: <span className="font-mono text-emerald-600 font-black">94.8%</span>
+                {t('enterprise_target_attainment', 'Enterprise Target Attainment:')} <span className="font-mono text-emerald-600 font-black">94.8%</span>
               </span>
             </div>
           </div>
@@ -1002,7 +1010,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                           setTimeout(() => setRecalcToast(null), 2500);
                         }}
                         className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center gap-1 mx-auto cursor-pointer shadow-2xs"
-                        title="Filter Dashboard to This Branch"
+                        title={t('filter_dashboard_to_this_branch', 'Filter Dashboard to This Branch')}
                       >
                         <span>{t('filter', 'Filter')}</span>
                         <ArrowRight className="w-3 h-3" />
@@ -1159,7 +1167,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </div>
                 </div>
               </div>
-              <p className="text-lg font-bold text-black mt-2">Aug 2026</p>
+              <p className="text-lg font-bold text-black mt-2">{t('aug_2026', 'Aug 2026')}</p>
               <p className="text-xs text-slate-500 mt-1 font-medium">202.3 M LL | {tr('peak_month', 'Peak Month')}</p>
             </div>
 
@@ -1174,7 +1182,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </div>
                 </div>
               </div>
-              <p className="text-lg font-bold text-black mt-2">Feb 2026</p>
+              <p className="text-lg font-bold text-black mt-2">{t('feb_2026', 'Feb 2026')}</p>
               <p className="text-xs text-slate-500 mt-1 font-medium">135.0 M LL | {tr('softest_month', 'Softest Month')}</p>
             </div>
 
@@ -1242,22 +1250,22 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </WidgetCard>
 
             {/* WIDGET 2: SALES BY CATEGORY DISTRIBUTION */}
-            <RenderPieWidget id="sales-category" title="Sales By Category Distribution" data={categorySalesData} />
+            <RenderPieWidget id="sales-category" title={t('sales_by_category_distribution', 'Sales By Category Distribution')} data={categorySalesData} />
 
             {/* WIDGET 3: SALES BY DIVISION */}
-            <RenderPieWidget id="sales-division" title="Sales By Division" data={divisionSalesData} />
+            <RenderPieWidget id="sales-division" title={t('sales_by_division', 'Sales By Division')} data={divisionSalesData} />
 
             {/* WIDGET 4: SALES BY GROUP */}
-            <RenderPieWidget id="sales-group" title="Sales By Group" data={groupSalesData} />
+            <RenderPieWidget id="sales-group" title={t('sales_by_group', 'Sales By Group')} data={groupSalesData} />
 
             {/* WIDGET 5: SALES BY DEPARTMENT */}
-            <RenderPieWidget id="sales-department" title="Sales By Department" data={departmentSalesData} />
+            <RenderPieWidget id="sales-department" title={t('sales_by_department', 'Sales By Department')} data={departmentSalesData} />
 
             {/* WIDGET 6: DISCOUNT SUMMARY */}
-            <RenderPieWidget id="discount-summary" title="Discount Summary" data={discountSummaryData} />
+            <RenderPieWidget id="discount-summary" title={t('discount_summary', 'Discount Summary')} data={discountSummaryData} />
 
             {/* WIDGET 7: DISCOUNT BY CATEGORY SUMMARY */}
-            <WidgetCard id="discount-by-category" title="Discount By Category Summary">
+            <WidgetCard id="discount-by-category" title={t('discount_by_category_summary', 'Discount By Category Summary')}>
               <div className="flex flex-col space-y-5">
                 <div className="h-80 w-full">
                   {discountSummaryData.filter((item) => !hiddenPieItems.includes(item.name)).length > 0 ? (
@@ -1284,7 +1292,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     </ResponsiveContainer>
                   ) : (
                     <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-200 rounded-xl p-4">
-                      All slices hidden. Click table rows below to restore.
+                      {t('all_slices_hidden_click_table_rows', 'All slices hidden. Click table rows below to restore.')}
                     </div>
                   )}
                 </div>
@@ -1322,7 +1330,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </WidgetCard>
 
             {/* WIDGET 8: VOID SUMMARY */}
-            <WidgetCard id="void-summary" title="Void Summary">
+            <WidgetCard id="void-summary" title={t('void_summary', 'Void Summary')}>
               <div className="flex flex-col space-y-5">
                 <div className="h-80 w-full">
                   {voidSummaryData.filter((item) => !hiddenPieItems.includes(item.reason)).length > 0 ? (
@@ -1349,7 +1357,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     </ResponsiveContainer>
                   ) : (
                     <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-200 rounded-xl p-4">
-                      All slices hidden. Click table rows below to restore.
+                      {t('all_slices_hidden_click_table_rows', 'All slices hidden. Click table rows below to restore.')}
                     </div>
                   )}
                 </div>
@@ -1376,7 +1384,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                             } ${
                               isHidden ? 'opacity-40 grayscale line-through' : 'hover:bg-slate-100'
                             }`}
-                            title="Click to toggle slice on/off"
+                            title={t('click_to_toggle_slice_onoff', 'Click to toggle slice on/off')}
                           >
                             <td className="py-3 px-4 flex items-center gap-2.5 font-normal">
                               <span
@@ -1398,10 +1406,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </WidgetCard>
 
             {/* WIDGET 9: USER SUMMARY */}
-            <RenderPieWidget id="user-summary" title="User Summary" data={userSummaryData} labelKey="user" />
+            <RenderPieWidget id="user-summary" title={t('user_summary', 'User Summary')} data={userSummaryData} labelKey="user" />
 
             {/* WIDGET 10: PAYMENT SUMMARY (FULL WIDTH & CENTERED) */}
-            <RenderPieWidget id="payment-summary" title="Payment Summary" data={paymentSummaryData} labelKey="method" className="col-span-full" />
+            <RenderPieWidget id="payment-summary" title={t('payment_summary', 'Payment Summary')} data={paymentSummaryData} labelKey="method" className="col-span-full" />
 
           </div>
 
@@ -1446,7 +1454,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         <div className="space-y-6">
           
           {/* 1. DAILY SUMMARY WIDGET (FULL WIDTH LINECHART + DATA TABLE) */}
-          <WidgetCard id="daily-summary-trends" title="Daily Summary">
+          <WidgetCard id="daily-summary-trends" title={t('daily_summary', 'Daily Summary')}>
             <div className="space-y-4">
               <div className="h-72 w-full pt-2">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1546,7 +1554,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* HOURLY WIDGET */}
-            <WidgetCard id="hourly-sales-trends" title="Average Sales by Hour">
+            <WidgetCard id="hourly-sales-trends" title={t('average_sales_by_hour', 'Average Sales by Hour')}>
               <div className="space-y-4">
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1592,7 +1600,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             </WidgetCard>
 
             {/* WEEKDAYS WIDGET */}
-            <WidgetCard id="weekdays-sales-trends" title="Sales by WeekDays">
+            <WidgetCard id="weekdays-sales-trends" title={t('sales_by_weekdays', 'Sales by WeekDays')}>
               <div className="space-y-4">
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1638,7 +1646,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           </div>
 
           {/* WIDGET A: YEARLY REVENUE (STACKED BARCHART BY MONTH) */}
-          <WidgetCard id="yearly-revenue-comparison" title="Yearly Revenue">
+          <WidgetCard id="yearly-revenue-comparison" title={t('yearly_revenue', 'Yearly Revenue')}>
             <div className="space-y-4">
               <div className="h-72 w-full pt-2">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1664,7 +1672,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           </WidgetCard>
 
           {/* WIDGET B: VOID SUMMARY (DATA TABLE ONLY) */}
-          <WidgetCard id="comparative-void-summary" title="Void Summary">
+          <WidgetCard id="comparative-void-summary" title={t('void_summary', 'Void Summary')}>
             <div className="border border-slate-200 rounded-xl overflow-x-auto text-base">
               <table className="w-full text-left font-sans">
                 <thead className="bg-slate-900 text-white font-semibold uppercase text-base tracking-wide">
@@ -1710,7 +1718,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           </WidgetCard>
 
           {/* 4. COMPARATIVE MONTHLY SALES BY EMPLOYEE (STACKED BARCHART + COMPREHENSIVE TABLE) */}
-          <WidgetCard id="employee-monthly-comparison" title="Comparative Monthly Sales By Employee">
+          <WidgetCard id="employee-monthly-comparison" title={t('comparative_monthly_sales_by_employee', 'Comparative Monthly Sales By Employee')}>
             <div className="space-y-5">
               <div className="h-80 w-full pt-2">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1796,7 +1804,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
           <div className="space-y-4">
             <div className="bg-slate-100 border border-slate-200 rounded-xl py-3 px-4 text-center shadow-xs">
               <h2 className="font-extrabold text-slate-800 text-sm uppercase tracking-wide">
-                Customers Statistics
+                {t('customers_statistics', 'Customers Statistics')}
               </h2>
             </div>
 
@@ -1841,11 +1849,11 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     </div>
                     <div className="grid grid-cols-2 divide-x divide-slate-200 bg-white">
                       <div className="flex justify-between py-2 px-3">
-                        <span className="text-slate-500 font-medium">LM</span>
+                        <span className="text-slate-500 font-medium">{t('lm', 'LM')}</span>
                         <span className="font-mono font-bold text-slate-900">1</span>
                       </div>
                       <div className="flex justify-between py-2 px-3">
-                        <span className="text-slate-500 font-medium">LY</span>
+                        <span className="text-slate-500 font-medium">{t('ly', 'LY')}</span>
                         <span className="font-mono font-bold text-slate-900">2</span>
                       </div>
                     </div>
@@ -1896,7 +1904,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                           setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                         }}
                         className="p-1 hover:bg-slate-200 rounded transition-colors"
-                        title="Sort by Customer Name"
+                        title={t('sort_by_customer_name', 'Sort by Customer Name')}
                       >
                         <ArrowUpDown className="w-3 h-3 text-slate-500" />
                       </button>
@@ -1915,7 +1923,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       <div className="relative">
                         <input
                           type="text"
-                          placeholder="Search..."
+                          placeholder={t('search', 'Search...')}
                           value={customerSearchQuery}
                           onChange={(e) => setCustomerSearchQuery(e.target.value)}
                           className="w-24 pl-6 pr-1.5 py-0.5 bg-white border border-slate-300 rounded text-xs font-sans text-slate-800"
@@ -1980,10 +1988,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                       ) : (
                         <ChevronRight className="w-4 h-4 text-slate-600" />
                       )}
-                      <span>Lebanon</span>
+                      <span>{t('lebanon', 'Lebanon')}</span>
                     </div>
                     <span className="font-mono text-xs font-bold text-slate-700 bg-white border border-slate-300 px-2 py-0.5 rounded-full">
-                      Total: 7
+                      {t('total_7', 'Total: 7')}
                     </span>
                   </div>
 
@@ -2026,19 +2034,19 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <div className="bg-slate-100 border-b border-slate-200 py-2.5 px-4 flex items-center justify-between">
               <span className="w-8"></span>
               <h2 className="font-extrabold text-slate-800 text-sm uppercase tracking-wide text-center">
-                Sales By Customer By Group
+                {t('sales_by_customer_by_group', 'Sales By Customer By Group')}
               </h2>
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setExpandedWidget('sales-by-customer-by-group')}
-                  title="Expand Fullscreen"
+                  title={t('expand_fullscreen', 'Expand Fullscreen')}
                   className="p-1 hover:bg-slate-200 rounded text-slate-500 hover:text-slate-800 transition-colors"
                 >
                   <Maximize2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => alert('Options for Sales By Customer By Group')}
-                  title="Options"
+                  title={t('options', 'Options')}
                   className="p-1 hover:bg-slate-200 rounded text-slate-500 hover:text-slate-800 transition-colors"
                 >
                   <MoreVertical className="w-4 h-4" />
@@ -2076,7 +2084,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   </ResponsiveContainer>
                 ) : (
                   <div className="h-full flex items-center justify-center text-slate-400 font-semibold text-xs italic border border-dashed border-slate-300 rounded-xl p-8 text-center">
-                    All slices hidden. Click table row below to restore.
+                    {t('all_slices_hidden_click_table_row_below', 'All slices hidden. Click table row below to restore.')}
                   </div>
                 )}
               </div>
@@ -2097,7 +2105,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                     <span>{t('all_groups', 'All Groups')}</span>
                   </div>
                   <span className="font-mono text-xs font-bold text-emerald-700 bg-white border border-slate-300 px-3 py-1 rounded-full">
-                    Total Value: 248,400,000 LL
+                    {t('total_value_248400000_ll', 'Total Value: 248,400,000 LL')}
                   </span>
                 </div>
 
@@ -2113,7 +2121,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                           className={`flex items-center justify-between py-3 px-4 transition-all cursor-pointer ${
                             isHidden ? 'opacity-40 grayscale bg-slate-100 line-through' : 'hover:bg-slate-50'
                           }`}
-                          title="Click to toggle slice on/off"
+                          title={t('click_to_toggle_slice_onoff', 'Click to toggle slice on/off')}
                         >
                           <div className="flex items-center gap-2.5 font-medium text-slate-900">
                             <span
@@ -2283,7 +2291,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <table className="w-full text-left font-sans">
                     <thead className="bg-slate-900 text-white font-semibold text-base uppercase tracking-wide">
                       <tr>
-                        <th className="py-3.5 px-4">Name</th>
+                        <th className="py-3.5 px-4">{t('name', 'Name')}</th>
                         <th className="py-3.5 px-4 text-right">{t('revenue_amount', 'Revenue Amount')}</th>
                         <th className="py-3.5 px-4 text-right">{t('share_pct', 'Share %')}</th>
                       </tr>
@@ -2327,17 +2335,17 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </div>
               <div>
                 <h2 className="text-base font-bold text-white">
-                  Daily Shift & Operations Dashboard
+                  {t('daily_shift_operations_dashboard', 'Daily Shift & Operations Dashboard')}
                 </h2>
                 <p className="text-white opacity-90 mt-1 text-sm block">
-                  Real-time transaction log, active cashier terminals, and payment method distribution for today.
+                  {t('realtime_transaction_log_active_cashier', 'Real-time transaction log, active cashier terminals, and payment method distribution for today.')}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3 shrink-0 ml-auto md:ml-0">
               <span className="bg-white text-slate-900 border-2 border-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm ml-auto flex items-center gap-1.5 font-mono">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Shift #0482 Active
+                {t('shift_0482_active', 'Shift #0482 Active')}
               </span>
               <button
                 onClick={() => setIsEodModalOpen(true)}
@@ -2357,7 +2365,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
                   <CreditCard className="w-4 h-4 text-blue-600" /> Payment Summary (Today)
                 </h3>
-                <span className="text-xs text-slate-500 font-mono font-bold">Aug 27, 2026</span>
+                <span className="text-xs text-slate-500 font-mono font-bold">{t('aug_27_2026', 'Aug 27, 2026')}</span>
               </div>
 
               <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
@@ -2424,10 +2432,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <div className="border border-slate-200 rounded-2xl bg-white p-5 shadow-sm hover:-translate-y-[2px] transition-all space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-emerald-600" /> Live Operations Status
+                  <Activity className="w-4 h-4 text-emerald-600" /> {t('live_operations_status', 'Live Operations Status')}
                 </h3>
                 <span className="bg-blue-50 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-md border border-blue-200">
-                  Real-time Sync
+                  {t('realtime_sync', 'Real-time Sync')}
                 </span>
               </div>
 
@@ -2436,26 +2444,26 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                   <span className="text-slate-500 font-semibold block text-[11px]">{t('active_terminals', 'Active Terminals')}</span>
                   <span className="font-mono text-lg font-black text-slate-900 block">4 / 4 POS</span>
                   <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> All Online
+                    <CheckCircle2 className="w-3 h-3" /> {t('all_online', 'All Online')}
                   </span>
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
                   <span className="text-slate-500 font-semibold block text-[11px]">{t('daily_order_volume', 'Daily Order Volume')}</span>
                   <span className="font-mono text-lg font-black text-slate-900 block">148 {t('orders', 'Orders')}</span>
-                  <span className="text-[10px] text-blue-600 font-bold">Avg 13,305,405 LL / Order</span>
+                  <span className="text-[10px] text-blue-600 font-bold">{t('avg_13305405_ll_order', 'Avg 13,305,405 LL / Order')}</span>
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
                   <span className="text-slate-500 font-semibold block text-[11px]">{t('pending_fleet_deliveries', 'Pending Fleet Deliveries')}</span>
                   <span className="font-mono text-lg font-black text-slate-900 block">12 {t('shipments', 'Shipments')}</span>
-                  <span className="text-[10px] text-amber-600 font-bold">SuperSonic Active</span>
+                  <span className="text-[10px] text-amber-600 font-bold">{t('supersonic_active', 'SuperSonic Active')}</span>
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
                   <span className="text-slate-500 font-semibold block text-[11px]">{t('active_cashiers', 'Active Cashiers')}</span>
                   <span className="font-mono text-lg font-black text-slate-900 block">3 {t('officers', 'Officers')}</span>
-                  <span className="text-[10px] text-slate-600 font-medium">Cashier NK, Cashier R, Hiba</span>
+                  <span className="text-[10px] text-slate-600 font-medium">{t('cashier_nk_cashier_r_hiba', 'Cashier NK, Cashier R, Hiba')}</span>
                 </div>
               </div>
 
@@ -2484,10 +2492,10 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
               </div>
               <div>
                 <h2 className="text-base font-bold text-white">
-                  Territorial Sales Distribution
+                  {t('territorial_sales_distribution', 'Territorial Sales Distribution')}
                 </h2>
                 <p className="text-white opacity-90 mt-1 text-sm block">
-                  Regional revenue density, customer account concentration, and territorial performance across Lebanon.
+                  {t('regional_revenue_density_customer', 'Regional revenue density, customer account concentration, and territorial performance across Lebanon.')}
                 </p>
               </div>
             </div>
@@ -2504,9 +2512,9 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
             <div className="border border-slate-200 rounded-2xl bg-white p-5 shadow-sm hover:-translate-y-[2px] transition-all space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-blue-600" /> Sales by Region & Territory
+                  <MapPin className="w-4 h-4 text-blue-600" /> {t('sales_by_region_territory', 'Sales by Region & Territory')}
                 </h3>
-                <span className="text-xs text-slate-500 font-bold">YTD 2026</span>
+                <span className="text-xs text-slate-500 font-bold">{t('ytd_2026', 'YTD 2026')}</span>
               </div>
 
               <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
@@ -2608,7 +2616,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl shadow-2xl p-5 max-w-xs w-full border border-slate-200 space-y-4">
             <h3 className="text-red-600 font-extrabold text-base border-b border-slate-200 pb-2 text-center">
-              End of Day Status
+              {t('end_of_day_status', 'End of Day Status')}
             </h3>
             <div className="flex items-center justify-between text-xs font-bold text-slate-800 py-3 px-1 border-b border-slate-100">
               <span className="text-slate-900 font-black">منتوجات زيت وزيتون الجنوب :</span>
@@ -2619,7 +2627,7 @@ export default function SalesDashboard({ onSelectScreen }: SalesDashboardProps) 
                 onClick={() => setIsEodModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold rounded-lg text-xs transition-colors"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>

@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import {
@@ -26,6 +27,7 @@ interface RejectReason {
 }
 
 export default function RejectReasonsView() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState<boolean>(true);
   const [reasons, setReasons] = useState<RejectReason[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -198,21 +200,21 @@ export default function RejectReasonsView() {
         <div className="header border-b border-slate-200 pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-              <h1 className="page-title text-2xl font-bold text-slate-900 tracking-tight">Reject Reasons</h1>
+              <h1 className="page-title text-2xl font-bold text-slate-900 tracking-tight">{t('reject_reasons', 'Reject Reasons')}</h1>
               <ol className="breadcrumb flex items-center gap-2 text-xs text-slate-500 mt-1">
                 <li>
                   <a href="/backoffice/operations" className="hover:text-emerald-700 transition">
-                    Operations
+                    {t('operations', 'Operations')}
                   </a>
                 </li>
                 <li>/</li>
                 <li>
                   <a href="/backoffice/operations?section=manage_product_requests" className="hover:text-emerald-700 transition">
-                    Product Request
+                    {t('product_request', 'Product Request')}
                   </a>
                 </li>
                 <li>/</li>
-                <li className="text-slate-700 font-semibold">Reject Reasons</li>
+                <li className="text-slate-700 font-semibold">{t('reject_reasons', 'Reject Reasons')}</li>
               </ol>
             </div>
 
@@ -224,10 +226,10 @@ export default function RejectReasonsView() {
                   fetchReasons();
                 }}
                 className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-sm transition"
-                title="Refresh Table"
+                title={t('refresh_table', 'Refresh Table')}
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
-                <span>Refresh</span>
+                <span>{t('refresh', 'Refresh')}</span>
               </button>
             </div>
           </div>
@@ -247,7 +249,7 @@ export default function RejectReasonsView() {
                   setPage(1);
                 }}
                 className="form-control search-input w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                placeholder="Search description..."
+                placeholder={t('search_description', 'Search description...')}
               />
             </div>
 
@@ -261,7 +263,7 @@ export default function RejectReasonsView() {
                 className="btn btn-primary inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-700 hover:bg-emerald-700 rounded-lg shadow-sm transition active:scale-95"
               >
                 <Plus className="w-4 h-4" />
-                <span className="rejectreasons-desktop-text">New Reason</span>
+                <span className="rejectreasons-desktop-text">{t('new_reason', 'New Reason')}</span>
               </button>
             </div>
           </div>
@@ -289,7 +291,7 @@ export default function RejectReasonsView() {
                     onClick={() => handleSort('DESCRIPTION')}
                   >
                     <div className="flex items-center gap-1">
-                      <span>Description</span>
+                      <span>{t('description', 'Description')}</span>
                       {sorting.value === 'DESCRIPTION' ? (
                         sorting.type === 'asc' ? <ArrowUp className="w-3 h-3 text-emerald-600" /> : <ArrowDown className="w-3 h-3 text-emerald-600" />
                       ) : (
@@ -297,7 +299,7 @@ export default function RejectReasonsView() {
                       )}
                     </div>
                   </th>
-                  <th className="rejectreasons-action-col py-3.5 px-4 text-right w-32">Actions</th>
+                  <th className="rejectreasons-action-col py-3.5 px-4 text-right w-32">{t('actions', 'Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
@@ -306,7 +308,7 @@ export default function RejectReasonsView() {
                     <td colSpan={3} className="py-12 text-center text-slate-400">
                       <div className="inline-flex items-center gap-2">
                         <RefreshCw className="w-5 h-5 animate-spin text-emerald-600" />
-                        <span>Loading reject reasons...</span>
+                        <span>{t('loading_reject_reasons', 'Loading reject reasons...')}</span>
                       </div>
                     </td>
                   </tr>
@@ -314,7 +316,7 @@ export default function RejectReasonsView() {
                   <tr>
                     <td colSpan={3} className="py-12 text-center text-slate-500">
                       <HelpCircle className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                      <p className="font-medium">No reject reasons found</p>
+                      <p className="font-medium">{t('no_reject_reasons_found', 'No reject reasons found')}</p>
                       <p className="text-xs text-slate-400 mt-0.5">Click &quot;New Reason&quot; to configure a standard rejection rationale.</p>
                     </td>
                   </tr>
@@ -339,7 +341,7 @@ export default function RejectReasonsView() {
                               setEditDescription(row.DESCRIPTION);
                             }}
                             className="p-1.5 text-slate-600 bg-slate-100 hover:bg-emerald-700 hover:text-white rounded-md transition shadow-xs"
-                            title="Edit Reason"
+                            title={t('edit_reason', 'Edit Reason')}
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
@@ -347,7 +349,7 @@ export default function RejectReasonsView() {
                             type="button"
                             onClick={() => setDeleteRow(row)}
                             className="p-1.5 text-slate-600 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-md transition shadow-xs"
-                            title="Delete Reason"
+                            title={t('delete_reason', 'Delete Reason')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -414,7 +416,7 @@ export default function RejectReasonsView() {
             <div className="flex items-center justify-between px-5 py-4 bg-slate-900 text-white">
               <h3 className="font-semibold text-base flex items-center gap-2">
                 <Plus className="w-4 h-4 text-emerald-400" />
-                <span>New Reject Reason</span>
+                <span>{t('new_reject_reason', 'New Reject Reason')}</span>
               </h3>
               <button
                 type="button"
@@ -428,7 +430,7 @@ export default function RejectReasonsView() {
             <form onSubmit={handleSaveNew} className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Reason Description <span className="text-rose-500">*</span>
+                  {t('reason_description', 'Reason Description')} <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   rows={3}
@@ -436,7 +438,7 @@ export default function RejectReasonsView() {
                   autoFocus
                   value={newDescription}
                   onChange={e => setNewDescription(e.target.value)}
-                  placeholder="e.g. Out of Stock at Central Warehouse, Budget Exceeded..."
+                  placeholder={t('eg_out_of_stock_at_central_warehouse', 'e.g. Out of Stock at Central Warehouse, Budget Exceeded...')}
                   className="w-full text-sm p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
                 />
               </div>
@@ -447,7 +449,7 @@ export default function RejectReasonsView() {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   id="newReasonBtn"
@@ -487,7 +489,7 @@ export default function RejectReasonsView() {
             <form onSubmit={handleSaveEdit} className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Reason Description <span className="text-rose-500">*</span>
+                  {t('reason_description', 'Reason Description')} <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   rows={3}
@@ -505,7 +507,7 @@ export default function RejectReasonsView() {
                   onClick={() => setEditRow(null)}
                   className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
@@ -531,9 +533,9 @@ export default function RejectReasonsView() {
               <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
                 <Trash2 className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">Delete Reason</h3>
+              <h3 className="text-base font-bold text-slate-900">{t('delete_reason', 'Delete Reason')}</h3>
               <p className="text-xs text-slate-600">
-                Are you sure you want to delete this reason ?
+                {t('are_you_sure_you_want_to_delete_this', 'Are you sure you want to delete this reason ?')}
               </p>
               <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-xs font-medium text-slate-800 text-left">
                 &quot;{deleteRow.DESCRIPTION}&quot;
@@ -546,7 +548,7 @@ export default function RejectReasonsView() {
                 onClick={() => setDeleteRow(null)}
                 className="px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg transition"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"

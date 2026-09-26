@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Accounting Shared Modals
@@ -43,6 +44,7 @@ interface SupportingDocModalProps {
 }
 
 export function SupportingDocModal({ isOpen, onClose, onSave, initialUrl = '' }: SupportingDocModalProps) {
+  const { t } = useLanguage();
   const [docUrl, setDocUrl] = useState(initialUrl);
 
   if (!isOpen) return null;
@@ -53,7 +55,7 @@ export function SupportingDocModal({ isOpen, onClose, onSave, initialUrl = '' }:
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <ExternalLink className="w-4 h-4 text-primary" />
-            <span>Supporting Document</span>
+            <span>{t('supporting_document', 'Supporting Document')}</span>
           </h4>
           <button
             type="button"
@@ -69,7 +71,7 @@ export function SupportingDocModal({ isOpen, onClose, onSave, initialUrl = '' }:
         </p>
 
         <div>
-          <label className="text-xs font-semibold text-foreground mb-1 block">Document Url</label>
+          <label className="text-xs font-semibold text-foreground mb-1 block">{t('document_url', 'Document Url')}</label>
           <input
             type="url"
             value={docUrl}
@@ -85,7 +87,7 @@ export function SupportingDocModal({ isOpen, onClose, onSave, initialUrl = '' }:
             onClick={onClose}
             className="bg-card hover:bg-muted text-muted-foreground px-4 py-2 rounded-lg text-xs font-semibold border border-border transition-colors cursor-pointer"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="button"
@@ -95,7 +97,7 @@ export function SupportingDocModal({ isOpen, onClose, onSave, initialUrl = '' }:
             }}
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
-            Save / Ok
+            {t('save_ok', 'Save / Ok')}
           </button>
         </div>
       </div>
@@ -123,6 +125,7 @@ export function SearchAccountsModal({
   onOpenAddAccount,
   onOpenStatement
 }: SearchAccountsModalProps) {
+  const { t } = useLanguage();
   const [typeFilter, setTypeFilter] = useState<string>('All Accounts');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showAll, setShowAll] = useState<boolean>(true);
@@ -176,20 +179,20 @@ export function SearchAccountsModal({
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-1.5">
-              <label className="text-muted-foreground font-semibold">Type *</label>
+              <label className="text-muted-foreground font-semibold">{t('type', 'Type *')}</label>
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
                 className="bg-card border border-input rounded-lg p-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               >
-                <option value="All Accounts">All Accounts</option>
-                <option value="Bank">Bank</option>
-                <option value="Cash">Cash</option>
-                <option value="Customer">Customer</option>
-                <option value="Employee">Employee</option>
-                <option value="Expense">Expense</option>
-                <option value="Others">Others</option>
-                <option value="Supplier">Supplier</option>
+                <option value="All Accounts">{t('all_accounts', 'All Accounts')}</option>
+                <option value="Bank">{t('bank', 'Bank')}</option>
+                <option value="Cash">{t('cash', 'Cash')}</option>
+                <option value="Customer">{t('customer', 'Customer')}</option>
+                <option value="Employee">{t('employee', 'Employee')}</option>
+                <option value="Expense">{t('expense', 'Expense')}</option>
+                <option value="Others">{t('others', 'Others')}</option>
+                <option value="Supplier">{t('supplier', 'Supplier')}</option>
               </select>
             </div>
 
@@ -212,7 +215,7 @@ export function SearchAccountsModal({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
+                placeholder={t('search', 'Search...')}
                 className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               />
             </div>
@@ -233,18 +236,18 @@ export function SearchAccountsModal({
           <table className="w-full text-left text-xs">
             <thead className="sticky top-0 bg-muted border-b border-border text-foreground font-semibold">
               <tr>
-                <th className="p-2.5 w-32">Account Number</th>
-                <th className="p-2.5">Account Name</th>
-                <th className="p-2.5 w-28 text-right">Balance $</th>
-                <th className="p-2.5 w-36 text-right">Balance LBP</th>
-                <th className="p-2.5 w-16 text-center">Ledger</th>
+                <th className="p-2.5 w-32">{t('account_number', 'Account Number')}</th>
+                <th className="p-2.5">{t('account_name', 'Account Name')}</th>
+                <th className="p-2.5 w-28 text-right">{t('balance', 'Balance $')}</th>
+                <th className="p-2.5 w-36 text-right">{t('balance_lbp', 'Balance LBP')}</th>
+                <th className="p-2.5 w-16 text-center">{t('ledger', 'Ledger')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filteredAccounts.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-muted-foreground text-xs font-medium">
-                    No Accounts Found!
+                    {t('no_accounts_found', 'No Accounts Found!')}
                   </td>
                 </tr>
               ) : (
@@ -271,7 +274,7 @@ export function SearchAccountsModal({
                       <button
                         type="button"
                         onClick={() => onOpenStatement(acc)}
-                        title="View Statement of Account"
+                        title={t('view_statement_of_account', 'View Statement of Account')}
                         className="text-muted-foreground hover:text-primary p-1 rounded transition-colors cursor-pointer"
                       >
                         <BookOpen className="w-3.5 h-3.5" />
@@ -291,7 +294,7 @@ export function SearchAccountsModal({
             onClick={onClose}
             className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
           >
-            Close
+            {t('close', 'Close')}
           </button>
         </div>
       </div>
@@ -309,6 +312,7 @@ interface StatementModalProps {
 }
 
 export function StatementModal({ isOpen, onClose, account }: StatementModalProps) {
+  const { t } = useLanguage();
   const [showAllDates, setShowAllDates] = useState<boolean>(true);
   const [fromDate, setFromDate] = useState<string>('2026-01-01');
   const [toDate, setToDate] = useState<string>('2026-12-31');
@@ -389,11 +393,11 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
                 onChange={(e) => setShowAllDates(e.target.checked)}
                 className="rounded border-input text-primary focus:ring-primary h-3.5 w-3.5"
               />
-              <span>Show All</span>
+              <span>{t('show_all', 'Show All')}</span>
             </label>
 
             <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground">From:</span>
+              <span className="text-muted-foreground">{t('from', 'From:')}</span>
               <input
                 type="date"
                 value={fromDate}
@@ -404,7 +408,7 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground">To:</span>
+              <span className="text-muted-foreground">{t('to', 'To:')}</span>
               <input
                 type="date"
                 value={toDate}
@@ -422,7 +426,7 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search.."
+                placeholder={t('search', 'Search..')}
                 className="w-full bg-card border border-input rounded-lg pl-8 pr-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               />
             </div>
@@ -432,7 +436,7 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
               onClick={() => {}}
               className="bg-card hover:bg-muted text-foreground border border-border px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
             >
-              Preview
+              {t('preview', 'Preview')}
             </button>
 
             <button
@@ -443,7 +447,7 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print</span>
+              <span>{t('print', 'Print')}</span>
             </button>
           </div>
         </div>
@@ -453,14 +457,14 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
           <table className="w-full text-left text-xs">
             <thead className="sticky top-0 bg-muted border-b border-border text-foreground font-semibold">
               <tr>
-                <th className="p-2.5">Date</th>
-                <th className="p-2.5">Date Of JV</th>
-                <th className="p-2.5">Reference</th>
+                <th className="p-2.5">{t('date', 'Date')}</th>
+                <th className="p-2.5">{t('date_of_jv', 'Date Of JV')}</th>
+                <th className="p-2.5">{t('reference', 'Reference')}</th>
                 <th className="p-2.5 text-right">Debit ($)</th>
                 <th className="p-2.5 text-right">Credit ($)</th>
-                <th className="p-2.5">Remark</th>
-                <th className="p-2.5">Created by</th>
-                <th className="p-2.5">Department</th>
+                <th className="p-2.5">{t('remark', 'Remark')}</th>
+                <th className="p-2.5">{t('created_by', 'Created by')}</th>
+                <th className="p-2.5">{t('department', 'Department')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -488,11 +492,11 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
         <div className="bg-muted p-3 rounded-lg border border-border flex flex-wrap items-center justify-between gap-4 text-xs font-semibold">
           <div className="flex items-center gap-6">
             <div>
-              <span className="text-muted-foreground block text-[11px]">Total in $:</span>
+              <span className="text-muted-foreground block text-[11px]">{t('total_in', 'Total in $:')}</span>
               <span className="font-mono text-foreground font-bold">${netUSD.toFixed(2)}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block text-[11px]">Total in LBP:</span>
+              <span className="text-muted-foreground block text-[11px]">{t('total_in_lbp', 'Total in LBP:')}</span>
               <span className="font-mono text-foreground font-bold">{netLBP.toLocaleString()} LBP</span>
             </div>
           </div>
@@ -501,7 +505,7 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
             onClick={onClose}
             className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
           >
-            Close
+            {t('close', 'Close')}
           </button>
         </div>
       </div>
@@ -528,6 +532,7 @@ export function AddAccountModal({
   subClasses4,
   onOpenAddSubClass4
 }: AddAccountModalProps) {
+  const { t } = useLanguage();
   const [accountName, setAccountName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<AccountDetail['account_type']>('ASSET');
@@ -606,7 +611,7 @@ export function AddAccountModal({
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <Plus className="w-4 h-4 text-primary" />
-            <span>Add Account</span>
+            <span>{t('add_account', 'Add Account')}</span>
           </h4>
           <button
             type="button"
@@ -619,64 +624,64 @@ export function AddAccountModal({
 
         <div className="space-y-3 text-xs font-medium">
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Account Name *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('account_name', 'Account Name *')}</label>
             <input
               type="text"
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
-              placeholder="e.g. Special Extra Virgin Reserve"
+              placeholder={t('eg_special_extra_virgin_reserve', 'e.g. Special Extra Virgin Reserve')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-muted-foreground mb-1 block">Description</label>
+            <label className="text-muted-foreground mb-1 block">{t('description', 'Description')}</label>
             <textarea
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter functional accounting notes..."
+              placeholder={t('enter_functional_accounting_notes', 'Enter functional accounting notes...')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Type *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('type', 'Type *')}</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as any)}
                 className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               >
-                <option value="ASSET">Assets</option>
-                <option value="LIABILITY">Liabilities</option>
-                <option value="EQUITY">Equity</option>
-                <option value="REVENUE">Revenue</option>
-                <option value="EXPENSE">Expense</option>
+                <option value="ASSET">{t('assets', 'Assets')}</option>
+                <option value="LIABILITY">{t('liabilities', 'Liabilities')}</option>
+                <option value="EQUITY">{t('equity', 'Equity')}</option>
+                <option value="REVENUE">{t('revenue', 'Revenue')}</option>
+                <option value="EXPENSE">{t('expense', 'Expense')}</option>
               </select>
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Sub Type</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('sub_type', 'Sub Type')}</label>
               <select
                 value={subType}
                 onChange={(e) => setSubType(e.target.value as any)}
                 className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               >
-                <option value="OTHERS">Others</option>
-                <option value="BANK">Bank</option>
-                <option value="CASH">Cash</option>
-                <option value="CUSTOMER">Customer</option>
-                <option value="SUPPLIER">Supplier</option>
-                <option value="EMPLOYEE">Employee</option>
-                <option value="EXPENSE">Expense</option>
+                <option value="OTHERS">{t('others', 'Others')}</option>
+                <option value="BANK">{t('bank', 'Bank')}</option>
+                <option value="CASH">{t('cash', 'Cash')}</option>
+                <option value="CUSTOMER">{t('customer', 'Customer')}</option>
+                <option value="SUPPLIER">{t('supplier', 'Supplier')}</option>
+                <option value="EMPLOYEE">{t('employee', 'Employee')}</option>
+                <option value="EXPENSE">{t('expense', 'Expense')}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="text-foreground mb-1 block font-semibold flex items-center justify-between">
-              <span>Account Header *</span>
+              <span>{t('account_header', 'Account Header *')}</span>
               <button
                 type="button"
                 onClick={onOpenAddSubClass4}
@@ -701,7 +706,7 @@ export function AddAccountModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-muted-foreground mb-1 block font-medium">Class</label>
+              <label className="text-muted-foreground mb-1 block font-medium">{t('class', 'Class')}</label>
               <input
                 type="text"
                 readOnly
@@ -710,7 +715,7 @@ export function AddAccountModal({
               />
             </div>
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Account Number</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('account_number', 'Account Number')}</label>
               <input
                 type="text"
                 value={accountNumber}
@@ -727,14 +732,14 @@ export function AddAccountModal({
             onClick={onClose}
             className="bg-card hover:bg-muted text-muted-foreground px-4 py-2 rounded-lg text-xs font-semibold border border-border transition-colors cursor-pointer"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="button"
             onClick={handleSave}
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
-            Save Account
+            {t('save_account', 'Save Account')}
           </button>
         </div>
       </div>
@@ -760,6 +765,7 @@ export function AddSubClass4Modal({
   subClasses3,
   onOpenAddSubClass3
 }: AddSubClass4ModalProps) {
+  const { t } = useLanguage();
   const [accountName, setAccountName] = useState('');
   const [headerNumber, setHeaderNumber] = useState(
     `${subClasses3[0]?.account_number_ref || '5300'}0`
@@ -791,7 +797,7 @@ export function AddSubClass4Modal({
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <Plus className="w-4 h-4 text-primary" />
-            <span>Add Account Sub Classes 4</span>
+            <span>{t('add_account_sub_classes_4', 'Add Account Sub Classes 4')}</span>
           </h4>
           <button
             type="button"
@@ -804,30 +810,30 @@ export function AddSubClass4Modal({
 
         <div className="space-y-3 text-xs font-medium">
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Account Name *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('account_name', 'Account Name *')}</label>
             <input
               type="text"
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
-              placeholder="e.g. Vault Cash Reserves"
+              placeholder={t('eg_vault_cash_reserves', 'e.g. Vault Cash Reserves')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Account Header Number *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('account_header_number', 'Account Header Number *')}</label>
             <input
               type="text"
               value={headerNumber}
               onChange={(e) => setHeaderNumber(e.target.value)}
-              placeholder="e.g. 53000"
+              placeholder={t('eg_53000', 'e.g. 53000')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
           </div>
 
           <div>
             <label className="text-foreground mb-1 block font-semibold flex items-center justify-between">
-              <span>Account Sub Class 3 *</span>
+              <span>{t('account_sub_class_3', 'Account Sub Class 3 *')}</span>
               <button
                 type="button"
                 onClick={onOpenAddSubClass3}
@@ -851,17 +857,17 @@ export function AddSubClass4Modal({
           </div>
 
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Account Class Type *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('account_class_type', 'Account Class Type *')}</label>
             <select
               value={classType}
               onChange={(e) => setClassType(e.target.value as any)}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             >
-              <option value="Assets">Assets</option>
-              <option value="Expense">Expense</option>
-              <option value="Liabilities">Liabilities</option>
-              <option value="Equity">Equity</option>
-              <option value="Revenue">Revenue</option>
+              <option value="Assets">{t('assets', 'Assets')}</option>
+              <option value="Expense">{t('expense', 'Expense')}</option>
+              <option value="Liabilities">{t('liabilities', 'Liabilities')}</option>
+              <option value="Equity">{t('equity', 'Equity')}</option>
+              <option value="Revenue">{t('revenue', 'Revenue')}</option>
             </select>
           </div>
         </div>
@@ -872,14 +878,14 @@ export function AddSubClass4Modal({
             onClick={onClose}
             className="bg-card hover:bg-muted text-muted-foreground px-4 py-2 rounded-lg text-xs font-semibold border border-border transition-colors cursor-pointer"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="button"
             onClick={handleSave}
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
-            Save
+            {t('save', 'Save')}
           </button>
         </div>
       </div>
@@ -897,6 +903,7 @@ interface AddSubClass3ModalProps {
 }
 
 export function AddSubClass3Modal({ isOpen, onClose, onSave }: AddSubClass3ModalProps) {
+  const { t } = useLanguage();
   const [accountName, setAccountName] = useState('');
   const [headerNumber, setHeaderNumber] = useState('');
   const [subClass2, setSubClass2] = useState('53 - Vaults & Cash');
@@ -924,7 +931,7 @@ export function AddSubClass3Modal({ isOpen, onClose, onSave }: AddSubClass3Modal
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <Plus className="w-4 h-4 text-primary" />
-            <span>Add Account Sub Classes 3</span>
+            <span>{t('add_account_sub_classes_3', 'Add Account Sub Classes 3')}</span>
           </h4>
           <button
             type="button"
@@ -937,29 +944,29 @@ export function AddSubClass3Modal({ isOpen, onClose, onSave }: AddSubClass3Modal
 
         <div className="space-y-3 text-xs font-medium">
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Account Name *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('account_name', 'Account Name *')}</label>
             <input
               type="text"
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
-              placeholder="e.g. Cash Vaults & Petty Cash"
+              placeholder={t('eg_cash_vaults_petty_cash', 'e.g. Cash Vaults & Petty Cash')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Account Header Number *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('account_header_number', 'Account Header Number *')}</label>
             <input
               type="text"
               value={headerNumber}
               onChange={(e) => setHeaderNumber(e.target.value)}
-              placeholder="e.g. 5300"
+              placeholder={t('eg_5300', 'e.g. 5300')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Account Sub Class 2 *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('account_sub_class_2', 'Account Sub Class 2 *')}</label>
             <select
               value={subClass2}
               onChange={(e) => setSubClass2(e.target.value)}
@@ -980,14 +987,14 @@ export function AddSubClass3Modal({ isOpen, onClose, onSave }: AddSubClass3Modal
             onClick={onClose}
             className="bg-card hover:bg-muted text-muted-foreground px-4 py-2 rounded-lg text-xs font-semibold border border-border transition-colors cursor-pointer"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="button"
             onClick={handleSave}
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
-            Save
+            {t('save', 'Save')}
           </button>
         </div>
       </div>
@@ -1005,6 +1012,7 @@ interface NewPaymentTermModalProps {
 }
 
 export function NewPaymentTermModal({ isOpen, onClose, onSave }: NewPaymentTermModalProps) {
+  const { t } = useLanguage();
   const [description, setDescription] = useState('');
   const [days, setDays] = useState(30);
 
@@ -1014,7 +1022,7 @@ export function NewPaymentTermModal({ isOpen, onClose, onSave }: NewPaymentTermM
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
       <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-sm p-5 space-y-4">
         <div className="flex items-center justify-between border-b border-border pb-3">
-          <h4 className="font-bold text-sm text-foreground">New Payment Term</h4>
+          <h4 className="font-bold text-sm text-foreground">{t('new_payment_term', 'New Payment Term')}</h4>
           <button
             type="button"
             onClick={onClose}
@@ -1026,18 +1034,18 @@ export function NewPaymentTermModal({ isOpen, onClose, onSave }: NewPaymentTermM
 
         <div className="space-y-3 text-xs font-medium">
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Description *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('description', 'Description *')}</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Net 45 Days"
+              placeholder={t('eg_net_45_days', 'e.g. Net 45 Days')}
               className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
             />
           </div>
 
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Nb. Of Days *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('nb_of_days', 'Nb. Of Days *')}</label>
             <input
               type="number"
               value={days}
@@ -1054,7 +1062,7 @@ export function NewPaymentTermModal({ isOpen, onClose, onSave }: NewPaymentTermM
             onClick={onClose}
             className="bg-card hover:bg-muted text-muted-foreground px-4 py-1.5 rounded-lg text-xs font-semibold border border-border transition-colors cursor-pointer"
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="button"
@@ -1068,7 +1076,7 @@ export function NewPaymentTermModal({ isOpen, onClose, onSave }: NewPaymentTermM
             }}
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-xs"
           >
-            Save
+            {t('save', 'Save')}
           </button>
         </div>
       </div>

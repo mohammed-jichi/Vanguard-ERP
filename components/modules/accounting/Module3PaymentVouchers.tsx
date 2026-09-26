@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 3: Accounting Payment (PV)
@@ -48,6 +49,7 @@ export function Module3PaymentVouchers({
   onShowToast,
   prefillPayToAccount
 }: Module3PaymentVouchersProps) {
+  const { t } = useLanguage();
   // Card 1: Accounts (Strict Lebanese PCG standard)
   const supplierAccounts = useMemo(
     () => {
@@ -271,7 +273,7 @@ export function Module3PaymentVouchers({
               <span>Accounting Payment (PV Workstation)</span>
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Issue supplier disbursements and credit payments with live balance synchronization
+              {t('issue_supplier_disbursements_and_credit', 'Issue supplier disbursements and credit payments with live balance synchronization')}
             </p>
           </div>
 
@@ -293,7 +295,7 @@ export function Module3PaymentVouchers({
               className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <Eye className="w-3.5 h-3.5 text-muted-foreground" />
-              <span>Preview</span>
+              <span>{t('preview', 'Preview')}</span>
             </button>
 
             {/* Supporting Document */}
@@ -303,7 +305,7 @@ export function Module3PaymentVouchers({
               className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <Upload className="w-3.5 h-3.5 text-primary" />
-              <span>Supporting Document</span>
+              <span>{t('supporting_document', 'Supporting Document')}</span>
             </button>
           </div>
         </div>
@@ -313,13 +315,13 @@ export function Module3PaymentVouchers({
           {/* CARD 1 (ACCOUNTS) */}
           <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-3.5 text-xs font-medium">
             <div className="flex items-center justify-between border-b border-border pb-2">
-              <span className="font-bold text-foreground">Card 1: Accounts</span>
+              <span className="font-bold text-foreground">{t('card_1_accounts', 'Card 1: Accounts')}</span>
               <span className="text-[10px] font-mono text-muted-foreground">Beneficiary &amp; Vault</span>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-foreground font-semibold">Pay To *</label>
+                <label className="text-foreground font-semibold">{t('pay_to', 'Pay To *')}</label>
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
@@ -328,7 +330,7 @@ export function Module3PaymentVouchers({
                     title="Quick-Add New Supplier Account (#40110...)"
                   >
                     <Plus className="w-2.5 h-2.5" />
-                    <span>New Supplier</span>
+                    <span>{t('new_supplier', 'New Supplier')}</span>
                   </button>
                   {/* Live balance badge */}
                   <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-border">
@@ -361,7 +363,7 @@ export function Module3PaymentVouchers({
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-foreground block font-semibold">From Account *</label>
+                <label className="text-foreground block font-semibold">{t('from_account', 'From Account *')}</label>
                 <button
                   type="button"
                   onClick={() => setQuickAddModal({ isOpen: true, presetType: 'DISBURSING', targetField: 'DISBURSING' })}
@@ -369,7 +371,7 @@ export function Module3PaymentVouchers({
                   title="Quick-Add New Cash Vault or Bank (#53xxx / #51xxx)"
                 >
                   <Plus className="w-2.5 h-2.5" />
-                  <span>New Vault/Bank</span>
+                  <span>{t('new_vaultbank', 'New Vault/Bank')}</span>
                 </button>
               </div>
               <div className="flex items-center gap-1">
@@ -399,28 +401,28 @@ export function Module3PaymentVouchers({
           {/* CARD 2 (NOTES) */}
           <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-3.5 text-xs font-medium">
             <div className="flex items-center justify-between border-b border-border pb-2">
-              <span className="font-bold text-foreground">Card 2: Notes</span>
+              <span className="font-bold text-foreground">{t('card_2_notes', 'Card 2: Notes')}</span>
               <span className="text-[10px] font-mono text-muted-foreground">Description &amp; Memo</span>
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">JV Description *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('jv_description', 'JV Description *')}</label>
               <textarea
                 rows={2}
                 value={jvDescription}
                 onChange={(e) => setJvDescription(e.target.value)}
-                placeholder="Payment memo for bank ledger and supplier receipt..."
+                placeholder={t('payment_memo_for_bank_ledger_and', 'Payment memo for bank ledger and supplier receipt...')}
                 className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs"
               />
             </div>
 
             <div>
-              <label className="text-muted-foreground mb-1 block font-medium">Internal Note</label>
+              <label className="text-muted-foreground mb-1 block font-medium">{t('internal_note', 'Internal Note')}</label>
               <textarea
                 rows={2}
                 value={internalNote}
                 onChange={(e) => setInternalNote(e.target.value)}
-                placeholder="Private remarks, approval log..."
+                placeholder={t('private_remarks_approval_log', 'Private remarks, approval log...')}
                 className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs text-xs"
               />
             </div>
@@ -429,12 +431,12 @@ export function Module3PaymentVouchers({
           {/* CARD 3 (EXECUTION DETAILS) */}
           <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-3.5 text-xs font-medium">
             <div className="flex items-center justify-between border-b border-border pb-2">
-              <span className="font-bold text-foreground">Card 3: Execution Details</span>
+              <span className="font-bold text-foreground">{t('card_3_execution_details', 'Card 3: Execution Details')}</span>
               <span className="text-[10px] font-mono text-muted-foreground">Date &amp; Dept</span>
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Payment Date</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('payment_date', 'Payment Date')}</label>
               <input
                 type="date"
                 value={paymentDate}
@@ -444,7 +446,7 @@ export function Module3PaymentVouchers({
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">For Department *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('for_department', 'For Department *')}</label>
               <select
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
@@ -452,7 +454,7 @@ export function Module3PaymentVouchers({
               >
                 <option value="Executive & Administration">Executive &amp; Administration</option>
                 <option value="Mill & Production">Mill &amp; Production</option>
-                <option value="Commercial Sales">Commercial Sales</option>
+                <option value="Commercial Sales">{t('commercial_sales', 'Commercial Sales')}</option>
                 <option value="Packaging & Bottling">Packaging &amp; Bottling</option>
               </select>
             </div>
@@ -465,7 +467,7 @@ export function Module3PaymentVouchers({
                   onChange={(e) => setPayByInvoices(e.target.checked)}
                   className="rounded border-input text-primary focus:ring-primary h-4 w-4"
                 />
-                <span>Pay by invoices</span>
+                <span>{t('pay_by_invoices', 'Pay by invoices')}</span>
               </label>
             </div>
           </div>
@@ -477,7 +479,7 @@ export function Module3PaymentVouchers({
         <div className="border-t border-border pt-4 space-y-4">
           {/* Payment Mode Radios */}
           <div className="flex items-center gap-6 text-xs font-semibold">
-            <span className="text-muted-foreground">Payment Mode:</span>
+            <span className="text-muted-foreground">{t('payment_mode', 'Payment Mode:')}</span>
             <label className="flex items-center gap-1.5 cursor-pointer">
               <input
                 type="radio"
@@ -506,7 +508,7 @@ export function Module3PaymentVouchers({
           {/* Payment Values Row */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs font-medium">
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Currency *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('currency', 'Currency *')}</label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value as any)}
@@ -518,7 +520,7 @@ export function Module3PaymentVouchers({
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Amount Paid</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('amount_paid', 'Amount Paid')}</label>
               <input
                 type="number"
                 value={amountPaid || ''}
@@ -530,12 +532,12 @@ export function Module3PaymentVouchers({
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Reference #</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('reference', 'Reference #')}</label>
               <input
                 type="text"
                 value={referenceNumber}
                 onChange={(e) => setReferenceNumber(e.target.value)}
-                placeholder="e.g. CHQ-991204 / WIRE-88"
+                placeholder={t('eg_chq991204_wire88', 'e.g. CHQ-991204 / WIRE-88')}
                 className="w-full bg-card border border-input rounded-lg p-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               />
             </div>
@@ -550,7 +552,7 @@ export function Module3PaymentVouchers({
               </div>
 
               <div className="bg-card px-3.5 py-1.5 rounded-lg border border-border shadow-2xs">
-                <span className="text-muted-foreground block text-[11px]">Total Payment:</span>
+                <span className="text-muted-foreground block text-[11px]">{t('total_payment', 'Total Payment:')}</span>
                 <span className="font-mono text-emerald-700 text-sm font-bold">{totalPaymentFormatted}</span>
               </div>
             </div>
@@ -589,7 +591,7 @@ export function Module3PaymentVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Eye className="w-4 h-4 text-primary" />
-                <span>Preview Payment Vouchers</span>
+                <span>{t('preview_payment_vouchers', 'Preview Payment Vouchers')}</span>
               </h4>
               <button
                 type="button"
@@ -607,7 +609,7 @@ export function Module3PaymentVouchers({
                 type="text"
                 value={previewSearch}
                 onChange={(e) => setPreviewSearch(e.target.value)}
-                placeholder="Search by account name..."
+                placeholder={t('search_by_account_name', 'Search by account name...')}
                 className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               />
             </div>
@@ -617,15 +619,15 @@ export function Module3PaymentVouchers({
               <table className="w-full text-left text-xs">
                 <thead className="sticky top-0 bg-muted border-b border-border text-foreground font-semibold">
                   <tr>
-                    <th className="p-2.5">Date</th>
-                    <th className="p-2.5">To Account</th>
-                    <th className="p-2.5">PV</th>
-                    <th className="p-2.5">Date Of PV</th>
+                    <th className="p-2.5">{t('date', 'Date')}</th>
+                    <th className="p-2.5">{t('to_account', 'To Account')}</th>
+                    <th className="p-2.5">{t('pv', 'PV')}</th>
+                    <th className="p-2.5">{t('date_of_pv', 'Date Of PV')}</th>
                     <th className="p-2.5 text-right">Amount ($)</th>
-                    <th className="p-2.5 min-w-[180px]">Description</th>
-                    <th className="p-2.5">Entered By</th>
-                    <th className="p-2.5">Department</th>
-                    <th className="p-2.5 text-center">Posted</th>
+                    <th className="p-2.5 min-w-[180px]">{t('description', 'Description')}</th>
+                    <th className="p-2.5">{t('entered_by', 'Entered By')}</th>
+                    <th className="p-2.5">{t('department', 'Department')}</th>
+                    <th className="p-2.5 text-center">{t('posted', 'Posted')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -646,11 +648,11 @@ export function Module3PaymentVouchers({
                         <td className="p-2.5 text-center">
                           {r.posted ? (
                             <span className="bg-card text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Yes
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> {t('yes', 'Yes')}
                             </span>
                           ) : (
                             <span className="bg-card text-amber-700 border border-amber-300 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
-                              Draft
+                              {t('draft', 'Draft')}
                             </span>
                           )}
                         </td>
@@ -673,7 +675,7 @@ export function Module3PaymentVouchers({
                 onClick={() => setShowPreviewModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>

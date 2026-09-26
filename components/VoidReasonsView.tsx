@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
@@ -28,6 +29,7 @@ interface ToastState {
 }
 
 export default function VoidReasonsView() {
+  const { t } = useLanguage();
   const { currentTenant } = useTenant();
   const [voidReasons, setVoidReasons] = useState<OmegaVoidReason[]>(INITIAL_VOID_REASONS);
 
@@ -313,16 +315,16 @@ export default function VoidReasonsView() {
       {/* PAGE HEADER */}
       <div className="px-6 pt-5 pb-3">
         <h1 className="text-xl font-bold text-slate-900 tracking-tight mb-1">
-          Void Reasons
+          {t('void_reasons', 'Void Reasons')}
         </h1>
         <ul className="flex items-center gap-1.5 text-xs text-slate-500">
           <li>
             <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
-              Home
+              {t('home', 'Home')}
             </Link>
           </li>
           <li>/</li>
-          <li className="text-slate-800 font-medium">Void Reasons</li>
+          <li className="text-slate-800 font-medium">{t('void_reasons', 'Void Reasons')}</li>
         </ul>
       </div>
 
@@ -336,7 +338,7 @@ export default function VoidReasonsView() {
               <div className="col-span-12 md:col-span-4 relative">
                 <input
                   type="search"
-                  placeholder="Search..."
+                  placeholder={t('search', 'Search...')}
                   value={searchVal}
                   onChange={(e) => setSearchVal(e.target.value)}
                   className="w-full text-xs font-normal bg-white border border-slate-300 rounded py-2 pl-9 pr-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
@@ -351,7 +353,7 @@ export default function VoidReasonsView() {
                   onChange={(e) => setSelectedBranchId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                   className="w-full text-xs font-normal bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer"
                 >
-                  <option value="all">All Branches</option>
+                  <option value="all">{t('all_branches', 'All Branches')}</option>
                   {OMEGA_BRANCHES.map(b => (
                     <option key={b.BRANCHID} value={b.BRANCHID}>
                       {b.BARANCHNAME}
@@ -368,7 +370,7 @@ export default function VoidReasonsView() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary hover:bg-primary text-white text-xs font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>New</span>
+                  <span>{t('new', 'New')}</span>
                 </button>
               </div>
             </div>
@@ -394,18 +396,18 @@ export default function VoidReasonsView() {
                     className="py-2.5 px-4 font-semibold cursor-pointer hover:bg-slate-50 transition-colors select-none"
                   >
                     <div className="flex items-center gap-1">
-                      <span>Description</span>
+                      <span>{t('description', 'Description')}</span>
                       <ArrowUpDown className="w-3 h-3 text-slate-400" />
                     </div>
                   </th>
                   <th className="py-2.5 px-4 font-semibold text-center" style={{ width: '160px' }}>
-                    Branch Restrictions
+                    {t('branch_restrictions', 'Branch Restrictions')}
                   </th>
                   <th className="py-2.5 px-4 font-semibold text-center" style={{ width: '120px' }}>
-                    Status
+                    {t('status', 'Status')}
                   </th>
                   <th className="py-2.5 px-4 font-semibold text-end" style={{ width: '110px' }}>
-                    Actions
+                    {t('actions', 'Actions')}
                   </th>
                 </tr>
               </thead>
@@ -413,7 +415,7 @@ export default function VoidReasonsView() {
                 {filteredList.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-slate-400 font-medium">
-                      No void reasons found.
+                      {t('no_void_reasons_found', 'No void reasons found.')}
                     </td>
                   </tr>
                 ) : (
@@ -426,13 +428,13 @@ export default function VoidReasonsView() {
                     >
                       <td className="py-2.5 px-4 font-mono text-slate-600">{row.VOIDID}</td>
                       <td className="py-2.5 px-4 font-medium text-slate-900">
-                        {row.VOIDDESCRIPTION || <span className="text-slate-400 italic">No description</span>}
+                        {row.VOIDDESCRIPTION || <span className="text-slate-400 italic">{t('no_description', 'No description')}</span>}
                       </td>
                       <td className="py-2.5 px-4 text-center">
                         {row.branch_excp && row.branch_excp.length > 0 ? (
                           <span
                             className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200"
-                            title="Branch Restrictions"
+                            title={t('branch_restrictions', 'Branch Restrictions')}
                           >
                             {row.branch_excp.length} Restricted
                           </span>
@@ -443,11 +445,11 @@ export default function VoidReasonsView() {
                       <td className="py-2.5 px-4 text-center">
                         {row.DISCONTINUED === -1 ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-                            <Ban className="w-2.5 h-2.5" /> Discontinued
+                            <Ban className="w-2.5 h-2.5" /> {t('discontinued', 'Discontinued')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                            Active
+                            {t('active', 'Active')}
                           </span>
                         )}
                       </td>
@@ -456,7 +458,7 @@ export default function VoidReasonsView() {
                           <button
                             type="button"
                             onClick={() => openEditModal(row)}
-                            title="Edit Void Reason"
+                            title={t('edit_void_reason', 'Edit Void Reason')}
                             className="p-1 rounded bg-primary hover:bg-primary text-white transition-colors cursor-pointer"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -464,7 +466,7 @@ export default function VoidReasonsView() {
                           <button
                             type="button"
                             onClick={() => setDeleteTarget(row)}
-                            title="Delete Void Reason"
+                            title={t('delete_void_reason', 'Delete Void Reason')}
                             className="p-1 rounded bg-destructive hover:bg-destructive text-white transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -481,7 +483,7 @@ export default function VoidReasonsView() {
           {/* FOOTER PAGINATOR INFO */}
           <div className="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
             <span>Showing {filteredList.length} of {voidReasons.length} void reasons</span>
-            <span className="font-mono text-[11px]">Page 1 of 1</span>
+            <span className="font-mono text-[11px]">{t('page_1_of_1', 'Page 1 of 1')}</span>
           </div>
         </div>
       </div>
@@ -494,7 +496,7 @@ export default function VoidReasonsView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden animate-scaleUp">
             {/* Modal Header */}
             <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between">
-              <h2 className="text-sm font-semibold tracking-wide">New Void Reason</h2>
+              <h2 className="text-sm font-semibold tracking-wide">{t('new_void_reason', 'New Void Reason')}</h2>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
@@ -508,7 +510,7 @@ export default function VoidReasonsView() {
             <form onSubmit={handleSaveAdd} className="p-5 space-y-4 text-xs">
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">
-                  Void Description <span className="text-rose-600">*</span>
+                  {t('void_description', 'Void Description')} <span className="text-rose-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -516,7 +518,7 @@ export default function VoidReasonsView() {
                   autoFocus
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  placeholder="e.g. COLD, DELAY, CHANGE HIS MIND..."
+                  placeholder={t('eg_cold_delay_change_his_mind', 'e.g. COLD, DELAY, CHANGE HIS MIND...')}
                   className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
               </div>
@@ -530,13 +532,13 @@ export default function VoidReasonsView() {
                   className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer w-4 h-4"
                 />
                 <label htmlFor="newVoidDiscontinued" className="text-slate-700 font-medium cursor-pointer">
-                  Discontinued
+                  {t('discontinued', 'Discontinued')}
                 </label>
               </div>
 
               {/* Branch Restrictions */}
               <div className="border border-slate-200 rounded p-3 bg-slate-50/50">
-                <div className="font-semibold text-slate-800 mb-2">Branch Restrictions</div>
+                <div className="font-semibold text-slate-800 mb-2">{t('branch_restrictions', 'Branch Restrictions')}</div>
                 <div className="space-y-1.5">
                   {OMEGA_BRANCHES.map(branch => (
                     <label key={branch.BRANCHID} className="flex items-center gap-2 cursor-pointer text-slate-700">
@@ -564,14 +566,14 @@ export default function VoidReasonsView() {
                   onClick={() => setShowAddModal(false)}
                   className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -587,7 +589,7 @@ export default function VoidReasonsView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden animate-scaleUp">
             {/* Modal Header */}
             <div className="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between">
-              <h2 className="text-sm font-semibold tracking-wide">Edit Void Reason</h2>
+              <h2 className="text-sm font-semibold tracking-wide">{t('edit_void_reason', 'Edit Void Reason')}</h2>
               <button
                 type="button"
                 onClick={() => { setShowEditModal(false); setEditingRow(null); }}
@@ -601,7 +603,7 @@ export default function VoidReasonsView() {
             <form onSubmit={handleSaveEdit} className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-3">
-                  <label className="block text-slate-700 font-semibold mb-1">Id</label>
+                  <label className="block text-slate-700 font-semibold mb-1">{t('id', 'Id')}</label>
                   <input
                     type="text"
                     disabled
@@ -611,7 +613,7 @@ export default function VoidReasonsView() {
                 </div>
                 <div className="col-span-9">
                   <label className="block text-slate-700 font-semibold mb-1">
-                    Void Description <span className="text-rose-600">*</span>
+                    {t('void_description', 'Void Description')} <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -633,13 +635,13 @@ export default function VoidReasonsView() {
                   className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer w-4 h-4"
                 />
                 <label htmlFor="editVoidDiscontinued" className="text-slate-700 font-medium cursor-pointer">
-                  Discontinued
+                  {t('discontinued', 'Discontinued')}
                 </label>
               </div>
 
               {/* Branch Restrictions */}
               <div className="border border-slate-200 rounded p-3 bg-slate-50/50">
-                <div className="font-semibold text-slate-800 mb-2">Branch Restrictions</div>
+                <div className="font-semibold text-slate-800 mb-2">{t('branch_restrictions', 'Branch Restrictions')}</div>
                 <div className="space-y-1.5">
                   {OMEGA_BRANCHES.map(branch => (
                     <label key={branch.BRANCHID} className="flex items-center gap-2 cursor-pointer text-slate-700">
@@ -667,14 +669,14 @@ export default function VoidReasonsView() {
                   onClick={() => { setShowEditModal(false); setEditingRow(null); }}
                   className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-primary text-white font-semibold rounded shadow-xs transition-colors cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
-                  <span>Save</span>
+                  <span>{t('save', 'Save')}</span>
                 </button>
               </div>
             </form>
@@ -690,7 +692,7 @@ export default function VoidReasonsView() {
           <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden animate-scaleUp">
             <div className="p-5">
               <p className="text-sm font-medium text-slate-800">
-                Are you sure you want to delete this void reason ?
+                {t('are_you_sure_you_want_to_delete_this', 'Are you sure you want to delete this void reason ?')}
               </p>
               <div className="mt-2 text-xs text-slate-500 font-mono">
                 {deleteTarget.VOIDID} - {deleteTarget.VOIDDESCRIPTION}
@@ -702,14 +704,14 @@ export default function VoidReasonsView() {
                 onClick={() => setDeleteTarget(null)}
                 className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-200 transition-colors font-medium cursor-pointer"
               >
-                Cancel
+                {t('cancel', 'Cancel')}
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
                 className="px-4 py-1.5 bg-primary hover:bg-primary text-white rounded font-semibold transition-colors cursor-pointer shadow-xs"
               >
-                OK
+                {t('ok', 'OK')}
               </button>
             </div>
           </div>

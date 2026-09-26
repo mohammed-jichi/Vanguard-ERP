@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 4: Accounting Receipt (RV)
@@ -59,6 +60,7 @@ export function Module4ReceiptVouchers({
   prefillFromAccount,
   prefillMemo
 }: Module4ReceiptVouchersProps) {
+  const { t } = useLanguage();
   // Account groupings (Strict Lebanese PCG standard)
   const clientAccounts = useMemo(
     () =>
@@ -278,7 +280,7 @@ export function Module4ReceiptVouchers({
             <span>Accounting Receipt (RV Workstation)</span>
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Collect receivables from clients, allocate bank/cash vaults, and issue certified official receipts
+            {t('collect_receivables_from_clients', 'Collect receivables from clients, allocate bank/cash vaults, and issue certified official receipts')}
           </p>
         </div>
 
@@ -289,7 +291,7 @@ export function Module4ReceiptVouchers({
             className="bg-card hover:bg-muted text-foreground border border-border px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
           >
             <Eye className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>Preview</span>
+            <span>{t('preview', 'Preview')}</span>
           </button>
 
           <a
@@ -301,7 +303,7 @@ export function Module4ReceiptVouchers({
             className="text-primary hover:underline text-xs font-semibold flex items-center gap-1 px-2 py-1.5"
           >
             <Video className="w-3.5 h-3.5" />
-            <span>Watch Tutorial</span>
+            <span>{t('watch_tutorial', 'Watch Tutorial')}</span>
           </a>
         </div>
       </div>
@@ -314,7 +316,7 @@ export function Module4ReceiptVouchers({
         <div className="bg-card border border-border rounded-xl p-5 shadow-xs space-y-3.5 text-xs font-medium">
           <div className="flex items-center justify-between border-b border-border pb-2.5">
             <h4 className="font-bold text-foreground flex items-center gap-2">
-              <span>Financial Entries</span>
+              <span>{t('financial_entries', 'Financial Entries')}</span>
             </h4>
             <span className="text-[10px] font-mono text-muted-foreground">Debtor &amp; Collection</span>
           </div>
@@ -322,7 +324,7 @@ export function Module4ReceiptVouchers({
           {/* From Accounts * (Searchable dropdown/picker) */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-foreground font-semibold">From Accounts *</label>
+              <label className="text-foreground font-semibold">{t('from_accounts', 'From Accounts *')}</label>
               <span className="text-[10px] font-mono text-muted-foreground">
                 Balance: ${liveClientBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
@@ -344,7 +346,7 @@ export function Module4ReceiptVouchers({
           {/* To Account * (Vault/Bank account - Class 5) */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-foreground font-semibold">To Account *</label>
+              <label className="text-foreground font-semibold">{t('to_account', 'To Account *')}</label>
               <button
                 type="button"
                 onClick={() => setShowQuickAddModal(true)}
@@ -352,7 +354,7 @@ export function Module4ReceiptVouchers({
                 title="Quick-Add New Cash Vault or Bank (#53xxx / #51xxx)"
               >
                 <Plus className="w-2.5 h-2.5" />
-                <span>New Vault/Bank</span>
+                <span>{t('new_vaultbank', 'New Vault/Bank')}</span>
               </button>
             </div>
             <div className="flex items-center gap-1">
@@ -381,7 +383,7 @@ export function Module4ReceiptVouchers({
           {/* Amount & Currency */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Amount *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('amount', 'Amount *')}</label>
               <input
                 type="number"
                 value={amount || ''}
@@ -393,7 +395,7 @@ export function Module4ReceiptVouchers({
             </div>
 
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Currency *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('currency', 'Currency *')}</label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value as any)}
@@ -407,7 +409,7 @@ export function Module4ReceiptVouchers({
 
           {/* Check # */}
           <div>
-            <label className="text-muted-foreground mb-1 block font-medium">Check #</label>
+            <label className="text-muted-foreground mb-1 block font-medium">{t('check', 'Check #')}</label>
             <input
               type="text"
               value={checkNumber}
@@ -419,7 +421,7 @@ export function Module4ReceiptVouchers({
 
           {/* Description* */}
           <div>
-            <label className="text-foreground mb-1 block font-semibold">Description *</label>
+            <label className="text-foreground mb-1 block font-semibold">{t('description', 'Description *')}</label>
             <input
               type="text"
               value={description}
@@ -435,12 +437,12 @@ export function Module4ReceiptVouchers({
           <div className="space-y-3.5">
             <div className="flex items-center justify-between border-b border-border pb-2.5">
               <h4 className="font-bold text-foreground">Classification &amp; Trigger</h4>
-              <span className="text-[10px] font-mono text-muted-foreground">Allocation Engine</span>
+              <span className="text-[10px] font-mono text-muted-foreground">{t('allocation_engine', 'Allocation Engine')}</span>
             </div>
 
             {/* Date */}
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Date</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('date', 'Date')}</label>
               <input
                 type="date"
                 value={date}
@@ -451,7 +453,7 @@ export function Module4ReceiptVouchers({
 
             {/* Department * */}
             <div>
-              <label className="text-foreground mb-1 block font-semibold">Department *</label>
+              <label className="text-foreground mb-1 block font-semibold">{t('department', 'Department *')}</label>
               <select
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
@@ -459,7 +461,7 @@ export function Module4ReceiptVouchers({
               >
                 <option value="Commercial Sales & Retail">Commercial Sales &amp; Retail</option>
                 <option value="Executive & Administration">Executive &amp; Administration</option>
-                <option value="Mill Operations">Mill Operations</option>
+                <option value="Mill Operations">{t('mill_operations', 'Mill Operations')}</option>
               </select>
             </div>
 
@@ -472,7 +474,7 @@ export function Module4ReceiptVouchers({
                   onChange={(e) => setPayByInvoices(e.target.checked)}
                   className="rounded border-input text-primary focus:ring-primary h-4 w-4"
                 />
-                <span>Pay by invoices</span>
+                <span>{t('pay_by_invoices', 'Pay by invoices')}</span>
               </label>
 
               <label className="flex items-center gap-2 font-semibold text-foreground cursor-pointer select-none">
@@ -495,7 +497,7 @@ export function Module4ReceiptVouchers({
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
             >
               <Plus className="w-4 h-4" />
-              <span>Add to Allocation Grid</span>
+              <span>{t('add_to_allocation_grid', 'Add to Allocation Grid')}</span>
             </button>
           </div>
         </div>
@@ -512,10 +514,10 @@ export function Module4ReceiptVouchers({
                 <th className="p-2.5">From Account (Client)</th>
                 <th className="p-2.5">To Account (Deposit)</th>
                 <th className="p-2.5 text-right">Amount ($)</th>
-                <th className="p-2.5">Check #</th>
-                <th className="p-2.5 min-w-[200px]">Description</th>
-                <th className="p-2.5">Department</th>
-                <th className="p-2.5 text-center w-14">Action</th>
+                <th className="p-2.5">{t('check', 'Check #')}</th>
+                <th className="p-2.5 min-w-[200px]">{t('description', 'Description')}</th>
+                <th className="p-2.5">{t('department', 'Department')}</th>
+                <th className="p-2.5 text-center w-14">{t('action', 'Action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border font-medium">
@@ -541,7 +543,7 @@ export function Module4ReceiptVouchers({
                         type="button"
                         onClick={() => handleDeleteLine(l.id)}
                         className="text-muted-foreground hover:text-destructive p-1 rounded transition-colors cursor-pointer"
-                        title="Delete Item"
+                        title={t('delete_item', 'Delete Item')}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -558,21 +560,21 @@ export function Module4ReceiptVouchers({
           {/* Badges: Total Balance $ | Total Balance LBP | Total Payment */}
           <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
             <div className="bg-card px-3.5 py-1.5 rounded-lg border border-border shadow-2xs">
-              <span className="text-muted-foreground block text-[11px]">Total Balance $:</span>
+              <span className="text-muted-foreground block text-[11px]">{t('total_balance', 'Total Balance $:')}</span>
               <span className="font-mono text-foreground text-sm font-bold">
                 ${totalBalanceUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
             </div>
 
             <div className="bg-card px-3.5 py-1.5 rounded-lg border border-border shadow-2xs">
-              <span className="text-muted-foreground block text-[11px]">Total Balance LBP:</span>
+              <span className="text-muted-foreground block text-[11px]">{t('total_balance_lbp', 'Total Balance LBP:')}</span>
               <span className="font-mono text-foreground text-sm font-bold">
                 {totalBalanceLBP.toLocaleString()} LBP
               </span>
             </div>
 
             <div className="bg-card px-3.5 py-1.5 rounded-lg border border-border shadow-2xs">
-              <span className="text-muted-foreground block text-[11px]">Total Payment:</span>
+              <span className="text-muted-foreground block text-[11px]">{t('total_payment', 'Total Payment:')}</span>
               <span className="font-mono text-emerald-700 text-sm font-bold">
                 ${totalPayment.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </span>
@@ -610,7 +612,7 @@ export function Module4ReceiptVouchers({
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <Eye className="w-4 h-4 text-primary" />
-                <span>Preview Receipt Vouchers</span>
+                <span>{t('preview_receipt_vouchers', 'Preview Receipt Vouchers')}</span>
               </h4>
               <button
                 type="button"
@@ -627,7 +629,7 @@ export function Module4ReceiptVouchers({
                 type="text"
                 value={previewSearch}
                 onChange={(e) => setPreviewSearch(e.target.value)}
-                placeholder="Search by customer..."
+                placeholder={t('search_by_customer', 'Search by customer...')}
                 className="w-full bg-card border border-input rounded-lg pl-8 pr-2.5 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
               />
             </div>
@@ -636,12 +638,12 @@ export function Module4ReceiptVouchers({
               <table className="w-full text-left text-xs">
                 <thead className="sticky top-0 bg-muted border-b border-border text-foreground font-semibold">
                   <tr>
-                    <th className="p-2.5">Date</th>
-                    <th className="p-2.5">From Account</th>
-                    <th className="p-2.5">RV #</th>
+                    <th className="p-2.5">{t('date', 'Date')}</th>
+                    <th className="p-2.5">{t('from_account', 'From Account')}</th>
+                    <th className="p-2.5">{t('rv', 'RV #')}</th>
                     <th className="p-2.5 text-right">Amount ($)</th>
-                    <th className="p-2.5 min-w-[180px]">Description</th>
-                    <th className="p-2.5 text-center">Posted</th>
+                    <th className="p-2.5 min-w-[180px]">{t('description', 'Description')}</th>
+                    <th className="p-2.5 text-center">{t('posted', 'Posted')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -664,11 +666,11 @@ export function Module4ReceiptVouchers({
                         <td className="p-2.5 text-center">
                           {r.posted ? (
                             <span className="bg-card text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Yes
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" /> {t('yes', 'Yes')}
                             </span>
                           ) : (
                             <span className="bg-card text-amber-700 border border-amber-300 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
-                              Draft
+                              {t('draft', 'Draft')}
                             </span>
                           )}
                         </td>
@@ -698,7 +700,7 @@ export function Module4ReceiptVouchers({
                 onClick={() => setShowPreviewModal(false)}
                 className="bg-card hover:bg-muted text-foreground border border-border px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer"
               >
-                Close
+                {t('close', 'Close')}
               </button>
             </div>
           </div>

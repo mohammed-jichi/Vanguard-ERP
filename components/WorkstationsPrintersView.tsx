@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -40,6 +41,7 @@ interface ToastState {
 }
 
 export default function WorkstationsPrintersView() {
+  const { t } = useLanguage();
   const { currentTenant } = useTenant();
   const [activeTab, setActiveTab] = useState<'workstations' | 'printers'>('workstations');
   const [selectedBranchId, setSelectedBranchId] = useState<number>(1);
@@ -451,13 +453,13 @@ export default function WorkstationsPrintersView() {
       <div className="max-w-7xl mx-auto space-y-4">
         {/* Title and Breadcrumb */}
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Device Preferences</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">{t('device_preferences', 'Device Preferences')}</h1>
           <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 mt-1">
             <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
-              Home
+              {t('home', 'Home')}
             </Link>
             <span>/</span>
-            <span className="text-slate-800 font-semibold">Device Preferences</span>
+            <span className="text-slate-800 font-semibold">{t('device_preferences', 'Device Preferences')}</span>
           </nav>
         </div>
 
@@ -465,7 +467,7 @@ export default function WorkstationsPrintersView() {
         <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
           <div className="w-full sm:w-80">
             <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
-              Select Branch
+              {t('select_branch', 'Select Branch')}
             </label>
             <select
               value={selectedBranchId}
@@ -515,16 +517,16 @@ export default function WorkstationsPrintersView() {
                 <thead className="bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wider select-none">
                   <tr>
                     <th className="px-4 py-3 w-16">#</th>
-                    <th className="px-4 py-3">Workstation</th>
-                    <th className="px-4 py-3">Device</th>
-                    <th className="px-4 py-3">Type Tag</th>
+                    <th className="px-4 py-3">{t('workstation', 'Workstation')}</th>
+                    <th className="px-4 py-3">{t('device', 'Device')}</th>
+                    <th className="px-4 py-3">{t('type_tag', 'Type Tag')}</th>
                     <th className="px-4 py-3 text-right">
                       <button
                         type="button"
                         onClick={handleOpenAddWorkstation}
                         className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded text-xs font-semibold inline-flex items-center gap-1 shadow-xs transition-colors"
                       >
-                        <Plus className="w-3.5 h-3.5 stroke-[2.2]" /> Add New
+                        <Plus className="w-3.5 h-3.5 stroke-[2.2]" /> {t('add_new', 'Add New')}
                       </button>
                     </th>
                   </tr>
@@ -552,21 +554,21 @@ export default function WorkstationsPrintersView() {
                         <td className="px-4 py-3">
                           {isCloud && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                              POS Cloud
+                              {t('pos_cloud', 'POS Cloud')}
                             </span>
                           )}
                           {isKitchen && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-orange-50 text-orange-800 border border-orange-200">
-                              Kitchen Monitor
+                              {t('kitchen_monitor', 'Kitchen Monitor')}
                             </span>
                           )}
                           {isInventory && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
-                              Inventory
+                              {t('inventory', 'Inventory')}
                             </span>
                           )}
                           {!isCloud && !isKitchen && !isInventory && (
-                            <span className="text-slate-400 text-xs">Standard POS</span>
+                            <span className="text-slate-400 text-xs">{t('standard_pos', 'Standard POS')}</span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -575,7 +577,7 @@ export default function WorkstationsPrintersView() {
                               type="button"
                               onClick={() => handleOpenEditWorkstation(row)}
                               className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-2xs border border-blue-200 hover:border-blue-600"
-                              title="Edit Workstation"
+                              title={t('edit_workstation', 'Edit Workstation')}
                             >
                               <Pencil className="w-4 h-4 stroke-[2.2]" />
                             </button>
@@ -583,7 +585,7 @@ export default function WorkstationsPrintersView() {
                               type="button"
                               onClick={() => handleDeleteWorkstation(row)}
                               className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-2xs border border-red-200 hover:border-red-600"
-                              title="Delete Workstation"
+                              title={t('delete_workstation', 'Delete Workstation')}
                             >
                               <Trash2 className="w-4 h-4 stroke-[2.2]" />
                             </button>
@@ -606,17 +608,17 @@ export default function WorkstationsPrintersView() {
                 <thead className="bg-slate-50 text-xs font-semibold text-slate-600 uppercase tracking-wider select-none">
                   <tr>
                     <th className="px-4 py-3 w-16">#</th>
-                    <th className="px-4 py-3">Physical Printer</th>
-                    <th className="px-4 py-3">Brand</th>
-                    <th className="px-4 py-3">Printer IP / Name</th>
-                    <th className="px-4 py-3">Series</th>
+                    <th className="px-4 py-3">{t('physical_printer', 'Physical Printer')}</th>
+                    <th className="px-4 py-3">{t('brand', 'Brand')}</th>
+                    <th className="px-4 py-3">{t('printer_ip_name', 'Printer IP / Name')}</th>
+                    <th className="px-4 py-3">{t('series', 'Series')}</th>
                     <th className="px-4 py-3 text-right">
                       <button
                         type="button"
                         onClick={handleOpenAddPrinter}
                         className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded text-xs font-semibold inline-flex items-center gap-1 shadow-xs transition-colors"
                       >
-                        <Plus className="w-3.5 h-3.5 stroke-[2.2]" /> New
+                        <Plus className="w-3.5 h-3.5 stroke-[2.2]" /> {t('new', 'New')}
                       </button>
                     </th>
                   </tr>
@@ -643,7 +645,7 @@ export default function WorkstationsPrintersView() {
                             type="button"
                             onClick={() => handleOpenEditPrinter(row)}
                             className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-2xs border border-blue-200 hover:border-blue-600"
-                            title="Edit Physical Printer"
+                            title={t('edit_physical_printer', 'Edit Physical Printer')}
                           >
                             <Pencil className="w-4 h-4 stroke-[2.2]" />
                           </button>
@@ -651,7 +653,7 @@ export default function WorkstationsPrintersView() {
                             type="button"
                             onClick={() => handleDeletePrinter(row.ID)}
                             className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-2xs border border-red-200 hover:border-red-600"
-                            title="Delete Physical Printer"
+                            title={t('delete_physical_printer', 'Delete Physical Printer')}
                           >
                             <Trash2 className="w-4 h-4 stroke-[2.2]" />
                           </button>
@@ -691,7 +693,7 @@ export default function WorkstationsPrintersView() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    WorkStation Name *
+                    {t('workstation_name', 'WorkStation Name *')}
                   </label>
                   <input
                     type="text"
@@ -699,12 +701,12 @@ export default function WorkstationsPrintersView() {
                     value={wsName}
                     onChange={e => setWsName(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. POS Main"
+                    placeholder={t('eg_pos_main', 'e.g. POS Main')}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">IP Address</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('ip_address', 'IP Address')}</label>
                   <input
                     type="text"
                     value={wsIp}
@@ -718,7 +720,7 @@ export default function WorkstationsPrintersView() {
               {/* Menu, Mode, Screen */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Menu *</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('menu', 'Menu *')}</label>
                   <select
                     value={wsMenu}
                     onChange={e => setWsMenu(parseInt(e.target.value))}
@@ -733,7 +735,7 @@ export default function WorkstationsPrintersView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Mode *</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('mode', 'Mode *')}</label>
                   <select
                     value={wsMode}
                     onChange={e => setWsMode(parseInt(e.target.value))}
@@ -748,7 +750,7 @@ export default function WorkstationsPrintersView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Main Screen *</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('main_screen', 'Main Screen *')}</label>
                   <select
                     value={wsScreen}
                     onChange={e => setWsScreen(parseInt(e.target.value))}
@@ -767,7 +769,7 @@ export default function WorkstationsPrintersView() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Cash Drawer Port *
+                    {t('cash_drawer_port', 'Cash Drawer Port *')}
                   </label>
                   <select
                     value={wsDrawer}
@@ -783,20 +785,20 @@ export default function WorkstationsPrintersView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Scale Port</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('scale_port', 'Scale Port')}</label>
                   <select
                     value={wsScale}
                     onChange={e => setWsScale(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
                   >
-                    <option value="-1">None</option>
-                    <option value="COM1">COM1</option>
-                    <option value="COM2">COM2</option>
+                    <option value="-1">{t('none', 'None')}</option>
+                    <option value="COM1">{t('com1', 'COM1')}</option>
+                    <option value="COM2">{t('com2', 'COM2')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Skin Style</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('skin_style', 'Skin Style')}</label>
                   <select
                     value={wsSkin}
                     onChange={e => setWsSkin(parseInt(e.target.value))}
@@ -813,7 +815,7 @@ export default function WorkstationsPrintersView() {
 
               {/* Station Roles Checkboxes */}
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-2">
-                <span className="block text-[11px] font-bold text-slate-700 uppercase mb-1">Station Roles</span>
+                <span className="block text-[11px] font-bold text-slate-700 uppercase mb-1">{t('station_roles', 'Station Roles')}</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium text-slate-700">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -822,7 +824,7 @@ export default function WorkstationsPrintersView() {
                       onChange={e => setWsIsPda(e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded border-slate-300"
                     />
-                    <span>This station is a PDA</span>
+                    <span>{t('this_station_is_a_pda', 'This station is a PDA')}</span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -832,7 +834,7 @@ export default function WorkstationsPrintersView() {
                       onChange={e => setWsIsOmenu(e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded border-slate-300"
                     />
-                    <span>This station is set For the OMenu App</span>
+                    <span>{t('this_station_is_set_for_the_omenu_app', 'This station is set For the OMenu App')}</span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -842,7 +844,7 @@ export default function WorkstationsPrintersView() {
                       onChange={e => setWsPrintForPda(e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded border-slate-300"
                     />
-                    <span>Print Invoices for all PDAs</span>
+                    <span>{t('print_invoices_for_all_pdas', 'Print Invoices for all PDAs')}</span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -852,7 +854,7 @@ export default function WorkstationsPrintersView() {
                       onChange={e => setWsIsBitfood(e.target.checked)}
                       className="w-4 h-4 text-blue-600 rounded border-slate-300"
                     />
-                    <span>Bitfood Dispatcher station</span>
+                    <span>{t('bitfood_dispatcher_station', 'Bitfood Dispatcher station')}</span>
                   </label>
                 </div>
               </div>
@@ -860,7 +862,7 @@ export default function WorkstationsPrintersView() {
               {/* Physical Printers Routing Section */}
               <div className="border border-slate-200 rounded-md overflow-hidden">
                 <div className="bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 border-b border-slate-200">
-                  Physical Printer Routing
+                  {t('physical_printer_routing', 'Physical Printer Routing')}
                 </div>
                 <div className="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -872,7 +874,7 @@ export default function WorkstationsPrintersView() {
                       onChange={e => setWsCheck1(parseInt(e.target.value))}
                       className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded bg-white"
                     >
-                      <option value={0}>None</option>
+                      <option value={0}>{t('none', 'None')}</option>
                       {printers.map(p => (
                         <option key={p.ID} value={p.ID}>
                           {p.DESCRIPTION} ({p.PRINTER_TYPE === 2 ? p.PRINTER_NAME : p.PRINTER_IP})
@@ -890,7 +892,7 @@ export default function WorkstationsPrintersView() {
                       onChange={e => setWsCheck2(parseInt(e.target.value))}
                       className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded bg-white"
                     >
-                      <option value={0}>None</option>
+                      <option value={0}>{t('none', 'None')}</option>
                       {printers.map(p => (
                         <option key={p.ID} value={p.ID}>
                           {p.DESCRIPTION} ({p.PRINTER_TYPE === 2 ? p.PRINTER_NAME : p.PRINTER_IP})
@@ -901,14 +903,14 @@ export default function WorkstationsPrintersView() {
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
-                      Fast Food 1 Printer
+                      {t('fast_food_1_printer', 'Fast Food 1 Printer')}
                     </label>
                     <select
                       value={wsFastFood1}
                       onChange={e => setWsFastFood1(parseInt(e.target.value))}
                       className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded bg-white"
                     >
-                      <option value={0}>None</option>
+                      <option value={0}>{t('none', 'None')}</option>
                       {printers.map(p => (
                         <option key={p.ID} value={p.ID}>
                           {p.DESCRIPTION}
@@ -919,14 +921,14 @@ export default function WorkstationsPrintersView() {
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
-                      Fast Food 2 Printer
+                      {t('fast_food_2_printer', 'Fast Food 2 Printer')}
                     </label>
                     <select
                       value={wsFastFood2}
                       onChange={e => setWsFastFood2(parseInt(e.target.value))}
                       className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded bg-white"
                     >
-                      <option value={0}>None</option>
+                      <option value={0}>{t('none', 'None')}</option>
                       {printers.map(p => (
                         <option key={p.ID} value={p.ID}>
                           {p.DESCRIPTION}
@@ -944,13 +946,13 @@ export default function WorkstationsPrintersView() {
                   onClick={() => setShowWorkstationModal(false)}
                   className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-xs transition-colors"
                 >
-                  <Save className="w-4 h-4" /> Save Workstation
+                  <Save className="w-4 h-4" /> {t('save_workstation', 'Save Workstation')}
                 </button>
               </div>
             </form>
@@ -982,7 +984,7 @@ export default function WorkstationsPrintersView() {
               {/* Description */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                  Description *
+                  {t('description', 'Description *')}
                 </label>
                 <input
                   type="text"
@@ -990,14 +992,14 @@ export default function WorkstationsPrintersView() {
                   value={prDescription}
                   onChange={e => setPrDescription(e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g. Invoice, Kitchen, Bar"
+                  placeholder={t('eg_invoice_kitchen_bar', 'e.g. Invoice, Kitchen, Bar')}
                 />
               </div>
 
               {/* Brand & Series */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Brand</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('brand', 'Brand')}</label>
                   <select
                     value={prBrandId}
                     onChange={e => setPrBrandId(parseInt(e.target.value))}
@@ -1013,15 +1015,15 @@ export default function WorkstationsPrintersView() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Printer Series
+                    {t('printer_series', 'Printer Series')}
                   </label>
                   <select
                     value={prSeries}
                     onChange={e => setPrSeries(parseInt(e.target.value))}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
                   >
-                    <option value={1}>Thermal</option>
-                    <option value={2}>Dot Matrix</option>
+                    <option value={1}>{t('thermal', 'Thermal')}</option>
+                    <option value={2}>{t('dot_matrix', 'Dot Matrix')}</option>
                   </select>
                 </div>
               </div>
@@ -1029,7 +1031,7 @@ export default function WorkstationsPrintersView() {
               {/* Printer Connection Type */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase mb-2">
-                  Printer Type / Connection
+                  {t('printer_type_connection', 'Printer Type / Connection')}
                 </label>
                 <div className="flex items-center gap-6">
                   <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
@@ -1040,7 +1042,7 @@ export default function WorkstationsPrintersView() {
                       onChange={() => setPrType(1)}
                       className="w-4 h-4 text-blue-600"
                     />
-                    <span>Network IP Address</span>
+                    <span>{t('network_ip_address', 'Network IP Address')}</span>
                   </label>
 
                   <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
@@ -1051,7 +1053,7 @@ export default function WorkstationsPrintersView() {
                       onChange={() => setPrType(2)}
                       className="w-4 h-4 text-blue-600"
                     />
-                    <span>Windows Shared Name</span>
+                    <span>{t('windows_shared_name', 'Windows Shared Name')}</span>
                   </label>
                 </div>
               </div>
@@ -1060,7 +1062,7 @@ export default function WorkstationsPrintersView() {
               {prType === 1 ? (
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Printer IP *
+                    {t('printer_ip', 'Printer IP *')}
                   </label>
                   <input
                     type="text"
@@ -1074,7 +1076,7 @@ export default function WorkstationsPrintersView() {
               ) : (
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Printer Name *
+                    {t('printer_name', 'Printer Name *')}
                   </label>
                   <input
                     type="text"
@@ -1082,7 +1084,7 @@ export default function WorkstationsPrintersView() {
                     value={prName}
                     onChange={e => setPrName(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md"
-                    placeholder="e.g. \\DESKTOP\ThermalPrinter"
+                    placeholder={t('eg_desktopthermalprinter', 'e.g. \\\\DESKTOP\\ThermalPrinter')}
                   />
                 </div>
               )}
@@ -1094,13 +1096,13 @@ export default function WorkstationsPrintersView() {
                   onClick={() => setShowPrinterModal(false)}
                   className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors"
                 >
-                  Cancel
+                  {t('cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 bg-primary hover:bg-primary/90 text-white rounded-md text-sm font-bold flex items-center gap-1.5 shadow-xs transition-colors"
                 >
-                  <Save className="w-4 h-4" /> Save Physical Printer
+                  <Save className="w-4 h-4" /> {t('save_physical_printer', 'Save Physical Printer')}
                 </button>
               </div>
             </form>

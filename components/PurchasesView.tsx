@@ -755,7 +755,7 @@ export default function PurchasesView() {
                 onClick={(e) => { e.preventDefault(); alert('Opening Purchases Video Tutorial...'); }}
                 className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium"
               >
-                Watch Tutorial
+                {t('watch_tutorial', 'Watch Tutorial')}
               </a>
               {viewMode === 'form' && (
                 <button
@@ -799,7 +799,7 @@ export default function PurchasesView() {
                     type="text"
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
-                    placeholder="Search by invoice # or supplier name ..."
+                    placeholder={t('search_by_invoice_or_supplier_name', 'Search by invoice # or supplier name ...')}
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 shadow-2xs focus:outline-none focus:border-blue-500"
                   />
                 </div>
@@ -825,7 +825,7 @@ export default function PurchasesView() {
                       type="button"
                       onClick={() => setFilterStatus(filterStatus === 'Unposted' ? 'All Statuses' : 'Unposted')}
                       className="text-xs text-red-600 font-bold hover:underline mr-1 cursor-pointer"
-                      title="Click to view only unposted invoices"
+                      title={t('click_to_view_only_unposted_invoices', 'Click to view only unposted invoices')}
                     >
                       Unposted Invoices: {unpostedCount}
                     </button>
@@ -838,7 +838,7 @@ export default function PurchasesView() {
                     }}
                     className="bg-primary hover:bg-primary text-white text-xs font-semibold px-4 py-1.5 rounded shadow-2xs cursor-pointer transition-colors"
                   >
-                    Filter
+                    {t('filter', 'Filter')}
                   </button>
                   <button
                     type="button"
@@ -940,9 +940,9 @@ export default function PurchasesView() {
                           type="button"
                           onClick={handlePostAllPurchases}
                           className="bg-emerald-700 hover:bg-emerald-800 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow-2xs cursor-pointer transition-colors"
-                          title="Post all unposted purchase invoices"
+                          title={t('post_all_unposted_purchase_invoices', 'Post all unposted purchase invoices')}
                         >
-                          Post All
+                          {t('post_all', 'Post All')}
                         </button>
                       </div>
                     </th>
@@ -980,7 +980,7 @@ export default function PurchasesView() {
                       <td className="py-3 px-3 text-center">
                         {pur.posted ? (
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                            Yes
+                            {t('yes', 'Yes')}
                           </span>
                         ) : (
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">
@@ -994,7 +994,7 @@ export default function PurchasesView() {
                           onClick={() => handleOpenEditInvoice(pur)}
                           className="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer shadow-2xs"
                         >
-                          Edit
+                          {t('edit', 'Edit')}
                         </button>
                         {!pur.posted && (
                           <button
@@ -1003,7 +1003,7 @@ export default function PurchasesView() {
                             className="px-2.5 py-1 rounded bg-emerald-700 hover:bg-emerald-800 text-white font-bold cursor-pointer shadow-2xs transition-colors"
                             title="Post invoice now (commit inventory and GL)"
                           >
-                            Post
+                            {t('post', 'Post')}
                           </button>
                         )}
                       </td>
@@ -1013,7 +1013,7 @@ export default function PurchasesView() {
                   {filteredPurchases.length === 0 && (
                     <tr>
                       <td colSpan={11} className="py-12 text-center text-slate-500 font-medium">
-                        No Purchases Found
+                        {t('no_purchases_found', 'No Purchases Found')}
                       </td>
                     </tr>
                   )}
@@ -1049,7 +1049,7 @@ export default function PurchasesView() {
                 type="button"
                 onClick={() => alert('Exporting purchase details...')}
                 className="bg-emerald-700 hover:bg-emerald-800 text-white p-2 rounded shadow-2xs cursor-pointer"
-                title="Export Data"
+                title={t('export_data', 'Export Data')}
               >
                 <Tag className="w-3.5 h-3.5" />
               </button>
@@ -1196,7 +1196,7 @@ export default function PurchasesView() {
                         type="button"
                         onClick={() => setShowLocationModal(true)}
                         className="p-1 bg-primary hover:bg-primary text-white rounded cursor-pointer shadow-2xs"
-                        title="Add New Location"
+                        title={t('add_new_location', 'Add New Location')}
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -1251,7 +1251,7 @@ export default function PurchasesView() {
                         type="button"
                         onClick={() => setShowCurrencyModal(true)}
                         className="p-1 bg-primary hover:bg-primary text-white rounded cursor-pointer shadow-2xs"
-                        title="Add New Currency"
+                        title={t('add_new_currency', 'Add New Currency')}
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -1260,7 +1260,7 @@ export default function PurchasesView() {
                         value={formCurrencyRate}
                         onChange={(e) => setFormCurrencyRate(e.target.value)}
                         className="w-16 border border-slate-300 rounded px-2 py-1 text-xs text-slate-800 shadow-2xs"
-                        title="Exchange Rate"
+                        title={t('exchange_rate', 'Exchange Rate')}
                       />
                     </div>
                   </div>
@@ -1279,7 +1279,7 @@ export default function PurchasesView() {
                         type="button"
                         onClick={() => setFormInvNumber((4000040 + purchases.length + 1).toString())}
                         className="p-1 text-slate-500 hover:text-slate-800 border border-slate-300 rounded"
-                        title="Generate New Invoice Number"
+                        title={t('generate_new_invoice_number', 'Generate New Invoice Number')}
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
                       </button>
@@ -1293,7 +1293,7 @@ export default function PurchasesView() {
                       type="text"
                       value={formNote}
                       onChange={(e) => setFormNote(e.target.value)}
-                      placeholder="Add notes for this purchase order / invoice ..."
+                      placeholder={t('add_notes_for_this_purchase_order', 'Add notes for this purchase order / invoice ...')}
                       className="flex-1 border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 shadow-2xs"
                     />
                   </div>
@@ -1320,7 +1320,7 @@ export default function PurchasesView() {
                         setShowItemDropdown(true);
                       }}
                       onFocus={() => setShowItemDropdown(true)}
-                      placeholder="Search items..."
+                      placeholder={t('search_items', 'Search items...')}
                       className="w-full pl-8 pr-3 py-1.5 border border-slate-300 rounded text-xs text-slate-800 placeholder-slate-400 shadow-2xs focus:outline-none focus:border-blue-500"
                     />
 
@@ -1394,14 +1394,14 @@ export default function PurchasesView() {
                     }}
                     className="bg-[#5c6b84] hover:bg-[#4b5972] text-white text-xs font-semibold px-3 py-1 rounded shadow-2xs cursor-pointer"
                   >
-                    Supplier Items
+                    {t('supplier_items', 'Supplier Items')}
                   </button>
                   <button
                     type="button"
                     onClick={() => alert('Import items dialog...')}
                     className="bg-[#5c6b84] hover:bg-[#4b5972] text-white text-xs font-semibold px-3 py-1 rounded shadow-2xs cursor-pointer"
                   >
-                    Import Items
+                    {t('import_items', 'Import Items')}
                   </button>
                 </div>
               </div>
@@ -1491,7 +1491,7 @@ export default function PurchasesView() {
                             type="button"
                             onClick={() => handleRemoveItem(item.id)}
                             className="text-red-500 hover:text-red-700 p-1 rounded"
-                            title="Delete Line"
+                            title={t('delete_line', 'Delete Line')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -1530,7 +1530,7 @@ export default function PurchasesView() {
                         onChange={(e) => setFreightCost(Number(e.target.value) || 0)}
                         className="w-24 border border-slate-300 rounded px-2 py-0.5 text-right text-xs font-bold"
                       />
-                      <span className="text-slate-500 font-semibold">LL</span>
+                      <span className="text-slate-500 font-semibold">{t('ll', 'LL')}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -1543,7 +1543,7 @@ export default function PurchasesView() {
                         onChange={(e) => setOtherCost(Number(e.target.value) || 0)}
                         className="w-24 border border-slate-300 rounded px-2 py-0.5 text-right text-xs font-bold"
                       />
-                      <span className="text-slate-500 font-semibold">LL</span>
+                      <span className="text-slate-500 font-semibold">{t('ll', 'LL')}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -1556,7 +1556,7 @@ export default function PurchasesView() {
                         onChange={(e) => setCustomCost(Number(e.target.value) || 0)}
                         className="w-24 border border-slate-300 rounded px-2 py-0.5 text-right text-xs font-bold"
                       />
-                      <span className="text-slate-500 font-semibold">LL</span>
+                      <span className="text-slate-500 font-semibold">{t('ll', 'LL')}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -1569,7 +1569,7 @@ export default function PurchasesView() {
                         onChange={(e) => setChargesCost(Number(e.target.value) || 0)}
                         className="w-24 border border-slate-300 rounded px-2 py-0.5 text-right text-xs font-bold"
                       />
-                      <span className="text-slate-500 font-semibold">LL</span>
+                      <span className="text-slate-500 font-semibold">{t('ll', 'LL')}</span>
                     </div>
                   </div>
                 </div>
@@ -1659,26 +1659,26 @@ export default function PurchasesView() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1.5">
-                    Location Description *
+                    {t('location_description', 'Location Description *')}
                   </label>
                   <input
                     type="text"
                     autoFocus
                     value={newLocDesc}
                     onChange={(e) => setNewLocDesc(e.target.value)}
-                    placeholder="e.g. Damour Secondary Warehouse"
+                    placeholder={t('eg_damour_secondary_warehouse', 'e.g. Damour Secondary Warehouse')}
                     className="w-full border-2 border-blue-400 rounded px-3 py-2 text-xs text-slate-800 focus:outline-none shadow-2xs"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1.5">
-                    Accounting Dep.
+                    {t('accounting_dep', 'Accounting Dep.')}
                   </label>
                   <input
                     type="text"
                     value={newLocAccDep}
                     onChange={(e) => setNewLocAccDep(e.target.value)}
-                    placeholder="e.g. Center #3"
+                    placeholder={t('eg_center_3', 'e.g. Center #3')}
                     className="w-full border border-slate-300 rounded px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-400 shadow-2xs"
                   />
                 </div>
@@ -1723,26 +1723,26 @@ export default function PurchasesView() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1.5">
-                    Description*
+                    {t('description', 'Description*')}
                   </label>
                   <input
                     type="text"
                     autoFocus
                     value={newCurrDesc}
                     onChange={(e) => setNewCurrDesc(e.target.value)}
-                    placeholder="e.g. British Pound"
+                    placeholder={t('eg_british_pound', 'e.g. British Pound')}
                     className="w-full border-2 border-blue-400 rounded px-3 py-2 text-xs text-slate-800 focus:outline-none shadow-2xs"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1.5">
-                    Symbol*
+                    {t('symbol', 'Symbol*')}
                   </label>
                   <input
                     type="text"
                     value={newCurrSymbol}
                     onChange={(e) => setNewCurrSymbol(e.target.value)}
-                    placeholder="e.g. £"
+                    placeholder={t('eg', 'e.g. £')}
                     className="w-full border border-slate-300 rounded px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-400 shadow-2xs"
                   />
                 </div>
@@ -1751,7 +1751,7 @@ export default function PurchasesView() {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1.5">
-                    POS Rate*
+                    {t('pos_rate', 'POS Rate*')}
                   </label>
                   <input
                     type="number"
@@ -1762,7 +1762,7 @@ export default function PurchasesView() {
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1.5">
-                    BackOffice Rate*
+                    {t('backoffice_rate', 'BackOffice Rate*')}
                   </label>
                   <input
                     type="number"
@@ -1773,7 +1773,7 @@ export default function PurchasesView() {
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1.5">
-                    Decimal Number*
+                    {t('decimal_number', 'Decimal Number*')}
                   </label>
                   <input
                     type="number"

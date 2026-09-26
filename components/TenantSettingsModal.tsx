@@ -179,7 +179,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
               <h3 className="font-bold text-base text-white flex items-center gap-2">
                 <span>{t('tenant_profile_title', 'Company Identity & Legal Settings')}</span>
                 <span className="bg-blue-600/20 text-blue-300 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-500/30">
-                  Tenant Profile
+                  {t('tenant_profile', 'Tenant Profile')}
                 </span>
               </h3>
               <p className="text-xs text-slate-400 font-medium mt-0.5">
@@ -191,7 +191,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
           <button
             onClick={onClose}
             className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-            title="Close modal"
+            title={t('close_modal', 'Close modal')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -231,7 +231,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                 {isUploadingLogo ? (
                   <div className="flex flex-col items-center justify-center p-2 text-center text-blue-600">
                     <Loader2 className="w-7 h-7 animate-spin mb-1" />
-                    <span className="text-[10px] font-bold">Uploading to Cloud...</span>
+                    <span className="text-[10px] font-bold">{t('uploading_to_cloud', 'Uploading to Cloud...')}</span>
                   </div>
                 ) : logoUrl ? (
                   <>
@@ -245,7 +245,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                     />
                     <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity">
                       <Camera className="w-6 h-6 mb-1" />
-                      <span className="text-[10px] font-bold">Change Photo</span>
+                      <span className="text-[10px] font-bold">{t('change_photo', 'Change Photo')}</span>
                     </div>
                   </>
                 ) : (
@@ -289,7 +289,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                     setBrandNameAr(e.target.value);
                     setCompanyName(e.target.value);
                   }}
-                  placeholder="e.g. Southern Olive SARL"
+                  placeholder={t('eg_southern_olive_sarl', 'e.g. Southern Olive SARL')}
                   style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
@@ -302,7 +302,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                   required
                   value={brandNameEn}
                   onChange={e => setBrandNameEn(e.target.value)}
-                  placeholder="e.g. Southern Olive Oil Products S.A.R.L"
+                  placeholder={t('eg_southern_olive_oil_products_sarl', 'e.g. Southern Olive Oil Products S.A.R.L')}
                   style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
@@ -324,7 +324,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                   type="text"
                   value={companyRegistrationNumber}
                   onChange={e => setCompanyRegistrationNumber(e.target.value)}
-                  placeholder="e.g. CR-104928-LB"
+                  placeholder={t('eg_cr104928lb', 'e.g. CR-104928-LB')}
                   style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
@@ -337,7 +337,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                   type="text"
                   value={taxIdentificationNumber}
                   onChange={e => setTaxIdentificationNumber(e.target.value)}
-                  placeholder="e.g. MOF-7489201"
+                  placeholder={t('eg_mof7489201', 'e.g. MOF-7489201')}
                   style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }}
                   className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                 />
@@ -360,10 +360,10 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
             <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 text-white border border-amber-500/40 space-y-3 shadow-md">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
-                  <Key className="w-3.5 h-3.5 text-amber-400" /> Authorized License Key
+                  <Key className="w-3.5 h-3.5 text-amber-400" /> {t('authorized_license_key', 'Authorized License Key')}
                 </span>
                 <span className="text-[10px] font-mono text-slate-300 bg-slate-800 px-2.5 py-0.5 rounded-md border border-slate-700">
-                  Perpetual Lifetime
+                  {t('perpetual_lifetime', 'Perpetual Lifetime')}
                 </span>
               </div>
 
@@ -378,7 +378,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                     alert('License Key copied to clipboard!');
                   }}
                   className="p-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-lg text-xs font-bold transition shrink-0 cursor-pointer"
-                  title="Copy Key"
+                  title={t('copy_key', 'Copy Key')}
                 >
                   <Copy className="w-3.5 h-3.5" />
                 </button>
@@ -386,8 +386,8 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-300">
                 <div className="space-y-0.5">
-                  <span className="text-slate-400 block text-[10px]">Authorized By:</span>
-                  <span className="text-white font-semibold">Vanguard ERP Global Licensing Authority</span>
+                  <span className="text-slate-400 block text-[10px]">{t('authorized_by', 'Authorized By:')}</span>
+                  <span className="text-white font-semibold">{t('vanguard_erp_global_licensing_authority', 'Vanguard ERP Global Licensing Authority')}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -397,7 +397,7 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
                     className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
                   >
                     <Award className="w-3.5 h-3.5" />
-                    <span>View Official Certificate</span>
+                    <span>{t('view_official_certificate', 'View Official Certificate')}</span>
                   </button>
                 </div>
               </div>
@@ -406,11 +406,11 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
             {/* QUICK SUMMARY OF ACTIVATED MODULES */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5">
               <div className="flex items-center justify-between text-[11px] font-bold text-slate-700">
-                <span>Enterprise Activation Scope:</span>
-                <span className="text-emerald-600 font-extrabold">All 18 Modules Unlocked</span>
+                <span>{t('enterprise_activation_scope', 'Enterprise Activation Scope:')}</span>
+                <span className="text-emerald-600 font-extrabold">{t('all_18_modules_unlocked', 'All 18 Modules Unlocked')}</span>
               </div>
               <p className="text-[10px] text-slate-500 leading-relaxed">
-                Inventory, Sales POS, Accounting, Wastage, Fleet, Production, V-Track, Reports, HR & Payroll, Loyalty, and Security Suite are fully authorized and unlimited for Southern Olive Oil Products S.A.R.L.
+                {t('inventory_sales_pos_accounting_wastage', 'Inventory, Sales POS, Accounting, Wastage, Fleet, Production, V-Track, Reports, HR & Payroll, Loyalty, and Security Suite are fully authorized and unlimited for Southern Olive Oil Products S.A.R.L.')}
               </p>
             </div>
           </div>
