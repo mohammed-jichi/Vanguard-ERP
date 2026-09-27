@@ -285,9 +285,9 @@ export default function Sidebar({
               placeholder={t('search_menu', 'search menu...')}
               value={sidebarFilter}
               onChange={(e) => setSidebarFilter(e.target.value)}
-              className="w-full text-xs font-normal bg-gray-50 border border-gray-200 rounded-lg py-1.5 px-3 pr-8 text-gray-700 focus:outline-none focus:border-amber-500 focus:bg-white transition-all"
+              className="w-full text-xs font-normal bg-gray-50 border border-gray-200 rounded-lg py-1.5 ps-8 pe-3 text-gray-700 focus:outline-none focus:border-amber-500 focus:bg-white transition-all"
             />
-            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2" />
+            <Search className="w-3.5 h-3.5 text-gray-400 absolute start-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         )}
       </div>
