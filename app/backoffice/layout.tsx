@@ -110,6 +110,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
       timestamp: string;
       actionLink?: string;
       actionLabel?: string;
+      source_type?: string;
+      source_ref?: string;
     }>;
     activities: Array<{
       id: string;
@@ -124,6 +126,24 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     alerts: [],
     activities: []
   });
+
+  const [latestUpdates, setLatestUpdates] = useState<Array<{
+    id: string;
+    commit_hash: string;
+    short_hash: string;
+    version: string;
+    title: string;
+    category: 'feature' | 'fix' | 'security' | 'performance' | 'refactor' | 'maintenance';
+    description: string;
+    bullet_points: string[];
+    affected_modules: string[];
+    author_name: string;
+    is_critical?: boolean;
+    deployed_at: string;
+  }>>([]);
+  const [loadingUpdates, setLoadingUpdates] = useState<boolean>(false);
+  const [updatesCategoryFilter, setUpdatesCategoryFilter] = useState<string>('all');
+  const [updatesSearchQuery, setUpdatesSearchQuery] = useState<string>('');
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -168,17 +188,46 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     }
   };
 
+  const fetchUpdates = useCallback(async () => {
+    try {
+      setLoadingUpdates(true);
+      const res = await fetch('/api/updates?limit=25');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setLatestUpdates(data.data);
+      }
+    } catch (e) {
+      console.warn('Notice: Failed to fetch updates:', e);
+    } finally {
+      setLoadingUpdates(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 15000);
+    fetchUpdates();
+
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('openUpdates') === 'true') {
+        setActiveDrawerTab('UPDATES');
+        setQuickDrawerOpen(true);
+      }
+    }
+
+    const interval = setInterval(() => {
+      fetchNotifications();
+      fetchUpdates();
+    }, 15000);
     const unsubscribe = subscribeToAccountingSync(() => {
       fetchNotifications();
+      fetchUpdates();
     });
     return () => {
       clearInterval(interval);
       unsubscribe();
     };
-  }, [fetchNotifications]);
+  }, [fetchNotifications, fetchUpdates]);
 
   // Keep-alive heartbeat: ping database every 10 minutes to prevent Supabase inactivity pause
   useEffect(() => {
@@ -690,30 +739,162 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4 text-xs">
               {activeDrawerTab === 'UPDATES' && (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-slate-900 text-sm">{t('latest_updates', 'Latest Updates')}</h3>
+                  <div className="flex items-center justify-between pb-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-base">🚀</span>
+                      <h3 className="font-black text-slate-900 text-sm">{t('latest_updates', 'Latest Updates')}</h3>
+                      {latestUpdates[0]?.version && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-500 text-slate-950 font-mono shadow-2xs">
+                          {latestUpdates[0].version}
+                        </span>
+                      )}
+                    </div>
                     <button type="button" onClick={() => setQuickDrawerOpen(false)} className="text-slate-400 hover:text-slate-700">✕</button>
                   </div>
 
-                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-900">{t('sales_control', 'Sales Control')}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">31 Aug 2026</span>
-                    </div>
-                    <p className="text-[11px] text-slate-600 leading-relaxed">
-                      {t('update_sales_matrix_desc', 'High-contrast matrix reporting engine with multi-format exports (PDF, Excel, CSV) now live for Southern Olive Oil Products S.A.R.L.')}
+                  <div className="p-3 bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-300/70 rounded-2xl shadow-2xs">
+                    <span className="text-[10px] text-amber-900 font-black uppercase tracking-wider block">
+                      {t('published_platform_release_notes', 'Verified Platform Deployments')}
+                    </span>
+                    <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-relaxed">
+                      {t('official_platformwide_version_releases', 'Production releases, bug fixes, and feature changelogs.')}
                     </p>
+                    {latestUpdates[0]?.deployed_at && (
+                      <div className="mt-1.5 pt-1.5 border-t border-amber-200/60 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                        <span>{t('latest_deployed', 'Last Deployed')}:</span>
+                        <span className="font-bold text-slate-700">
+                          {new Date(latestUpdates[0].deployed_at).toLocaleString()}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-900">{t('operations_center', 'Operations Center')}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">26 Aug 2026</span>
+                  {/* Filter & Search Controls */}
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={updatesSearchQuery}
+                      onChange={(e) => setUpdatesSearchQuery(e.target.value)}
+                      placeholder={t('search_updates', 'Search release notes or modules...')}
+                      className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    />
+
+                    <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[10px] font-bold">
+                      {['all', 'feature', 'fix', 'security', 'performance', 'refactor'].map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setUpdatesCategoryFilter(cat)}
+                          className={`px-2 py-0.5 rounded-lg shrink-0 transition-colors uppercase cursor-pointer ${
+                            updatesCategoryFilter === cat
+                              ? 'bg-amber-600 text-white font-black shadow-2xs'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
                     </div>
-                    <p className="text-[11px] text-slate-600 leading-relaxed">
-                      {t('update_ops_role_desc', 'A new role access has been configured under Operations Center: Purchase Order - Hide Cost option.')}
-                    </p>
                   </div>
+
+                  {/* Releases list */}
+                  {loadingUpdates ? (
+                    <div className="p-6 text-center text-slate-400 space-y-1">
+                      <span className="text-xl animate-spin block">⏳</span>
+                      <p className="text-xs">{t('loading_updates', 'Loading deployment records...')}</p>
+                    </div>
+                  ) : latestUpdates.length === 0 ? (
+                    <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-center space-y-1">
+                      <span className="text-2xl block">📰</span>
+                      <p className="font-bold text-slate-600 text-xs">{t('no_updates_found', 'No updates recorded yet.')}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {latestUpdates
+                        .filter((u) => {
+                          const matchesCat = updatesCategoryFilter === 'all' || u.category === updatesCategoryFilter;
+                          const matchesSearch =
+                            !updatesSearchQuery.trim() ||
+                            u.title.toLowerCase().includes(updatesSearchQuery.toLowerCase()) ||
+                            u.description.toLowerCase().includes(updatesSearchQuery.toLowerCase()) ||
+                            (u.affected_modules && u.affected_modules.some((m) => m.toLowerCase().includes(updatesSearchQuery.toLowerCase())));
+                          return matchesCat && matchesSearch;
+                        })
+                        .map((update) => {
+                          const catStyles: Record<string, string> = {
+                            feature: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                            fix: 'bg-amber-100 text-amber-800 border-amber-300',
+                            security: 'bg-rose-100 text-rose-800 border-rose-300',
+                            performance: 'bg-sky-100 text-sky-800 border-sky-300',
+                            refactor: 'bg-indigo-100 text-indigo-800 border-indigo-300',
+                            maintenance: 'bg-slate-100 text-slate-800 border-slate-300'
+                          };
+
+                          return (
+                            <div
+                              key={update.commit_hash || update.id}
+                              className="p-3 bg-slate-50 hover:bg-white rounded-xl border border-slate-200 hover:border-amber-300 space-y-1.5 transition-all shadow-2xs group"
+                            >
+                              <div className="flex justify-between items-center gap-2">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className={`px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase tracking-wider border ${catStyles[update.category] || catStyles.feature}`}>
+                                    {update.category}
+                                  </span>
+                                  <span className="text-[9.5px] font-black font-mono bg-slate-200/80 text-slate-800 px-1.5 py-0.2 rounded">
+                                    {update.version}
+                                  </span>
+                                  <span className="text-[9px] font-mono text-slate-500">
+                                    #{update.short_hash}
+                                  </span>
+                                </div>
+                                <span className="text-[9.5px] text-slate-400 font-mono shrink-0">
+                                  {new Date(update.deployed_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              </div>
+
+                              <h4 className="font-bold text-slate-900 text-xs leading-snug group-hover:text-amber-700 transition-colors">
+                                {update.title}
+                              </h4>
+
+                              {update.description && update.description !== update.title && (
+                                <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                                  {update.description}
+                                </p>
+                              )}
+
+                              {update.bullet_points && update.bullet_points.length > 0 && (
+                                <ul className="space-y-1 pt-1 border-t border-slate-200/60 text-[10.5px] text-slate-600">
+                                  {update.bullet_points.slice(0, 3).map((bp, bidx) => (
+                                    <li key={bidx} className="flex items-start gap-1.5">
+                                      <span className="text-amber-500 shrink-0">•</span>
+                                      <span className="leading-tight">{bp}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+
+                              {update.affected_modules && update.affected_modules.length > 0 && (
+                                <div className="flex items-center gap-1 flex-wrap pt-1">
+                                  {update.affected_modules.map((mod, midx) => (
+                                    <span key={midx} className="text-[8.5px] font-bold bg-slate-200/60 text-slate-700 px-1.5 py-0.2 rounded">
+                                      {mod}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={fetchUpdates}
+                    className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors text-center border border-slate-200 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <span>🔄 {t('refresh_updates', 'Refresh Releases')}</span>
+                  </button>
                 </div>
               )}
 
@@ -793,14 +974,25 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                               {t('dismiss', 'Dismiss')}
                             </button>
                             {alt.actionLink && (
-                              <Link
-                                href={alt.actionLink}
-                                onClick={() => setQuickDrawerOpen(false)}
-                                className="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-800 text-[10.5px] font-bold rounded-lg border border-slate-300 shadow-2xs flex items-center gap-1 transition-colors"
-                              >
-                                <span>{alt.actionLabel ? t(alt.actionLabel, alt.actionLabel) : t('action', 'Action')}</span>
-                                <span>↗</span>
-                              </Link>
+                              alt.source_type === 'RELEASE' || alt.type === 'SYSTEM_RELEASE' ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setActiveDrawerTab('UPDATES')}
+                                  className="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 text-[10.5px] font-black rounded-lg border border-amber-400 shadow-2xs flex items-center gap-1 transition-colors cursor-pointer"
+                                >
+                                  <span>{alt.actionLabel ? t(alt.actionLabel, alt.actionLabel) : t('view_release_notes', 'View Release Notes')}</span>
+                                  <span>🚀</span>
+                                </button>
+                              ) : (
+                                <Link
+                                  href={alt.actionLink}
+                                  onClick={() => setQuickDrawerOpen(false)}
+                                  className="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-800 text-[10.5px] font-bold rounded-lg border border-slate-300 shadow-2xs flex items-center gap-1 transition-colors"
+                                >
+                                  <span>{alt.actionLabel ? t(alt.actionLabel, alt.actionLabel) : t('action', 'Action')}</span>
+                                  <span>↗</span>
+                                </Link>
+                              )
                             )}
                           </div>
                         </div>

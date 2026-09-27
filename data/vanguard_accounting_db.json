@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-09-21T09:03:48.004Z",
+  "last_updated": "2026-09-27T23:03:56.329Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-78c53a2",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (78c53a2) - Complete 5-language native localization (ar, en, fr, es, fa) and dual-write persistence for My Account console",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "78c53a233ce92d032ed5df9f2c10938a6c5e7b09",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Account & Security",
+          "Multilingual Engine (i18n)"
+        ]
+      },
+      "created_at": "2026-09-27T12:02:18.000Z"
+    },
     {
       "id": "act-1789981428004-5065",
       "tenant_id": "00000000-0000-0000-0000-000000000001",
@@ -5941,6 +5958,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-78c53a2",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Complete 5-language native localization (ar, en, fr, es, fa) and dual-write persistence for My Account console",
+      "message": "feat(i18n): complete 5-language native localization (ar, en, fr, es, fa) and dual-write persistence for My Account console",
+      "timestamp": "2026-09-27T12:02:18.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "78c53a233ce92d032ed5df9f2c10938a6c5e7b09",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-exp-ev-1789911247993-2178",
       "type": "UNCLOSED_CASE",

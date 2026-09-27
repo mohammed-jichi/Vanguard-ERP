@@ -1031,12 +1031,13 @@ export default function SocialMediaManagementHub({
                   {platformOrders
                     .filter((ord) => orderStatusFilter === 'ALL' || ord.order_status === orderStatusFilter)
                     .map((ord) => {
-                      const channelBadge = {
+                      const channelBadge = ({
                         whatsapp: { label: t('channel_whatsapp', '💬 WhatsApp'), color: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
                         social_media: { label: t('channel_social_media', '📱 Social Media'), color: 'bg-blue-50 text-blue-800 border-blue-200' },
                         supersonic: { label: t('channel_supersonic', '⚡ SuperSonic'), color: 'bg-amber-50 text-amber-800 border-amber-200' },
                         website: { label: t('channel_website', '🌐 Web Store'), color: 'bg-indigo-50 text-indigo-800 border-indigo-200' },
-                      }[ord.channel] || { label: ord.channel, color: 'bg-slate-100 text-slate-700 border-slate-200' };
+                        vmenu: { label: t('channel_vmenu', '📲 V-Menu QR'), color: 'bg-emerald-100 text-emerald-900 border-emerald-300' },
+                      } as Record<string, { label: string; color: string }>)[ord.channel] || { label: ord.channel, color: 'bg-slate-100 text-slate-700 border-slate-200' };
 
                       const statusBadge = {
                         pending_rep_approval: { label: t('st_pending_rep', '⏳ Pending Rep'), color: 'bg-amber-100 text-amber-900 border-amber-200' },

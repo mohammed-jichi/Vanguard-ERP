@@ -2,7 +2,7 @@
 // VANGUARD ERP: SUPERSONIC FLEET & SOCIAL CRM INTEGRATION TYPES
 // ============================================================
 
-export type OnlineOrderChannel = 'supersonic' | 'social_media' | 'whatsapp' | 'website';
+export type OnlineOrderChannel = 'supersonic' | 'social_media' | 'whatsapp' | 'website' | 'vmenu';
 
 export type OnlineOrderStatus = 
   | 'pending_rep_approval' 

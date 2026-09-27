@@ -1,0 +1,228 @@
+[
+  {
+    "id": "78c53a23-3ce9-4d03-aed5-df9f2c10938a",
+    "commit_hash": "78c53a233ce92d032ed5df9f2c10938a6c5e7b09",
+    "short_hash": "78c53a2",
+    "version": "v2.0.0",
+    "title": "Complete 5-language native localization (ar, en, fr, es, fa) and dual-write persistence for My Account console",
+    "category": "feature",
+    "description": "feat(i18n): complete 5-language native localization (ar, en, fr, es, fa) and dual-write persistence for My Account console",
+    "bullet_points": [
+      "Implemented complete 5-language native localization (ar, en, fr, es, fa) and dual-write persistence for my account console",
+      "Enhanced system stability and operator workflow in Account & Security & Multilingual Engine (i18n)",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Account & Security",
+      "Multilingual Engine (i18n)"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T12:02:18.000Z",
+    "created_at": "2026-09-27T23:03:56.324Z"
+  },
+  {
+    "id": "843fed143830d4ced427340ac79538166b6832db",
+    "commit_hash": "843fed143830d4ced427340ac79538166b6832db",
+    "short_hash": "843fed1",
+    "version": "v2.0.0",
+    "title": "Implement comprehensive 5-tab My Account console with Supabase persistence and zero hardcoding",
+    "category": "feature",
+    "description": "feat(account): implement comprehensive 5-tab My Account console with Supabase persistence and zero hardcoding",
+    "bullet_points": [
+      "Implemented implement comprehensive 5-tab my account console with supabase persistence and zero hardcoding",
+      "Enhanced system stability and operator workflow in Account & Security & Core Shell & UI",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Account & Security",
+      "Core Shell & UI",
+      "Multilingual Engine (i18n)"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T11:49:07.000Z",
+    "created_at": "2026-09-27T12:25:57.615Z"
+  },
+  {
+    "id": "7262c3de14ced61567a7276db415cf2d938b6779",
+    "commit_hash": "7262c3de14ced61567a7276db415cf2d938b6779",
+    "short_hash": "7262c3d",
+    "version": "v2.0.0",
+    "title": "Streamline alerts link styling and remove duplicate inbox row in favor of header inbox icon",
+    "category": "refactor",
+    "description": "refactor(profile): streamline alerts link styling and remove duplicate inbox row in favor of header inbox icon",
+    "bullet_points": [
+      "Applied improvements to Core Shell & UI",
+      "Maintained backward compatibility with existing enterprise workflows"
+    ],
+    "affected_modules": [
+      "Core Shell & UI"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T11:27:44.000Z",
+    "created_at": "2026-09-27T12:25:57.980Z"
+  },
+  {
+    "id": "f9c13dbb22d5b9683582ee8d01a8827e1e8e87dc",
+    "commit_hash": "f9c13dbb22d5b9683582ee8d01a8827e1e8e87dc",
+    "short_hash": "f9c13db",
+    "version": "v2.0.0",
+    "title": "Increase search input start padding and align magnifier icon to prevent placeholder overlap",
+    "category": "fix",
+    "description": "fix(ui): increase search input start padding and align magnifier icon to prevent placeholder overlap",
+    "bullet_points": [
+      "Resolved: increase search input start padding and align magnifier icon to prevent placeholder overlap",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Alerts & Notifications"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T11:15:34.000Z",
+    "created_at": "2026-09-27T12:25:58.228Z"
+  },
+  {
+    "id": "81e9b57f8a293f7d7705e7313c7e8a43ea7ee13f",
+    "commit_hash": "81e9b57f8a293f7d7705e7313c7e8a43ea7ee13f",
+    "short_hash": "81e9b57",
+    "version": "v2.0.0",
+    "title": "Remove duplicate language option from profile dropdown in favor of standalone header language selector",
+    "category": "refactor",
+    "description": "refactor(header): remove duplicate language option from profile dropdown in favor of standalone header language selector",
+    "bullet_points": [
+      "Applied improvements to Core Shell & UI",
+      "Maintained backward compatibility with existing enterprise workflows"
+    ],
+    "affected_modules": [
+      "Core Shell & UI"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T11:06:27.000Z",
+    "created_at": "2026-09-27T12:25:58.480Z"
+  },
+  {
+    "id": "65fc391987e7f806638c7e6e30f195c75d23440c",
+    "commit_hash": "65fc391987e7f806638c7e6e30f195c75d23440c",
+    "short_hash": "65fc391",
+    "version": "v2.0.0",
+    "title": "Restore Supersonic Fleet Management unconditionally and enforce sequential 1 to 8 module numbering across all languages",
+    "category": "feature",
+    "description": "feat(navigation): restore Supersonic Fleet Management unconditionally and enforce sequential 1 to 8 module numbering across all languages",
+    "bullet_points": [
+      "Implemented restore supersonic fleet management unconditionally and enforce sequential 1 to 8 module numbering across all languages",
+      "Enhanced system stability and operator workflow in Multilingual Engine (i18n)",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Multilingual Engine (i18n)"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T10:33:58.000Z",
+    "created_at": "2026-09-27T12:25:58.729Z"
+  },
+  {
+    "id": "02a92fb5364c38fae26684cd9656f375a98d4fc7",
+    "commit_hash": "02a92fb5364c38fae26684cd9656f375a98d4fc7",
+    "short_hash": "02a92fb",
+    "version": "v2.0.0",
+    "title": "Eliminate remaining hardcoded strings in notifications console and update translations dictionary",
+    "category": "fix",
+    "description": "fix(i18n): eliminate remaining hardcoded strings in notifications console and update translations dictionary",
+    "bullet_points": [
+      "Resolved: eliminate remaining hardcoded strings in notifications console and update translations dictionary",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Alerts & Notifications",
+      "Multilingual Engine (i18n)"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T10:14:52.000Z",
+    "created_at": "2026-09-27T12:25:58.970Z"
+  },
+  {
+    "id": "481b60a04720c055cbdbe68c7c4f8aff9a084846",
+    "commit_hash": "481b60a04720c055cbdbe68c7c4f8aff9a084846",
+    "short_hash": "481b60a",
+    "version": "v2.0.0",
+    "title": "Implement real-world verification flow, live database search, email/whatsapp dispatch, and full 5-lang i18n",
+    "category": "feature",
+    "description": "feat(notifications): implement real-world verification flow, live database search, email/whatsapp dispatch, and full 5-lang i18n",
+    "bullet_points": [
+      "Implemented implement real-world verification flow, live database search, email/whatsapp dispatch, and full 5-lang i18n",
+      "Enhanced system stability and operator workflow in HR & Payroll & Alerts & Notifications",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "HR & Payroll",
+      "Alerts & Notifications",
+      "Multilingual Engine (i18n)"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T10:08:51.000Z",
+    "created_at": "2026-09-27T12:25:59.264Z"
+  },
+  {
+    "id": "e3d85ae9149a24c36ddc440ebbefe7a1d9469d64",
+    "commit_hash": "e3d85ae9149a24c36ddc440ebbefe7a1d9469d64",
+    "short_hash": "e3d85ae",
+    "version": "v2.0.0",
+    "title": "Implement header language selector dropdown with native 5 languages and google translate hybrid engine",
+    "category": "feature",
+    "description": "feat(i18n): implement header language selector dropdown with native 5 languages and google translate hybrid engine",
+    "bullet_points": [
+      "Implemented implement header language selector dropdown with native 5 languages and google translate hybrid engine",
+      "Enhanced system stability and operator workflow in Core Shell & UI & Multilingual Engine (i18n)",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Core Shell & UI",
+      "Multilingual Engine (i18n)"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T09:23:58.000Z",
+    "created_at": "2026-09-27T12:25:59.548Z"
+  },
+  {
+    "id": "ec4997ab66bea8de72d895a98d8f4423b24c0eb3",
+    "commit_hash": "ec4997ab66bea8de72d895a98d8f4423b24c0eb3",
+    "short_hash": "ec4997a",
+    "version": "v2.0.0",
+    "title": "Integrate header profile link, dual-gate verification, and 16-dept alert console",
+    "category": "feature",
+    "description": "feat(notifications): integrate header profile link, dual-gate verification, and 16-dept alert console",
+    "bullet_points": [
+      "Implemented integrate header profile link, dual-gate verification, and 16-dept alert console",
+      "Enhanced system stability and operator workflow in Core Shell & UI & Alerts & Notifications",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Core Shell & UI",
+      "Alerts & Notifications"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-27T09:06:19.000Z",
+    "created_at": "2026-09-27T12:25:59.796Z"
+  }
+]

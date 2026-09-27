@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { DeepLinkFallbackProvider } from '@/components/DeepLinkFallbackProvider';
 import { LanguageProvider } from '@/lib/LanguageContext';
+import { PermissionProvider } from '@/lib/PermissionContext';
 
 export const metadata: Metadata = {
   title: 'Vanguard ERP | Southern Olive Oil Products S.A.R.L',
@@ -21,9 +22,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-[#f8fafc] text-slate-800 antialiased font-sans m-0 p-0">
         <LanguageProvider>
-          <DeepLinkFallbackProvider>
-            {children}
-          </DeepLinkFallbackProvider>
+          <PermissionProvider>
+            <DeepLinkFallbackProvider>
+              {children}
+            </DeepLinkFallbackProvider>
+          </PermissionProvider>
         </LanguageProvider>
       </body>
     </html>

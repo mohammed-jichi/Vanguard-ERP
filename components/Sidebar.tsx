@@ -88,6 +88,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import { isModuleLicensed } from '@/lib/license';
+import { usePermission } from '@/lib/PermissionContext';
 import TenantSettingsModal from './TenantSettingsModal';
 import StandaloneAppDownloadModal, { StandaloneAppType } from './StandaloneAppDownloadModal';
 
@@ -109,6 +110,7 @@ export default function Sidebar({
   const router = useRouter();
   const pathname = usePathname();
   const { currentTenant, isModuleEnabled: contextIsModuleEnabled } = useTenant();
+  const { canAccess, activeRole } = usePermission();
   const { language, dir, t } = useLanguage();
   const [internalIsOpen, setInternalIsOpen] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -242,9 +244,32 @@ export default function Sidebar({
     return title.toLowerCase().includes(sidebarFilter.toLowerCase());
   };
 
-  // Helper to check if a specific system module is enabled for the active tenant
+  // Helper to check if a specific system module is enabled for the active tenant and permitted by active RBAC role
   const isModuleEnabled = (moduleKey: string): boolean => {
-    return contextIsModuleEnabled ? contextIsModuleEnabled(moduleKey) : isModuleLicensed(currentTenant, moduleKey);
+    // 1. Check tenant license/feature enablement
+    const tenantLicensed = contextIsModuleEnabled ? contextIsModuleEnabled(moduleKey) : isModuleLicensed(currentTenant, moduleKey);
+    if (!tenantLicensed) return false;
+
+    // 2. Enforce Role-Based Access Control (RBAC) dynamically
+    if (canAccess) {
+      let rbacCode = moduleKey;
+      if (moduleKey === 'sales') rbacCode = 'mod1_sales_pos';
+      else if (moduleKey === 'operations' || moduleKey === 'inventory') rbacCode = 'mod2_operations_inventory';
+      else if (moduleKey === 'crm' || moduleKey === 'customer') rbacCode = 'mod3_customer_crm';
+      else if (moduleKey === 'loyalty') rbacCode = 'mod4_loyalty';
+      else if (moduleKey === 'accounting' || moduleKey === 'finance') rbacCode = 'mod5_accounting_financials';
+      else if (moduleKey === 'hr' || moduleKey === 'payroll') rbacCode = 'mod6_hr_payroll';
+      else if (moduleKey === 'fleet' || moduleKey === 'supersonic' || moduleKey === 'vtrack') rbacCode = 'mod7_fleet_dispatch';
+      else if (moduleKey === 'vconnect' || moduleKey === 'messaging') rbacCode = 'mod8_vconnect_messaging';
+      else if (moduleKey === 'pressing' || moduleKey === 'pressing-mill') rbacCode = 'mod9_pressing_mill';
+      else if (moduleKey === 'vmenu' || moduleKey === 'v-store' || moduleKey === 'store') rbacCode = 'mod10_vmenu_online';
+      else if (moduleKey === 'formulations' || moduleKey === 'blending') rbacCode = 'mod11_commercial_formulations';
+      else if (moduleKey === 'governance' || moduleKey === 'system_settings') rbacCode = 'mod12_system_governance';
+
+      return canAccess(rbacCode, 'view');
+    }
+
+    return true;
   };
 
   return (

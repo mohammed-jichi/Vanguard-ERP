@@ -99,7 +99,26 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
     timestamp: string;
     actionLink?: string;
     actionLabel?: string;
+    source_type?: string;
+    source_ref?: string;
   }>>([]);
+  const [latestUpdates, setLatestUpdates] = useState<Array<{
+    id: string;
+    commit_hash: string;
+    short_hash: string;
+    version: string;
+    title: string;
+    category: 'feature' | 'fix' | 'security' | 'performance' | 'refactor' | 'maintenance';
+    description: string;
+    bullet_points: string[];
+    affected_modules: string[];
+    author_name: string;
+    is_critical?: boolean;
+    deployed_at: string;
+  }>>([]);
+  const [loadingUpdates, setLoadingUpdates] = useState<boolean>(false);
+  const [updatesCategoryFilter, setUpdatesCategoryFilter] = useState<string>('all');
+  const [updatesSearchQuery, setUpdatesSearchQuery] = useState<string>('');
   const [dynamicActivities, setDynamicActivities] = useState<Array<{
     id: string;
     action_type: string;
@@ -146,6 +165,20 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
       const inboxData = await inboxRes.json();
       if (inboxData.success && Array.isArray(inboxData.data)) {
         setInboxMessages(inboxData.data);
+      }
+
+      // Fetch dynamic platform updates & deployment logs
+      try {
+        setLoadingUpdates(true);
+        const upRes = await fetch('/api/updates?limit=25');
+        const upData = await upRes.json();
+        if (upData.success && Array.isArray(upData.data)) {
+          setLatestUpdates(upData.data);
+        }
+      } catch (err) {
+        console.warn('Notice: Header updates fetch:', err);
+      } finally {
+        setLoadingUpdates(false);
       }
     } catch (e) {
       console.warn('Notice: Header notification fetch:', e);
@@ -734,58 +767,166 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 </div>
               )}
               
-              {/* LATEST UPDATES TAB (WITH SHOW MORE SCROLLABLE AREA) */}
+              {/* LATEST UPDATES TAB (DYNAMIC PLATFORM DEPLOYMENT LOGS) */}
               {quickMenuTab === 'updates' && (
                 <div className="space-y-3">
-                  <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-2xl">
-                    <span className="text-[10px] text-amber-800 font-black uppercase tracking-wider block">
-                      {t('published_platform_release_notes', 'Published Platform Release Notes')}
-                    </span>
-                    <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-relaxed">
-                      {t('official_platformwide_version_releases', 'Official platform-wide version releases, changelogs, and engine deployments.')}
-                    </p>
-                  </div>
-
-                  <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-1">
-                    <span className="text-[10px] text-amber-700 font-bold font-mono uppercase tracking-wider">{t('v2026826_release', 'v2026.8.26 Release')}</span>
-                    <h5 className="font-black text-amber-950 text-xs">{t('vanguard_erp_accounting_uom_engine', 'Vanguard ERP Accounting & UOM Engine')}</h5>
-                    <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
-                      Integrated 18 multi-unit conversions (Tanks, Drums, Gallons, Liters, Kilos) with dynamic landed cost calculations.
-                    </p>
-                  </div>
-
-                  <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-2xl space-y-1">
-                    <span className="text-[10px] text-emerald-600 font-bold font-mono uppercase tracking-wider">{t('v2026820_release', 'v2026.8.20 Release')}</span>
-                    <h5 className="font-black text-gray-900 text-xs">{t('supersonic_driver_fleet_realtime_gps', 'SuperSonic Driver Fleet Real-Time GPS Tracking')}</h5>
-                    <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
-                      {t('enabled_live_driver_mobile_dispatching', 'Enabled live driver mobile dispatching and automated proof of delivery receipt generation.')}
-                    </p>
-                  </div>
-
-                  {showMoreUpdates && (
-                    <div className="space-y-3 animate-in fade-in duration-200">
-                      <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
-                        <span className="text-[10px] text-sky-600 font-bold font-mono uppercase tracking-wider">{t('v2026810_release', 'v2026.8.10 Release')}</span>
-                        <h5 className="font-black text-slate-900 text-xs">{t('pos_touch_terminal_multicurrency', 'POS Touch Terminal Multi-Currency Checkout')}</h5>
-                        <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
-                          {t('dual_cash_drawer_support_handling', 'Dual cash drawer support handling simultaneous LBP and USD cash change logic.')}
-                        </p>
+                  <div className="p-3 bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border border-amber-300/70 rounded-2xl shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                        <span className="text-[10px] text-amber-900 font-black uppercase tracking-wider block">
+                          {t('published_platform_release_notes', 'Platform Release Notes & Deployment Log')}
+                        </span>
                       </div>
-                      <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
-                        <span className="text-[10px] text-indigo-600 font-bold font-mono uppercase tracking-wider">{t('v2026801_release', 'v2026.8.01 Release')}</span>
-                        <h5 className="font-black text-slate-900 text-xs">{t('social_crm_customer_whatsapp_integration', 'Social CRM & Customer WhatsApp Integration')}</h5>
-                        <p className="text-gray-600 font-medium text-[11px] leading-relaxed">
-                          {t('automated_whatsapp_invoice_pdf', 'Automated WhatsApp invoice PDF dispatching directly to registered customer numbers.')}
-                        </p>
+                      {latestUpdates[0]?.version && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-500 text-slate-950 font-mono shadow-2xs">
+                          {latestUpdates[0].version}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-slate-600 font-medium mt-1 leading-relaxed">
+                      {t('official_platformwide_version_releases', 'Automated CI/CD deployment logs, verified production releases, and engine updates.')}
+                    </p>
+                    {latestUpdates[0]?.deployed_at && (
+                      <div className="mt-1.5 pt-1.5 border-t border-amber-200/60 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                        <span>{t('latest_deployed', 'Last Deployed')}:</span>
+                        <span className="font-bold text-slate-700">
+                          {new Date(latestUpdates[0].deployed_at).toLocaleString()}
+                        </span>
                       </div>
+                    )}
+                  </div>
+
+                  {/* SEARCH & CATEGORY FILTER */}
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
+                      <input
+                        type="text"
+                        value={updatesSearchQuery}
+                        onChange={(e) => setUpdatesSearchQuery(e.target.value)}
+                        placeholder={t('search_updates', 'Search release notes or modules...')}
+                        className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[10px] font-bold">
+                      {['all', 'feature', 'fix', 'security', 'performance', 'refactor'].map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setUpdatesCategoryFilter(cat)}
+                          className={`px-2 py-0.5 rounded-lg shrink-0 transition-colors uppercase cursor-pointer ${
+                            updatesCategoryFilter === cat
+                              ? 'bg-amber-600 text-white font-black shadow-2xs'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* UPDATES STREAM */}
+                  {loadingUpdates ? (
+                    <div className="p-6 text-center text-slate-400 space-y-2">
+                      <RefreshCw className="w-5 h-5 mx-auto animate-spin text-amber-500" />
+                      <p className="text-xs">{t('loading_updates', 'Loading deployment records...')}</p>
+                    </div>
+                  ) : latestUpdates.length === 0 ? (
+                    <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-center space-y-1">
+                      <Sparkles className="w-5 h-5 text-slate-400 mx-auto" />
+                      <p className="font-bold text-slate-600 text-xs">{t('no_updates_found', 'No updates recorded yet.')}</p>
+                      <p className="text-[10px] text-slate-400">{t('updates_auto_populate', 'Releases will populate automatically upon deployment.')}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {latestUpdates
+                        .filter((u) => {
+                          const matchesCat = updatesCategoryFilter === 'all' || u.category === updatesCategoryFilter;
+                          const matchesSearch =
+                            !updatesSearchQuery.trim() ||
+                            u.title.toLowerCase().includes(updatesSearchQuery.toLowerCase()) ||
+                            u.description.toLowerCase().includes(updatesSearchQuery.toLowerCase()) ||
+                            (u.affected_modules && u.affected_modules.some((m) => m.toLowerCase().includes(updatesSearchQuery.toLowerCase())));
+                          return matchesCat && matchesSearch;
+                        })
+                        .map((update) => {
+                          const catBadgeStyles: Record<string, string> = {
+                            feature: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                            fix: 'bg-amber-100 text-amber-800 border-amber-300',
+                            security: 'bg-rose-100 text-rose-800 border-rose-300',
+                            performance: 'bg-sky-100 text-sky-800 border-sky-300',
+                            refactor: 'bg-indigo-100 text-indigo-800 border-indigo-300',
+                            maintenance: 'bg-slate-100 text-slate-800 border-slate-300'
+                          };
+
+                          return (
+                            <div
+                              key={update.commit_hash || update.id}
+                              className="p-3.5 bg-slate-50/80 hover:bg-white border border-slate-200 hover:border-amber-300 rounded-2xl space-y-2 transition-all shadow-2xs group"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className={`px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase tracking-wider border ${catBadgeStyles[update.category] || catBadgeStyles.feature}`}>
+                                    {update.category}
+                                  </span>
+                                  <span className="text-[9.5px] font-black font-mono bg-slate-200/80 text-slate-800 px-1.5 py-0.2 rounded">
+                                    {update.version}
+                                  </span>
+                                  <span className="text-[9px] font-mono text-slate-500">
+                                    #{update.short_hash}
+                                  </span>
+                                </div>
+                                <span className="text-[9.5px] font-mono text-slate-400 shrink-0">
+                                  {new Date(update.deployed_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              </div>
+
+                              <h5 className="font-black text-slate-900 text-xs leading-snug group-hover:text-amber-700 transition-colors">
+                                {update.title}
+                              </h5>
+
+                              {update.description && update.description !== update.title && (
+                                <p className="text-slate-600 font-medium text-[11px] leading-relaxed">
+                                  {update.description}
+                                </p>
+                              )}
+
+                              {update.bullet_points && update.bullet_points.length > 0 && (
+                                <ul className="space-y-1 pt-1 border-t border-slate-200/60 text-[10.5px] text-slate-600 font-medium">
+                                  {update.bullet_points.slice(0, 3).map((bp, bidx) => (
+                                    <li key={bidx} className="flex items-start gap-1.5">
+                                      <span className="text-amber-500 shrink-0 mt-0.5">•</span>
+                                      <span className="leading-tight">{bp}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+
+                              {update.affected_modules && update.affected_modules.length > 0 && (
+                                <div className="flex items-center gap-1 flex-wrap pt-1">
+                                  {update.affected_modules.map((mod, midx) => (
+                                    <span key={midx} className="text-[8.5px] font-bold bg-slate-200/60 text-slate-700 px-1.5 py-0.2 rounded">
+                                      {mod}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                     </div>
                   )}
 
                   <button
-                    onClick={() => setShowMoreUpdates(!showMoreUpdates)}
-                    className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-xs transition-colors text-center border border-gray-200"
+                    type="button"
+                    onClick={() => loadHeaderFeeds(includeResolvedAlerts)}
+                    className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors text-center border border-slate-200 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    {showMoreUpdates ? 'Show Less Updates' : 'Show More Updates (2)'}
+                    <RefreshCw className="w-3 h-3 text-slate-500" />
+                    <span>{t('refresh_updates', 'Refresh Releases')}</span>
                   </button>
                 </div>
               )}
@@ -858,13 +999,23 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                           <p className="text-[11px] font-medium opacity-90 leading-relaxed">{alt.message}</p>
                           <div className="pt-1.5 flex items-center justify-between border-t border-black/5 mt-1">
                             {alt.actionLink ? (
-                              <a
-                                href={alt.actionLink}
-                                onClick={() => setIsQuickMenuOpen(false)}
-                                className="text-[11px] font-extrabold text-amber-800 hover:text-amber-950 hover:underline inline-flex items-center gap-1"
-                              >
-                                <span>{alt.actionLabel || 'Inspect'}</span> →
-                              </a>
+                              alt.source_type === 'RELEASE' || alt.type === 'SYSTEM_RELEASE' ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setQuickMenuTab('updates')}
+                                  className="text-[11px] font-extrabold text-amber-800 hover:text-amber-950 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                  <span>{alt.actionLabel || 'View Release Notes'}</span> →
+                                </button>
+                              ) : (
+                                <a
+                                  href={alt.actionLink}
+                                  onClick={() => setIsQuickMenuOpen(false)}
+                                  className="text-[11px] font-extrabold text-amber-800 hover:text-amber-950 hover:underline inline-flex items-center gap-1"
+                                >
+                                  <span>{alt.actionLabel || 'Inspect'}</span> →
+                                </a>
+                              )
                             ) : <span />}
                             {alt.status !== 'RESOLVED' && alt.status !== 'ARCHIVED' && (
                               <button

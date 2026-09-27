@@ -35,6 +35,8 @@ const DEFAULT_ACCOUNT_SETTINGS = {
     signatureHtml: '<p><strong>Mohammed Jichi</strong><br>General Operations Manager<br>Southern Olive Oil Products S.A.R.L<br>Email: mohammed.jichi@gmail.com</p>',
   },
   inboxMessages: {
+    vmenu_group: true,
+    new_vmenu_order: true,
     digital_menu_group: true,
     new_omenu_order: true,
     operations_center_group: true,
@@ -44,6 +46,7 @@ const DEFAULT_ACCOUNT_SETTINGS = {
     product_request_rejection: true,
     new_inter_brand_requisition: true,
     new_inter_brand_purchase: true,
+    vtrack_group: true,
     otrack_group: true,
     alert_on_void_items: true,
     alert_on_refund: true,
@@ -59,7 +62,10 @@ const DEFAULT_ACCOUNT_SETTINGS = {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const tenantId = searchParams.get('tenantId') || '00000000-0000-0000-0000-000000000001';
+    const rawTenantId = searchParams.get('tenantId');
+    const tenantId = (rawTenantId && rawTenantId !== '1300' && !String(rawTenantId).startsWith('comp-'))
+      ? String(rawTenantId)
+      : '00000000-0000-0000-0000-000000000001';
 
     const supabase = getSupabaseServerClient();
 
@@ -69,6 +75,21 @@ export async function GET(request: Request) {
       .select('feature_flags')
       .eq('id', tenantId)
       .maybeSingle();
+
+    // Check user_notification_preferences if available
+    let dbNotificationPrefs: any = null;
+    try {
+      const { data: notifData } = await supabase
+        .from('user_notification_preferences')
+        .select('preferences')
+        .eq('tenant_id', tenantId)
+        .maybeSingle();
+      if (notifData?.preferences) {
+        dbNotificationPrefs = notifData.preferences;
+      }
+    } catch (e) {
+      // Table may not exist yet in all environments
+    }
 
     const storedPreferences = tenantData?.feature_flags?.user_account_preferences;
 
@@ -88,6 +109,7 @@ export async function GET(request: Request) {
       inboxMessages: {
         ...DEFAULT_ACCOUNT_SETTINGS.inboxMessages,
         ...(storedPreferences?.inboxMessages || {}),
+        ...(dbNotificationPrefs || {}),
       },
     };
 
@@ -101,7 +123,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { tenantId = '00000000-0000-0000-0000-000000000001', section, payload } = body;
+    const { tenantId: rawTenantId, section, payload } = body;
+    const tenantId = (rawTenantId && rawTenantId !== '1300' && !String(rawTenantId).startsWith('comp-'))
+      ? String(rawTenantId)
+      : '00000000-0000-0000-0000-000000000001';
 
     const supabase = getSupabaseServerClient();
 

@@ -101,6 +101,37 @@ export interface FleetLedgerEntryRecord {
   created_at: Date;
 }
 
+export interface SalesRepresentativeRecord {
+  id: string;
+  rep_code: string;
+  full_name: string;
+  phone: string;
+  assigned_channel: string;
+  commission_rate: number;
+  total_commission_usd: number;
+  total_commission_lbp: number;
+  current_unpaid_balance_usd: number;
+  is_active: boolean;
+}
+
+export interface RepCommissionLedgerRecord {
+  id: string;
+  rep_id: string;
+  rep_code: string;
+  rep_name: string;
+  order_id: string;
+  order_number: string;
+  customer_name: string;
+  trigger_event: 'V_MENU_ORDER_CONFIRMED' | 'IN_STORE_PICKUP_BILLED' | 'FLEET_DELIVERY_COLLECTED';
+  order_total_usd: number;
+  commission_rate: number;
+  commission_amount_usd: number;
+  commission_amount_lbp: number;
+  is_credited: boolean;
+  payout_status: 'UNPAID' | 'PAID_IN_PAYROLL';
+  created_at: string;
+}
+
 // In-Memory Database Storage (Shared across operations)
 class VanguardDatabaseContext {
   private static instance: VanguardDatabaseContext;
@@ -696,6 +727,77 @@ class VanguardDatabaseContext {
       branch_id: 'br-choueifat',
       is_active: true,
       created_at: new Date().toISOString(),
+    },
+  ];
+
+  public salesRepresentatives: SalesRepresentativeRecord[] = [
+    {
+      id: 'rep-001-id',
+      rep_code: 'REP-001',
+      full_name: 'Mahdi Kassem',
+      phone: '03112233',
+      assigned_channel: 'Field Sales',
+      commission_rate: 0.0400,
+      total_commission_usd: 480.0,
+      total_commission_lbp: 43200000.0,
+      current_unpaid_balance_usd: 120.0,
+      is_active: true,
+    },
+    {
+      id: 'rep-002-id',
+      rep_code: 'REP-002',
+      full_name: 'Ahmad Ali Kassem',
+      phone: '03445566',
+      assigned_channel: 'WhatsApp',
+      commission_rate: 0.0500,
+      total_commission_usd: 850.0,
+      total_commission_lbp: 76500000.0,
+      current_unpaid_balance_usd: 245.0,
+      is_active: true,
+    },
+    {
+      id: 'rep-004-id',
+      rep_code: 'REP-004',
+      full_name: 'Hiba Aloulou',
+      phone: '03778899',
+      assigned_channel: 'Instagram',
+      commission_rate: 0.0500,
+      total_commission_usd: 620.0,
+      total_commission_lbp: 55800000.0,
+      current_unpaid_balance_usd: 180.0,
+      is_active: true,
+    },
+    {
+      id: 'rep-008-id',
+      rep_code: 'REP-008',
+      full_name: 'Hussein Mahdi',
+      phone: '03990011',
+      assigned_channel: 'TikTok',
+      commission_rate: 0.0700,
+      total_commission_usd: 1120.0,
+      total_commission_lbp: 100800000.0,
+      current_unpaid_balance_usd: 350.0,
+      is_active: true,
+    },
+  ];
+
+  public repCommissionLedger: RepCommissionLedgerRecord[] = [
+    {
+      id: 'com-led-001',
+      rep_id: 'rep-002-id',
+      rep_code: 'REP-002',
+      rep_name: 'Ahmad Ali Kassem',
+      order_id: 'ord-crm-001',
+      order_number: 'ORD-WA-8921',
+      customer_name: 'سليمان كنعان (Sleiman Kanaan)',
+      trigger_event: 'V_MENU_ORDER_CONFIRMED',
+      order_total_usd: 110.0,
+      commission_rate: 0.0500,
+      commission_amount_usd: 5.5,
+      commission_amount_lbp: 495000.0,
+      is_credited: true,
+      payout_status: 'UNPAID',
+      created_at: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
     },
   ];
 
@@ -1629,6 +1731,66 @@ export class TransactionClient {
         return true;
       }
       return false;
+    },
+  };
+
+  public sales_representatives = {
+    findMany: async (args?: { where?: Partial<SalesRepresentativeRecord> }) => {
+      let reps = [...this.ctx.salesRepresentatives];
+      if (args?.where) {
+        reps = reps.filter(r => {
+          return Object.entries(args.where!).every(([k, v]) => (r as any)[k] === v);
+        });
+      }
+      return reps;
+    },
+    findUnique: async (args: { where: { rep_code?: string; id?: string } }) => {
+      return this.ctx.salesRepresentatives.find(r => 
+        (args.where.rep_code && r.rep_code.toUpperCase() === args.where.rep_code.toUpperCase()) ||
+        (args.where.id && r.id === args.where.id)
+      ) || null;
+    },
+    update: async (args: { where: { rep_code?: string; id?: string }; data: Partial<SalesRepresentativeRecord> }) => {
+      const idx = this.ctx.salesRepresentatives.findIndex(r => 
+        (args.where.rep_code && r.rep_code.toUpperCase() === args.where.rep_code.toUpperCase()) ||
+        (args.where.id && r.id === args.where.id)
+      );
+      if (idx === -1) throw new Error('Sales Representative not found');
+      this.ctx.salesRepresentatives[idx] = {
+        ...this.ctx.salesRepresentatives[idx],
+        ...args.data,
+      };
+      return this.ctx.salesRepresentatives[idx];
+    },
+  };
+
+  public rep_commission_ledger = {
+    findMany: async (args?: { where?: Partial<RepCommissionLedgerRecord> }) => {
+      let entries = [...this.ctx.repCommissionLedger];
+      if (args?.where) {
+        entries = entries.filter(e => {
+          return Object.entries(args.where!).every(([k, v]) => (e as any)[k] === v);
+        });
+      }
+      return entries.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    },
+    create: async (args: { data: Omit<RepCommissionLedgerRecord, 'id' | 'created_at'> }) => {
+      const entry: RepCommissionLedgerRecord = {
+        id: `com-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
+        ...args.data,
+        created_at: new Date().toISOString(),
+      };
+      this.ctx.repCommissionLedger.unshift(entry);
+
+      // Accumulate to sales rep totals
+      const rep = this.ctx.salesRepresentatives.find(r => r.rep_code.toUpperCase() === entry.rep_code.toUpperCase());
+      if (rep) {
+        rep.total_commission_usd = Number((rep.total_commission_usd + entry.commission_amount_usd).toFixed(2));
+        rep.total_commission_lbp = Math.round(rep.total_commission_lbp + entry.commission_amount_lbp);
+        rep.current_unpaid_balance_usd = Number((rep.current_unpaid_balance_usd + entry.commission_amount_usd).toFixed(2));
+      }
+
+      return entry;
     },
   };
 }

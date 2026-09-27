@@ -32,6 +32,8 @@ import {
   Outdent,
   KeyRound,
   RefreshCw,
+  ExternalLink,
+  ChevronDown,
 } from 'lucide-react';
 
 type TabKey = 'profile' | 'password' | 'security' | 'email_messages' | 'inbox_messages';
@@ -41,12 +43,19 @@ export default function MyAccountPage() {
   const { dir, t } = useLanguage();
 
   const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
-  const tenantId = currentTenant?.id || '00000000-0000-0000-0000-000000000001';
+  const tenantId = (currentTenant?.id && currentTenant.id !== '1300' && !String(currentTenant.id).startsWith('comp-'))
+    ? currentTenant.id
+    : '00000000-0000-0000-0000-000000000001';
 
   const [activeTab, setActiveTab] = useState<TabKey>('profile');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  // Formats flyout dropdown state
+  const [formatsMenuOpen, setFormatsMenuOpen] = useState(false);
+  const [activeFlyout, setActiveFlyout] = useState<'headings' | 'inline' | 'blocks' | 'alignment' | null>(null);
+  const formatsMenuRef = useRef<HTMLDivElement>(null);
 
   // Tab 1: Profile State
   const [firstName, setFirstName] = useState('Mohammed');
@@ -82,7 +91,9 @@ export default function MyAccountPage() {
 
   // Tab 5: Inbox Message Settings (Hierarchical Checkbox Tree)
   const [inboxTree, setInboxTree] = useState({
-    // Digital Menu Group
+    // V-Menu Group (Digital Ordering & QR)
+    vmenu_group: true,
+    new_vmenu_order: true,
     digital_menu_group: true,
     new_omenu_order: true,
 
@@ -95,7 +106,8 @@ export default function MyAccountPage() {
     new_inter_brand_requisition: true,
     new_inter_brand_purchase: true,
 
-    // O-Track Group
+    // V-Track Group (Live Audit & Fleet Engine)
+    vtrack_group: true,
     otrack_group: true,
     alert_on_void_items: true,
     alert_on_refund: true,
@@ -147,7 +159,13 @@ export default function MyAccountPage() {
             }
           }
           if (inboxMessages) {
-            setInboxTree((prev) => ({ ...prev, ...inboxMessages }));
+            setInboxTree((prev) => ({
+              ...prev,
+              ...inboxMessages,
+              vmenu_group: inboxMessages.vmenu_group ?? inboxMessages.digital_menu_group ?? prev.vmenu_group,
+              new_vmenu_order: inboxMessages.new_vmenu_order ?? inboxMessages.new_omenu_order ?? prev.new_vmenu_order,
+              vtrack_group: inboxMessages.vtrack_group ?? inboxMessages.otrack_group ?? prev.vtrack_group,
+            }));
           }
         }
       } catch (err) {
@@ -167,6 +185,18 @@ export default function MyAccountPage() {
       }
     }
   }, [activeTab, signatureHtml]);
+
+  // Click-outside listener for formats flyout menu
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (formatsMenuRef.current && !formatsMenuRef.current.contains(e.target as Node)) {
+        setFormatsMenuOpen(false);
+        setActiveFlyout(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Save active tab preferences directly to Supabase via /api/user/account
   const handleSaveActiveTab = async (e?: React.FormEvent) => {
@@ -267,37 +297,123 @@ export default function MyAccountPage() {
     }
   };
 
-  // Rich Text Editor Commands
+  // Rich Text Editor Commands with CSS and Format Enforcement
   const formatDoc = (cmd: string, val: string | undefined = undefined) => {
-    if (typeof document !== 'undefined') {
-      document.execCommand(cmd, false, val);
-      if (editorRef.current) {
-        setSignatureHtml(editorRef.current.innerHTML);
+    if (typeof document !== 'undefined' && editorRef.current) {
+      editorRef.current.focus();
+
+      try {
+        document.execCommand('styleWithCSS', false, 'true');
+      } catch (e) {}
+
+      if (cmd === 'formatBlock') {
+        const tag = val || 'p';
+        try {
+          document.execCommand('formatBlock', false, `<${tag.replace(/[<>]/g, '')}>`);
+        } catch (e) {
+          document.execCommand('formatBlock', false, tag.replace(/[<>]/g, ''));
+        }
+      } else if (['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'].includes(cmd)) {
+        document.execCommand(cmd, false, val);
+
+        // Explicitly enforce inline style on closest block container so justify & align visibly take effect
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          let node: Node | null = selection.anchorNode;
+          while (node && node !== editorRef.current) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const el = node as HTMLElement;
+              const tagName = el.tagName.toLowerCase();
+              if (['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'pre'].includes(tagName)) {
+                if (cmd === 'justifyFull') {
+                  el.style.textAlign = 'justify';
+                  el.style.textJustify = 'inter-word';
+                  el.style.width = '100%';
+                } else if (cmd === 'justifyCenter') {
+                  el.style.textAlign = 'center';
+                } else if (cmd === 'justifyRight') {
+                  el.style.textAlign = 'right';
+                } else if (cmd === 'justifyLeft') {
+                  el.style.textAlign = 'left';
+                }
+                break;
+              }
+            }
+            node = node.parentNode;
+          }
+        }
+      } else if (cmd === 'code') {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const codeEl = document.createElement('code');
+          codeEl.className = 'bg-slate-100 text-pink-600 px-1.5 py-0.5 rounded font-mono text-xs';
+          codeEl.textContent = range.toString() || 'code';
+          range.deleteContents();
+          range.insertNode(codeEl);
+        }
+      } else {
+        document.execCommand(cmd, false, val);
       }
+
+      setSignatureHtml(editorRef.current.innerHTML);
     }
   };
 
-  // Hierarchical Checkbox Tree Handlers
+  // Live Backend Persistence for Inbox Message Settings
+  const persistInboxSettings = async (updatedTree: typeof inboxTree, notify = true) => {
+    try {
+      const res = await fetch('/api/user/account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId,
+          section: 'inbox_messages',
+          payload: updatedTree,
+        }),
+      });
+
+      const resData = await res.json();
+      if (!res.ok || !resData.success) {
+        throw new Error(resData.error || 'Failed to sync with backend');
+      }
+
+      if (notify) {
+        showToast(t('inbox_settings_synced', 'Inbox message settings synchronized with backend!'), 'success');
+      }
+    } catch (err: any) {
+      console.error('Error synchronizing inbox settings:', err);
+      showToast(err.message || t('inbox_settings_error', 'Failed to synchronize with backend'), 'error');
+    }
+  };
+
+  // Hierarchical Checkbox Tree Handlers (Direct live sync on toggle)
   const handleParentToggle = (parentKey: keyof typeof inboxTree, childKeys: (keyof typeof inboxTree)[]) => {
     const nextVal = !inboxTree[parentKey];
-    setInboxTree((prev) => {
-      const updated = { ...prev, [parentKey]: nextVal };
-      childKeys.forEach((k) => {
-        updated[k] = nextVal;
-      });
-      return updated;
+    const updated = { ...inboxTree, [parentKey]: nextVal };
+    if (parentKey === 'vmenu_group') updated.digital_menu_group = nextVal;
+    if (parentKey === 'vtrack_group') updated.otrack_group = nextVal;
+    childKeys.forEach((k) => {
+      updated[k] = nextVal;
     });
+    if (childKeys.includes('new_vmenu_order')) updated.new_omenu_order = nextVal;
+
+    setInboxTree(updated);
+    persistInboxSettings(updated, true);
   };
 
   const handleChildToggle = (childKey: keyof typeof inboxTree, parentKey: keyof typeof inboxTree, siblingKeys: (keyof typeof inboxTree)[]) => {
     const nextChildVal = !inboxTree[childKey];
-    setInboxTree((prev) => {
-      const updated = { ...prev, [childKey]: nextChildVal };
-      const allSiblings = [childKey, ...siblingKeys];
-      const hasAnyChecked = allSiblings.some((k) => (k === childKey ? nextChildVal : prev[k]));
-      updated[parentKey] = hasAnyChecked;
-      return updated;
-    });
+    const updated = { ...inboxTree, [childKey]: nextChildVal };
+    if (childKey === 'new_vmenu_order') updated.new_omenu_order = nextChildVal;
+    const allSiblings = [childKey, ...siblingKeys];
+    const hasAnyChecked = allSiblings.some((k) => (k === childKey ? nextChildVal : inboxTree[k]));
+    updated[parentKey] = hasAnyChecked;
+    if (parentKey === 'vmenu_group') updated.digital_menu_group = hasAnyChecked;
+    if (parentKey === 'vtrack_group') updated.otrack_group = hasAnyChecked;
+
+    setInboxTree(updated);
+    persistInboxSettings(updated, true);
   };
 
   // Child keys arrays for each group
@@ -310,13 +426,14 @@ export default function MyAccountPage() {
     'new_inter_brand_purchase',
   ];
 
-  const otrackChildren: (keyof typeof inboxTree)[] = [
+  const vtrackChildren: (keyof typeof inboxTree)[] = [
     'alert_on_void_items',
     'alert_on_refund',
     'alert_on_discount',
     'alert_on_new_table_reservation',
     'alert_on_receipt_cancellation',
   ];
+  const otrackChildren = vtrackChildren;
 
   const reservationChildren: (keyof typeof inboxTree)[] = ['no_show_reservation', 'reservation_stay_period_alert'];
 
@@ -859,56 +976,296 @@ export default function MyAccountPage() {
 
                 <div className="w-px h-4 bg-slate-300 mx-1" />
 
-                {/* Formats Dropdown with Headings, Inline, Blocks, and Alignment */}
-                <select
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (!val) return;
-                    if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'blockquote', 'pre', 'div'].includes(val)) {
-                      formatDoc('formatBlock', `<${val}>`);
-                    } else if (['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript'].includes(val)) {
-                      formatDoc(val);
-                    } else if (val === 'code') {
-                      formatDoc('formatBlock', '<pre>');
-                    } else if (['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'].includes(val)) {
-                      formatDoc(val);
-                    }
-                    e.target.value = '';
-                  }}
-                  className="px-2 py-1 text-xs bg-white border border-slate-200 rounded-lg font-medium text-slate-700 cursor-pointer focus:outline-none"
-                  defaultValue=""
-                >
-                  <option value="" disabled>{t('formats', 'Formats')}</option>
-                  <optgroup label={t('headings', 'Headings')}>
-                    <option value="h1">{t('heading_1', 'Heading 1')}</option>
-                    <option value="h2">{t('heading_2', 'Heading 2')}</option>
-                    <option value="h3">{t('heading_3', 'Heading 3')}</option>
-                    <option value="h4">{t('heading_4', 'Heading 4')}</option>
-                    <option value="h5">{t('heading_5', 'Heading 5')}</option>
-                    <option value="h6">{t('heading_6', 'Heading 6')}</option>
-                  </optgroup>
-                  <optgroup label={t('inline_styles', 'Inline')}>
-                    <option value="bold">{t('bold', 'Bold')}</option>
-                    <option value="italic">{t('italic', 'Italic')}</option>
-                    <option value="underline">{t('underline', 'Underline')}</option>
-                    <option value="strikeThrough">{t('strikethrough', 'Strikethrough')}</option>
-                    <option value="superscript">{t('superscript', 'Superscript')}</option>
-                    <option value="subscript">{t('subscript', 'Subscript')}</option>
-                    <option value="code">{t('code', 'Code')}</option>
-                  </optgroup>
-                  <optgroup label={t('blocks', 'Blocks')}>
-                    <option value="p">{t('paragraph', 'Paragraph')}</option>
-                    <option value="blockquote">{t('blockquote', 'Blockquote')}</option>
-                    <option value="div">{t('div', 'Div')}</option>
-                    <option value="pre">{t('pre', 'Pre')}</option>
-                  </optgroup>
-                  <optgroup label={t('alignment', 'Alignment')}>
-                    <option value="justifyLeft">{t('align_left', 'Align Left')}</option>
-                    <option value="justifyCenter">{t('align_center', 'Align Center')}</option>
-                    <option value="justifyRight">{t('align_right', 'Align Right')}</option>
-                    <option value="justifyFull">{t('align_justify', 'Justify')}</option>
-                  </optgroup>
-                </select>
+                {/* Formats Flyout Menu with Headings, Inline, Blocks, and Alignment */}
+                <div className="relative" ref={formatsMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormatsMenuOpen(!formatsMenuOpen);
+                      setActiveFlyout(null);
+                    }}
+                    className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-white hover:bg-slate-100 border border-slate-200 rounded-lg font-bold text-slate-700 cursor-pointer shadow-2xs transition-colors"
+                  >
+                    <span>{t('formats', 'Formats')}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  </button>
+
+                  {formatsMenuOpen && (
+                    <div className="absolute left-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 text-xs animate-fadeIn">
+                      {/* Sub-menu 1: Headings */}
+                      <div
+                        className="relative px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between cursor-pointer font-semibold text-slate-700 select-none"
+                        onMouseEnter={() => setActiveFlyout('headings')}
+                        onClick={() => setActiveFlyout(activeFlyout === 'headings' ? null : 'headings')}
+                      >
+                        <span>{t('headings', 'Headings')}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+
+                        {activeFlyout === 'headings' && (
+                          <div
+                            className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-60 animate-fadeIn"
+                            onMouseLeave={() => setActiveFlyout(null)}
+                          >
+                            {[1, 2, 3, 4, 5, 6].map((num) => (
+                              <button
+                                key={num}
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  formatDoc('formatBlock', `h${num}`);
+                                  setFormatsMenuOpen(false);
+                                  setActiveFlyout(null);
+                                }}
+                                className="w-full text-left px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between text-slate-800 cursor-pointer font-bold"
+                              >
+                                <span>{t(`heading_${num}`, `Heading ${num}`)}</span>
+                                <span className="text-[10px] text-slate-400 font-mono">H{num}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Sub-menu 2: Inline */}
+                      <div
+                        className="relative px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between cursor-pointer font-semibold text-slate-700 select-none"
+                        onMouseEnter={() => setActiveFlyout('inline')}
+                        onClick={() => setActiveFlyout(activeFlyout === 'inline' ? null : 'inline')}
+                      >
+                        <span>{t('inline_styles', 'Inline')}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+
+                        {activeFlyout === 'inline' && (
+                          <div
+                            className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-60 animate-fadeIn"
+                            onMouseLeave={() => setActiveFlyout(null)}
+                          >
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('bold');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 font-bold text-slate-800 cursor-pointer"
+                            >
+                              {t('bold', 'Bold')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('italic');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 italic text-slate-800 cursor-pointer"
+                            >
+                              {t('italic', 'Italic')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('underline');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 underline text-slate-800 cursor-pointer"
+                            >
+                              {t('underline', 'Underline')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('strikeThrough');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 line-through text-slate-800 cursor-pointer"
+                            >
+                              {t('strikethrough', 'Strikethrough')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('superscript');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 text-slate-800 cursor-pointer"
+                            >
+                              {t('superscript', 'Superscript')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('subscript');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 text-slate-800 cursor-pointer"
+                            >
+                              {t('subscript', 'Subscript')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('code');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 font-mono text-xs text-pink-600 cursor-pointer"
+                            >
+                              {t('code', 'Code')}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Sub-menu 3: Blocks */}
+                      <div
+                        className="relative px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between cursor-pointer font-semibold text-slate-700 select-none"
+                        onMouseEnter={() => setActiveFlyout('blocks')}
+                        onClick={() => setActiveFlyout(activeFlyout === 'blocks' ? null : 'blocks')}
+                      >
+                        <span>{t('blocks', 'Blocks')}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+
+                        {activeFlyout === 'blocks' && (
+                          <div
+                            className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-60 animate-fadeIn"
+                            onMouseLeave={() => setActiveFlyout(null)}
+                          >
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('formatBlock', 'p');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 text-slate-800 cursor-pointer"
+                            >
+                              {t('paragraph', 'Paragraph')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('formatBlock', 'blockquote');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 italic text-slate-800 border-l-2 border-primary ml-1 cursor-pointer"
+                            >
+                              {t('blockquote', 'Blockquote')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('formatBlock', 'div');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 text-slate-800 cursor-pointer"
+                            >
+                              {t('div', 'Div')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('formatBlock', 'pre');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 font-mono text-xs text-slate-800 cursor-pointer"
+                            >
+                              {t('pre', 'Pre')}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Sub-menu 4: Alignment */}
+                      <div
+                        className="relative px-3 py-1.5 hover:bg-slate-100 flex items-center justify-between cursor-pointer font-semibold text-slate-700 select-none"
+                        onMouseEnter={() => setActiveFlyout('alignment')}
+                        onClick={() => setActiveFlyout(activeFlyout === 'alignment' ? null : 'alignment')}
+                      >
+                        <span>{t('alignment', 'Alignment')}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+
+                        {activeFlyout === 'alignment' && (
+                          <div
+                            className="absolute left-full top-0 ml-1 w-44 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-60 animate-fadeIn"
+                            onMouseLeave={() => setActiveFlyout(null)}
+                          >
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('justifyLeft');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 text-slate-800 flex items-center gap-2 cursor-pointer"
+                            >
+                              <AlignLeft className="w-3.5 h-3.5 text-slate-500" />
+                              <span>{t('align_left', 'Align Left')}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('justifyCenter');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 text-slate-800 flex items-center gap-2 cursor-pointer"
+                            >
+                              <AlignCenter className="w-3.5 h-3.5 text-slate-500" />
+                              <span>{t('align_center', 'Align Center')}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('justifyRight');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 text-slate-800 flex items-center gap-2 cursor-pointer"
+                            >
+                              <AlignRight className="w-3.5 h-3.5 text-slate-500" />
+                              <span>{t('align_right', 'Align Right')}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                formatDoc('justifyFull');
+                                setFormatsMenuOpen(false);
+                                setActiveFlyout(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-100 text-slate-800 flex items-center gap-2 cursor-pointer"
+                            >
+                              <AlignJustify className="w-3.5 h-3.5 text-slate-500" />
+                              <span>{t('align_justify', 'Justify')}</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <div className="w-px h-4 bg-slate-300 mx-1" />
 
@@ -1011,6 +1368,110 @@ export default function MyAccountPage() {
                 </button>
               </div>
 
+              {/* Scoped CSS for Lists, Headings, Blocks, and Alignment */}
+              <style dangerouslySetInnerHTML={{ __html: `
+                .vanguard-rich-editor ol {
+                  list-style-type: decimal !important;
+                  padding-inline-start: 2.25rem !important;
+                  margin-block: 0.5rem !important;
+                }
+                .vanguard-rich-editor ul {
+                  list-style-type: disc !important;
+                  padding-inline-start: 2.25rem !important;
+                  margin-block: 0.5rem !important;
+                }
+                .vanguard-rich-editor li {
+                  display: list-item !important;
+                  margin-block: 0.25rem !important;
+                }
+                .vanguard-rich-editor h1 {
+                  font-size: 2rem !important;
+                  font-weight: 800 !important;
+                  line-height: 1.25 !important;
+                  margin-block: 0.75rem 0.5rem !important;
+                }
+                .vanguard-rich-editor h2 {
+                  font-size: 1.625rem !important;
+                  font-weight: 700 !important;
+                  line-height: 1.3 !important;
+                  margin-block: 0.625rem 0.375rem !important;
+                }
+                .vanguard-rich-editor h3 {
+                  font-size: 1.375rem !important;
+                  font-weight: 700 !important;
+                  line-height: 1.35 !important;
+                  margin-block: 0.5rem 0.35rem !important;
+                }
+                .vanguard-rich-editor h4 {
+                  font-size: 1.15rem !important;
+                  font-weight: 600 !important;
+                  line-height: 1.4 !important;
+                  margin-block: 0.4rem 0.25rem !important;
+                }
+                .vanguard-rich-editor h5 {
+                  font-size: 1rem !important;
+                  font-weight: 600 !important;
+                  margin-block: 0.35rem 0.2rem !important;
+                }
+                .vanguard-rich-editor h6 {
+                  font-size: 0.875rem !important;
+                  font-weight: 600 !important;
+                  color: #64748b !important;
+                  margin-block: 0.25rem 0.15rem !important;
+                }
+                .vanguard-rich-editor p {
+                  margin-bottom: 0.5rem !important;
+                  min-height: 1.25rem !important;
+                  line-height: 1.6 !important;
+                }
+                .vanguard-rich-editor blockquote {
+                  border-left: 4px solid #6366f1 !important;
+                  padding-left: 1rem !important;
+                  padding-block: 0.375rem !important;
+                  font-style: italic !important;
+                  color: #475569 !important;
+                  background-color: #f8fafc !important;
+                  border-radius: 0 0.375rem 0.375rem 0 !important;
+                  margin: 0.75rem 0 !important;
+                }
+                .vanguard-rich-editor pre {
+                  background-color: #0f172a !important;
+                  color: #f8fafc !important;
+                  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+                  font-size: 0.85rem !important;
+                  padding: 0.75rem 1rem !important;
+                  border-radius: 0.5rem !important;
+                  overflow-x: auto !important;
+                  margin: 0.75rem 0 !important;
+                }
+                .vanguard-rich-editor div {
+                  min-height: 1.2rem !important;
+                  margin-bottom: 0.25rem !important;
+                }
+                .vanguard-rich-editor [style*="text-align: justify"],
+                .vanguard-rich-editor p[align="justify"],
+                .vanguard-rich-editor div[align="justify"] {
+                  text-align: justify !important;
+                  text-justify: inter-word !important;
+                  width: 100% !important;
+                }
+                .vanguard-rich-editor [style*="text-align: center"],
+                .vanguard-rich-editor p[align="center"],
+                .vanguard-rich-editor div[align="center"] {
+                  text-align: center !important;
+                }
+                .vanguard-rich-editor [style*="text-align: right"],
+                .vanguard-rich-editor p[align="right"],
+                .vanguard-rich-editor div[align="right"] {
+                  text-align: right !important;
+                }
+                .vanguard-rich-editor [style*="text-align: left"],
+                .vanguard-rich-editor p[align="left"],
+                .vanguard-rich-editor div[align="left"] {
+                  text-align: left !important;
+                }
+              ` }} />
+
               {/* Editable Body */}
               <div
                 ref={editorRef}
@@ -1021,7 +1482,12 @@ export default function MyAccountPage() {
                     setSignatureHtml(editorRef.current.innerHTML);
                   }
                 }}
-                className="p-4 min-h-[220px] focus:outline-none text-xs text-slate-800 leading-relaxed font-sans"
+                onInput={() => {
+                  if (editorRef.current) {
+                    setSignatureHtml(editorRef.current.innerHTML);
+                  }
+                }}
+                className="vanguard-rich-editor p-4 min-h-[220px] focus:outline-none text-xs text-slate-800 leading-relaxed font-sans"
               />
             </div>
 
@@ -1044,42 +1510,61 @@ export default function MyAccountPage() {
             =================================================================== */}
         {activeTab === 'inbox_messages' && (
           <form onSubmit={handleSaveActiveTab} className="space-y-6">
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">
-                {t('tab_inbox_message_settings', 'Inbox Message Settings')}
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {t(
-                  'inbox_message_settings_desc',
-                  'Select which operational events and audit notifications dispatch directly to your inbox and alert feed.'
-                )}
-              </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+              <div>
+                <h2 className="text-sm font-bold text-slate-900">
+                  {t('tab_inbox_message_settings', 'Inbox Message Settings')}
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {t(
+                    'inbox_message_settings_desc',
+                    'Select which operational events and audit notifications dispatch directly to your inbox and alert feed.'
+                  )}
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs shrink-0 self-start sm:self-auto">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Live Supabase Sync</span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Group 1: Digital Menu */}
+              {/* Group 1: V-Menu (Digital Ordering & QR) */}
               <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-3">
-                <label className="flex items-center gap-2.5 cursor-pointer pb-2 border-b border-slate-200">
-                  <input
-                    type="checkbox"
-                    checked={inboxTree.digital_menu_group}
-                    onChange={() => handleParentToggle('digital_menu_group', ['new_omenu_order'])}
-                    className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
-                  />
-                  <span className="text-xs font-black text-slate-900">
-                    {t('digital_menu_group', 'Digital Menu')}
-                  </span>
-                </label>
-                <div className="ps-6 space-y-2">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                   <label className="flex items-center gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={inboxTree.new_omenu_order}
-                      onChange={() => handleChildToggle('new_omenu_order', 'digital_menu_group', [])}
+                      checked={inboxTree.vmenu_group}
+                      onChange={() => handleParentToggle('vmenu_group', ['new_vmenu_order'])}
+                      className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                    />
+                    <span className="text-xs font-black text-slate-900">
+                      {t('vmenu_group', 'V-Menu (Digital Ordering & QR)')}
+                    </span>
+                  </label>
+                  <Link
+                    href="/vmenu"
+                    target="_blank"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline px-2 py-0.5 rounded-md bg-white border border-slate-200 shadow-2xs"
+                  >
+                    <span>{t('open_vmenu', 'Open V-Menu')}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-tight">
+                  {t('vmenu_digital_desc', 'Customer digital orders, table QR scans, and sales rep assisted checkouts route directly through the V-Menu engine.')}
+                </p>
+                <div className="ps-6 space-y-2 pt-1">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={inboxTree.new_vmenu_order}
+                      onChange={() => handleChildToggle('new_vmenu_order', 'vmenu_group', [])}
                       className="w-3.5 h-3.5 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                     />
                     <span className="text-xs font-medium text-slate-700">
-                      {t('new_omenu_order', 'New O-menu Order')}
+                      {t('new_vmenu_order', 'New V-Menu Order')}
                     </span>
                   </label>
                 </div>
@@ -1121,21 +1606,35 @@ export default function MyAccountPage() {
                 </div>
               </div>
 
-              {/* Group 3: O-Track / Audits */}
+              {/* Group 3: V-Track (Live Audit & Fleet Engine) */}
               <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-3">
-                <label className="flex items-center gap-2.5 cursor-pointer pb-2 border-b border-slate-200">
-                  <input
-                    type="checkbox"
-                    checked={inboxTree.otrack_group}
-                    onChange={() => handleParentToggle('otrack_group', otrackChildren)}
-                    className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
-                  />
-                  <span className="text-xs font-black text-slate-900">
-                    {t('otrack_group', 'O Track')}
-                  </span>
-                </label>
-                <div className="ps-6 space-y-2">
-                  {otrackChildren.map((itemKey) => (
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={inboxTree.vtrack_group}
+                      onChange={() => handleParentToggle('vtrack_group', vtrackChildren)}
+                      className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                    />
+                    <span className="text-xs font-black text-slate-900">
+                      {t('vtrack_group', 'V-Track')}
+                    </span>
+                  </label>
+                  <Link
+                    href="/vtrack"
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 hover:text-emerald-800 hover:underline px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 shadow-2xs"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>{t('open_vtrack', 'Open V-Track Engine')}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-tight">
+                  {t('vtrack_audit_stream_desc', 'Live audit events (Void, Refund, Discount, Table Reservation, Receipt Cancellation) stream directly to active V-Track engine.')}
+                </p>
+                <div className="ps-6 space-y-2 pt-1">
+                  {vtrackChildren.map((itemKey) => (
                     <label key={itemKey} className="flex items-center gap-2.5 cursor-pointer">
                       <input
                         type="checkbox"
@@ -1143,8 +1642,8 @@ export default function MyAccountPage() {
                         onChange={() =>
                           handleChildToggle(
                             itemKey,
-                            'otrack_group',
-                            otrackChildren.filter((k) => k !== itemKey)
+                            'vtrack_group',
+                            vtrackChildren.filter((k) => k !== itemKey)
                           )
                         }
                         className="w-3.5 h-3.5 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"

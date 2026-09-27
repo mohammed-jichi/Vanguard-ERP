@@ -6,6 +6,8 @@
     "dev": "next dev",
     "dev:static": "node server.js",
     "build": "next build",
+    "postbuild": "node scripts/log_release.js",
+    "release:log": "node scripts/log_release.js",
     "start": "next start"
   },
   "dependencies": {

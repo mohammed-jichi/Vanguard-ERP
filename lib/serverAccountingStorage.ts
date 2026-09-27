@@ -116,7 +116,7 @@ export interface PersistedSystemActivity {
 
 export interface DynamicSystemAlert {
   id: string;
-  type: 'APPROVAL_REQUIRED' | 'UNCLOSED_CASE' | 'POSTING_SUCCESS' | 'SECURITY_ALERT';
+  type: 'APPROVAL_REQUIRED' | 'UNCLOSED_CASE' | 'POSTING_SUCCESS' | 'SECURITY_ALERT' | 'SYSTEM_RELEASE';
   severity: 'CRITICAL' | 'WARNING' | 'INFO';
   title: string;
   message: string;
@@ -129,7 +129,7 @@ export interface DynamicSystemAlert {
   actionLink?: string;
   actionLabel?: string;
   source_ref?: string;
-  source_type?: 'EXPENSE' | 'VOUCHER' | 'INBOX' | 'AUDIT';
+  source_type?: 'EXPENSE' | 'VOUCHER' | 'INBOX' | 'AUDIT' | 'RELEASE';
 }
 
 interface PersistentDatabaseState {
@@ -2359,6 +2359,33 @@ export class ServerAccountingStorage {
       }
     }
     writeDbState(state);
+
+    // Sync dismissal to Supabase
+    try {
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .maybeSingle();
+
+      if (tenantData) {
+        const flags = tenantData.feature_flags || {};
+        const remoteDismissed = Array.isArray(flags.dismissed_alert_ids) ? flags.dismissed_alert_ids : [];
+        if (!remoteDismissed.includes(alertId)) {
+          remoteDismissed.push(alertId);
+        }
+        await supabase
+          .from('tenants')
+          .update({
+            feature_flags: {
+              ...flags,
+              dismissed_alert_ids: remoteDismissed
+            }
+          })
+          .eq('id', '00000000-0000-0000-0000-000000000001');
+      }
+    } catch (e) {}
+
     return true;
   }
 
@@ -2547,6 +2574,55 @@ export class ServerAccountingStorage {
         }
       }
     }
+
+    // 5. Deployed System Release Alerts (from releases manifest)
+    try {
+      const manifestPath = path.resolve(process.cwd(), 'lib/releases_manifest.json');
+      if (fs.existsSync(manifestPath)) {
+        const manifestReleases = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        if (Array.isArray(manifestReleases) && manifestReleases.length > 0) {
+          // Check top 2 recent releases
+          const topReleases = manifestReleases.slice(0, 2);
+          for (const rel of topReleases) {
+            const relId = `alert-rel-${rel.short_hash || (rel.commit_hash ? rel.commit_hash.slice(0, 7) : 'head')}`;
+            if (!alerts.some((a) => a.id === relId)) {
+              const isDismissed = dismissedIds.has(relId);
+              if (!isDismissed) {
+                alerts.push({
+                  id: relId,
+                  type: 'SYSTEM_RELEASE',
+                  severity: rel.is_critical ? 'CRITICAL' : 'INFO',
+                  title: `🚀 Platform Release ${rel.version}: ${rel.title}`,
+                  message: rel.description || (rel.bullet_points && rel.bullet_points[0]) || 'System deployment completed successfully.',
+                  timestamp: rel.deployed_at || rel.created_at || new Date().toISOString(),
+                  is_read: false,
+                  status: 'PENDING',
+                  source_ref: rel.commit_hash,
+                  source_type: 'RELEASE',
+                  actionLink: '/backoffice?openUpdates=true',
+                  actionLabel: 'View Release Notes'
+                });
+              } else if (includeResolved) {
+                alerts.push({
+                  id: relId,
+                  type: 'SYSTEM_RELEASE',
+                  severity: 'INFO',
+                  title: `Acknowledged Release: ${rel.version} (${rel.short_hash})`,
+                  message: rel.title,
+                  timestamp: rel.deployed_at || rel.created_at || new Date().toISOString(),
+                  is_read: true,
+                  status: 'RESOLVED',
+                  source_ref: rel.commit_hash,
+                  source_type: 'RELEASE',
+                  actionLink: '/backoffice?openUpdates=true',
+                  actionLabel: 'View Release Notes'
+                });
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {}
 
     // 5. Search Filter (if applied)
     let filteredAlerts = alerts;

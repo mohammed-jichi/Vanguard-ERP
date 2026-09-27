@@ -36,8 +36,10 @@ import {
   ArrowRight,
   Filter,
   Store,
-  Lock
+  Lock,
+  QrCode
 } from 'lucide-react';
+import VMenuQrGeneratorConsole from '@/components/modules/sales/VMenuQrGeneratorConsole';
 import { getBranchData, getAllBranchesList, BranchInfo } from '@/lib/branchData';
 import { useTenant } from '@/lib/TenantContext';
 
@@ -68,7 +70,7 @@ export default function AuthenticVanguardSalesDashboard() {
   const [chartMode, setChartMode] = useState<'pie' | 'line'>('pie');
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'summary' | 'comparative' | 'customers' | 'today' | 'geographics' | 'vtrack'>('summary');
+  const [activeTab, setActiveTab] = useState<'summary' | 'comparative' | 'customers' | 'today' | 'geographics' | 'vtrack' | 'vmenu_qr'>('summary');
   const [customerTopN, setCustomerTopN] = useState<number>(10);
   const [customerGroupFilter, setCustomerGroupFilter] = useState<string>('All Groups');
 
@@ -78,6 +80,15 @@ export default function AuthenticVanguardSalesDashboard() {
       setActiveTab('summary');
     }
   }, [isFleetEnabled, activeTab]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const tabParam = new URLSearchParams(window.location.search).get('tab');
+      if (tabParam === 'vmenu_qr') {
+        setActiveTab('vmenu_qr');
+      }
+    }
+  }, []);
 
   const renderFleetEntitlementNotice = (featureName: string) => (
     <div className="bg-white border border-amber-200 rounded-2xl p-8 text-center space-y-4 shadow-sm max-w-xl mx-auto my-8">
@@ -1113,6 +1124,14 @@ export default function AuthenticVanguardSalesDashboard() {
               <Truck className="w-4 h-4" /> VTrack
             </Link>
           )}
+
+          <button 
+            type="button"
+            onClick={() => setActiveTab('vmenu_qr')}
+            className={`vanguard-pill-btn ${activeTab === 'vmenu_qr' ? 'active' : ''}`}
+          >
+            <QrCode className="w-4 h-4" /> V-Menu & QR Generator
+          </button>
 
           <button 
             type="button"
@@ -3816,6 +3835,13 @@ export default function AuthenticVanguardSalesDashboard() {
           <span>|</span>
           <a href="#" className="hover:underline">Feedback</a>
         </div>
+
+        {/* V-Menu & QR Generator Tab */}
+        {activeTab === 'vmenu_qr' && (
+          <div className="mt-4">
+            <VMenuQrGeneratorConsole />
+          </div>
+        )}
 
       </div>
 
