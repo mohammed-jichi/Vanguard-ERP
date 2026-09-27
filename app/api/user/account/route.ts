@@ -149,6 +149,20 @@ export async function POST(request: Request) {
       user_account_preferences: updatedPrefs,
     };
 
+    if (section === 'inbox_messages') {
+      try {
+        await supabase
+          .from('user_notification_preferences')
+          .upsert({
+            tenant_id: tenantId,
+            preferences: payload,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'tenant_id' });
+      } catch (tableErr: any) {
+        // Silently catch if table does not exist yet in schema
+      }
+    }
+
     const { error: updateError } = await supabase
       .from('tenants')
       .update({ feature_flags: newFeatureFlags })

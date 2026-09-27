@@ -249,7 +249,7 @@ export default function MyAccountPage() {
 
       const resData = await res.json();
       if (!res.ok || !resData.success) {
-        throw new Error(resData.error || 'Failed to save settings');
+        throw new Error(resData.error || t('failed_to_save_settings', 'Failed to save settings'));
       }
 
       showToast(t('saved_successfully', 'Saved successfully!'), 'success');
@@ -261,7 +261,7 @@ export default function MyAccountPage() {
       }
     } catch (err: any) {
       console.error('Error saving account settings:', err);
-      showToast(err.message || 'Error occurred while saving', 'error');
+      showToast(err.message || t('error_occurred_saving', 'Error occurred while saving'), 'error');
     } finally {
       setIsSaving(false);
     }
@@ -561,9 +561,9 @@ export default function MyAccountPage() {
                   onChange={(e) => setDefaultBrand(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none transition-all cursor-pointer"
                 >
-                  <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub</option>
-                  <option value="Southern Olive Pressing Mill">Southern Olive Pressing Mill</option>
-                  <option value="Vanguard Distribution Hub">Vanguard Distribution Hub</option>
+                  <option value="Zeit w zaytoun ljanoub">{t('brand_zeit_w_zaytoun', 'Zeit w zaytoun ljanoub')}</option>
+                  <option value="Southern Olive Pressing Mill">{t('brand_southern_olive', 'Southern Olive Pressing Mill')}</option>
+                  <option value="Vanguard Distribution Hub">{t('brand_vanguard_hub', 'Vanguard Distribution Hub')}</option>
                 </select>
               </div>
 
@@ -577,8 +577,8 @@ export default function MyAccountPage() {
                   onChange={(e) => setDefaultAccountingCompany(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none transition-all cursor-pointer"
                 >
-                  <option value="Southern Olive Oil Products S.A.R.L">Southern Olive Oil Products S.A.R.L</option>
-                  <option value="Vanguard Trading International">Vanguard Trading International</option>
+                  <option value="Southern Olive Oil Products S.A.R.L">{t('company_southern_olive', 'Southern Olive Oil Products S.A.R.L')}</option>
+                  <option value="Vanguard Trading International">{t('company_vanguard_trading', 'Vanguard Trading International')}</option>
                 </select>
               </div>
             </div>
@@ -740,10 +740,10 @@ export default function MyAccountPage() {
                         onChange={(e) => setSecurityQuestion(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-blue-500 cursor-pointer"
                       >
-                        <option value="What was your childhood nickname?">What was your childhood nickname?</option>
-                        <option value="What is the name of your favorite pet?">What is the name of your favorite pet?</option>
-                        <option value="What was the make of your first car?">What was the make of your first car?</option>
-                        <option value="What city were you born in?">What city were you born in?</option>
+                        <option value="What was your childhood nickname?">{t('sec_q_nickname', 'What was your childhood nickname?')}</option>
+                        <option value="What is the name of your favorite pet?">{t('sec_q_pet', 'What is the name of your favorite pet?')}</option>
+                        <option value="What was the make of your first car?">{t('sec_q_car', 'What was the make of your first car?')}</option>
+                        <option value="What city were you born in?">{t('sec_q_city', 'What city were you born in?')}</option>
                       </select>
                     </div>
 
@@ -755,7 +755,7 @@ export default function MyAccountPage() {
                         type="text"
                         value={securityAnswer}
                         onChange={(e) => setSecurityAnswer(e.target.value)}
-                        placeholder="Enter answer..."
+                        placeholder={t('enter_answer_placeholder', 'Enter answer...')}
                         className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-blue-500"
                       />
                     </div>
@@ -880,27 +880,27 @@ export default function MyAccountPage() {
                 >
                   <option value="" disabled>{t('formats', 'Formats')}</option>
                   <optgroup label={t('headings', 'Headings')}>
-                    <option value="h1">Heading 1</option>
-                    <option value="h2">Heading 2</option>
-                    <option value="h3">Heading 3</option>
-                    <option value="h4">Heading 4</option>
-                    <option value="h5">Heading 5</option>
-                    <option value="h6">Heading 6</option>
+                    <option value="h1">{t('heading_1', 'Heading 1')}</option>
+                    <option value="h2">{t('heading_2', 'Heading 2')}</option>
+                    <option value="h3">{t('heading_3', 'Heading 3')}</option>
+                    <option value="h4">{t('heading_4', 'Heading 4')}</option>
+                    <option value="h5">{t('heading_5', 'Heading 5')}</option>
+                    <option value="h6">{t('heading_6', 'Heading 6')}</option>
                   </optgroup>
                   <optgroup label={t('inline_styles', 'Inline')}>
                     <option value="bold">{t('bold', 'Bold')}</option>
                     <option value="italic">{t('italic', 'Italic')}</option>
                     <option value="underline">{t('underline', 'Underline')}</option>
                     <option value="strikeThrough">{t('strikethrough', 'Strikethrough')}</option>
-                    <option value="superscript">Superscript</option>
-                    <option value="subscript">Subscript</option>
-                    <option value="code">Code</option>
+                    <option value="superscript">{t('superscript', 'Superscript')}</option>
+                    <option value="subscript">{t('subscript', 'Subscript')}</option>
+                    <option value="code">{t('code', 'Code')}</option>
                   </optgroup>
                   <optgroup label={t('blocks', 'Blocks')}>
-                    <option value="p">Paragraph</option>
-                    <option value="blockquote">Blockquote</option>
-                    <option value="div">Div</option>
-                    <option value="pre">Pre</option>
+                    <option value="p">{t('paragraph', 'Paragraph')}</option>
+                    <option value="blockquote">{t('blockquote', 'Blockquote')}</option>
+                    <option value="div">{t('div', 'Div')}</option>
+                    <option value="pre">{t('pre', 'Pre')}</option>
                   </optgroup>
                   <optgroup label={t('alignment', 'Alignment')}>
                     <option value="justifyLeft">{t('align_left', 'Align Left')}</option>
