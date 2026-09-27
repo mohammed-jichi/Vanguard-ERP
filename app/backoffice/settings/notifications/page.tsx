@@ -434,7 +434,7 @@ export default function AlertsAndNotificationsConsole() {
             type="button"
             onClick={() => fetchLiveEmployees()}
             className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors"
-            title="Refresh database records"
+            title={t('refresh_database_records', 'Refresh database records')}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
           </button>
@@ -465,7 +465,7 @@ export default function AlertsAndNotificationsConsole() {
                 rel="noreferrer"
                 className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center gap-1 transition-colors"
               >
-                <span>WhatsApp Web</span>
+                <span>{t('whatsapp_web', 'WhatsApp Web')}</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             )}
@@ -475,7 +475,7 @@ export default function AlertsAndNotificationsConsole() {
               rel="noreferrer"
               className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] flex items-center gap-1 transition-colors"
             >
-              <span>Test Confirmation Link</span>
+              <span>{t('test_confirmation_link', 'Test Confirmation Link')}</span>
               <ExternalLink className="w-3 h-3" />
             </a>
             <button
@@ -665,7 +665,7 @@ export default function AlertsAndNotificationsConsole() {
                       {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
                           <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
-                          <span>Connecting to Supabase...</span>
+                          <span>{t('connecting_to_database', 'Connecting to database...')}</span>
                         </div>
                       ) : (
                         t('no_matching_employees', 'No matching employee records found in system database.')
@@ -691,7 +691,7 @@ export default function AlertsAndNotificationsConsole() {
 
                         {/* Email Address */}
                         <td className="py-3 px-3 font-mono text-slate-700 text-[11px]">
-                          {emp.email || <span className="text-slate-300 italic">None</span>}
+                          {emp.email || <span className="text-slate-300 italic">{t('none', 'None')}</span>}
                         </td>
 
                         {/* Email Verified Gate */}
@@ -709,7 +709,7 @@ export default function AlertsAndNotificationsConsole() {
                               onClick={() => handleDispatchVerification(emp, 'email')}
                               disabled={isDispatchingEmail || !emp.email}
                               className="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-[10.5px] shadow-2xs transition-all cursor-pointer disabled:opacity-50"
-                              title="Click to dispatch live verification email"
+                              title={t('dispatch_email_hint', 'Click to dispatch live verification email')}
                             >
                               {isDispatchingEmail ? t('dispatching', 'Dispatching...') : t('verify', 'Verify')}
                             </button>
@@ -737,7 +737,7 @@ export default function AlertsAndNotificationsConsole() {
 
                         {/* Phone Number */}
                         <td className="py-3 px-3 font-mono text-slate-700 text-[11px]">
-                          {emp.phone || <span className="text-slate-300 italic">None</span>}
+                          {emp.phone || <span className="text-slate-300 italic">{t('none', 'None')}</span>}
                         </td>
 
                         {/* Phone Verified Gate */}
@@ -755,7 +755,7 @@ export default function AlertsAndNotificationsConsole() {
                               onClick={() => handleDispatchVerification(emp, 'phone')}
                               disabled={isDispatchingPhone || !emp.phone}
                               className="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-[10.5px] shadow-2xs transition-all cursor-pointer disabled:opacity-50"
-                              title="Click to dispatch live WhatsApp verification"
+                              title={t('dispatch_whatsapp_hint', 'Click to dispatch live WhatsApp verification')}
                             >
                               {isDispatchingPhone ? t('dispatching', 'Dispatching...') : t('verify', 'Verify')}
                             </button>
@@ -897,7 +897,7 @@ export default function AlertsAndNotificationsConsole() {
                       {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
                           <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
-                          <span>Connecting to Supabase...</span>
+                          <span>{t('connecting_to_database', 'Connecting to database...')}</span>
                         </div>
                       ) : (
                         t('no_matching_employees', 'No matching employee records found in system database.')
@@ -917,7 +917,7 @@ export default function AlertsAndNotificationsConsole() {
                             checked={isAllRowSelected}
                             onChange={() => handleToggleRowMaster(emp.id)}
                             className="rounded border-slate-300 text-blue-600 focus:ring-0 w-4 h-4 cursor-pointer"
-                            title="Toggle all 3 alert categories"
+                            title={t('toggle_all_categories', 'Toggle all 3 alert categories')}
                           />
                         </td>
 
