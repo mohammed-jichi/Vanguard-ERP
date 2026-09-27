@@ -675,7 +675,7 @@ export default function OrganizationSettingsPage() {
                               <span>Registered Facility Branches (1 Detail Row)</span>
                             </span>
                             <span className="text-[11px] font-mono text-slate-400">
-                              Cust ID# 1300
+                              Facility ID# 1300
                             </span>
                           </div>
 
@@ -683,7 +683,7 @@ export default function OrganizationSettingsPage() {
                             <table className="w-full text-left text-xs border-collapse">
                               <thead>
                                 <tr className="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[10.5px] border-b border-slate-200">
-                                  <th className="py-2.5 px-3.5">Cust ID#</th>
+                                  <th className="py-2.5 px-3.5">FACILITY ID#</th>
                                   <th className="py-2.5 px-3.5">Branch ID#</th>
                                   <th className="py-2.5 px-3.5">Branch Name</th>
                                   <th className="py-2.5 px-3.5">Address</th>
@@ -698,7 +698,7 @@ export default function OrganizationSettingsPage() {
                                     Southern Olive and Oil Products - Main
                                   </td>
                                   <td className="py-2.5 px-3.5 text-slate-600">
-                                    Old Saida Road, Lebanon
+                                    Old Saida Road, Choueifat, Lebanon
                                   </td>
                                   <td className="py-2.5 px-3.5 text-center">
                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">

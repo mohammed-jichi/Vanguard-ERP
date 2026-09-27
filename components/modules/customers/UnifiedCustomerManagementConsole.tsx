@@ -241,6 +241,10 @@ export default function UnifiedCustomerManagementConsole() {
       case 'categories': return 'categories';
       case 'tags': return 'tags';
       case 'leads_settings': return 'leads_settings';
+      case 'branches':
+      case 'brands':
+      case 'facilities':
+      case 'company_info': return 'branches';
       default: return 'customers';
     }
   }, [rawSection]);
@@ -443,6 +447,7 @@ export default function UnifiedCustomerManagementConsole() {
             {activeSection === 'categories' && t('customers_categories_config', 'Customers Categories Configuration')}
             {activeSection === 'tags' && t('customers_tags_config', 'Customers Tags Configuration')}
             {activeSection === 'leads_settings' && t('leads_pipeline_settings', 'Leads Pipeline Settings & Stages')}
+            {activeSection === 'branches' && t('brands_sub_branches_directory', 'Brands & Sub-Branches Directory')}
           </h1>
         </div>
 
@@ -953,6 +958,76 @@ export default function UnifiedCustomerManagementConsole() {
               <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block">Stage 4: Converted Client</span>
               <span className="text-sm font-bold text-slate-900 block">Account Created & Enrolled</span>
               <p className="text-[11px] text-slate-500">Syncs debtor account to Accounts Receivable and generates welcome pack.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Brands & Sub-Branches Directory */}
+      {activeSection === 'branches' && (
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-2">
+            <div>
+              <h2 className="font-bold text-slate-900 text-sm">
+                {t('brands_sub_branches_directory', 'Brands & Sub-Branches Directory')}
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {t('brands_sub_branches_desc', 'Registered entity brand profiles, facility branches, and physical operations centers')}
+              </p>
+            </div>
+            <span className="text-xs font-bold text-slate-500 font-mono">
+              1 Registered Brand Entity
+            </span>
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <table className="w-full text-left rtl:text-right text-xs border-collapse">
+              <thead>
+                <tr className="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                  <th className="py-2.5 px-3.5">FACILITY ID#</th>
+                  <th className="py-2.5 px-3.5">Branch ID#</th>
+                  <th className="py-2.5 px-3.5">Branch Name</th>
+                  <th className="py-2.5 px-3.5">Address</th>
+                  <th className="py-2.5 px-3.5">Facility Type</th>
+                  <th className="py-2.5 px-3.5 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="hover:bg-slate-50 transition">
+                  <td className="py-2.5 px-3.5 font-mono font-bold text-blue-700">1300</td>
+                  <td className="py-2.5 px-3.5 font-mono font-bold text-slate-900">1</td>
+                  <td className="py-2.5 px-3.5 font-bold text-slate-900">
+                    Southern Olive and Oil Products - Main
+                  </td>
+                  <td className="py-2.5 px-3.5 text-slate-600">
+                    Old Saida Road, Choueifat, Lebanon
+                  </td>
+                  <td className="py-2.5 px-3.5 font-semibold text-slate-900">
+                    Corporate Mill &amp; Commercial Hub
+                  </td>
+                  <td className="py-2.5 px-3.5 text-center">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      Active
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-2">
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Facility Code</span>
+              <span className="font-mono font-bold text-slate-900 mt-1 block">SO-HQ-MAIN-01</span>
+            </div>
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Facility Type</span>
+              <span className="font-bold text-slate-900 mt-1 block">Corporate Mill &amp; Commercial Hub</span>
+            </div>
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Operational Status</span>
+              <span className="font-bold text-emerald-700 mt-1 block">Fully Operational / Online</span>
             </div>
           </div>
         </div>
