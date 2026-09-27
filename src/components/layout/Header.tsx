@@ -79,12 +79,6 @@ export default function VanguardHeader({ onSelectScreen }: HeaderProps = {}) {
               </p>
             </div>
 
-            {/* Language Trigger */}
-            <div className="p-2 border-t border-b border-slate-100 my-1 flex items-center justify-between text-xs">
-              <span className="text-slate-500 font-medium">Language</span>
-              <span className="font-mono text-[10px] font-bold uppercase bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{language}</span>
-            </div>
-
             {/* Account & Settings Links */}
             <button
               type="button"

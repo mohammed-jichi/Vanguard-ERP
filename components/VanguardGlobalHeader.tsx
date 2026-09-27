@@ -516,22 +516,6 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>{t('alerts_notifications', 'Alerts & Notifications')}</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsProfileOpen(false);
-                    setIsLangModalOpen(true);
-                  }}
-                  className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center justify-between transition-colors cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span>{t('language', 'Language')}</span>
-                  </span>
-                  <span className="text-[10px] font-mono uppercase bg-slate-100 px-2 py-0.5 rounded font-bold text-slate-600 border border-slate-200">
-                    {language}
-                  </span>
-                </button>
                 <div className="p-2 border-b border-gray-100 bg-emerald-50/70 rounded-xl mb-1 text-left">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">

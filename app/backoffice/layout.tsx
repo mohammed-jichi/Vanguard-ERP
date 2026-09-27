@@ -555,23 +555,6 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       <span className="text-sm">💬</span> <span>{t('notifications_inbox', 'Notifications & Inbox')}</span>
                     </Link>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUserDropdownOpen(false);
-                        setIsLangModalOpen(true);
-                      }}
-                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center justify-between text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <span className="text-sm">🌐</span>
-                        <span>{t('language', 'Language')}</span>
-                      </span>
-                      <span className="text-[10px] font-mono uppercase bg-slate-100 px-2 py-0.5 rounded font-bold text-slate-600 border border-slate-200">
-                        {language}
-                      </span>
-                    </button>
-
                     <Link
                       href={`/${orgId}/settings/account`}
                       onClick={() => setUserDropdownOpen(false)}
