@@ -576,14 +576,14 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('cust'); }}
-            title={t('crm_debtors', '3. Customer Management')}
+            title={t('customer_management', '3. Customer Management')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['cust'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
               <Users className="w-4 h-4 text-primary shrink-0" />
-              {isOpen && <span className="truncate font-semibold">{t('crm_debtors', '3. Customer Management')}</span>}
+              {isOpen && <span className="truncate font-semibold">{t('customer_management', '3. Customer Management')}</span>}
             </div>
             {isOpen && (expandedGroups['cust'] ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
           </button>
@@ -1123,9 +1123,8 @@ export default function Sidebar({
         )}
 
         {/* ===================================================================
-            MODULE 6: SUPERSONIC FLEET MANAGEMENT
+            MODULE 6: SUPERSONIC FLEET MANAGEMENT (DISPATCH & FLEET LOGISTICS)
             =================================================================== */}
-        {isModuleEnabled('fleet') && (
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('supersonic'); }}
@@ -1182,7 +1181,6 @@ export default function Sidebar({
             </div>
           )}
         </div>
-        )}
 
         {/* ===================================================================
             MODULE 7: V-CONNECT (SOCIAL CRM & SUPPORT)
@@ -1191,7 +1189,7 @@ export default function Sidebar({
         <div>
           <button
             onClick={() => { ensureOpen(); toggleGroup('social'); }}
-            title={t('social_crm', '7. V-Connect (Social CRM & Support)')}
+            title={t('v_connect', '7. V-Connect (Communications & Omnichannel)')}
             className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
               expandedGroups['social'] ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
             }`}
@@ -1200,7 +1198,7 @@ export default function Sidebar({
               <Share2 className="w-4 h-4 text-primary shrink-0" />
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{t('social_crm', '7. V-Connect (Social CRM & Support)')}</span>
+                  <span>{t('v_connect', '7. V-Connect (Communications & Omnichannel)')}</span>
                   <span className="bg-cyan-100 text-cyan-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('connect', 'CONNECT')}</span>
                 </span>
               )}
