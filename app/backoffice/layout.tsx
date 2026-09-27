@@ -538,21 +538,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       onClick={() => setUserDropdownOpen(false)}
                       className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
                     >
-                      <span className="text-sm">🔔</span>
-                      <div className="flex flex-col">
-                        <span>{t('alerts_notifications_title', 'Alerts & Notifications')}</span>
-                        <span className="text-[10px] text-slate-400 font-normal">
-                          {t('employee_alerts_config_sub', 'Employee Alerts & Notifications Configurations')}
-                        </span>
-                      </div>
-                    </Link>
-
-                    <Link
-                      href="/backoffice/inbox"
-                      onClick={() => setUserDropdownOpen(false)}
-                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
-                    >
-                      <span className="text-sm">💬</span> <span>{t('notifications_inbox', 'Notifications & Inbox')}</span>
+                      <span className="text-sm">🔔</span> <span>{t('alerts_notifications_title', 'Alerts & Notifications')}</span>
                     </Link>
 
                     <Link
