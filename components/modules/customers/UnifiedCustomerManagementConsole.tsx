@@ -913,6 +913,51 @@ export default function UnifiedCustomerManagementConsole() {
         </div>
       )}
 
+      {/* Leads Pipeline Settings */}
+      {activeSection === 'leads_settings' && (
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-2">
+            <div>
+              <h2 className="font-bold text-slate-900 text-sm">
+                {t('leads_settings_title', 'Leads Settings & Commercial Pipeline Automation')}
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {t('leads_settings_desc', 'Configure lead qualification criteria, acquisition stages, and SLA response assignment rules')}
+              </p>
+            </div>
+            <button className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-xs font-bold shadow-xs transition cursor-pointer">
+              {t('add_pipeline_stage', '+ Add Pipeline Stage')}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+              <span className="text-xs font-bold text-blue-700 uppercase tracking-wider block">Stage 1: Inbound Lead</span>
+              <span className="text-sm font-bold text-slate-900 block">Social DMs & WhatsApp Inquiries</span>
+              <p className="text-[11px] text-slate-500">Auto-routes to regional rep with 5-minute initial SLA response counter.</p>
+            </div>
+
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+              <span className="text-xs font-bold text-amber-700 uppercase tracking-wider block">Stage 2: Commercial Check</span>
+              <span className="text-sm font-bold text-slate-900 block">KYC & Credit Verification</span>
+              <p className="text-[11px] text-slate-500">Validates commercial registration and assigns wholesale discount group.</p>
+            </div>
+
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+              <span className="text-xs font-bold text-purple-700 uppercase tracking-wider block">Stage 3: Quotation Sent</span>
+              <span className="text-sm font-bold text-slate-900 block">Proforma Invoicing Dispatched</span>
+              <p className="text-[11px] text-slate-500">Linked directly to Operations Center quotations and inventory reservation.</p>
+            </div>
+
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+              <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block">Stage 4: Converted Client</span>
+              <span className="text-sm font-bold text-slate-900 block">Account Created & Enrolled</span>
+              <p className="text-[11px] text-slate-500">Syncs debtor account to Accounts Receivable and generates welcome pack.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MODAL 1: ADD NEW COMMERCIAL CUSTOMER / DEBTOR */}
       {isCustomerModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">

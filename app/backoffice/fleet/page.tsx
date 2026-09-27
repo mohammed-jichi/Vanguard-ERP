@@ -314,7 +314,7 @@ function SuperSonicFleetPageContent() {
           <div className="flex items-center gap-2">
             <span className="text-xl">🚚</span>
             <h1 className="text-xl font-extrabold text-foreground tracking-tight">
-              8. Supersonic Fleet: {' '}
+              6. Supersonic Fleet Management: {' '}
               {activeTab === 'southern-olive' && 'Southern Olive Oil In-House Orders'}
               {activeTab === '3pl-orders' && 'SuperSonic 3PL Commercial Orders'}
               {activeTab === 'dispatch' && 'Corridors & Regional Dispatch (Assign Drivers & En-Route)'}

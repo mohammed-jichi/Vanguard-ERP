@@ -67,8 +67,9 @@ import {
   Share2,
   Navigation,
   Scale,
-  Globe,
-  Headphones
+  Headphones,
+  Smartphone,
+  Download
 } from 'lucide-react';
 
 export interface NavSubItem {
@@ -401,7 +402,8 @@ export const navigationConfig: NavItem[] = [
     icon: Navigation,
     items: [
       { title: 'Fleet Dashboard', href: '/supersonic/dashboard', icon: LayoutDashboard },
-      { title: 'V-Driver Mobile PWA', href: '/v-driver', icon: Truck },
+      { title: 'Launch V-Driver App / PWA', href: '/v-driver', icon: Smartphone },
+      { title: 'V-Driver PWA Manifest', href: '/manifest-driver.json', icon: Download },
       { title: 'Fleet Reports', href: '/supersonic/reports', icon: FileBarChart },
       { title: 'Active Dispatches', href: '/supersonic/dispatches', icon: Truck },
       { title: 'Driver Management', href: '/supersonic/drivers', icon: UserCheck },
@@ -420,7 +422,8 @@ export const navigationConfig: NavItem[] = [
     items: [
       { title: 'V-Connect Hub', href: '/connect', icon: MessageSquare },
       { title: 'Social CRM Dashboard', href: '/social-crm/dashboard', icon: LayoutDashboard },
-      { title: 'Sales Rep Mobile PWA', href: '/sales-rep', icon: Users },
+      { title: 'Launch V-Connect Agent Client', href: '/sales-rep', icon: Smartphone },
+      { title: 'V-Connect PWA Manifest', href: '/manifest-sales.json', icon: Download },
       { title: 'Reports Hub', href: '/social-crm/reports', icon: FileBarChart },
       { title: 'Omnichannel Inbox', href: '/social-crm/inbox', icon: MessageSquare },
       { title: 'Campaign Analytics', href: '/social-crm/campaigns', icon: FileBarChart },
@@ -446,21 +449,10 @@ export const navigationConfig: NavItem[] = [
       { title: 'Settlements & Milling Fees', href: '/pressing-mill/settlements', path: '/pressing-mill/settlements', icon: DollarSign },
       { title: 'Oil Handover & Dispatch', href: '/pressing-mill/dispatch', path: '/pressing-mill/dispatch', icon: Truck },
       { title: 'Direct Counter Sales & POS', href: '/pressing-mill/pos', path: '/pressing-mill/pos', icon: ShoppingCart },
+      { title: 'Touch Workstation Client', href: '/pressing-mill/pos', path: '/pressing-mill/pos', icon: Monitor },
+      { title: 'Industrial Kiosk Manifest', href: '/manifest-mill.json', icon: Download },
       { title: 'Directory & Ledgers', href: '/pressing-mill/directory', path: '/pressing-mill/directory', icon: BookOpen },
       { title: 'Mill Settings & Line Config', href: '/pressing-mill/setup', path: '/pressing-mill/setup', icon: Settings }
-    ]
-  },
-
-  // ==========================================
-  // 9. V-STORE (ONLINE STOREFRONT)
-  // ==========================================
-  {
-    title: '9. V-Store (Online Storefront)',
-    icon: Globe,
-    href: '/backoffice/online-orders',
-    items: [
-      { title: 'Online Orders', href: '/backoffice/online-orders', icon: ShoppingCart },
-      { title: 'Customer Storefront', href: '/landing', icon: Globe }
     ]
   }
 ];

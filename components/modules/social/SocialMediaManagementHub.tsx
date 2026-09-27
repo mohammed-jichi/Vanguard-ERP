@@ -696,7 +696,7 @@ export default function SocialMediaManagementHub({
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-primary"></span>
               <h1 className="text-[20px] font-bold text-foreground tracking-tight">
-                {t('vconnect_title', '10. V-Connect (Social CRM & Support Management Hub)')}
+                {t('vconnect_title', '7. V-Connect (Social CRM & Support Management Hub)')}
               </h1>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 font-medium">

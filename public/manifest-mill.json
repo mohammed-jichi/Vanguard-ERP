@@ -1,0 +1,25 @@
+{
+  "name": "Pressing Mill Engine — Industrial Workstation",
+  "short_name": "Mill Workstation",
+  "description": "Vanguard ERP Industrial Touch-Screen Olive Pressing & Weighbridge Workstation",
+  "start_url": "/pressing-mill/pos",
+  "scope": "/pressing-mill",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#064e3b",
+  "theme_color": "#047857",
+  "categories": ["business", "productivity", "manufacturing"],
+  "icons": [
+    {
+      "src": "/vanguard-emblem.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/vanguard-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

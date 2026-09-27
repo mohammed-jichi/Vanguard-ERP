@@ -79,7 +79,9 @@ import {
   ShoppingBag,
   MessageCircle,
   Activity,
-  Target
+  Target,
+  Smartphone,
+  Download
 } from 'lucide-react';
 
 import { useRouter, usePathname } from 'next/navigation';
@@ -87,6 +89,7 @@ import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import { isModuleLicensed } from '@/lib/license';
 import TenantSettingsModal from './TenantSettingsModal';
+import StandaloneAppDownloadModal, { StandaloneAppType } from './StandaloneAppDownloadModal';
 
 interface SidebarProps {
   activeScreen?: string;
@@ -109,6 +112,7 @@ export default function Sidebar({
   const { language, dir, t } = useLanguage();
   const [internalIsOpen, setInternalIsOpen] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [downloadAppModal, setDownloadAppModal] = useState<StandaloneAppType | null>(null);
   const [sidebarFilter, setSidebarFilter] = useState<string>('');
 
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
@@ -1158,6 +1162,23 @@ export default function Sidebar({
                 <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5 text-blue-600" /> {t('vtrack_geographics', 'V-Track Geographics')}</span>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-black">{t('active', 'ACTIVE')}</span>
               </Link>
+
+              {/* Standalone V-Driver Portal & Download Trigger */}
+              <div className="pt-1 mt-1 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setDownloadAppModal('v-driver')}
+                  className="w-full text-start p-1.5 bg-blue-50/80 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg flex items-center justify-between font-bold transition-all shadow-2xs group cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Smartphone className="w-3.5 h-3.5 text-blue-700 shrink-0" />
+                    <span>{t('launch_vdriver_app', 'V-Driver App / PWA')}</span>
+                  </span>
+                  <span className="text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-black flex items-center gap-0.5">
+                    <Download className="w-2.5 h-2.5" /> PWA
+                  </span>
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -1205,6 +1226,23 @@ export default function Sidebar({
               <Link href="/backoffice/social-crm?tab=inbox" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('omnichannel_inbox', 'Omnichannel Inbox')}</Link>
               <Link href="/backoffice/social-crm?tab=campaigns" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('campaign_analytics', 'Campaign Analytics')}</Link>
               <Link href="/backoffice/social-crm?tab=bots" className="w-full text-start p-1.5 hover:text-primary hover:bg-slate-50 rounded transition-colors block">{t('automation_bots', 'Automation Bots')}</Link>
+
+              {/* Standalone V-Connect Portal & Download Trigger */}
+              <div className="pt-1 mt-1 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setDownloadAppModal('v-connect')}
+                  className="w-full text-start p-1.5 bg-cyan-50/80 hover:bg-cyan-100 text-cyan-900 border border-cyan-200 rounded-lg flex items-center justify-between font-bold transition-all shadow-2xs group cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Smartphone className="w-3.5 h-3.5 text-cyan-700 shrink-0" />
+                    <span>{t('launch_vconnect_client', 'V-Connect Agent Client')}</span>
+                  </span>
+                  <span className="text-[9px] bg-cyan-700 text-white px-1.5 py-0.5 rounded font-black flex items-center gap-0.5">
+                    <Download className="w-2.5 h-2.5" /> CLIENT
+                  </span>
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -1336,45 +1374,23 @@ export default function Sidebar({
               >
                 {t('pm_setup', 'Mill Settings & Line Config')}
               </Link>
-            </div>
-          )}
-        </div>
-        )}
 
-        {/* ===================================================================
-            MODULE 9: V-STORE (ONLINE STOREFRONT & E-COMMERCE)
-            =================================================================== */}
-        {isModuleEnabled('v-store') && (
-        <div>
-          <button
-            onClick={() => { ensureOpen(); toggleGroup('v-store'); }}
-            title={t('online_orders', '9. V-Store (Online Storefront)')}
-            className={`w-full flex items-center ${isOpen ? 'justify-between px-2.5 py-2' : 'justify-center p-2.5'} rounded-lg transition-colors ${
-              (expandedGroups['v-store'] || expandedGroups['store']) ? 'bg-slate-50 text-primary font-bold' : 'hover:bg-slate-50 hover:text-primary text-slate-700'
-            }`}
-          >
-            <div className="flex items-center gap-2.5">
-              <Globe className="w-4 h-4 text-emerald-600 shrink-0" />
-              {isOpen && (
-                <span className="truncate flex items-center gap-1 font-semibold">
-                  <span>{t('online_orders', '9. V-Store (Online Storefront)')}</span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1 py-0.2 rounded font-bold">{t('web', 'WEB')}</span>
-                </span>
-              )}
-            </div>
-            {isOpen && ((expandedGroups['v-store'] || expandedGroups['store']) ? <ChevronDown className="w-3.5 h-3.5 text-slate-500" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-500" />)}
-          </button>
-
-          {isOpen && (expandedGroups['v-store'] || expandedGroups['store']) && (
-            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/online-orders" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded font-semibold text-emerald-700 flex items-center justify-between">
-                <span>{t('online_orders', 'Online Orders')}</span>
-                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">{t('live', 'LIVE')}</span>
-              </Link>
-              <Link href="/landing" target="_blank" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded text-slate-700 flex items-center justify-between">
-                <span>{t('customer_storefront', 'Customer Storefront')}</span>
-                <ExternalLink className="w-3 h-3 text-slate-400" />
-              </Link>
+              {/* Standalone Touch Workstation Portal & Download Trigger */}
+              <div className="pt-1 mt-1 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setDownloadAppModal('pressing-mill')}
+                  className="w-full text-start p-1.5 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-lg flex items-center justify-between font-bold transition-all shadow-2xs group cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Monitor className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                    <span>{t('launch_mill_kiosk', 'Touch Workstation Client')}</span>
+                  </span>
+                  <span className="text-[9px] bg-emerald-700 text-white px-1.5 py-0.5 rounded font-black flex items-center gap-0.5">
+                    <Download className="w-2.5 h-2.5" /> KIOSK
+                  </span>
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -1425,6 +1441,13 @@ export default function Sidebar({
       <TenantSettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+
+      {/* STANDALONE WORKSTATIONS APP PORTALS MODAL */}
+      <StandaloneAppDownloadModal
+        isOpen={downloadAppModal !== null}
+        onClose={() => setDownloadAppModal(null)}
+        initialApp={downloadAppModal || 'v-driver'}
       />
     </aside>
   );
