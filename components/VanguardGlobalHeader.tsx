@@ -536,7 +536,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <span className="text-[9.5px] font-mono text-emerald-600 font-black">{t('live', 'LIVE')}</span>
                 </a>
                 <Link
-                  href={`/${orgId}/settings/account`}
+                  href="/backoffice/account"
                   onClick={() => setIsProfileOpen(false)}
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
                 >

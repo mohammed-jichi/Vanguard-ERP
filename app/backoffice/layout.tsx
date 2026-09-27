@@ -542,7 +542,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                     </Link>
 
                     <Link
-                      href={`/${orgId}/settings/account`}
+                      href="/backoffice/account"
                       onClick={() => setUserDropdownOpen(false)}
                       className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
                     >
