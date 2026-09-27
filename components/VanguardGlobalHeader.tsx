@@ -42,6 +42,7 @@ import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
 import { clearAuthSession } from '@/lib/authSession';
 import LanguageSwitcherModal from '@/components/LanguageSwitcherModal';
+import HeaderLanguageDropdown from '@/components/HeaderLanguageDropdown';
 
 interface VanguardGlobalHeaderProps {
   activeScreen: string;
@@ -473,6 +474,9 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
             <HelpCircle className="w-4.5 h-4.5 text-amber-400" />
           </a>
 
+          {/* HEADER LANGUAGE SELECTOR DROPDOWN */}
+          <HeaderLanguageDropdown />
+
           {/* USER PROFILE DROPDOWN (STRICTLY MOHAMMED) */}
           <div className="relative">
             <button
@@ -512,52 +516,22 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <Bell className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>{t('alerts_notifications', 'Alerts & Notifications')}</span>
                 </button>
-                {/* 5-LANGUAGE SELECTOR SYSTEM */}
-                <div className="p-2 border-t border-b border-gray-100 my-1 space-y-1">
-                  <span className="text-[10px] uppercase font-bold text-gray-400 block px-1 mb-1">
-                    {t('language', 'Language')}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    setIsLangModalOpen(true);
+                  }}
+                  className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center justify-between transition-colors cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <Globe className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>{t('language', 'Language')}</span>
                   </span>
-                  {[
-                    { code: 'en' as LanguageCode, label: 'English (US)', flag: '🇺🇸' },
-                    { code: 'fr' as LanguageCode, label: 'Français', flag: '🇫🇷' },
-                    { code: 'es' as LanguageCode, label: 'Español', flag: '🇪🇸' },
-                    { code: 'ar' as LanguageCode, label: 'Arabic', flag: '🇸🇦' },
-                    { code: 'fa' as LanguageCode, label: 'Persian', flag: '🇮🇷' },
-                  ].map((item) => (
-                    <button
-                      key={item.code}
-                      onClick={() => {
-                        setLanguage(item.code);
-                        setIsProfileOpen(false);
-                      }}
-                      className={`w-full px-2.5 py-1.5 rounded-lg flex items-center justify-between text-xs font-bold transition-colors cursor-pointer ${
-                        language === item.code
-                          ? 'bg-blue-600 text-white shadow-2xs'
-                          : 'hover:bg-slate-100 text-slate-700'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span>{item.flag}</span>
-                        <span>{item.label}</span>
-                      </span>
-                      {language === item.code && <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-bold">{t('active', 'Active')}</span>}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsProfileOpen(false);
-                      setIsLangModalOpen(true);
-                    }}
-                    className="w-full py-1.5 px-2.5 rounded-lg bg-slate-100 hover:bg-amber-50 hover:text-amber-900 border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-between transition-colors cursor-pointer mt-1"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <span>🌍</span>
-                      <span>{t('more_languages', 'More Languages...')}</span>
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-400">20+</span>
-                  </button>
-                </div>
+                  <span className="text-[10px] font-mono uppercase bg-slate-100 px-2 py-0.5 rounded font-bold text-slate-600 border border-slate-200">
+                    {language}
+                  </span>
+                </button>
                 <div className="p-2 border-b border-gray-100 bg-emerald-50/70 rounded-xl mb-1 text-left">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">

@@ -25,7 +25,7 @@ export function isRTL(lang: LanguageCode): boolean {
 
 export const PINNED_LANGUAGES: LanguageMeta[] = [
   { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇱🇧', dir: 'rtl', isPinned: true },
-  { code: 'en', name: 'English', nativeName: 'English (US)', flag: '🇺🇸', dir: 'ltr', isPinned: true },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', dir: 'ltr', isPinned: true },
   { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷', dir: 'ltr', isPinned: true },
   { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', dir: 'ltr', isPinned: true },
   { code: 'fa', name: 'Persian', nativeName: 'فارسی', flag: '🇮🇷', dir: 'rtl', isPinned: true },
@@ -69004,11 +69004,20 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const [language, setLanguageState] = useState<LanguageCode>('en');
   const [dir, setDir] = useState<'ltr' | 'rtl'>('ltr');
 
-  // Initialize language from localStorage on client mount
+  // Initialize language from localStorage or NEXT_LOCALE cookie on client mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        const saved = localStorage.getItem('vanguard_language') as LanguageCode;
+        let saved = localStorage.getItem('vanguard_language') as LanguageCode | null;
+        if (!saved) {
+          saved = localStorage.getItem('NEXT_LOCALE') as LanguageCode | null;
+        }
+        if (!saved) {
+          const cookieMatch = document.cookie.match(/(?:^|;\s*)NEXT_LOCALE=([^;]+)/);
+          if (cookieMatch && cookieMatch[1]) {
+            saved = cookieMatch[1] as LanguageCode;
+          }
+        }
         if (saved && ALL_LANGUAGES.some(l => l.code === saved)) {
           setLanguageState(saved);
           const newDir = isRTL(saved) ? 'rtl' : 'ltr';
@@ -69029,6 +69038,14 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('vanguard_language', lang);
+        localStorage.setItem('NEXT_LOCALE', lang);
+        document.cookie = `NEXT_LOCALE=${lang};path=/;max-age=31536000;SameSite=Lax`;
+        
+        // Clear any lingering Google Translate cookie when switching to native language
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        if (window.location.hostname) {
+          document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+        }
       } catch (e) {
         console.warn('Failed to persist language preference:', e);
       }

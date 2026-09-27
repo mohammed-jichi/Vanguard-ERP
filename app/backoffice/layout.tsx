@@ -14,6 +14,7 @@ import ModuleNotLicensedScreen, { ALL_CANONICAL_MODULES } from '@/components/Mod
 import SupportCenterModal from '@/components/SupportCenterModal';
 import FeedbackModal from '@/components/FeedbackModal';
 import LanguageSwitcherModal from '@/components/LanguageSwitcherModal';
+import HeaderLanguageDropdown from '@/components/HeaderLanguageDropdown';
 import { PINNED_LANGUAGES } from '@/lib/LanguageContext';
 
 function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode }) {
@@ -477,81 +478,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               </svg>
             </button>
 
-            {/* 5. Language Switcher (Primary 5 + Extended "More" Selector) */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 flex items-center gap-1.5 text-xs font-bold shadow-2xs cursor-pointer"
-                title={t('language', 'Language')}
-              >
-                <span className="text-xs">
-                  {PINNED_LANGUAGES.find(l => l.code === language)?.flag || '🌐'}
-                </span>
-                <span className="font-mono text-[11px] uppercase font-bold">
-                  {language}
-                </span>
-                <span className="text-[10px] text-slate-400">▾</span>
-              </button>
-
-              {isLangDropdownOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setIsLangDropdownOpen(false)}
-                  />
-                  <div className="absolute end-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
-                    <div className="px-3 py-1.5 border-b border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                      <span>{t('language', 'Language')}</span>
-                      <span className="font-mono text-[9px] text-primary">{dir.toUpperCase()}</span>
-                    </div>
-
-                    <div className="py-1 space-y-0.5 px-1.5">
-                      {PINNED_LANGUAGES.map((item) => (
-                        <button
-                          key={item.code}
-                          type="button"
-                          onClick={() => {
-                            setLanguage(item.code);
-                            setIsLangDropdownOpen(false);
-                          }}
-                          className={`w-full px-2.5 py-1.5 rounded-xl flex items-center justify-between text-xs font-bold transition-colors cursor-pointer ${
-                            language === item.code
-                              ? 'bg-primary text-white shadow-2xs'
-                              : 'hover:bg-slate-100 text-slate-700'
-                          }`}
-                        >
-                          <span className="flex items-center gap-2">
-                            <span>{item.flag}</span>
-                            <span>{item.nativeName}</span>
-                          </span>
-                          <span className="text-[10px] font-mono opacity-80 uppercase">
-                            {item.code}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="pt-1 mt-1 border-t border-slate-100 px-1.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsLangDropdownOpen(false);
-                          setIsLangModalOpen(true);
-                        }}
-                        className="w-full px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-amber-50 hover:text-amber-900 text-slate-700 text-xs font-bold flex items-center justify-between transition-colors cursor-pointer"
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <span>🌐</span>
-                          <span>{t('more_languages', 'More Languages...')}</span>
-                        </span>
-                        <span className="text-[10px] text-slate-400 font-mono">20+</span>
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+            {/* 5. Header Language Selector Dropdown (Hybrid: Native 5 Languages + Google Translate) */}
+            <HeaderLanguageDropdown />
 
             {/* 6. QUICK MENU GRID BUTTON */}
             <button
@@ -627,58 +555,22 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       <span className="text-sm">💬</span> <span>{t('notifications_inbox', 'Notifications & Inbox')}</span>
                     </Link>
 
-                    {/* Dynamic Multi-Language Switcher (Top 5 + More) */}
-                    <div className="px-3 py-2 border-y border-slate-100 bg-slate-50/60 my-1 space-y-1.5">
-                      <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
-                        <span className="flex items-center gap-1.5">
-                          <span>🌐</span> <span>{t('language', 'Language')}</span>
-                        </span>
-                        <span className="font-mono text-[10px] text-primary font-bold">
-                          {dir.toUpperCase()}
-                        </span>
-                      </div>
-
-                      <div className="space-y-1">
-                        {PINNED_LANGUAGES.map((item) => (
-                          <button
-                            key={item.code}
-                            type="button"
-                            onClick={() => {
-                              setLanguage(item.code);
-                              setUserDropdownOpen(false);
-                            }}
-                            className={`w-full px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
-                              language === item.code
-                                ? 'bg-primary text-white shadow-2xs font-extrabold'
-                                : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
-                            }`}
-                          >
-                            <span className="flex items-center gap-2">
-                              <span>{item.flag}</span>
-                              <span>{item.nativeName}</span>
-                            </span>
-                            <span className="text-[10px] font-mono uppercase opacity-75">
-                              {item.code}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setUserDropdownOpen(false);
-                          setIsLangModalOpen(true);
-                        }}
-                        className="w-full py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-amber-50 hover:text-amber-900 border border-slate-200 text-slate-700 text-xs font-bold flex items-center justify-between transition-colors cursor-pointer"
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <span>🌍</span>
-                          <span>{t('more_languages', 'More Languages...')}</span>
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-400">20+</span>
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUserDropdownOpen(false);
+                        setIsLangModalOpen(true);
+                      }}
+                      className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center justify-between text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <span className="text-sm">🌐</span>
+                        <span>{t('language', 'Language')}</span>
+                      </span>
+                      <span className="text-[10px] font-mono uppercase bg-slate-100 px-2 py-0.5 rounded font-bold text-slate-600 border border-slate-200">
+                        {language}
+                      </span>
+                    </button>
 
                     <Link
                       href={`/${orgId}/settings/account`}

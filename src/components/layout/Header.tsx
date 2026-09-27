@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import HeaderLanguageDropdown from '@/components/HeaderLanguageDropdown';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
 import {
   Globe,
@@ -50,6 +51,9 @@ export default function VanguardHeader({ onSelectScreen }: HeaderProps = {}) {
       {/* 2. User Profile & Quick Actions */}
       <div className="flex items-center gap-3 relative">
         
+        {/* Header Language Selector Dropdown */}
+        <HeaderLanguageDropdown />
+
         {/* User Profile Button */}
         <button
           type="button"
@@ -75,36 +79,10 @@ export default function VanguardHeader({ onSelectScreen }: HeaderProps = {}) {
               </p>
             </div>
 
-            {/* Language Selector Section */}
-            <div className="p-2 border-t border-b border-slate-100 my-1 space-y-1">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block px-1 mb-1">
-                SELECT LANGUAGE
-              </span>
-              {languages.map((item) => (
-                <button
-                  key={item.code}
-                  type="button"
-                  onClick={() => {
-                    setLanguage(item.code);
-                    setIsProfileOpen(false);
-                  }}
-                  className={`w-full px-2.5 py-1.5 rounded-lg flex items-center justify-between text-xs font-bold transition-colors cursor-pointer ${
-                    language === item.code
-                      ? 'bg-blue-600 text-white shadow-2xs'
-                      : 'hover:bg-slate-100 text-slate-700'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <span>{item.flag}</span>
-                    <span>{item.label}</span>
-                  </span>
-                  {language === item.code && (
-                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-bold">
-                      Active
-                    </span>
-                  )}
-                </button>
-              ))}
+            {/* Language Trigger */}
+            <div className="p-2 border-t border-b border-slate-100 my-1 flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">Language</span>
+              <span className="font-mono text-[10px] font-bold uppercase bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{language}</span>
             </div>
 
             {/* Account & Settings Links */}
