@@ -12,11 +12,22 @@ const CORS_HEADERS = {
 const DB_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DB_DIR, 'vanguard_accounting_db.json');
 
+export interface BranchAccessSetting {
+  company_name: string;
+  branch_id: string;
+  branch_name: string;
+  enabled: boolean;
+  salesman: string;
+  workstation_id: string;
+}
+
 export interface EnterpriseUserRecord {
   id: string;
   tenant_id: string;
   user_code: string;
   name: string;
+  first_name?: string;
+  last_name?: string;
   email?: string;
   pin: string;
   card_number: string;
@@ -25,114 +36,142 @@ export interface EnterpriseUserRecord {
   role_badge?: string;
   branch: string;
   status: 'ACTIVE' | 'INACTIVE';
+  is_training?: boolean;
+  expiry_date?: string;
+  created_by?: string;
   contact?: string;
   last_login?: string;
+  branches_access?: BranchAccessSetting[];
   created_at?: string;
   updated_at?: string;
 }
+
+const DEFAULT_BRANCH_ACCESS: BranchAccessSetting[] = [
+  {
+    company_name: 'Zeit w zaytoun ljanoub',
+    branch_id: '22901',
+    branch_name: 'Zeit w zaytoun ljanoub',
+    enabled: true,
+    salesman: 'Mahdi',
+    workstation_id: '2000',
+  },
+];
 
 const DEFAULT_USERS: EnterpriseUserRecord[] = [
   {
     id: 'u-101',
     tenant_id: '1300',
     user_code: '101',
-    name: 'Jichi Mohammed',
-    email: 'mohammed@vanguard-erp.com',
+    name: 'Hussien Jichi',
+    first_name: 'Hussien',
+    last_name: 'Jichi',
+    email: 'jamaljichihusseinmahdi@gmail.com',
     pin: '1001',
     card_number: 'CRD-1001',
-    role: 'General Operations & Mill Manager',
-    role_id: 'r_ops',
+    role: 'Manager',
+    role_id: 'r_manager',
     role_badge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    branch: 'Choueifat Central Plant',
+    branch: 'Zeit w zaytoun ljanoub',
     status: 'ACTIVE',
+    is_training: false,
+    expiry_date: '2026-12-10',
+    created_by: 'Jamal Jichi',
     contact: '+961 70 112233',
     last_login: 'Today, 11:42 AM',
-    created_at: new Date().toISOString(),
+    created_at: '2024-05-15',
+    branches_access: DEFAULT_BRANCH_ACCESS,
   },
   {
     id: 'u-102',
     tenant_id: '1300',
     user_code: '102',
     name: 'Ali Hassan',
+    first_name: 'Ali',
+    last_name: 'Hassan',
     email: 'ali.hassan@southernolive-lb.com',
     pin: '1002',
     card_number: 'CRD-1002',
-    role: 'Super Administrator',
-    role_id: 'r_super',
-    role_badge: 'bg-red-100 text-red-800 border-red-200',
-    branch: 'Choueifat Production Mill',
+    role: 'Limited Access',
+    role_id: 'r_limited',
+    role_badge: 'bg-blue-100 text-blue-800 border-blue-200',
+    branch: 'Zeit w zaytoun ljanoub',
     status: 'ACTIVE',
+    is_training: false,
+    expiry_date: '2027-01-15',
+    created_by: 'Jamal Jichi',
     contact: '+961 71 445566',
     last_login: 'Today, 08:15 AM',
-    created_at: new Date().toISOString(),
+    created_at: '2024-06-01',
+    branches_access: DEFAULT_BRANCH_ACCESS,
   },
   {
     id: 'u-103',
     tenant_id: '1300',
     user_code: '103',
     name: 'Sarah Khoury',
+    first_name: 'Sarah',
+    last_name: 'Khoury',
     email: 's.khoury@southernolive-lb.com',
     pin: '1003',
     card_number: 'CRD-1003',
-    role: 'Senior Financial Accountant',
-    role_id: 'r_accountant',
-    role_badge: 'bg-amber-100 text-amber-800 border-amber-200',
-    branch: 'Beirut Corporate Hub',
+    role: 'Manager',
+    role_id: 'r_manager',
+    role_badge: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    branch: 'Zeit w zaytoun ljanoub',
     status: 'ACTIVE',
+    is_training: true,
+    expiry_date: '2026-11-20',
+    created_by: 'Jamal Jichi',
     contact: '+961 03 778899',
     last_login: 'Yesterday, 04:30 PM',
-    created_at: new Date().toISOString(),
+    created_at: '2024-06-15',
+    branches_access: DEFAULT_BRANCH_ACCESS,
   },
   {
     id: 'u-104',
     tenant_id: '1300',
     user_code: '104',
     name: 'Omar Zaiter',
+    first_name: 'Omar',
+    last_name: 'Zaiter',
     email: 'omar.z@southernolive-lb.com',
     pin: '1004',
     card_number: 'CRD-1004',
-    role: 'POS Terminal Cashier',
-    role_id: 'r_cashier',
-    role_badge: 'bg-blue-100 text-blue-800 border-blue-200',
-    branch: 'Choueifat Cashier Desk',
-    status: 'ACTIVE',
+    role: 'Limited Access',
+    role_id: 'r_limited',
+    role_badge: 'bg-slate-100 text-slate-800 border-slate-200',
+    branch: 'Zeit w zaytoun ljanoub',
+    status: 'INACTIVE',
+    is_training: false,
+    expiry_date: '2025-08-30',
+    created_by: 'Jamal Jichi',
     contact: '+961 76 332211',
-    last_login: 'Today, 09:00 AM',
-    created_at: new Date().toISOString(),
+    last_login: '2025-08-25, 09:00 AM',
+    created_at: '2024-07-01',
+    branches_access: DEFAULT_BRANCH_ACCESS,
   },
   {
     id: 'u-105',
     tenant_id: '1300',
     user_code: '105',
-    name: 'Hussein Baydoun',
-    email: 'h.baydoun@southernolive-lb.com',
+    name: 'Nour Mansour',
+    first_name: 'Nour',
+    last_name: 'Mansour',
+    email: 'nour.m@southernolive-lb.com',
     pin: '1005',
     card_number: 'CRD-1005',
-    role: 'SuperSonic Fleet Lead & Driver',
-    role_id: 'r_driver',
-    role_badge: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-    branch: 'Distribution Fleet',
+    role: 'Limited Access',
+    role_id: 'r_limited',
+    role_badge: 'bg-blue-100 text-blue-800 border-blue-200',
+    branch: 'Zeit w zaytoun ljanoub',
     status: 'ACTIVE',
-    contact: '+961 70 889900',
-    last_login: 'Today, 07:45 AM',
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'u-106',
-    tenant_id: '1300',
-    user_code: '106',
-    name: 'Nour Mansour',
-    email: 'nour.m@southernolive-lb.com',
-    pin: '1006',
-    card_number: 'CRD-1006',
-    role: 'Commercial Field Sales Representative',
-    role_id: 'r_sales',
-    role_badge: 'bg-purple-100 text-purple-800 border-purple-200',
-    branch: 'South Lebanon District',
-    status: 'ACTIVE',
+    is_training: true,
+    expiry_date: '2026-09-15',
+    created_by: 'Jamal Jichi',
     contact: '+961 71 990011',
     last_login: 'Yesterday, 02:15 PM',
-    created_at: new Date().toISOString(),
+    created_at: '2024-07-10',
+    branches_access: DEFAULT_BRANCH_ACCESS,
   },
 ];
 
