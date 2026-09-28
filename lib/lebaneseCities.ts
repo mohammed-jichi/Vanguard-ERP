@@ -12,43 +12,22 @@ export interface LebaneseCity {
   nameAr?: string;
 }
 
-export const WORLD_COUNTRIES = [
-  'Lebanon',
-  'United Arab Emirates',
-  'Saudi Arabia',
-  'Kuwait',
-  'Qatar',
-  'Oman',
-  'Bahrain',
-  'Jordan',
-  'Egypt',
-  'Iraq',
-  'Syria',
-  'Turkey',
-  'United States',
-  'United Kingdom',
-  'Canada',
-  'France',
-  'Germany',
-  'Italy',
-  'Spain',
-  'Switzerland',
-  'Australia',
-  'Belgium',
-  'Brazil',
-  'China',
-  'Cyprus',
-  'Denmark',
-  'Greece',
-  'India',
-  'Japan',
-  'Netherlands',
-  'Nigeria',
-  'Norway',
-  'Russia',
-  'South Africa',
-  'Sweden',
-];
+import {
+  ALL_WORLD_COUNTRIES,
+  ALL_COUNTRY_DIAL_CODES,
+  ALL_WORLD_COUNTRIES_INFO,
+  CountryInfo,
+} from './countriesData';
+
+export {
+  ALL_WORLD_COUNTRIES,
+  ALL_COUNTRY_DIAL_CODES,
+  ALL_WORLD_COUNTRIES_INFO,
+  type CountryInfo,
+};
+
+export const WORLD_COUNTRIES = ALL_WORLD_COUNTRIES;
+
 
 export const LEBANESE_CITIES: LebaneseCity[] = [
   // EL KOURA CAZA (NORTH LEBANON)

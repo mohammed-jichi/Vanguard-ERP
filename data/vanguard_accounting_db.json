@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-09-27T23:03:56.329Z",
+  "last_updated": "2026-09-28T17:19:42.910Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-90ff4e9",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (90ff4e9) - Align personnel table with omega, clean work location logic, separate modal flows, and update lebanese cities",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "90ff4e9e27161ff08e04c69f2c5898430d2f0838",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "HR & Payroll",
+          "Settings & Governance"
+        ]
+      },
+      "created_at": "2026-09-28T16:38:29.000Z"
+    },
     {
       "id": "act-rel-78c53a2",
       "company_id": 1300,
@@ -5958,6 +5975,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-90ff4e9",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Align personnel table with omega, clean work location logic, separate modal flows, and update lebanese cities",
+      "message": "fix(hr): align personnel table with omega, clean work location logic, separate modal flows, and update lebanese cities",
+      "timestamp": "2026-09-28T16:38:29.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "90ff4e9e27161ff08e04c69f2c5898430d2f0838",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-78c53a2",
       "type": "SYSTEM_RELEASE",

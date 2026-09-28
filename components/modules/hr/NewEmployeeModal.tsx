@@ -9,8 +9,12 @@ import {
 import {
   searchLebaneseCities,
   LebaneseCity,
-  WORLD_COUNTRIES,
 } from '@/lib/lebaneseCities';
+import {
+  ALL_WORLD_COUNTRIES,
+  ALL_COUNTRY_DIAL_CODES,
+  ALL_WORLD_COUNTRIES_INFO,
+} from '@/lib/countriesData';
 import {
   X,
   User,
@@ -42,22 +46,6 @@ interface NewEmployeeModalProps {
   hideScheduleTab?: boolean;
 }
 
-const COUNTRY_DIAL_CODES = [
-  { code: '+961', country: 'Lebanon', flag: '🇱🇧' },
-  { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' },
-  { code: '+971', country: 'UAE', flag: '🇦🇪' },
-  { code: '+965', country: 'Kuwait', flag: '🇰🇼' },
-  { code: '+974', country: 'Qatar', flag: '🇶🇦' },
-  { code: '+962', country: 'Jordan', flag: '🇯🇴' },
-  { code: '+963', country: 'Syria', flag: '🇸🇾' },
-  { code: '+964', country: 'Iraq', flag: '🇮🇶' },
-  { code: '+20', country: 'Egypt', flag: '🇪🇬' },
-  { code: '+1', country: 'USA/Canada', flag: '🇺🇸' },
-  { code: '+44', country: 'UK', flag: '🇬🇧' },
-  { code: '+33', country: 'France', flag: '🇫🇷' },
-  { code: '+49', country: 'Germany', flag: '🇩🇪' },
-  { code: '+90', country: 'Turkey', flag: '🇹🇷' },
-];
 
 const DEPARTMENTS_LIST = [
   'Accounting',
@@ -124,6 +112,8 @@ export default function NewEmployeeModal({
   const [firstName, setFirstName] = useState(initialEmployee?.firstName || '');
   const [lastName, setLastName] = useState(initialEmployee?.lastName || '');
   const [countryCode, setCountryCode] = useState(initialEmployee?.countryCode || '+961');
+  const [dialCodeSearchQuery, setDialCodeSearchQuery] = useState('');
+  const [isDialCodeDropdownOpen, setIsDialCodeDropdownOpen] = useState(false);
   const [phone, setPhone] = useState(initialEmployee?.phone || '');
   const [email, setEmail] = useState(initialEmployee?.email || '');
   const [dob, setDob] = useState(initialEmployee?.dateOfBirth || '1995-01-01');
@@ -153,6 +143,8 @@ export default function NewEmployeeModal({
 
   // Address & Identification
   const [country, setCountry] = useState(initialEmployee?.country || 'Lebanon');
+  const [countrySearchQuery, setCountrySearchQuery] = useState('');
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const [city, setCity] = useState(initialEmployee?.city || 'Choueifat (معمل الشويفات)');
   const [citySearchQuery, setCitySearchQuery] = useState('');
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
@@ -225,6 +217,39 @@ export default function NewEmployeeModal({
     setPosToastMsg(msg);
     setTimeout(() => setPosToastMsg(null), 3000);
   };
+
+  // Active dial code details
+  const activeDialCodeObj = useMemo(() => {
+    return (
+      ALL_COUNTRY_DIAL_CODES.find((c) => c.code === countryCode) || {
+        code: '+961',
+        country: 'Lebanon',
+        flag: '🇱🇧',
+        iso: 'LB',
+      }
+    );
+  }, [countryCode]);
+
+  // Filtered dial codes
+  const filteredDialCodes = useMemo(() => {
+    const q = dialCodeSearchQuery.trim().toLowerCase();
+    if (!q) return ALL_COUNTRY_DIAL_CODES;
+    const cleanQ = q.startsWith('+') ? q.slice(1) : q;
+    return ALL_COUNTRY_DIAL_CODES.filter(
+      (c) =>
+        c.country.toLowerCase().includes(q) ||
+        c.code.toLowerCase().includes(q) ||
+        c.code.replace('+', '').includes(cleanQ) ||
+        c.iso.toLowerCase().includes(q)
+    );
+  }, [dialCodeSearchQuery]);
+
+  // Filtered worldwide countries
+  const filteredCountries = useMemo(() => {
+    const q = countrySearchQuery.trim().toLowerCase();
+    if (!q) return ALL_WORLD_COUNTRIES;
+    return ALL_WORLD_COUNTRIES.filter((c) => c.toLowerCase().includes(q));
+  }, [countrySearchQuery]);
 
   // Filtered Lebanese Cities
   const filteredCities = useMemo(() => {
@@ -460,28 +485,82 @@ export default function NewEmployeeModal({
                     </div>
                   </div>
 
-                  {/* Phone with Country Dial Code */}
+                  {/* Phone with Exhaustive Searchable Country Dial Code */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 block">Phone*</label>
                     <div className="flex items-center gap-2">
-                      <select
-                        value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        className="w-32 px-2.5 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
-                      >
-                        {COUNTRY_DIAL_CODES.map((c) => (
-                          <option key={c.code} value={c.code}>
-                            {c.flag} {c.code} ({c.country})
-                          </option>
-                        ))}
-                      </select>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsDialCodeDropdownOpen(!isDialCodeDropdownOpen);
+                            setIsCountryDropdownOpen(false);
+                            setIsCityDropdownOpen(false);
+                          }}
+                          className="w-36 px-2.5 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus:border-primary shadow-2xs hover:bg-slate-50 transition-colors"
+                        >
+                          <span className="flex items-center gap-1.5 truncate">
+                            <span className="text-base leading-none">{activeDialCodeObj.flag}</span>
+                            <span className="font-mono font-bold">{activeDialCodeObj.code}</span>
+                          </span>
+                          <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+                        </button>
+
+                        {isDialCodeDropdownOpen && (
+                          <div className="absolute top-full left-0 mt-1 w-72 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 p-2 max-h-64 overflow-y-auto space-y-1 animate-slideDown">
+                            <div className="relative mb-2">
+                              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                              <input
+                                type="text"
+                                autoFocus
+                                value={dialCodeSearchQuery}
+                                onChange={(e) => setDialCodeSearchQuery(e.target.value)}
+                                placeholder="Search code, country or ISO (+971, France, US)..."
+                                className="w-full pl-8 pr-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium outline-hidden"
+                              />
+                            </div>
+
+                            {filteredDialCodes.length === 0 ? (
+                              <div className="py-3 text-center text-xs text-slate-400 font-medium">
+                                No dial codes matching "{dialCodeSearchQuery}"
+                              </div>
+                            ) : (
+                              filteredDialCodes.map((c, idx) => (
+                                <button
+                                  key={`${c.code}-${c.country}-${idx}`}
+                                  type="button"
+                                  onClick={() => {
+                                    setCountryCode(c.code);
+                                    setIsDialCodeDropdownOpen(false);
+                                    setDialCodeSearchQuery('');
+                                  }}
+                                  className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${
+                                    countryCode === c.code && activeDialCodeObj.country === c.country
+                                      ? 'bg-primary/10 text-primary font-bold'
+                                      : 'text-slate-800'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 truncate">
+                                    <span className="text-base leading-none shrink-0">{c.flag}</span>
+                                    <span className="font-medium truncate">{c.country}</span>
+                                  </div>
+                                  <span className="font-mono font-bold text-slate-600 shrink-0 text-[11px] ml-2">
+                                    {c.code}
+                                  </span>
+                                </button>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+
                       <input
                         type="text"
                         required
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="70 123456"
-                        className="flex-1 px-3 py-2 text-xs font-bold font-mono text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                        className="flex-1 px-3 py-2 text-xs font-bold font-mono text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary shadow-2xs"
                       />
                     </div>
                   </div>
@@ -749,19 +828,64 @@ export default function NewEmployeeModal({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Country*</label>
-                    <select
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
+                  {/* Exhaustive Searchable Worldwide Country Dropdown */}
+                  <div className="space-y-1 relative">
+                    <label className="text-xs font-bold text-slate-700 block">Country* (ISO Worldwide)</label>
+                    <div
+                      onClick={() => {
+                        setIsCountryDropdownOpen(!isCountryDropdownOpen);
+                        setIsCityDropdownOpen(false);
+                        setIsDialCodeDropdownOpen(false);
+                      }}
+                      className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus-within:border-primary shadow-2xs hover:bg-slate-50 transition-colors"
                     >
-                      {WORLD_COUNTRIES.map((ctry) => (
-                        <option key={ctry} value={ctry}>
-                          {ctry}
-                        </option>
-                      ))}
-                    </select>
+                      <span className="truncate">{country}</span>
+                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-1" />
+                    </div>
+
+                    {isCountryDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 p-2 max-h-60 overflow-y-auto space-y-1 animate-slideDown">
+                        <div className="relative mb-2">
+                          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                          <input
+                            type="text"
+                            autoFocus
+                            value={countrySearchQuery}
+                            onChange={(e) => setCountrySearchQuery(e.target.value)}
+                            placeholder="Search 245+ countries (Afghanistan to Zimbabwe)..."
+                            className="w-full pl-8 pr-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium outline-hidden"
+                          />
+                        </div>
+
+                        {filteredCountries.length === 0 ? (
+                          <div className="py-3 text-center text-xs text-slate-400 font-medium">
+                            No countries found matching "{countrySearchQuery}"
+                          </div>
+                        ) : (
+                          filteredCountries.map((ctry) => (
+                            <button
+                              key={ctry}
+                              type="button"
+                              onClick={() => {
+                                setCountry(ctry);
+                                setIsCountryDropdownOpen(false);
+                                setCountrySearchQuery('');
+                              }}
+                              className={`w-full text-left px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${
+                                country === ctry ? 'bg-primary/10 text-primary font-bold' : 'text-slate-800'
+                              }`}
+                            >
+                              <span>{ctry}</span>
+                              {ctry === 'Lebanon' && (
+                                <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
+                                  Default (🇱🇧)
+                                </span>
+                              )}
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Custom Searchable Lebanese City Dropdown */}

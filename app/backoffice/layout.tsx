@@ -93,6 +93,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isLangModalOpen, setIsLangModalOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+  const [activeBranch, setActiveBranch] = useState<string>('1300 Choueifat Central Plant (معمل الشويفات)');
+  const [branchDropdownOpen, setBranchDropdownOpen] = useState<boolean>(false);
 
   const { language, dir, setLanguage, t } = useLanguage();
   const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
@@ -448,24 +450,77 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
           </Link>
         </div>
 
-        {/* Center: Tenant Badge with Dynamic Company ID */}
-        <div className="flex-1 flex justify-center items-center px-4">
+        {/* Center: Designated Slots for Enterprise Brand Context & Active Facility Switcher */}
+        <div className="flex-1 flex flex-wrap justify-center items-center gap-2.5 px-3">
+          {/* Slot 1: Enterprise Brand Context */}
           <Link
             href="/admin"
             title={t('switch_workspace_admin', 'Switch Workspace / Admin Hub')}
-            className="flex items-center px-5 py-2 rounded-full bg-muted hover:bg-muted/80 border border-border shadow-xs hover:border-primary transition-all group"
+            className="flex items-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 shadow-2xs hover:border-primary transition-all group shrink-0"
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-primary mr-3 shadow-xs animate-pulse"></span>
-            <span className="text-[13px] font-bold tracking-wide text-foreground">
-              {currentTenant ? `${currentTenant.brandNameAr || currentTenant.name}` : 'Southern Olive Oil Products S.A.R.L'}
+            <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-xs animate-pulse"></span>
+            <span className="text-xs font-black tracking-wide text-slate-900">
+              {currentTenant ? `${currentTenant.brandNameAr || currentTenant.name}` : 'Southern Olive and Oil Products S.A.R.L.'}
             </span>
-            <span className="text-[11px] font-mono font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full mr-2">
+            <span className="text-[10px] font-mono font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded-full mx-1.5">
               #{currentTenant?.companyId || '1300'}
             </span>
-            <span className="text-[11px] font-semibold text-slate-500 mr-1 group-hover:text-emerald-800 transition-colors">
+            <span className="text-[10px] font-semibold text-slate-500 group-hover:text-emerald-800 transition-colors">
               {t('switch', '(Switch)')}
             </span>
           </Link>
+
+          {/* Slot 2: Facility / Branch Switcher */}
+          <div className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => setBranchDropdownOpen(!branchDropdownOpen)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100/80 border border-amber-300/80 text-amber-950 font-bold text-xs shadow-2xs transition-colors cursor-pointer"
+              title="Active Facility & Branch Switcher"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+              <span className="truncate max-w-[220px] font-bold">{activeBranch}</span>
+              <span className="text-[10px] text-amber-700 ml-0.5">▾</span>
+            </button>
+
+            {branchDropdownOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setBranchDropdownOpen(false)}
+                />
+                <div className="absolute left-1/2 -translate-x-1/2 mt-1 w-72 bg-white border border-slate-300 rounded-2xl shadow-2xl py-1.5 text-xs text-slate-800 z-50 animate-fadeIn">
+                  <div className="px-3 py-1.5 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Select Active Facility
+                  </div>
+                  {[
+                    { id: 'choueifat', name: '1300 Choueifat Central Plant (معمل الشويفات)', active: true },
+                    { id: 'beirut', name: 'Beirut Distribution Hub (مستودع بيروت)', active: false },
+                    { id: 'saida', name: 'Saida Coastal Press (معصرة صيدا)', active: false },
+                  ].map((br) => (
+                    <button
+                      key={br.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveBranch(br.name);
+                        setBranchDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center justify-between transition-colors ${
+                        activeBranch === br.name ? 'bg-amber-50/70 font-bold text-amber-950' : 'text-slate-700'
+                      }`}
+                    >
+                      <span className="truncate">{br.name}</span>
+                      {activeBranch === br.name && (
+                        <span className="text-[9px] bg-emerald-100 text-emerald-800 font-black px-1.5 py-0.2 rounded shrink-0 ml-1">
+                          ACTIVE
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Right Side: Action Icons -> QUICK MENU FIRST -> JICHI MOHAMMED */}

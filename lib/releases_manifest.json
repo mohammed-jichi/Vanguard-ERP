@@ -1,5 +1,28 @@
 [
   {
+    "id": "90ff4e9e-2716-4ff0-ae04-c69f2c589843",
+    "commit_hash": "90ff4e9e27161ff08e04c69f2c5898430d2f0838",
+    "short_hash": "90ff4e9",
+    "version": "v2.0.0",
+    "title": "Align personnel table with omega, clean work location logic, separate modal flows, and update lebanese cities",
+    "category": "fix",
+    "description": "fix(hr): align personnel table with omega, clean work location logic, separate modal flows, and update lebanese cities",
+    "bullet_points": [
+      "Resolved: align personnel table with omega, clean work location logic, separate modal flows, and update lebanese cities",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "HR & Payroll",
+      "Settings & Governance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-09-28T16:38:29.000Z",
+    "created_at": "2026-09-28T17:19:42.905Z"
+  },
+  {
     "id": "78c53a23-3ce9-4d03-aed5-df9f2c10938a",
     "commit_hash": "78c53a233ce92d032ed5df9f2c10938a6c5e7b09",
     "short_hash": "78c53a2",

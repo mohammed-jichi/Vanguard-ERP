@@ -33,7 +33,8 @@ import {
   Truck,
   Map,
   ShieldCheck,
-  Award
+  Award,
+  Building2
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTenant } from '@/lib/TenantContext';
@@ -264,21 +265,29 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           </a>
         </div>
 
-        {/* CENTER: TENANT LICENSE AND NAME (FORCE PURE WHITE TEXT FOR HIGH CONTRAST) */}
-        <a
-          href="/backoffice/license"
-          title={t('vanguard_erp_authorized_enterprise', 'Vanguard ERP Authorized Enterprise License - View Certificate')}
-          className="hidden md:flex items-center gap-2.5 bg-[#252538] hover:bg-[#2d2d44] border border-[#373752] hover:border-amber-500/50 px-4 py-1.5 rounded-full text-xs shadow-inner transition-colors cursor-pointer"
-        >
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span className="font-mono text-white font-black text-sm" style={{ color: '#ffffff' }}>001</span>
-          <span className="text-white font-bold" style={{ color: '#ffffff' }}>-</span>
-          <span className="font-semibold text-white tracking-wide" style={{ color: '#ffffff' }}>{t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}</span>
-          <span className="text-[11px] text-emerald-300 font-bold bg-emerald-950/70 border border-emerald-500/40 px-2.5 py-0.5 rounded-full shadow-2xs flex items-center gap-1">
-            <ShieldCheck className="w-3 h-3 text-emerald-400" />
-            {t('licensed_unlocked', 'LICENSED & UNLOCKED')}
-          </span>
-        </a>
+        {/* CENTER: TENANT ENTERPRISE AND FACILITY SLOTS */}
+        <div className="hidden lg:flex items-center gap-2.5">
+          <a
+            href="/backoffice/license"
+            title={t('vanguard_erp_authorized_enterprise', 'Vanguard ERP Authorized Enterprise License - View Certificate')}
+            className="flex items-center gap-2 bg-[#252538] hover:bg-[#2d2d44] border border-[#373752] hover:border-amber-500/50 px-3.5 py-1.5 rounded-full text-xs shadow-inner transition-colors cursor-pointer"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="font-mono text-white font-black text-xs" style={{ color: '#ffffff' }}>#1300</span>
+            <span className="text-white font-bold" style={{ color: '#ffffff' }}>-</span>
+            <span className="font-semibold text-white tracking-wide truncate max-w-[220px]" style={{ color: '#ffffff' }}>{t('southern_olive_oil_products_sarl', 'Southern Olive and Oil Products S.A.R.L.')}</span>
+            <span className="text-[10px] text-emerald-300 font-bold bg-emerald-950/70 border border-emerald-500/40 px-2 py-0.5 rounded-full shadow-2xs flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              {t('licensed_unlocked', 'LICENSED')}
+            </span>
+          </a>
+
+          {/* FACILITY CONTEXT SLOT */}
+          <div className="flex items-center gap-1.5 bg-[#252538] border border-[#373752] px-3 py-1.5 rounded-full text-xs font-bold text-amber-300 shadow-inner">
+            <Building2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span className="truncate max-w-[240px]">#1300 Choueifat Central Plant (معمل الشويفات)</span>
+          </div>
+        </div>
 
         {/* RIGHT ICONS ACTION BAR (PREMIUM GOLD THEME - text-amber-400 / text-amber-500) */}
         <div className="flex items-center gap-1.5 md:gap-2">
