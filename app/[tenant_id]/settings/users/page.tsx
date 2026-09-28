@@ -6,7 +6,7 @@ import UsersManagementConsole from '@/components/settings/UsersManagementConsole
 
 /**
  * Vanguard ERP — Dynamic Workspace Users Route (/[tenant_id]/settings/users)
- * Master Omega-style Users Management Console with integrated virtual touch keyboard.
+ * Master Omega-style Users Management Console with streamlined modal layout.
  */
 export default function TenantUsersManagementPage() {
   const params = useParams();

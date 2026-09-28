@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -15,28 +15,21 @@ import {
   Shield,
   Pencil,
   Trash2,
-  Lock,
   CreditCard,
   Building,
   KeyRound,
-  Delete,
-  CornerDownLeft,
   X,
   RefreshCw,
   Eye,
   EyeOff,
-  Keyboard,
   Hash,
   Phone,
-  Sparkles,
-  ArrowRight,
+  Mail,
 } from 'lucide-react';
 
 interface UsersManagementConsoleProps {
   initialTenantId?: string;
 }
-
-type ActiveInputKey = 'user_code' | 'name' | 'pin' | 'card_number' | 'contact' | 'email';
 
 export default function UsersManagementConsole({ initialTenantId }: UsersManagementConsoleProps) {
   const { currentTenant } = useTenant();
@@ -76,21 +69,6 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
   const [formEmail, setFormEmail] = useState<string>('');
   const [showPin, setShowPin] = useState<boolean>(false);
 
-  // Virtual Keyboard & Numpad Integration State
-  const [keyboardMode, setKeyboardMode] = useState<'NUMPAD' | 'QWERTY'>('NUMPAD');
-  const [activeField, setActiveField] = useState<ActiveInputKey>('user_code');
-  const [isCaps, setIsCaps] = useState<boolean>(true);
-
-  // Input refs for direct focus binding
-  const inputRefs: Record<ActiveInputKey, React.RefObject<HTMLInputElement | null>> = {
-    user_code: useRef<HTMLInputElement>(null),
-    name: useRef<HTMLInputElement>(null),
-    pin: useRef<HTMLInputElement>(null),
-    card_number: useRef<HTMLInputElement>(null),
-    contact: useRef<HTMLInputElement>(null),
-    email: useRef<HTMLInputElement>(null),
-  };
-
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
@@ -126,7 +104,6 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
   // Handle opening modal for Add New User
   const handleOpenAddUser = () => {
     setEditingUserId(null);
-    // Generate next user code
     const nextCode = (users.length > 0 ? Math.max(...users.map((u) => parseInt(u.user_code, 10) || 100)) + 1 : 101).toString();
     setFormUserCode(nextCode);
     setFormName('');
@@ -138,8 +115,6 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     setFormContact('');
     setFormEmail('');
     setShowPin(false);
-    setActiveField('user_code');
-    setKeyboardMode('NUMPAD');
     setIsModalOpen(true);
   };
 
@@ -156,91 +131,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     setFormContact(user.contact || '');
     setFormEmail(user.email || '');
     setShowPin(false);
-    setActiveField('name');
-    setKeyboardMode('QWERTY');
     setIsModalOpen(true);
-  };
-
-  // Handle active field selection with smart keyboard auto-switch
-  const handleSelectField = (fieldKey: ActiveInputKey) => {
-    setActiveField(fieldKey);
-    if (fieldKey === 'user_code' || fieldKey === 'pin' || fieldKey === 'card_number' || fieldKey === 'contact') {
-      setKeyboardMode('NUMPAD');
-    } else {
-      setKeyboardMode('QWERTY');
-    }
-    // Set focus on input element
-    setTimeout(() => {
-      inputRefs[fieldKey]?.current?.focus();
-    }, 50);
-  };
-
-  // Virtual Keyboard typing engine
-  const handleVirtualKeyPress = (char: string) => {
-    switch (activeField) {
-      case 'user_code':
-        setFormUserCode((prev) => prev + char);
-        break;
-      case 'name':
-        setFormName((prev) => prev + (isCaps ? char.toUpperCase() : char.toLowerCase()));
-        break;
-      case 'pin':
-        setFormPin((prev) => prev + char);
-        break;
-      case 'card_number':
-        setFormCardNumber((prev) => prev + char.toUpperCase());
-        break;
-      case 'contact':
-        setFormContact((prev) => prev + char);
-        break;
-      case 'email':
-        setFormEmail((prev) => prev + char.toLowerCase());
-        break;
-    }
-  };
-
-  // Virtual Keyboard Backspace
-  const handleVirtualBackspace = () => {
-    switch (activeField) {
-      case 'user_code':
-        setFormUserCode((prev) => prev.slice(0, -1));
-        break;
-      case 'name':
-        setFormName((prev) => prev.slice(0, -1));
-        break;
-      case 'pin':
-        setFormPin((prev) => prev.slice(0, -1));
-        break;
-      case 'card_number':
-        setFormCardNumber((prev) => prev.slice(0, -1));
-        break;
-      case 'contact':
-        setFormContact((prev) => prev.slice(0, -1));
-        break;
-      case 'email':
-        setFormEmail((prev) => prev.slice(0, -1));
-        break;
-    }
-  };
-
-  // Virtual Keyboard Clear
-  const handleVirtualClear = () => {
-    switch (activeField) {
-      case 'user_code': setFormUserCode(''); break;
-      case 'name': setFormName(''); break;
-      case 'pin': setFormPin(''); break;
-      case 'card_number': setFormCardNumber(''); break;
-      case 'contact': setFormContact(''); break;
-      case 'email': setFormEmail(''); break;
-    }
-  };
-
-  // Advance to next field in sequence
-  const handleAdvanceNextField = () => {
-    const sequence: ActiveInputKey[] = ['user_code', 'name', 'pin', 'card_number', 'contact', 'email'];
-    const idx = sequence.indexOf(activeField);
-    const nextKey = sequence[(idx + 1) % sequence.length];
-    handleSelectField(nextKey);
   };
 
   // Save / Upsert User
@@ -248,12 +139,10 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     e.preventDefault();
     if (!formName.trim()) {
       showToast('Please enter a valid user display name');
-      handleSelectField('name');
       return;
     }
     if (!formUserCode.trim()) {
       showToast('Please provide a unique user code');
-      handleSelectField('user_code');
       return;
     }
 
@@ -382,7 +271,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
         </div>
       )}
 
-      {/* Header & Breadcrumb (Omega Style) */}
+      {/* Header & Breadcrumb */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
@@ -400,16 +289,8 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
           </div>
         </div>
 
-        {/* Action Controls */}
+        {/* Action Controls: + Add User only (Roles & Permissions button removed) */}
         <div className="flex items-center gap-2">
-          <Link
-            href={`/backoffice/settings/roles?orgId=${orgId}`}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-2xs border border-slate-200"
-          >
-            <Shield className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Roles & Permissions</span>
-          </Link>
-
           <button
             type="button"
             onClick={handleOpenAddUser}
@@ -421,7 +302,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
         </div>
       </div>
 
-      {/* Search & Filter Bar (Omega Style) */}
+      {/* Search & Filter Bar */}
       <div className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto flex-1">
           {/* Search Input */}
@@ -652,27 +533,27 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
       </div>
 
       {/* ====================================================================== */}
-      {/* ADD / EDIT USER MODAL WITH INTEGRATED TOUCH KEYBOARD & NUMPAD          */}
+      {/* STREAMLINED ADD / EDIT USER MODAL (Clean, Centered Form Layout)         */}
       {/* ====================================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-5">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           <div
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
             onClick={() => setIsModalOpen(false)}
           />
-          <div className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-5xl max-h-[94vh] flex flex-col z-10 animate-zoomIn overflow-hidden">
+          <div className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col z-10 animate-zoomIn overflow-hidden">
             {/* Modal Header */}
-            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
-              <div className="flex items-center gap-2.5">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+              <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
                   <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-                    {editingUserId ? `Edit User: ${formName} (Code: ${formUserCode})` : 'Add New Operator'}
+                    {editingUserId ? `Edit User: ${formName}` : 'Add New Operator'}
                   </h2>
                   <p className="text-[11px] text-slate-500 font-medium">
-                    Configure POS terminal credentials, RFID card, and role permissions.
+                    Configure operator credentials, badge number, and role assignment.
                   </p>
                 </div>
               </div>
@@ -685,475 +566,172 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
               </button>
             </div>
 
-            {/* Modal Body: Split Layout (Form Left / Touch Keyboard Right) */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 bg-slate-50/40">
-              {/* Left Column: Form Fields */}
-              <form onSubmit={handleSaveUser} className="lg:col-span-6 space-y-3.5">
-                {/* User Code & Card Number */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-600 flex items-center justify-between">
-                      <span>User Code</span>
-                      {activeField === 'user_code' && (
-                        <span className="text-[9.5px] font-bold text-primary animate-pulse">● Active</span>
-                      )}
-                    </label>
-                    <div
-                      onClick={() => handleSelectField('user_code')}
-                      className={`relative flex items-center bg-white rounded-xl border transition-all ${
-                        activeField === 'user_code'
-                          ? 'border-primary ring-2 ring-primary/20 shadow-xs'
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <Hash className="w-4 h-4 text-slate-400 absolute left-3" />
-                      <input
-                        ref={inputRefs.user_code}
-                        type="text"
-                        value={formUserCode}
-                        onChange={(e) => setFormUserCode(e.target.value)}
-                        onFocus={() => handleSelectField('user_code')}
-                        placeholder="101"
-                        className="w-full pl-9 pr-3 py-2 text-xs font-bold font-mono text-slate-900 bg-transparent outline-hidden"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-600 flex items-center justify-between">
-                      <span>Card / Badge #</span>
-                      {activeField === 'card_number' && (
-                        <span className="text-[9.5px] font-bold text-primary animate-pulse">● Active</span>
-                      )}
-                    </label>
-                    <div
-                      onClick={() => handleSelectField('card_number')}
-                      className={`relative flex items-center bg-white rounded-xl border transition-all ${
-                        activeField === 'card_number'
-                          ? 'border-primary ring-2 ring-primary/20 shadow-xs'
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      <CreditCard className="w-4 h-4 text-slate-400 absolute left-3" />
-                      <input
-                        ref={inputRefs.card_number}
-                        type="text"
-                        value={formCardNumber}
-                        onChange={(e) => setFormCardNumber(e.target.value)}
-                        onFocus={() => handleSelectField('card_number')}
-                        placeholder="CRD-1001"
-                        className="w-full pl-9 pr-3 py-2 text-xs font-bold font-mono text-slate-900 bg-transparent outline-hidden"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Username / Full Name */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-600 flex items-center justify-between">
-                    <span>Username / Display Name</span>
-                    {activeField === 'name' && (
-                      <span className="text-[9.5px] font-bold text-primary animate-pulse">● Active</span>
-                    )}
-                  </label>
-                  <div
-                    onClick={() => handleSelectField('name')}
-                    className={`relative flex items-center bg-white rounded-xl border transition-all ${
-                      activeField === 'name'
-                        ? 'border-primary ring-2 ring-primary/20 shadow-xs'
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <Users className="w-4 h-4 text-slate-400 absolute left-3" />
-                    <input
-                      ref={inputRefs.name}
-                      type="text"
-                      value={formName}
-                      onChange={(e) => setFormName(e.target.value)}
-                      onFocus={() => handleSelectField('name')}
-                      placeholder="e.g. Jichi Mohammed"
-                      className="w-full pl-9 pr-3 py-2 text-xs font-bold text-slate-900 bg-transparent outline-hidden"
-                    />
-                  </div>
-                </div>
-
-                {/* PIN / Password */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-600 flex items-center justify-between">
-                    <span>Quick PIN / POS Password</span>
-                    {activeField === 'pin' && (
-                      <span className="text-[9.5px] font-bold text-primary animate-pulse">● Active</span>
-                    )}
-                  </label>
-                  <div
-                    onClick={() => handleSelectField('pin')}
-                    className={`relative flex items-center bg-white rounded-xl border transition-all ${
-                      activeField === 'pin'
-                        ? 'border-primary ring-2 ring-primary/20 shadow-xs'
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3" />
-                    <input
-                      ref={inputRefs.pin}
-                      type={showPin ? 'text' : 'password'}
-                      value={formPin}
-                      onChange={(e) => setFormPin(e.target.value)}
-                      onFocus={() => handleSelectField('pin')}
-                      placeholder="4-digit quick PIN"
-                      className="w-full pl-9 pr-10 py-2 text-xs font-bold font-mono tracking-wider text-slate-900 bg-transparent outline-hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPin(!showPin)}
-                      className="absolute right-2.5 text-slate-400 hover:text-slate-600 p-1 rounded-md"
-                    >
-                      {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Role Dropdown (Directly Bound to Roles & Permissions) */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-600 block">
-                    Assigned Role (Permissions & Action Matrix)
-                  </label>
-                  <div className="relative">
-                    <Shield className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <select
-                      value={formRoleId}
-                      onChange={(e) => setFormRoleId(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
-                    >
-                      {roles.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name} {r.is_read_only ? '(Read Only)' : ''}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Branch / Station & Status */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-600 block">Branch / Plant</label>
+            {/* Modal Body: Centered Streamlined Form */}
+            <form onSubmit={handleSaveUser} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+              {/* User Code & Card / Badge Number */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">User Code / ID</label>
+                  <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                    <Hash className="w-4 h-4 text-slate-400 absolute left-3" />
                     <input
                       type="text"
-                      value={formBranch}
-                      onChange={(e) => setFormBranch(e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                      value={formUserCode}
+                      onChange={(e) => setFormUserCode(e.target.value)}
+                      placeholder="101"
+                      className="w-full pl-9 pr-3 py-2.5 text-xs font-bold font-mono text-slate-900 bg-transparent outline-hidden"
                     />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-600 block">Status</label>
-                    <select
-                      value={formStatus}
-                      onChange={(e) => setFormStatus(e.target.value as any)}
-                      className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
-                    >
-                      <option value="ACTIVE">Active</option>
-                      <option value="INACTIVE">Inactive</option>
-                    </select>
                   </div>
                 </div>
 
-                {/* Contact Phone & Email */}
-                <div className="grid grid-cols-2 gap-3 pt-1">
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-600 flex items-center justify-between">
-                      <span>Phone / Contact</span>
-                      {activeField === 'contact' && (
-                        <span className="text-[9.5px] font-bold text-primary animate-pulse">● Active</span>
-                      )}
-                    </label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">Card / Badge Number</label>
+                  <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                    <CreditCard className="w-4 h-4 text-slate-400 absolute left-3" />
                     <input
-                      ref={inputRefs.contact}
+                      type="text"
+                      value={formCardNumber}
+                      onChange={(e) => setFormCardNumber(e.target.value)}
+                      placeholder="CRD-1001"
+                      className="w-full pl-9 pr-3 py-2.5 text-xs font-bold font-mono text-slate-900 bg-transparent outline-hidden"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Username / Display Name */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 block">Username / Display Name</label>
+                <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                  <Users className="w-4 h-4 text-slate-400 absolute left-3" />
+                  <input
+                    type="text"
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value)}
+                    placeholder="e.g. Jichi Mohammed"
+                    className="w-full pl-9 pr-3 py-2.5 text-xs font-bold text-slate-900 bg-transparent outline-hidden"
+                  />
+                </div>
+              </div>
+
+              {/* Quick PIN / POS Password */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 block">Quick PIN / POS Password</label>
+                <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                  <KeyRound className="w-4 h-4 text-slate-400 absolute left-3" />
+                  <input
+                    type={showPin ? 'text' : 'password'}
+                    value={formPin}
+                    onChange={(e) => setFormPin(e.target.value)}
+                    placeholder="4-digit quick PIN"
+                    className="w-full pl-9 pr-10 py-2.5 text-xs font-bold font-mono tracking-wider text-slate-900 bg-transparent outline-hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPin(!showPin)}
+                    className="absolute right-3 text-slate-400 hover:text-slate-600 p-1 rounded-md"
+                  >
+                    {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Role Dropdown (Directly Bound to Roles & Permissions) */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 block">
+                  Assigned Role (Permissions & Action Matrix)
+                </label>
+                <div className="relative">
+                  <Shield className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <select
+                    value={formRoleId}
+                    onChange={(e) => setFormRoleId(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
+                  >
+                    {roles.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name} {r.is_read_only ? '(Read Only)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Branch / Plant & Status */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">Branch / Plant</label>
+                  <input
+                    type="text"
+                    value={formBranch}
+                    onChange={(e) => setFormBranch(e.target.value)}
+                    className="w-full px-3 py-2.5 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">Account Status</label>
+                  <select
+                    value={formStatus}
+                    onChange={(e) => setFormStatus(e.target.value as any)}
+                    className="w-full px-3 py-2.5 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
+                  >
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Contact Phone & Email */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">Phone / Contact</label>
+                  <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3" />
+                    <input
                       type="text"
                       value={formContact}
                       onChange={(e) => setFormContact(e.target.value)}
-                      onFocus={() => handleSelectField('contact')}
                       placeholder="+961..."
-                      className="w-full px-3 py-2 text-xs font-medium text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                      className="w-full pl-9 pr-3 py-2.5 text-xs font-medium text-slate-800 bg-transparent outline-hidden"
                     />
                   </div>
+                </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-600 flex items-center justify-between">
-                      <span>Email (Optional)</span>
-                      {activeField === 'email' && (
-                        <span className="text-[9.5px] font-bold text-primary animate-pulse">● Active</span>
-                      )}
-                    </label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700 block">Email Address (Optional)</label>
+                  <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3" />
                     <input
-                      ref={inputRefs.email}
                       type="email"
                       value={formEmail}
                       onChange={(e) => setFormEmail(e.target.value)}
-                      onFocus={() => handleSelectField('email')}
                       placeholder="user@vanguard..."
-                      className="w-full px-3 py-2 text-xs font-medium text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                      className="w-full pl-9 pr-3 py-2.5 text-xs font-medium text-slate-800 bg-transparent outline-hidden"
                     />
                   </div>
                 </div>
-              </form>
-
-              {/* Right Column: Virtual Touch Keyboard & Numpad */}
-              <div className="lg:col-span-6 flex flex-col bg-white border border-slate-200 rounded-2xl shadow-xs p-4 overflow-hidden">
-                {/* Touch Keyboard Header & Layout Switcher */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-                  <div className="flex items-center gap-2">
-                    <Keyboard className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-black text-slate-800 tracking-tight">
-                      Touch Keyboard
-                    </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary uppercase">
-                      Target: {activeField.replace('_', ' ')}
-                    </span>
-                  </div>
-
-                  {/* Mode Toggles */}
-                  <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200">
-                    <button
-                      type="button"
-                      onClick={() => setKeyboardMode('NUMPAD')}
-                      className={`px-3 py-1 text-xs font-extrabold rounded-lg transition-all cursor-pointer ${
-                        keyboardMode === 'NUMPAD'
-                          ? 'bg-white text-primary shadow-xs'
-                          : 'text-slate-500 hover:text-slate-900'
-                      }`}
-                    >
-                      123 Numpad
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setKeyboardMode('QWERTY')}
-                      className={`px-3 py-1 text-xs font-extrabold rounded-lg transition-all cursor-pointer ${
-                        keyboardMode === 'QWERTY'
-                          ? 'bg-white text-primary shadow-xs'
-                          : 'text-slate-500 hover:text-slate-900'
-                      }`}
-                    >
-                      ABC QWERTY
-                    </button>
-                  </div>
-                </div>
-
-                {/* 1. DEDICATED NUMERIC KEYPAD */}
-                {keyboardMode === 'NUMPAD' && (
-                  <div className="flex-1 flex flex-col justify-center">
-                    <div className="grid grid-cols-3 gap-2.5 max-w-sm mx-auto w-full">
-                      {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
-                        <button
-                          key={digit}
-                          type="button"
-                          onClick={() => handleVirtualKeyPress(digit)}
-                          className="h-14 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-2xl text-xl font-black font-mono text-slate-800 transition-all active:scale-95 shadow-2xs flex items-center justify-center cursor-pointer select-none"
-                        >
-                          {digit}
-                        </button>
-                      ))}
-
-                      {/* Clear Button */}
-                      <button
-                        type="button"
-                        onClick={handleVirtualClear}
-                        className="h-14 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 rounded-2xl text-sm font-black transition-all active:scale-95 flex items-center justify-center cursor-pointer select-none"
-                      >
-                        Clear
-                      </button>
-
-                      {/* 0 */}
-                      <button
-                        type="button"
-                        onClick={() => handleVirtualKeyPress('0')}
-                        className="h-14 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-2xl text-xl font-black font-mono text-slate-800 transition-all active:scale-95 shadow-2xs flex items-center justify-center cursor-pointer select-none"
-                      >
-                        0
-                      </button>
-
-                      {/* 00 */}
-                      <button
-                        type="button"
-                        onClick={() => handleVirtualKeyPress('00')}
-                        className="h-14 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-2xl text-base font-black font-mono text-slate-800 transition-all active:scale-95 shadow-2xs flex items-center justify-center cursor-pointer select-none"
-                      >
-                        00
-                      </button>
-
-                      {/* Backspace */}
-                      <button
-                        type="button"
-                        onClick={handleVirtualBackspace}
-                        className="h-12 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 rounded-2xl text-xs font-black transition-all active:scale-95 flex items-center justify-center gap-1 cursor-pointer select-none"
-                      >
-                        <Delete className="w-4 h-4" />
-                        <span>⌫</span>
-                      </button>
-
-                      {/* Dot . */}
-                      <button
-                        type="button"
-                        onClick={() => handleVirtualKeyPress('.')}
-                        className="h-12 bg-slate-50 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-2xl text-lg font-black transition-all active:scale-95 flex items-center justify-center cursor-pointer select-none"
-                      >
-                        .
-                      </button>
-
-                      {/* Next Field */}
-                      <button
-                        type="button"
-                        onClick={handleAdvanceNextField}
-                        className="h-12 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 rounded-2xl text-xs font-black transition-all active:scale-95 flex items-center justify-center gap-1 cursor-pointer select-none"
-                      >
-                        <span>Next</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. FULL QWERTY ALPHA KEYBOARD */}
-                {keyboardMode === 'QWERTY' && (
-                  <div className="flex-1 flex flex-col justify-center space-y-1.5 select-none">
-                    {/* Numbers Row */}
-                    <div className="flex gap-1 justify-center">
-                      {['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map((num) => (
-                        <button
-                          key={num}
-                          type="button"
-                          onClick={() => handleVirtualKeyPress(num)}
-                          className="flex-1 h-10 bg-slate-50 hover:bg-slate-200 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 transition-all active:scale-95 cursor-pointer"
-                        >
-                          {num}
-                        </button>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={handleVirtualBackspace}
-                        className="px-3 h-10 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer flex items-center justify-center"
-                      >
-                        ⌫
-                      </button>
-                    </div>
-
-                    {/* QWERTY Row 1 */}
-                    <div className="flex gap-1 justify-center">
-                      {['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map((k) => (
-                        <button
-                          key={k}
-                          type="button"
-                          onClick={() => handleVirtualKeyPress(k)}
-                          className="flex-1 h-10 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-xl text-xs font-bold text-slate-800 transition-all active:scale-95 cursor-pointer"
-                        >
-                          {isCaps ? k : k.toLowerCase()}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* QWERTY Row 2 */}
-                    <div className="flex gap-1 justify-center px-2">
-                      {['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'].map((k) => (
-                        <button
-                          key={k}
-                          type="button"
-                          onClick={() => handleVirtualKeyPress(k)}
-                          className="flex-1 h-10 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-xl text-xs font-bold text-slate-800 transition-all active:scale-95 cursor-pointer"
-                        >
-                          {isCaps ? k : k.toLowerCase()}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* QWERTY Row 3 */}
-                    <div className="flex gap-1 justify-center">
-                      <button
-                        type="button"
-                        onClick={() => setIsCaps(!isCaps)}
-                        className={`px-3 h-10 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer border ${
-                          isCaps
-                            ? 'bg-primary text-white border-primary shadow-xs'
-                            : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-                        }`}
-                      >
-                        ⇧ Caps
-                      </button>
-                      {['Z', 'X', 'C', 'V', 'B', 'N', 'M'].map((k) => (
-                        <button
-                          key={k}
-                          type="button"
-                          onClick={() => handleVirtualKeyPress(k)}
-                          className="flex-1 h-10 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-xl text-xs font-bold text-slate-800 transition-all active:scale-95 cursor-pointer"
-                        >
-                          {isCaps ? k : k.toLowerCase()}
-                        </button>
-                      ))}
-                      {['-', '_', '@', '.'].map((sym) => (
-                        <button
-                          key={sym}
-                          type="button"
-                          onClick={() => handleVirtualKeyPress(sym)}
-                          className="w-8 h-10 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-xs font-black text-slate-700 transition-all active:scale-95 cursor-pointer"
-                        >
-                          {sym}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Bottom Row */}
-                    <div className="flex gap-1 justify-center pt-1">
-                      <button
-                        type="button"
-                        onClick={handleVirtualClear}
-                        className="px-4 h-10 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer"
-                      >
-                        Clear
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleVirtualKeyPress(' ')}
-                        className="flex-1 h-10 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 transition-all active:scale-95 cursor-pointer shadow-2xs"
-                      >
-                        Space
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleAdvanceNextField}
-                        className="px-4 h-10 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 rounded-xl text-xs font-black transition-all active:scale-95 cursor-pointer flex items-center gap-1"
-                      >
-                        <span>Next</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
+            </form>
 
             {/* Modal Footer */}
-            <div className="p-4 sm:p-5 border-t border-slate-100 flex items-center justify-between bg-slate-50/80">
-              <div className="text-xs text-slate-500 font-medium hidden sm:block">
-                Touch on any field to direct keypad keystrokes. Physical keyboard also supported.
-              </div>
-              <div className="flex items-center gap-2.5 ml-auto">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  disabled={isSaving}
-                  onClick={handleSaveUser}
-                  className="flex items-center gap-1.5 px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
-                >
-                  {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
-                  <span>{isSaving ? 'Saving...' : editingUserId ? 'Save Changes' : 'Create User'}</span>
-                </button>
-              </div>
+            <div className="p-4 sm:p-5 border-t border-slate-100 flex items-center justify-end gap-2.5 bg-slate-50/80">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isSaving}
+                onClick={handleSaveUser}
+                className="flex items-center gap-1.5 px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+              >
+                {isSaving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : null}
+                <span>{isSaving ? 'Saving...' : editingUserId ? 'Save Changes' : 'Create User'}</span>
+              </button>
             </div>
           </div>
         </div>
