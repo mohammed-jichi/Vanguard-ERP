@@ -32,9 +32,9 @@ const SALESMEN_LIST = [
 
 const DEFAULT_BRANCH_ACCESS: BranchAccessSetting[] = [
   {
-    company_name: 'Zeit w zaytoun ljanoub',
-    branch_id: '22901',
-    branch_name: 'Zeit w zaytoun ljanoub',
+    company_name: 'منتوجات زيت وزيتون الجنوب ش.م.م.',
+    branch_id: '1300',
+    branch_name: 'معمل الشويفات المركزي (Choueifat Facility)',
     enabled: true,
     salesman: 'Mahdi',
     workstation_id: '2000',
@@ -200,7 +200,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
         formRole === 'Manager'
           ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
           : 'bg-blue-100 text-blue-800 border-blue-200',
-      branch: formBranchAccess.find((b) => b.enabled)?.branch_name || 'Zeit w zaytoun ljanoub',
+      branch: formBranchAccess.find((b) => b.enabled)?.branch_name || 'معمل الشويفات المركزي (Choueifat Facility)',
       status: formActive ? 'ACTIVE' : 'INACTIVE',
       is_training: formIsTraining,
       expiry_date: formExpiryDate,
@@ -694,16 +694,16 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
 
                 {/* Branch Card / Group */}
                 <div className="border border-slate-200 bg-slate-50/70 rounded-2xl p-3.5 space-y-3">
-                  <div className="text-xs font-black text-slate-900 tracking-tight">
-                    Zeit w zaytoun ljanoub
+                  <div className="text-sm font-black text-slate-900 tracking-tight font-arabic">
+                    منتوجات زيت وزيتون الجنوب ش.م.م.
                   </div>
 
                   {formBranchAccess.map((br, idx) => (
                     <div
                       key={br.branch_id || idx}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-2xs"
                     >
-                      {/* Checkbox + Branch ID + Branch Name */}
+                      {/* Checkbox + Facility Code + Facility Name */}
                       <label className="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer select-none">
                         <input
                           type="checkbox"
