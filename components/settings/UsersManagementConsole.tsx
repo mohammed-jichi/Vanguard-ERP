@@ -204,8 +204,15 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     setSelectedPersonnelId(newEmp.id);
     setFormFirstName(newEmp.firstName);
     setFormLastName(newEmp.lastName);
-    setFormEmail(newEmp.email);
+    setFormEmail(newEmp.email || '');
+    setIsNewEmployeeModalOpen(false);
+    setIsModalOpen(true);
     showToast(`Employee ${newEmp.fullName} created and auto-filled.`);
+  };
+
+  const handleOpenNewEmployeeFromAddUser = () => {
+    setIsModalOpen(false);
+    setIsNewEmployeeModalOpen(true);
   };
 
   // Check All / Uncheck All Branches
@@ -599,7 +606,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
       {/* ==================================================================== */}
       {/* 2. ADD USER / EDIT USER MODAL                                        */}
       {/* ==================================================================== */}
-      {isModalOpen && (
+      {isModalOpen && !isNewEmployeeModalOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           <div
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
@@ -647,7 +654,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
                     {/* Plus Button to open New Employee Dialog */}
                     <button
                       type="button"
-                      onClick={() => setIsNewEmployeeModalOpen(true)}
+                      onClick={handleOpenNewEmployeeFromAddUser}
                       title="Add New Employee (Module 6: HR Personnel)"
                       className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1 shrink-0"
                     >
@@ -965,8 +972,12 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
       {/* Nested Reusable New Employee Modal (HR Personnel Engine) */}
       <NewEmployeeModal
         isOpen={isNewEmployeeModalOpen}
-        onClose={() => setIsNewEmployeeModalOpen(false)}
+        onClose={() => {
+          setIsNewEmployeeModalOpen(false);
+          setIsModalOpen(true);
+        }}
         onEmployeeCreated={handleEmployeeCreated}
+        hideScheduleTab={true}
       />
     </div>
   );

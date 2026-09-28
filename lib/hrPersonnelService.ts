@@ -513,6 +513,20 @@ export class HRPersonnelService {
     return nextList;
   }
 
+  public static deleteEmployee(empId: string): HREmployeeRecord[] {
+    const list = this.getEmployees();
+    const nextList = list.filter((e) => e.id !== empId);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(nextList));
+        window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: nextList }));
+      } catch (err) {
+        console.warn('[HRPersonnelService] Failed deleting from localStorage:', err);
+      }
+    }
+    return nextList;
+  }
+
   public static getDaysOff(): DayOffRecord[] {
     if (typeof window === 'undefined') {
       return [];

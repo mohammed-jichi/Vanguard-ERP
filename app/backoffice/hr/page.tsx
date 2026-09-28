@@ -9,6 +9,7 @@ import UnifiedPrintableReportSheet from '@/components/reports/UnifiedPrintableRe
 import { EmployeeAttendanceTemplate } from '@/components/reports/sales/EmployeeAttendanceTemplate';
 import { getDefaultInitialDateRange, formatDisplayDate } from '@/lib/dateRangeEngine';
 import UnifiedHRConsole from '@/components/modules/hr/UnifiedHRConsole';
+import PersonnelMasterConsole from '@/components/modules/hr/PersonnelMasterConsole';
 import { 
   Users, 
   Clock, 
@@ -102,88 +103,89 @@ function HRPageContent() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 font-sans bg-background min-h-screen text-slate-800" dir={dir}>
-      {/* Page Header with Main Tab Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 gap-3 print:hidden">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900">{t('hr_payroll_title', '8. HR & Payroll Management')}</h1>
-            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-mono">
-              {t('live_biometrics_badge', 'Live Biometrics')}
-            </span>
+      {/* When viewing Personnel (Default), render Exact Omega Personnel Master View without SaaS pill bars */}
+      {activeTab === 'employees' ? (
+        <PersonnelMasterConsole />
+      ) : (
+        <>
+          {/* Page Header with Main Tab Switcher for Attendance, Payroll, Reports */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 gap-3 print:hidden">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold text-slate-900">{t('hr_payroll_title', '8. HR & Payroll Management')}</h1>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-mono">
+                  {t('live_biometrics_badge', 'Live Biometrics')}
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 font-medium mt-0.5">
+                {t('hr_page_subtitle', 'Biometric ZKTeco punch terminals, shift tracking, and BLOM Bank automated payroll reconciliation')}
+              </p>
+            </div>
+
+            {/* Tab Switcher */}
+            <div className="flex flex-wrap items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setActiveTab('employees')}
+                className="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60"
+              >
+                <Users size={13} />
+                <span>Personnel</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('attendance')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'attendance' 
+                    ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                }`}
+              >
+                <Clock size={13} />
+                <span>{t('attendance_shifts_tab', 'Attendance & Shifts')}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('payroll')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'payroll' 
+                    ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                }`}
+              >
+                <DollarSign size={13} />
+                <span>{t('payroll_runs_tab', 'Payroll Runs & Payslips')}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('reports');
+                  setSelectedReport('Monthly Payroll & Biometric Attendance Reconciliation');
+                }}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'reports' 
+                    ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                }`}
+              >
+                <FileText size={13} />
+                <span>{t('HR Reports Hub', 'HR Reports Hub')}</span>
+                <span className="text-[9.5px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-black font-mono">
+                  REP_HR
+                </span>
+              </button>
+            </div>
           </div>
-          <p className="text-xs text-slate-600 font-medium mt-0.5">
-            {t('hr_page_subtitle', 'Biometric ZKTeco punch terminals, shift tracking, and BLOM Bank automated payroll reconciliation')}
-          </p>
-        </div>
 
-        {/* Tab Switcher */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200 text-xs font-bold">
-          <button
-            type="button"
-            onClick={() => setActiveTab('employees')}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'employees' 
-                ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-            }`}
-          >
-            <Users size={13} />
-            <span>{t('Staff Directory', 'Staff Directory')}</span>
-          </button>
+          {/* CORE WORKSTATION (Attendance, Payroll) */}
+          {activeTab !== 'reports' && (
+            <UnifiedHRConsole initialTab={activeTab} key={activeTab} />
+          )}
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('attendance')}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'attendance' 
-                ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-            }`}
-          >
-            <Clock size={13} />
-            <span>{t('attendance_shifts_tab', 'Attendance & Shifts')}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('payroll')}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'payroll' 
-                ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-            }`}
-          >
-            <DollarSign size={13} />
-            <span>{t('payroll_runs_tab', 'Payroll Runs & Payslips')}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab('reports');
-              setSelectedReport('Monthly Payroll & Biometric Attendance Reconciliation');
-            }}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'reports' 
-                ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-            }`}
-          >
-            <FileText size={13} />
-            <span>{t('HR Reports Hub', 'HR Reports Hub')}</span>
-            <span className="text-[9.5px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-black font-mono">
-              REP_HR
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* CORE WORKSTATION (Employees, Attendance, Payroll) */}
-      {activeTab !== 'reports' && (
-        <UnifiedHRConsole initialTab={activeTab} key={activeTab} />
-      )}
-
-      {/* MASTER-DETAIL UNIFIED REPORTS HUB */}
+          {/* MASTER-DETAIL UNIFIED REPORTS HUB */}
       {activeTab === 'reports' && (
         <div className="space-y-4">
           <UnifiedModuleReportsHub
@@ -391,6 +393,8 @@ function HRPageContent() {
             )}
           </UnifiedModuleReportsHub>
         </div>
+      )}
+        </>
       )}
     </div>
   );

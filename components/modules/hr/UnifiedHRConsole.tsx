@@ -35,6 +35,7 @@ import {
   Flame,
   Award
 } from 'lucide-react';
+import PersonnelMasterConsole from './PersonnelMasterConsole';
 
 export interface EmployeeRecord {
   id: string;
@@ -660,232 +661,40 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
         </div>
       )}
 
-      {/* Top Navigation Tabs */}
-      <div className="bg-card border border-border rounded-xl p-2 shadow-xs flex flex-wrap items-center gap-2 text-xs font-semibold">
-        {[
-          { id: 'employees', label: t('hr_tab_employees', 'Employee Master Directory'), icon: Users },
-          { id: 'attendance', label: t('hr_tab_attendance', 'Attendance & Shifts'), icon: Clock },
-          { id: 'payroll', label: t('hr_tab_payroll', 'Payroll Runs & Payslips'), icon: DollarSign },
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-                isActive
-                  ? 'bg-primary text-primary-foreground shadow-2xs font-bold'
-                  : 'bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/70'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Top Navigation Tabs (Hidden on Personnel Master View) */}
+      {activeTab !== 'employees' && (
+        <div className="bg-card border border-border rounded-xl p-2 shadow-xs flex flex-wrap items-center gap-2 text-xs font-semibold">
+          {[
+            { id: 'employees', label: t('hr_tab_employees', 'Personnel Master Directory'), icon: Users },
+            { id: 'attendance', label: t('hr_tab_attendance', 'Attendance & Shifts'), icon: Clock },
+            { id: 'payroll', label: t('hr_tab_payroll', 'Payroll Runs & Payslips'), icon: DollarSign },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-2xs font-bold'
+                    : 'bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/70'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* TAB 1: EMPLOYEE MASTER DIRECTORY */}
       {/* ========================================================================= */}
       {activeTab === 'employees' && (
-        <div className="space-y-4">
-          {/* Metrics Overview */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            <div className="bg-card p-4 rounded-xl border border-border shadow-2xs">
-              <div className="flex items-center justify-between text-muted-foreground text-xs font-semibold">
-                <span>{t('total_registered_staff', 'Total Registered Staff')}</span>
-                <Users className="w-4 h-4 text-primary" />
-              </div>
-              <div className="mt-2 text-2xl font-bold text-foreground">{employees.length}</div>
-              <p className="text-[11px] text-emerald-700 font-semibold mt-0.5">
-                {employees.filter((e) => e.contractStatus === 'ACTIVE').length} {t('active_contracts', 'Active Contracts')}
-              </p>
-            </div>
-
-            <div className="bg-card p-4 rounded-xl border border-border shadow-2xs">
-              <div className="flex items-center justify-between text-muted-foreground text-xs font-semibold">
-                <span>{t('probation_contracts', 'Under Probation Period')}</span>
-                <Clock className="w-4 h-4 text-amber-600" />
-              </div>
-              <div className="mt-2 text-2xl font-bold text-foreground">
-                {employees.filter((e) => e.contractStatus === 'PROBATION').length}
-              </div>
-              <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
-                {t('standard_90_days_trial', 'Standard 90-day evaluation')}
-              </p>
-            </div>
-
-            <div className="bg-card p-4 rounded-xl border border-border shadow-2xs">
-              <div className="flex items-center justify-between text-muted-foreground text-xs font-semibold">
-                <span>{t('biometric_devices_active', 'Active Biometric Terminals')}</span>
-                <Cpu className="w-4 h-4 text-purple-600" />
-              </div>
-              <div className="mt-2 text-2xl font-bold text-foreground">3</div>
-              <p className="text-[11px] text-purple-700 font-semibold mt-0.5">
-                {t('choueifat_and_nabatieh_plants', 'Choueifat (2) • Nabatieh (1)')}
-              </p>
-            </div>
-
-            <div className="bg-card p-4 rounded-xl border border-border shadow-2xs">
-              <div className="flex items-center justify-between text-muted-foreground text-xs font-semibold">
-                <span>{t('monthly_base_expenditure', 'Monthly Base Expenditure')}</span>
-                <DollarSign className="w-4 h-4 text-emerald-600" />
-              </div>
-              <div className="mt-2 text-2xl font-bold text-foreground font-mono">
-                ${employees.reduce((acc, e) => acc + e.basicSalary, 0).toLocaleString()}
-              </div>
-              <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
-                {t('exclusive_of_ot_bonuses', 'Excl. OT & allowances')}
-              </p>
-            </div>
-          </div>
-
-          {/* Action & Filter Bar */}
-          <div className="bg-card border border-border rounded-xl p-3 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <div className="relative w-full sm:w-64">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t('search_staff_placeholder', 'Search staff name, ID, or National ID...')}
-                  className="w-full bg-card border border-input rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-medium"
-                />
-              </div>
-
-              <select
-                value={deptFilter}
-                onChange={(e) => setDeptFilter(e.target.value)}
-                className="bg-card border border-input rounded-lg p-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-semibold"
-              >
-                <option value="ALL">{t('all_departments', 'All Departments')}</option>
-                <option value="Pressing & Extraction Plant">{t('dept_pressing', 'Pressing & Extraction Plant')}</option>
-                <option value="Packaging & Automated Bottling">{t('dept_packaging', 'Packaging & Automated Bottling')}</option>
-                <option value="SuperSonic Fleet Logistics">{t('dept_logistics', 'SuperSonic Fleet Logistics')}</option>
-                <option value="Sales & Commercial Wholesale">{t('dept_sales', 'Sales & Commercial Wholesale')}</option>
-                <option value="Accounting & Administration">{t('dept_accounting', 'Accounting & Administration')}</option>
-                <option value="Quality Control & Lab">{t('dept_quality', 'Quality Control & Lab')}</option>
-              </select>
-
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-card border border-input rounded-lg p-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs font-semibold"
-              >
-                <option value="ALL">{t('all_contract_statuses', 'All Contract Statuses')}</option>
-                <option value="ACTIVE">{t('status_active', 'Active (دائم)')}</option>
-                <option value="PROBATION">{t('status_probation', 'Probation (تجربة)')}</option>
-                <option value="SUSPENDED">{t('status_suspended', 'Suspended (معلق)')}</option>
-                <option value="NOTICE">{t('status_notice', 'Notice (إنذار)')}</option>
-              </select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setShowAddEmpModal(true)}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>{t('add_new_employee', '+ Add Employee')}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Employee Directory Table */}
-          <div className="bg-card border border-border rounded-xl overflow-hidden shadow-2xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="bg-muted text-muted-foreground font-semibold border-b border-border uppercase text-[10.5px]">
-                    <th className="py-2.5 px-3">{t('col_emp_id', 'Staff ID')}</th>
-                    <th className="py-2.5 px-3">{t('col_full_name', 'Employee Full Name')}</th>
-                    <th className="py-2.5 px-3">{t('col_national_id', 'National ID / SSN')}</th>
-                    <th className="py-2.5 px-3">{t('col_job_title', 'Job Title & Department')}</th>
-                    <th className="py-2.5 px-3 text-right">{t('col_basic_salary', 'Basic Salary')}</th>
-                    <th className="py-2.5 px-3 text-center">{t('col_hire_date', 'Hire Date')}</th>
-                    <th className="py-2.5 px-3 text-center">{t('col_contract_status', 'Status')}</th>
-                    <th className="py-2.5 px-3 text-center">{t('col_actions', 'Actions')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border font-medium">
-                  {filteredEmployees.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="py-8 text-center text-muted-foreground text-xs">
-                        {t('no_staff_records_found', 'No employee records matching criteria.')}
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredEmployees.map((emp) => (
-                      <tr key={emp.id} className="hover:bg-muted/40 transition-colors">
-                        <td className="py-2.5 px-3 font-mono font-bold text-primary">
-                          #{emp.id}
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <span className="font-bold text-foreground block">{emp.name}</span>
-                          <span className="text-[11px] text-muted-foreground font-mono">{emp.phone}</span>
-                        </td>
-                        <td className="py-2.5 px-3 font-mono text-muted-foreground">
-                          <div>{emp.nationalId}</div>
-                          <div className="text-[10px] text-muted-foreground">{emp.socialSecurityNo}</div>
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <span className="font-semibold text-foreground block">{emp.title}</span>
-                          <span className="text-[11px] text-muted-foreground">{emp.dept}</span>
-                        </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-bold text-foreground">
-                          ${emp.basicSalary.toLocaleString()}
-                        </td>
-                        <td className="py-2.5 px-3 text-center font-mono text-[11px] text-muted-foreground">
-                          {emp.hireDate}
-                        </td>
-                        <td className="py-2.5 px-3 text-center">
-                          <span
-                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
-                              emp.contractStatus === 'ACTIVE'
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : emp.contractStatus === 'PROBATION'
-                                ? 'bg-amber-100 text-amber-800'
-                                : emp.contractStatus === 'SUSPENDED'
-                                ? 'bg-destructive/10 text-destructive'
-                                : 'bg-muted text-muted-foreground'
-                            }`}
-                          >
-                            {emp.contractStatus}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-3 text-center">
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => handleSimulatePunch(emp)}
-                              title={t('quick_clock_in', 'Simulate Clock In')}
-                              className="p-1 text-muted-foreground hover:text-emerald-700 rounded transition-colors cursor-pointer"
-                            >
-                              <Clock className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleOpenPayslip(emp)}
-                              title={t('view_payslip_tooltip', 'View Monthly Payslip')}
-                              className="p-1 text-muted-foreground hover:text-primary rounded transition-colors cursor-pointer"
-                            >
-                              <Receipt className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <PersonnelMasterConsole />
       )}
 
       {/* ========================================================================= */}
