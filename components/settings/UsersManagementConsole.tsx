@@ -6,6 +6,11 @@ import { useTenant } from '@/lib/TenantContext';
 import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 import { EnterpriseUserRecord, BranchAccessSetting } from '@/app/api/users/route';
 import {
+  HREmployeeRecord,
+  HRPersonnelService,
+} from '@/lib/hrPersonnelService';
+import NewEmployeeModal from '@/components/modules/hr/NewEmployeeModal';
+import {
   Search,
   Plus,
   Pencil,
@@ -15,6 +20,8 @@ import {
   Lock,
   X,
   CheckCircle2,
+  UserPlus,
+  Briefcase,
 } from 'lucide-react';
 
 interface UsersManagementConsoleProps {
@@ -32,9 +39,9 @@ const SALESMEN_LIST = [
 
 const DEFAULT_BRANCH_ACCESS: BranchAccessSetting[] = [
   {
-    company_name: 'منتوجات زيت وزيتون الجنوب ش.م.م.',
+    company_name: 'منتوجات زيت وزيتون الجنوب ش.م.م. (Southern Olive and Oil Products S.A.R.L.)',
     branch_id: '1300',
-    branch_name: 'معمل الشويفات المركزي (Choueifat Facility)',
+    branch_name: 'Choueifat Central Plant (معمل الشويفات)',
     enabled: true,
     salesman: 'Mahdi',
     workstation_id: '2000',
@@ -67,10 +74,16 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
+  // HR Personnel Integration State
+  const [hrPersonnelList, setHrPersonnelList] = useState<HREmployeeRecord[]>([]);
+  const [selectedPersonnelId, setSelectedPersonnelId] = useState<string>('');
+  const [isNewEmployeeModalOpen, setIsNewEmployeeModalOpen] = useState<boolean>(false);
+
   // Modal Form State
   const [formFirstName, setFormFirstName] = useState<string>('');
   const [formLastName, setFormLastName] = useState<string>('');
   const [formEmail, setFormEmail] = useState<string>('');
+  const [formPassword, setFormPassword] = useState<string>('');
   const [formRole, setFormRole] = useState<'Manager' | 'Limited Access'>('Manager');
   const [formIsTraining, setFormIsTraining] = useState<boolean>(false);
   const [formActive, setFormActive] = useState<boolean>(true);
@@ -104,16 +117,28 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     }
   };
 
+  // Load HR personnel on mount & listen to updates
   useEffect(() => {
     fetchUsers();
+    setHrPersonnelList(HRPersonnelService.getEmployees());
+
+    const handleHREvent = (e: any) => {
+      if (e.detail) {
+        setHrPersonnelList(e.detail);
+      }
+    };
+    window.addEventListener('vanguard_hr_employees_updated', handleHREvent);
+    return () => window.removeEventListener('vanguard_hr_employees_updated', handleHREvent);
   }, [orgId]);
 
   // Open Modal for Add New User
   const handleOpenAddUser = () => {
     setEditingUserId(null);
+    setSelectedPersonnelId('');
     setFormFirstName('');
     setFormLastName('');
     setFormEmail('');
+    setFormPassword('');
     setFormRole('Manager');
     setFormIsTraining(false);
     setFormActive(true);
@@ -128,6 +153,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
   // Open Modal for Edit User
   const handleOpenEditUser = (user: EnterpriseUserRecord) => {
     setEditingUserId(user.id);
+    setSelectedPersonnelId('');
 
     let first = user.first_name || '';
     let last = user.last_name || '';
@@ -140,6 +166,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     setFormFirstName(first);
     setFormLastName(last);
     setFormEmail(user.email || '');
+    setFormPassword('');
     setFormRole(user.role === 'Limited Access' ? 'Limited Access' : 'Manager');
     setFormIsTraining(Boolean(user.is_training));
     setFormActive(user.status === 'ACTIVE');
@@ -155,6 +182,30 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
 
     setNewPassword('');
     setIsModalOpen(true);
+  };
+
+  // Handle Personnel Selected from Dropdown
+  const handlePersonnelSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = e.target.value;
+    setSelectedPersonnelId(selectedId);
+    if (!selectedId) return;
+
+    const emp = hrPersonnelList.find((p) => p.id === selectedId);
+    if (emp) {
+      setFormFirstName(emp.firstName);
+      setFormLastName(emp.lastName);
+      setFormEmail(emp.email);
+    }
+  };
+
+  // Handle Employee Created from NewEmployeeModal
+  const handleEmployeeCreated = (newEmp: HREmployeeRecord) => {
+    setHrPersonnelList(HRPersonnelService.getEmployees());
+    setSelectedPersonnelId(newEmp.id);
+    setFormFirstName(newEmp.firstName);
+    setFormLastName(newEmp.lastName);
+    setFormEmail(newEmp.email);
+    showToast(`Employee ${newEmp.fullName} created and auto-filled.`);
   };
 
   // Check All / Uncheck All Branches
@@ -176,6 +227,10 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     }
     if (!formEmail.trim()) {
       showToast('Email address is required.');
+      return;
+    }
+    if (!editingUserId && !formPassword.trim()) {
+      showToast('Password is required for new user.');
       return;
     }
 
@@ -200,7 +255,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
         formRole === 'Manager'
           ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
           : 'bg-blue-100 text-blue-800 border-blue-200',
-      branch: formBranchAccess.find((b) => b.enabled)?.branch_name || 'معمل الشويفات المركزي (Choueifat Facility)',
+      branch: formBranchAccess.find((b) => b.enabled)?.branch_name || 'Choueifat Central Plant (معمل الشويفات)',
       status: formActive ? 'ACTIVE' : 'INACTIVE',
       is_training: formIsTraining,
       expiry_date: formExpiryDate,
@@ -542,7 +597,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
       </div>
 
       {/* ==================================================================== */}
-      {/* 2. EDIT USER & ADD USER MODAL (Matching Screenshots 1, 2, 3, 4)      */}
+      {/* 2. ADD USER / EDIT USER MODAL                                        */}
       {/* ==================================================================== */}
       {isModalOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
@@ -555,7 +610,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/90">
               <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-                {editingUserId ? 'Edit User' : 'New User'}
+                {editingUserId ? 'Edit User' : 'Add User'}
               </h2>
               <button
                 type="button"
@@ -568,7 +623,45 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
 
             {/* Modal Body */}
             <form onSubmit={handleSaveUser} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
-              {/* Top Grid & Inputs: First Name* & Last Name* */}
+              {/* Personnel Selection Header (When creating a user) */}
+              {!editingUserId && (
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
+                  <label className="text-xs font-bold text-slate-800 block flex items-center gap-1.5">
+                    <Briefcase className="w-3.5 h-3.5 text-primary" />
+                    <span>Personnel*</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={selectedPersonnelId}
+                      onChange={handlePersonnelSelect}
+                      className="flex-1 px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
+                    >
+                      <option value="">Select Personnel</option>
+                      {hrPersonnelList.map((emp) => (
+                        <option key={emp.id} value={emp.id}>
+                          {emp.fullName} ({emp.designation} - {emp.department})
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Plus Button to open New Employee Dialog */}
+                    <button
+                      type="button"
+                      onClick={() => setIsNewEmployeeModalOpen(true)}
+                      title="Add New Employee (Module 6: HR Personnel)"
+                      className="px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1 shrink-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>New Employee</span>
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Select an existing HR employee or click "+" to register a new employee with biometric clock binding.
+                  </p>
+                </div>
+              )}
+
+              {/* Credentials & Role Fields: First Name* & Last Name* */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-700 block">First Name*</label>
@@ -607,6 +700,21 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
                 />
               </div>
 
+              {/* Password* (For New User) */}
+              {!editingUserId && (
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 block">Password*</label>
+                  <input
+                    type="password"
+                    required
+                    value={formPassword}
+                    onChange={(e) => setFormPassword(e.target.value)}
+                    placeholder="Enter user password"
+                    className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                  />
+                </div>
+              )}
+
               {/* Role* Dropdown (Strictly: Manager and Limited Access) */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 block">Role*</label>
@@ -644,7 +752,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
                   </label>
                 </div>
 
-                {/* Right: Metadata Labels */}
+                {/* Right: Metadata Labels (Shown when editing or creating) */}
                 <div className="text-xs font-semibold text-slate-600 space-y-1.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
                   <div className="flex items-center justify-between">
                     <span className="text-slate-500">Created by:</span>
@@ -666,7 +774,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
                 </div>
               </div>
 
-              {/* Branches Access Section */}
+              {/* Branches Access Section (Configured for Actual Enterprise Entity & Facility) */}
               <div className="space-y-2.5 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-black text-slate-900 uppercase tracking-wide">
@@ -694,8 +802,8 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
 
                 {/* Branch Card / Group */}
                 <div className="border border-slate-200 bg-slate-50/70 rounded-2xl p-3.5 space-y-3">
-                  <div className="text-sm font-black text-slate-900 tracking-tight font-arabic">
-                    منتوجات زيت وزيتون الجنوب ش.م.م.
+                  <div className="text-xs sm:text-sm font-black text-slate-900 tracking-tight font-arabic flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <span>منتوجات زيت وزيتون الجنوب ش.م.م. (Southern Olive and Oil Products S.A.R.L.)</span>
                   </div>
 
                   {formBranchAccess.map((br, idx) => (
@@ -772,42 +880,44 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
                 </button>
               </div>
 
-              {/* Reset Password & Security Question Section */}
-              <div className="border-t border-slate-200 pt-4 space-y-3">
-                <div className="text-xs font-black text-slate-900 uppercase tracking-wide">
-                  Reset Password
-                </div>
+              {/* Reset Password & Security Question Section (When editing an existing user) */}
+              {editingUserId && (
+                <div className="border-t border-slate-200 pt-4 space-y-3">
+                  <div className="text-xs font-black text-slate-900 uppercase tracking-wide">
+                    Reset Password
+                  </div>
 
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => setIsSecurityQuestionConfirmOpen(true)}
-                    className="px-3.5 py-1.5 bg-[#78350f] hover:bg-[#92400e] text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
-                  >
-                    <HelpCircle className="w-4 h-4" />
-                    <span>Reset Security Question</span>
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsSecurityQuestionConfirmOpen(true)}
+                      className="px-3.5 py-1.5 bg-[#78350f] hover:bg-[#92400e] text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                    >
+                      <HelpCircle className="w-4 h-4" />
+                      <span>Reset Security Question</span>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={handleResetPassword}
-                    className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
-                  >
-                    <Lock className="w-4 h-4" />
-                    <span>Reset Password</span>
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={handleResetPassword}
+                      className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                    >
+                      <Lock className="w-4 h-4" />
+                      <span>Reset Password</span>
+                    </button>
+                  </div>
 
-                <div className="relative">
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="New Password"
-                    className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary placeholder:text-slate-400"
-                  />
+                  <div className="relative">
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="New Password"
+                      className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary placeholder:text-slate-400"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </form>
           </div>
         </div>
@@ -851,6 +961,13 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
           </div>
         </div>
       )}
+
+      {/* Nested Reusable New Employee Modal (HR Personnel Engine) */}
+      <NewEmployeeModal
+        isOpen={isNewEmployeeModalOpen}
+        onClose={() => setIsNewEmployeeModalOpen(false)}
+        onEmployeeCreated={handleEmployeeCreated}
+      />
     </div>
   );
 }
