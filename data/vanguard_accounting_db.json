@@ -6095,10 +6095,14 @@
       "user_code": "101",
       "email": "jamaljichihusseinmahdi@gmail.com",
       "name": "Hussien Jichi",
-      "password": "Vanguard2026!Secure",
-      "password_hash": "d8804ee85f62e006f3a1babdf4c3a08319f0d2782d7e8752f642130151a968ec",
-      "pin": "Vanguard2026!Secure",
-      "role": "Manager"
+      "password": "123456",
+      "password_hash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+      "pin": "123456",
+      "role": "Manager",
+      "is_active": true,
+      "status": "Active",
+      "email_confirmed": true,
+      "email_verified": true
     },
     {
       "id": "u-102",
