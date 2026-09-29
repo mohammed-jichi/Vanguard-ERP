@@ -119,23 +119,70 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password: password,
-      });
+      let authSuccess = false;
+      let verifiedUserId = '';
+      let verifiedEmail = cleanEmail;
+      let sessionToken = '';
 
-      if (error || !data?.user || !data?.session) {
-        setIsLoading(false);
-        showToast(t('invalid_credentials', 'Invalid email or password.'), 'error');
-        return;
+      // 1. Attempt primary Supabase Auth login
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: password,
+        });
+
+        if (!error && data?.user && data?.session) {
+          authSuccess = true;
+          verifiedUserId = data.user.id;
+          verifiedEmail = data.user.email || cleanEmail;
+          sessionToken = data.session.access_token;
+        }
+      } catch (sbErr) {
+        console.warn("Client Supabase auth attempt bypassed or failed:", sbErr);
       }
 
-      const verifiedUserId = data.user.id;
-      const verifiedEmail = data.user.email || cleanEmail;
+      // 2. If Supabase Auth failed or user password was updated in live ERP database, fallback to ERP Auth Engine
+      if (!authSuccess) {
+        const loginRes = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: cleanEmail,
+            password: password,
+            companyId: cleanCompanyId,
+          }),
+        });
 
-      // Securely store session access token cookies (session-scoped: no expires / no max-age)
-      document.cookie = `sb-${verifiedUserId}-auth-token=${data.session.access_token}; path=/; SameSite=Lax`;
-      document.cookie = `sb-access-token=${data.session.access_token}; path=/; SameSite=Lax`;
+        const loginData = await loginRes.json();
+        if (!loginRes.ok || !loginData.success) {
+          setIsLoading(false);
+          showToast(loginData.error || t('invalid_credentials', 'Invalid email or password.'), 'error');
+          return;
+        }
+
+        verifiedUserId = loginData.user?.id || `u-${Date.now()}`;
+        verifiedEmail = loginData.user?.email || cleanEmail;
+        sessionToken = loginData.token || `vg-${Date.now()}`;
+
+        // Store session tokens in cookies
+        document.cookie = `sb-${verifiedUserId}-auth-token=${sessionToken}; path=/; SameSite=Lax`;
+        document.cookie = `sb-access-token=${sessionToken}; path=/; SameSite=Lax`;
+        document.cookie = `so_authenticated=true; path=/; SameSite=Lax`;
+
+        const assignment = loginData.assignment;
+        if (assignment) {
+          persistTenantSession(assignment);
+          const params = new URLSearchParams(window.location.search);
+          const redirectUrl = params.get("redirect");
+          const target = getPostLoginDestination(assignment, redirectUrl);
+          window.location.href = target;
+          return;
+        }
+      }
+
+      // Handle successful Supabase Auth path
+      document.cookie = `sb-${verifiedUserId}-auth-token=${sessionToken}; path=/; SameSite=Lax`;
+      document.cookie = `sb-access-token=${sessionToken}; path=/; SameSite=Lax`;
 
       // Verify that the authenticated user belongs to the specified Company / Tenant ID
       const assignment = await resolveUserTenantAndRole(verifiedEmail, verifiedUserId, cleanCompanyId);
@@ -154,7 +201,6 @@ export default function LoginPage() {
       persistTenantSession(assignment);
 
       // Redirect directly to tenant workspace dashboard route (e.g. /[tenant_id]/dashboard)
-      // Strictly reserve /admin for Super Admins
       const params = new URLSearchParams(window.location.search);
       const redirectUrl = params.get("redirect");
       const target = getPostLoginDestination(assignment, redirectUrl);

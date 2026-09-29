@@ -95,6 +95,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
 
   // Confirmation Modal State for Reset Security Question
   const [isSecurityQuestionConfirmOpen, setIsSecurityQuestionConfirmOpen] = useState<boolean>(false);
+  const [isResettingPassword, setIsResettingPassword] = useState<boolean>(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -246,6 +247,8 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
       ? users.find((u) => u.id === editingUserId)?.user_code || '101'
       : (users.length > 0 ? Math.max(...users.map((u) => parseInt(u.user_code, 10) || 100)) + 1 : 101).toString();
 
+    const effectivePassword = newPassword.trim() || formPassword.trim() || undefined;
+
     const payload: EnterpriseUserRecord = {
       id: editingUserId || `u-${Date.now()}`,
       tenant_id: orgId,
@@ -254,7 +257,8 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
       first_name: formFirstName.trim(),
       last_name: formLastName.trim(),
       email: formEmail.trim(),
-      pin: users.find((u) => u.id === editingUserId)?.pin || '1001',
+      password: effectivePassword,
+      pin: effectivePassword || users.find((u) => u.id === editingUserId)?.pin || '1001',
       card_number: users.find((u) => u.id === editingUserId)?.card_number || `CRD-${nextUserCode}`,
       role: formRole,
       role_id: formRole === 'Manager' ? 'r_manager' : 'r_limited',
@@ -295,6 +299,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
         setUsers(data.users);
       }
       setIsModalOpen(false);
+      setNewPassword('');
       showToast(editingUserId ? `User ${payload.name} updated successfully!` : `User ${payload.name} created successfully!`);
     } catch (err) {
       console.error('[UsersConsole] Save user failed:', err);
@@ -328,13 +333,54 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
   };
 
   // Reset Password Action
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (!newPassword.trim()) {
       showToast('Please enter a new password first.');
       return;
     }
-    showToast('Password reset successfully.');
-    setNewPassword('');
+
+    if (!editingUserId) {
+      showToast('No user selected.');
+      return;
+    }
+
+    const cleanPass = newPassword.trim();
+    const targetUser = users.find((u) => u.id === editingUserId);
+    const targetEmail = formEmail.trim() || targetUser?.email || '';
+
+    setIsResettingPassword(true);
+    try {
+      const res = await fetch('/api/users/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: editingUserId,
+          email: targetEmail,
+          newPassword: cleanPass,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to reset password');
+      }
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === editingUserId
+            ? { ...u, password: cleanPass, pin: cleanPass }
+            : u
+        )
+      );
+
+      showToast('Password reset successfully.');
+      setNewPassword('');
+    } catch (err: any) {
+      console.error('[UsersConsole] Reset password failed:', err);
+      showToast(err.message || 'Error resetting password');
+    } finally {
+      setIsResettingPassword(false);
+    }
   };
 
   // Filtered Users
@@ -906,11 +952,12 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
 
                     <button
                       type="button"
+                      disabled={isResettingPassword}
                       onClick={handleResetPassword}
-                      className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                      className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
                     >
                       <Lock className="w-4 h-4" />
-                      <span>Reset Password</span>
+                      <span>{isResettingPassword ? 'Resetting...' : 'Reset Password'}</span>
                     </button>
                   </div>
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { getSupabaseServerClient } from '@/lib/supabaseClient';
+import { hashPassword, syncSupabaseUserAuth } from '@/lib/authSync';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -42,6 +43,8 @@ export interface EnterpriseUserRecord {
   contact?: string;
   last_login?: string;
   branches_access?: BranchAccessSetting[];
+  password?: string;
+  password_hash?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -239,24 +242,39 @@ export async function GET(req: Request) {
         .order('user_code', { ascending: true });
 
       if (!error && dbUsers && dbUsers.length > 0) {
-        const mapped: EnterpriseUserRecord[] = dbUsers.map((u: any) => ({
-          id: u.id || `u-${u.user_code || Date.now()}`,
-          tenant_id: String(u.tenant_id || tenantId),
-          user_code: String(u.user_code || u.code || ''),
-          name: u.name || u.display_name || 'Operator',
-          email: u.email || '',
-          pin: String(u.pin || u.password_hash || ''),
-          card_number: String(u.card_number || u.badge_number || ''),
-          role: u.role_name || u.role || 'Enterprise Operator',
-          role_id: u.role_id || 'r_cashier',
-          role_badge: u.role_badge || 'bg-slate-100 text-slate-800 border-slate-200',
-          branch: u.branch || 'Choueifat Central Plant',
-          status: u.status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE',
-          contact: u.contact || u.phone || '',
-          last_login: u.last_login || 'Recently',
-          created_at: u.created_at,
-          updated_at: u.updated_at,
-        }));
+        const localList = readLocalUsers();
+        const localMap = new Map(localList.map((u) => [u.id, u]));
+        const localEmailMap = new Map(localList.filter(u => u.email).map(u => [u.email!.toLowerCase(), u]));
+
+        const mapped: EnterpriseUserRecord[] = dbUsers.map((u: any) => {
+          const emailLower = (u.email || '').toLowerCase();
+          const localMatch = localMap.get(u.id) || (emailLower ? localEmailMap.get(emailLower) : undefined);
+          const effectivePass = localMatch?.password || u.password || (u.pin ? String(u.pin) : undefined);
+
+          return {
+            id: u.id || `u-${u.user_code || Date.now()}`,
+            tenant_id: String(u.tenant_id || tenantId),
+            user_code: String(u.user_code || u.code || ''),
+            name: u.name || u.display_name || 'Operator',
+            first_name: u.first_name || localMatch?.first_name,
+            last_name: u.last_name || localMatch?.last_name,
+            email: u.email || localMatch?.email || '',
+            password: effectivePass,
+            password_hash: localMatch?.password_hash || (effectivePass ? hashPassword(effectivePass) : undefined),
+            pin: String(u.pin || localMatch?.pin || effectivePass || ''),
+            card_number: String(u.card_number || u.badge_number || ''),
+            role: u.role_name || u.role || 'Enterprise Operator',
+            role_id: u.role_id || 'r_cashier',
+            role_badge: u.role_badge || 'bg-slate-100 text-slate-800 border-slate-200',
+            branch: u.branch || 'Choueifat Central Plant',
+            status: u.status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE',
+            contact: u.contact || u.phone || '',
+            last_login: u.last_login || 'Recently',
+            branches_access: localMatch?.branches_access || DEFAULT_BRANCH_ACCESS,
+            created_at: u.created_at,
+            updated_at: u.updated_at,
+          };
+        });
 
         writeLocalUsers(mapped);
         return NextResponse.json({ success: true, users: mapped, source: 'supabase' }, { headers: CORS_HEADERS });
@@ -283,19 +301,39 @@ export async function POST(req: Request) {
       currentUsers = body.users;
     } else if (body.user && typeof body.user === 'object') {
       const incoming: EnterpriseUserRecord = body.user;
-      const index = currentUsers.findIndex((u) => u.id === incoming.id || (incoming.user_code && u.user_code === incoming.user_code));
+      const index = currentUsers.findIndex(
+        (u) =>
+          u.id === incoming.id ||
+          (incoming.user_code && u.user_code === incoming.user_code) ||
+          (incoming.email && u.email && u.email.toLowerCase() === incoming.email.toLowerCase())
+      );
+
+      const existingUser = index >= 0 ? currentUsers[index] : null;
+      const effectivePassword = incoming.password?.trim() || existingUser?.password;
+      const effectiveHash = effectivePassword ? hashPassword(effectivePassword) : (incoming.password_hash || existingUser?.password_hash);
+      const effectivePin = incoming.pin || effectivePassword || existingUser?.pin || '1001';
+
+      const mergedUser: EnterpriseUserRecord = {
+        ...(existingUser || {}),
+        ...incoming,
+        password: effectivePassword,
+        password_hash: effectiveHash,
+        pin: effectivePin,
+        updated_at: new Date().toISOString(),
+      };
+
       if (index >= 0) {
-        currentUsers[index] = {
-          ...currentUsers[index],
-          ...incoming,
-          updated_at: new Date().toISOString(),
-        };
+        currentUsers[index] = mergedUser;
       } else {
-        currentUsers.unshift({
-          ...incoming,
-          id: incoming.id || `u-${Date.now()}`,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+        mergedUser.id = incoming.id || `u-${Date.now()}`;
+        mergedUser.created_at = new Date().toISOString();
+        currentUsers.unshift(mergedUser);
+      }
+
+      // If user has a password and email, keep auth store synchronized
+      if (effectivePassword && incoming.email) {
+        syncSupabaseUserAuth(incoming.email, effectivePassword, mergedUser).catch((err) => {
+          console.warn('[API /api/users] syncSupabaseUserAuth non-fatal error:', err);
         });
       }
     } else {
@@ -312,7 +350,9 @@ export async function POST(req: Request) {
         const userToSync = body.user || (body.users ? body.users[0] : null);
         if (userToSync) {
           await supabase.from('users').upsert({
-            id: userToSync.id,
+            id: userToSync.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userToSync.id)
+              ? userToSync.id
+              : undefined,
             tenant_id: userToSync.tenant_id || '1300',
             user_code: userToSync.user_code,
             name: userToSync.name,
@@ -325,7 +365,7 @@ export async function POST(req: Request) {
             status: userToSync.status,
             contact: userToSync.contact,
             updated_at: new Date().toISOString(),
-          });
+          }, { onConflict: 'email' });
         }
       } catch (err) {
         console.warn('[API /api/users] Supabase background sync failed (non-fatal):', err);
