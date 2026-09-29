@@ -16,12 +16,14 @@ import FeedbackModal from '@/components/FeedbackModal';
 import LanguageSwitcherModal from '@/components/LanguageSwitcherModal';
 import HeaderLanguageDropdown from '@/components/HeaderLanguageDropdown';
 import { PINNED_LANGUAGES } from '@/lib/LanguageContext';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentOpsSection = searchParams.get('section') || 'dashboard';
   const { currentTenant, switchTenant, registeredCompanies, isModuleEnabled } = useTenant();
+  const activeUser = useActiveUser();
 
   // Sync tenant from URL searchParams if provided
   useEffect(() => {
@@ -523,7 +525,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
           </div>
         </div>
 
-        {/* Right Side: Action Icons -> QUICK MENU FIRST -> JICHI MOHAMMED */}
+        {/* Right Side: Action Icons -> QUICK MENU FIRST -> USER PROFILE */}
         <div className="flex items-center gap-3 shrink-0">
 
           <div className="flex items-center gap-1.5 text-slate-600">
@@ -598,7 +600,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             </button>
           </div>
 
-          {/* 7. JICHI MOHAMMED PROFILE */}
+          {/* 7. USER PROFILE DROPDOWN */}
           <div className="relative">
             <button
               type="button"
@@ -606,9 +608,9 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors shadow-2xs cursor-pointer"
             >
               <div className="w-6 h-6 rounded-full bg-primary text-white font-bold flex items-center justify-center text-[11px] shadow-xs">
-                M
+                {activeUser.avatarLetter || 'U'}
               </div>
-              <span className="text-xs font-semibold text-slate-900">Jichi Mohammed</span>
+              <span className="text-xs font-semibold text-slate-900">{activeUser.name || 'Authorized User'}</span>
               <span className="text-[11px] text-primary">▾</span>
             </button>
 
@@ -621,10 +623,10 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                 />
                 <div className="absolute end-0 mt-2 w-64 bg-white border border-slate-300 rounded-2xl shadow-2xl py-2 text-xs text-slate-800 z-50 animate-fadeIn">
                   <div className="px-4 py-2.5 border-b border-slate-100 bg-card">
-                    <div className="font-bold text-slate-900 text-sm">Jichi Mohammed</div>
-                    <div className="text-[10.5px] text-primary font-mono font-semibold">{t('general_operations_manager', 'General Operations Manager')}</div>
+                    <div className="font-bold text-slate-900 text-sm">{activeUser.name || 'Authorized User'}</div>
+                    <div className="text-[10.5px] text-primary font-mono font-semibold">{activeUser.role || t('general_operations_manager', 'General Operations Manager')}</div>
                     <div className="text-[9.5px] text-slate-400 font-mono truncate mt-0.5">
-                      Southern Olive Oil Products S.A.R.L
+                      {currentTenant?.name || 'Southern Olive Oil Products S.A.R.L'}
                     </div>
                   </div>
 

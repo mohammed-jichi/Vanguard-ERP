@@ -115,6 +115,17 @@ export async function POST(req: Request) {
       }).catch(() => {});
     }
 
+    const resolvedDisplayName =
+      matchedUser?.name ||
+      assignment.fullName ||
+      (cleanEmail === 'jamaljichihusseinmahdi@gmail.com' ? 'Hussien Jichi' : 'Vanguard User');
+    const resolvedFirstName =
+      matchedUser?.first_name ||
+      (resolvedDisplayName ? resolvedDisplayName.split(' ')[0] : 'Hussien');
+    const resolvedLastName =
+      matchedUser?.last_name ||
+      (resolvedDisplayName ? resolvedDisplayName.split(' ').slice(1).join(' ') : 'Jichi');
+
     const response = NextResponse.json(
       {
         success: true,
@@ -122,7 +133,9 @@ export async function POST(req: Request) {
         user: {
           id: userId,
           email: cleanEmail,
-          name: matchedUser?.name || assignment.fullName || 'Vanguard User',
+          name: resolvedDisplayName,
+          first_name: resolvedFirstName,
+          last_name: resolvedLastName,
           role: assignment.role,
         },
         assignment,
@@ -137,6 +150,7 @@ export async function POST(req: Request) {
     response.cookies.set('vanguard_tenant_id', assignment.tenantId, { path: '/', sameSite: 'lax' });
     response.cookies.set('vanguard_user_role', assignment.role, { path: '/', sameSite: 'lax' });
     response.cookies.set('vanguard_auth_session', cleanEmail, { path: '/', sameSite: 'lax' });
+    response.cookies.set('vanguard_user_name', resolvedDisplayName, { path: '/', sameSite: 'lax' });
     if (assignment.companyCode) {
       response.cookies.set('vanguard_company_code', assignment.companyCode, { path: '/', sameSite: 'lax' });
     }

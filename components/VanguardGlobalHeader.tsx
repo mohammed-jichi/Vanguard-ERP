@@ -44,6 +44,7 @@ import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
 import { clearAuthSession } from '@/lib/authSession';
 import LanguageSwitcherModal from '@/components/LanguageSwitcherModal';
 import HeaderLanguageDropdown from '@/components/HeaderLanguageDropdown';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 interface VanguardGlobalHeaderProps {
   activeScreen: string;
@@ -57,6 +58,7 @@ interface VisitedItem {
 
 export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: VanguardGlobalHeaderProps) {
   const { currentTenant, currentUser } = useTenant();
+  const activeUser = useActiveUser();
   const { language, dir, setLanguage, t } = useLanguage();
   const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
 
@@ -519,17 +521,17 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           {/* HEADER LANGUAGE SELECTOR DROPDOWN */}
           <HeaderLanguageDropdown />
 
-          {/* USER PROFILE DROPDOWN (STRICTLY MOHAMMED) */}
+          {/* USER PROFILE DROPDOWN (DYNAMIC USER RESOLUTION) */}
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="flex items-center gap-1.5 p-1.5 hover:bg-[#252538] text-white rounded-xl transition-colors"
             >
               <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center border border-amber-300 shadow-xs">
-                M
+                {activeUser.avatarLetter || 'U'}
               </div>
               <span className="font-bold text-xs text-white hidden sm:inline">
-                {t('mohammed', 'Mohammed')}
+                {activeUser.name || t('user', 'User')}
               </span>
               <ChevronDown className="w-3 h-3 text-amber-400" />
             </button>
@@ -539,10 +541,13 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
               <div className={`absolute right-0 mt-2 w-60 bg-white text-gray-900 border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-semibold ${language === 'ar' ? 'dir-ltr text-right' : 'dir-ltr text-left'}`}>
                 <div className="p-2 border-b border-gray-100">
                   <p className="text-gray-900 font-bold">
-                    {t('mohammed', 'Mohammed')}
+                    {activeUser.name || t('user', 'User')}
                   </p>
-                  <p className="text-[10px] text-gray-500 font-medium">
-                    {t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}
+                  <p className="text-[11px] text-amber-600 font-semibold">
+                    {activeUser.role || 'Manager'}
+                  </p>
+                  <p className="text-[10px] text-gray-500 font-medium truncate">
+                    {currentTenant?.name || t('southern_olive_oil_products_sarl', 'Southern Olive Oil Products S.A.R.L')}
                   </p>
                 </div>
 

@@ -307,8 +307,8 @@ export async function resolveUserTenantAndRole(
 
       if (matchedTenant) {
         // Query user's profile under this tenant if available
-        let userRole: 'COMPANY_ADMIN' | 'MANAGER' | 'STAFF' | 'DRIVER' = 'COMPANY_ADMIN';
-        let userFullName = 'Vanguard Operator';
+        let userRole: 'COMPANY_ADMIN' | 'MANAGER' | 'STAFF' | 'DRIVER' = normalizedEmail === 'jamaljichihusseinmahdi@gmail.com' ? 'MANAGER' : 'COMPANY_ADMIN';
+        let userFullName = normalizedEmail === 'jamaljichihusseinmahdi@gmail.com' ? 'Hussien Jichi' : 'Vanguard Operator';
         let profile: any = null;
 
         try {
@@ -561,6 +561,22 @@ export function persistTenantSession(assignment: UserTenantAssignment) {
   }
   if (assignment.fullName) {
     sessionStorage.setItem('vanguard_user_name', assignment.fullName);
+    localStorage.setItem('vanguard_user_name', assignment.fullName);
+    localStorage.setItem('vanguard_user_email', assignment.email);
+    localStorage.setItem('vanguard_user_role', assignment.role);
+    const userRecord = {
+      id: assignment.userId || 'u-active',
+      email: assignment.email,
+      name: assignment.fullName,
+      fullName: assignment.fullName,
+      role: assignment.role,
+    };
+    sessionStorage.setItem('vanguard_user', JSON.stringify(userRecord));
+    sessionStorage.setItem('so_authenticated_user', JSON.stringify(userRecord));
+    localStorage.setItem('vanguard_user', JSON.stringify(userRecord));
+    localStorage.setItem('so_authenticated_user', JSON.stringify(userRecord));
+    document.cookie = `vanguard_user_name=${encodeURIComponent(assignment.fullName)}; path=/; SameSite=Lax`;
+    try { window.dispatchEvent(new Event('vanguard_auth_change')); } catch (e) {}
   }
 
   const tenantObj = {

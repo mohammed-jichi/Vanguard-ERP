@@ -169,6 +169,18 @@ export default function LoginPage() {
         document.cookie = `sb-access-token=${sessionToken}; path=/; SameSite=Lax`;
         document.cookie = `so_authenticated=true; path=/; SameSite=Lax`;
 
+        if (loginData.user) {
+          const uStr = JSON.stringify(loginData.user);
+          localStorage.setItem('vanguard_user', uStr);
+          sessionStorage.setItem('vanguard_user', uStr);
+          localStorage.setItem('so_authenticated_user', uStr);
+          sessionStorage.setItem('so_authenticated_user', uStr);
+          localStorage.setItem('vanguard_user_name', loginData.user.name);
+          sessionStorage.setItem('vanguard_user_name', loginData.user.name);
+          document.cookie = `vanguard_user_name=${encodeURIComponent(loginData.user.name)}; path=/; SameSite=Lax`;
+          try { window.dispatchEvent(new Event('vanguard_auth_change')); } catch (e) {}
+        }
+
         const assignment = loginData.assignment;
         if (assignment) {
           persistTenantSession(assignment);
@@ -196,6 +208,25 @@ export default function LoginPage() {
         showToast(t('user_not_in_tenant', 'User account is not registered with this Company ID.'), 'error');
         return;
       }
+
+      const effectiveName =
+        assignment.fullName ||
+        (cleanEmail === 'jamaljichihusseinmahdi@gmail.com' ? 'Hussien Jichi' : cleanEmail.split('@')[0]);
+      const userProfile = {
+        id: verifiedUserId,
+        email: verifiedEmail,
+        name: effectiveName,
+        role: assignment.role,
+      };
+      const uStr = JSON.stringify(userProfile);
+      localStorage.setItem('vanguard_user', uStr);
+      sessionStorage.setItem('vanguard_user', uStr);
+      localStorage.setItem('so_authenticated_user', uStr);
+      sessionStorage.setItem('so_authenticated_user', uStr);
+      localStorage.setItem('vanguard_user_name', effectiveName);
+      sessionStorage.setItem('vanguard_user_name', effectiveName);
+      document.cookie = `vanguard_user_name=${encodeURIComponent(effectiveName)}; path=/; SameSite=Lax`;
+      try { window.dispatchEvent(new Event('vanguard_auth_change')); } catch (e) {}
 
       // Persist tenant session to cookies and client sessionStorage
       persistTenantSession(assignment);
