@@ -304,7 +304,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
           ? {
               ...item,
               status: 'APPROVED',
-              approvedBy: 'Jichi Mohammed',
+              approvedBy: 'Mohammed Jichi',
               approvedDate: new Date().toISOString().replace('T', ' ').slice(0, 16)
             }
           : item
@@ -776,7 +776,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
                                       ? {
                                           ...item,
                                           status: 'APPROVED',
-                                          approvedBy: 'Jichi Mohammed',
+                                          approvedBy: 'Mohammed Jichi',
                                           approvedDate: new Date().toISOString().slice(0, 10)
                                         }
                                       : item

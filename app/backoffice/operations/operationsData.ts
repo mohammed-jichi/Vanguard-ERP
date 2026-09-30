@@ -801,7 +801,7 @@ export const INITIAL_SALES: SalesRecord[] = [
     branch: 'Choueifat POS Store Front & Showroom',
     customer: 'Spinneys Hypermarket Hazmieh',
     customerId: 'CUST-0021',
-    salesman: 'Jichi Mohammed',
+    salesman: 'Mohammed Jichi',
     amountUsd: 3240.00,
     amountLbp: 289980000,
     currency: 'USD',
@@ -835,7 +835,7 @@ export const INITIAL_SALES: SalesRecord[] = [
     branch: 'Choueifat POS Store Front & Showroom',
     customer: 'Faysal Gourmet Market Dbayeh',
     customerId: 'CUST-0089',
-    salesman: 'Jichi Mohammed',
+    salesman: 'Mohammed Jichi',
     amountUsd: 980.00,
     amountLbp: 87710000,
     currency: 'USD',
@@ -869,7 +869,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     branch: 'Beirut Central Distribution Depot',
     customer: 'Carrefour City Centre Beirut',
     customerId: 'CUST-0018',
-    salesman: 'Jichi Mohammed',
+    salesman: 'Mohammed Jichi',
     validUntil: '2026-09-30',
     totalUsd: 12800.00,
     totalLbp: 1145600000,
@@ -1170,7 +1170,7 @@ export const INITIAL_ADJUSTMENTS: AdjustmentRecord[] = [
     varianceValueUsd: -196.00,
     units: '16-Liter Tin',
     reason: 'Physical inventory audit variance (leakage)',
-    auditor: 'Jichi Mohammed'
+    auditor: 'Mohammed Jichi'
   },
   {
     id: 'ADJ-102',
@@ -1205,7 +1205,7 @@ export const INITIAL_PRODUCT_REQUESTS: ProductRequestRecord[] = [
     costUsd: 7.80,
     unit: '750ml Bottle',
     status: 'APPROVED',
-    approvedBy: 'Jichi Mohammed',
+    approvedBy: 'Mohammed Jichi',
     approvedDate: '2026-09-05 16:00',
     deliveryDate: '2026-09-06',
     remark: 'Restock boutique weekend promotion shelf'

@@ -31,7 +31,7 @@ export interface CreditSalesTemplateProps {
 
 const DEFAULT_CREDIT_SALES: CreditSalesRecord[] = [
   {
-    clientName: 'Jichi Mohammed',
+    clientName: 'Mohammed Jichi',
     code: 'CLI-001',
     check: '100105',
     date: '01-Jan-26',

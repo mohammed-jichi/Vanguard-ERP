@@ -36,6 +36,7 @@ import {
   Award
 } from 'lucide-react';
 import PersonnelMasterConsole from './PersonnelMasterConsole';
+import { HRPersonnelService, HREmployeeRecord } from '@/lib/hrPersonnelService';
 
 export interface EmployeeRecord {
   id: string;
@@ -58,168 +59,138 @@ export interface EmployeeRecord {
   absenceDays: number;
 }
 
-export const INITIAL_EMPLOYEES: EmployeeRecord[] = [
-  {
-    id: 'EMP-001',
-    name: 'Youssef Abboud',
-    nationalId: '1002938475',
-    title: 'Plant Operations Supervisor',
-    dept: 'Pressing & Extraction Plant',
-    basicSalary: 1450,
+export function hrEmployeeToUnifiedEmployee(hr: HREmployeeRecord): EmployeeRecord {
+  const salaryMap: Record<string, number> = {
+    '641': 2500, // Mohammed Jichi (General Operations Manager)
+    '642': 3500, // Hussien Jichi (Owner / Director)
+    '644': 1800, // Hussein Jichi (Accountant)
+    '649': 850,  // Hiba Aloulou (Cashier)
+  };
+  const overtimeMap: Record<string, number> = {
+    '641': 4.0,
+    '642': 0.0,
+    '644': 6.0,
+    '649': 2.5,
+  };
+  const basicSalary = salaryMap[hr.id] || 1200;
+  const overtimeHours = overtimeMap[hr.id] || 0;
+
+  return {
+    id: hr.id,
+    name: hr.fullName || `${hr.firstName} ${hr.lastName}`.trim(),
+    nationalId: hr.nationalId || `100${hr.id.padStart(7, '0')}`,
+    title: hr.designation || 'Staff',
+    dept: hr.department || 'Operations',
+    basicSalary,
     currency: 'USD',
-    hireDate: '2021-03-15',
-    contractStatus: 'ACTIVE',
-    shift: '07:00 - 15:30',
-    phone: '+961 70 112 233',
-    terminal: 'Choueifat Bio-01',
-    socialSecurityNo: 'CNSS-8899201',
-    iban: 'LB81-0014-0000-1122-3344-01',
-    overtimeHours: 6.5,
+    hireDate: hr.dateHired || '2024-05-15',
+    contractStatus: hr.active ? 'ACTIVE' : 'SUSPENDED',
+    shift: hr.schedule?.templateName?.includes('07:00') ? '07:00 - 15:30' : '08:00 - 16:30',
+    phone: hr.phone,
+    terminal: hr.branch || '1300 Choueifat Central Plant (معمل الشويفات)',
+    socialSecurityNo: hr.socialSecurityNo || `CNSS-${hr.id}00`,
+    iban: `LB81-0014-0000-0000-${hr.id.padStart(4, '0')}-01`,
+    overtimeHours,
     transportAllowance: 120,
-    bonus: 50,
+    bonus: hr.id === '641' ? 200 : hr.id === '644' ? 100 : 50,
     absenceDays: 0,
-  },
-  {
-    id: 'EMP-002',
-    name: 'Laila Harb',
-    nationalId: '1008472910',
-    title: 'Senior Financial Controller',
-    dept: 'Accounting & Administration',
-    basicSalary: 1800,
-    currency: 'USD',
-    hireDate: '2020-01-10',
-    contractStatus: 'ACTIVE',
-    shift: '08:00 - 16:30',
-    phone: '+961 03 445 566',
-    terminal: 'Choueifat Bio-02',
-    socialSecurityNo: 'CNSS-7711402',
-    iban: 'LB81-0014-0000-5566-7788-02',
-    overtimeHours: 0.0,
-    transportAllowance: 120,
-    bonus: 100,
-    absenceDays: 0,
-  },
-  {
-    id: 'EMP-003',
-    name: 'Nabil Sleiman',
-    nationalId: '1003829102',
-    title: 'Lead Bottling Line Operator',
-    dept: 'Packaging & Automated Bottling',
-    basicSalary: 1200,
-    currency: 'USD',
-    hireDate: '2022-06-01',
-    contractStatus: 'ACTIVE',
-    shift: '07:00 - 15:30',
-    phone: '+961 71 889 900',
-    terminal: 'Choueifat Bio-01',
-    socialSecurityNo: 'CNSS-9933503',
-    iban: 'LB81-0014-0000-9900-1122-03',
-    overtimeHours: 8.0,
-    transportAllowance: 120,
-    bonus: 30,
-    absenceDays: 1,
-  },
-  {
-    id: 'EMP-004',
-    name: 'Ziad Kassis',
-    nationalId: '1009182736',
-    title: 'Senior Fleet Route Dispatcher',
-    dept: 'SuperSonic Fleet Logistics',
-    basicSalary: 1350,
-    currency: 'USD',
-    hireDate: '2021-09-20',
-    contractStatus: 'ACTIVE',
-    shift: '06:30 - 15:00',
-    phone: '+961 76 332 211',
-    terminal: 'Choueifat Bio-02',
-    socialSecurityNo: 'CNSS-6644204',
-    iban: 'LB81-0014-0000-3344-5566-04',
-    overtimeHours: 12.0,
-    transportAllowance: 140,
-    bonus: 60,
-    absenceDays: 0,
-  },
-  {
-    id: 'EMP-005',
-    name: 'Rami Haddad',
-    nationalId: '1004738291',
-    title: 'Key Accounts Wholesale Rep',
-    dept: 'Sales & Commercial Wholesale',
-    basicSalary: 1500,
-    currency: 'USD',
-    hireDate: '2023-02-15',
-    contractStatus: 'ACTIVE',
-    shift: '08:30 - 17:00',
-    phone: '+961 70 998 877',
-    terminal: 'Remote / Mobile GPS',
-    socialSecurityNo: 'CNSS-5522105',
-    iban: 'LB81-0014-0000-7788-9900-05',
-    overtimeHours: 0.0,
-    transportAllowance: 180,
-    bonus: 150,
-    absenceDays: 0,
-  },
-  {
-    id: 'EMP-006',
-    name: 'Ahmad Zein',
-    nationalId: '1005829104',
-    title: 'Cold Press Mill Technician',
-    dept: 'Pressing & Extraction Plant',
-    basicSalary: 1250,
-    currency: 'USD',
-    hireDate: '2022-11-01',
-    contractStatus: 'ACTIVE',
-    shift: '07:00 - 15:30',
-    phone: '+961 78 443 322',
-    terminal: 'Nabatieh Bio-01',
-    socialSecurityNo: 'CNSS-4411806',
-    iban: 'LB81-0014-0000-2233-4455-06',
-    overtimeHours: 10.0,
-    transportAllowance: 120,
-    bonus: 40,
-    absenceDays: 0,
-  },
-  {
-    id: 'EMP-007',
-    name: 'Karim Daher',
-    nationalId: '1006948201',
-    title: 'Quality Assurance & Lab Chemist',
-    dept: 'Quality Control & Lab',
-    basicSalary: 1400,
-    currency: 'USD',
-    hireDate: '2024-05-15',
-    contractStatus: 'PROBATION',
-    shift: '08:00 - 16:30',
-    phone: '+961 71 556 677',
-    terminal: 'Choueifat Bio-02',
-    socialSecurityNo: 'CNSS-3322907',
-    iban: 'LB81-0014-0000-6677-8899-07',
-    overtimeHours: 2.0,
-    transportAllowance: 120,
-    bonus: 0,
-    absenceDays: 0,
-  },
-  {
-    id: 'EMP-008',
-    name: 'Samir Mansour',
-    nationalId: '1007839205',
-    title: 'Fleet Maintenance Mechanic',
-    dept: 'SuperSonic Fleet Logistics',
-    basicSalary: 1150,
-    currency: 'USD',
-    hireDate: '2023-08-01',
-    contractStatus: 'SUSPENDED',
-    shift: '07:00 - 15:30',
-    phone: '+961 70 778 899',
-    terminal: 'Choueifat Bio-01',
-    socialSecurityNo: 'CNSS-2211708',
-    iban: 'LB81-0014-0000-4455-6677-08',
-    overtimeHours: 0.0,
-    transportAllowance: 0,
-    bonus: 0,
-    absenceDays: 5,
+  };
+}
+
+export function getInitialUnifiedEmployees(): EmployeeRecord[] {
+  try {
+    const hrEmployees = HRPersonnelService.getEmployees();
+    if (hrEmployees && hrEmployees.length > 0) {
+      return hrEmployees.map(hrEmployeeToUnifiedEmployee);
+    }
+  } catch (e) {
+    console.warn('[UnifiedHRConsole] Error reading HR personnel records:', e);
   }
-];
+  return [
+    {
+      id: '641',
+      name: 'Mohammed Jichi',
+      nationalId: '1000000641',
+      title: 'General Operations Manager',
+      dept: 'Management',
+      basicSalary: 2500,
+      currency: 'USD',
+      hireDate: '2024-05-15',
+      contractStatus: 'ACTIVE',
+      shift: '08:00 - 16:30',
+      phone: '71384506',
+      terminal: '1300 Choueifat Central Plant',
+      socialSecurityNo: 'CNSS-64100',
+      iban: 'LB81-0014-0000-0000-0641-01',
+      overtimeHours: 4.0,
+      transportAllowance: 120,
+      bonus: 200,
+      absenceDays: 0,
+    },
+    {
+      id: '642',
+      name: 'Hussien Jichi',
+      nationalId: '1000000642',
+      title: 'Owner / Director',
+      dept: 'Owners',
+      basicSalary: 3500,
+      currency: 'USD',
+      hireDate: '2020-01-01',
+      contractStatus: 'ACTIVE',
+      shift: '08:00 - 16:30',
+      phone: '71390241',
+      terminal: '1300 Choueifat Central Plant',
+      socialSecurityNo: 'CNSS-64200',
+      iban: 'LB81-0014-0000-0000-0642-01',
+      overtimeHours: 0.0,
+      transportAllowance: 120,
+      bonus: 0,
+      absenceDays: 0,
+    },
+    {
+      id: '644',
+      name: 'Hussein Jichi',
+      nationalId: '1000000644',
+      title: 'Accountant',
+      dept: 'Accounting',
+      basicSalary: 1800,
+      currency: 'USD',
+      hireDate: '2024-06-15',
+      contractStatus: 'ACTIVE',
+      shift: '08:00 - 16:30',
+      phone: '81958823',
+      terminal: '1300 Choueifat Central Plant',
+      socialSecurityNo: 'CNSS-64400',
+      iban: 'LB81-0014-0000-0000-0644-01',
+      overtimeHours: 6.0,
+      transportAllowance: 120,
+      bonus: 100,
+      absenceDays: 0,
+    },
+    {
+      id: '649',
+      name: 'Hiba Aloulou',
+      nationalId: '1000000649',
+      title: 'Cashier',
+      dept: 'Sales',
+      basicSalary: 850,
+      currency: 'USD',
+      hireDate: '2023-04-01',
+      contractStatus: 'ACTIVE',
+      shift: '07:00 - 15:30',
+      phone: '78846247',
+      terminal: '1300 Choueifat Central Plant',
+      socialSecurityNo: 'CNSS-64900',
+      iban: 'LB81-0014-0000-0000-0649-01',
+      overtimeHours: 2.5,
+      transportAllowance: 120,
+      bonus: 50,
+      absenceDays: 0,
+    },
+  ];
+}
+
+export const INITIAL_EMPLOYEES: EmployeeRecord[] = getInitialUnifiedEmployees();
 
 export interface AttendancePunch {
   id: string;
@@ -236,13 +207,10 @@ export interface AttendancePunch {
 }
 
 export const INITIAL_PUNCHES: AttendancePunch[] = [
-  { id: 'PCH-801', empId: 'EMP-001', name: 'Youssef Abboud', dept: 'Pressing Plant', date: '2026-09-25', clockIn: '06:55 AM', clockOut: '04:00 PM', terminal: 'Choueifat Bio-01', workedHours: 9.0, overtimeHours: 0.5, status: 'OVERTIME' },
-  { id: 'PCH-802', empId: 'EMP-002', name: 'Laila Harb', dept: 'Accounting', date: '2026-09-25', clockIn: '07:58 AM', clockOut: '04:30 PM', terminal: 'Choueifat Bio-02', workedHours: 8.5, overtimeHours: 0.0, status: 'ON_TIME' },
-  { id: 'PCH-803', empId: 'EMP-003', name: 'Nabil Sleiman', dept: 'Packaging', date: '2026-09-25', clockIn: '07:22 AM', clockOut: '04:15 PM', terminal: 'Choueifat Bio-01', workedHours: 8.8, overtimeHours: 0.8, status: 'LATE' },
-  { id: 'PCH-804', empId: 'EMP-004', name: 'Ziad Kassis', dept: 'Logistics', date: '2026-09-25', clockIn: '06:25 AM', clockOut: '05:00 PM', terminal: 'Choueifat Bio-02', workedHours: 10.5, overtimeHours: 2.0, status: 'OVERTIME' },
-  { id: 'PCH-805', empId: 'EMP-005', name: 'Rami Haddad', dept: 'Wholesale Sales', date: '2026-09-25', clockIn: '08:45 AM', clockOut: '05:00 PM', terminal: 'Mobile GPS Punch', workedHours: 8.25, overtimeHours: 0.0, status: 'LATE' },
-  { id: 'PCH-806', empId: 'EMP-006', name: 'Ahmad Zein', dept: 'Pressing Plant', date: '2026-09-25', clockIn: '06:58 AM', clockOut: '04:30 PM', terminal: 'Nabatieh Bio-01', workedHours: 9.5, overtimeHours: 1.0, status: 'OVERTIME' },
-  { id: 'PCH-807', empId: 'EMP-007', name: 'Karim Daher', dept: 'Quality & Lab', date: '2026-09-25', clockIn: '08:02 AM', clockOut: '04:30 PM', terminal: 'Choueifat Bio-02', workedHours: 8.5, overtimeHours: 0.0, status: 'ON_TIME' },
+  { id: 'PCH-641', empId: '641', name: 'Mohammed Jichi', dept: 'Management', date: '2026-09-30', clockIn: '07:50 AM', clockOut: '05:15 PM', terminal: 'Choueifat Plant Bio-01', workedHours: 9.4, overtimeHours: 1.0, status: 'OVERTIME' },
+  { id: 'PCH-642', empId: '642', name: 'Hussien Jichi', dept: 'Owners', date: '2026-09-30', clockIn: '08:25 AM', clockOut: '04:30 PM', terminal: 'Choueifat Plant Bio-01', workedHours: 8.0, overtimeHours: 0.0, status: 'ON_TIME' },
+  { id: 'PCH-644', empId: '644', name: 'Hussein Jichi', dept: 'Accounting', date: '2026-09-30', clockIn: '07:55 AM', clockOut: '05:30 PM', terminal: 'Choueifat Plant Bio-02', workedHours: 9.5, overtimeHours: 1.5, status: 'OVERTIME' },
+  { id: 'PCH-649', empId: '649', name: 'Hiba Aloulou', dept: 'Sales', date: '2026-09-30', clockIn: '06:55 AM', clockOut: '03:40 PM', terminal: 'POS Terminal 10', workedHours: 8.75, overtimeHours: 0.5, status: 'OVERTIME' },
 ];
 
 export interface HolidayItem {
@@ -327,6 +295,24 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
     checkPayrollStatus();
   }, [currentTenant?.id]);
 
+  // Synchronize live employees from HRPersonnelService dynamically
+  useEffect(() => {
+    const syncLivePersonnel = () => {
+      try {
+        const liveList = HRPersonnelService.getEmployees();
+        if (liveList && liveList.length > 0) {
+          setEmployees(liveList.map(hrEmployeeToUnifiedEmployee));
+        }
+      } catch (err) {
+        console.warn('[UnifiedHRConsole] Error syncing live employees:', err);
+      }
+    };
+
+    syncLivePersonnel();
+    window.addEventListener('storage', syncLivePersonnel);
+    return () => window.removeEventListener('storage', syncLivePersonnel);
+  }, []);
+
   // New Employee Form State
   const [newEmpName, setNewEmpName] = useState('');
   const [newEmpNationalId, setNewEmpNationalId] = useState('');
@@ -351,8 +337,9 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
       return;
     }
 
+    const nextId = (employees.length + 650).toString();
     const newEmp: EmployeeRecord = {
-      id: `EMP-00${employees.length + 1}`,
+      id: nextId,
       name: newEmpName.trim(),
       nationalId: newEmpNationalId.trim(),
       title: newEmpTitle.trim() || 'General Staff',
@@ -364,8 +351,8 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
       shift: newEmpShift,
       phone: newEmpPhone.trim(),
       terminal: newEmpTerminal,
-      socialSecurityNo: `CNSS-${Math.floor(1000000 + Math.random() * 9000000)}`,
-      iban: `LB81-0014-0000-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}-01`,
+      socialSecurityNo: `CNSS-${nextId}00`,
+      iban: `LB81-0014-0000-0000-${nextId.padStart(4, '0')}-01`,
       overtimeHours: 0,
       transportAllowance: 120,
       bonus: 0,
@@ -373,8 +360,44 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
     };
 
     setEmployees((prev) => [newEmp, ...prev]);
+
+    // Save to HRPersonnelService to persist across entire ERP
+    try {
+      const parts = newEmpName.trim().split(' ');
+      const fName = parts[0] || 'Staff';
+      const lName = parts.slice(1).join(' ') || 'Employee';
+      const hrRecord: HREmployeeRecord = {
+        id: nextId,
+        active: newEmpStatus === 'ACTIVE',
+        firstName: fName,
+        lastName: lName,
+        fullName: newEmpName.trim(),
+        email: `${fName.toLowerCase()}.${lName.toLowerCase()}@southernolive-lb.com`,
+        phone: newEmpPhone.trim(),
+        countryCode: '+961',
+        gender: 'Male',
+        maritalStatus: 'Single',
+        childrenCount: 0,
+        department: newEmpDept,
+        designation: newEmpTitle.trim() || 'General Staff',
+        location: 'Office',
+        dateHired: newEmpHireDate,
+        country: 'Lebanon',
+        city: 'Choueifat (معمل الشويفات) - Aley',
+        brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
+        branch: '1300 Choueifat Central Plant (معمل الشويفات)',
+        useBranch: true,
+        isBackoffice: true,
+        posEmployeeId: String(employees.length + 1),
+        createdAt: new Date().toISOString().split('T')[0],
+      };
+      HRPersonnelService.saveEmployee(hrRecord);
+    } catch (saveErr) {
+      console.warn('Failed to save to HRPersonnelService:', saveErr);
+    }
+
     setShowAddEmpModal(false);
-    showToast(t('employee_created_success', `Employee ${newEmp.name} (${newEmp.id}) added successfully!`));
+    showToast(t('employee_created_success', `Employee ${newEmp.name} (#${newEmp.id}) added successfully!`));
 
     // Reset Form
     setNewEmpName('');

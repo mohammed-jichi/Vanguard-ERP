@@ -429,7 +429,7 @@ export default function ContactsView() {
           </button>
           <div className="flex items-center gap-1.5 pl-2 border-l border-zinc-700 cursor-pointer hover:text-white">
             <User className="w-3.5 h-3.5" />
-            <span className="text-xs">{t('jichi_mohammed', 'Jichi Mohammed')}</span>
+            <span className="text-xs">{t('mohammed_jichi', 'Mohammed Jichi')}</span>
             <ChevronDown className="w-3 h-3 text-zinc-400" />
           </div>
           <button type="button" title={t('apps', 'Apps')} className="hover:text-white p-1 ml-1">

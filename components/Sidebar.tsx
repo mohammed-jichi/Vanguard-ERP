@@ -1082,9 +1082,27 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['hr'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/hr?section=schedule_overview" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('schedule_overview', 'Schedule Overview')}</Link>
-              <Link href="/backoffice/hr?section=personnel" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('personnel', 'Personnel')}</Link>
-              <Link href="/backoffice/hr?section=schedules" className="block p-1.5 hover:text-primary hover:bg-slate-50 rounded">{t('schedules', 'Schedules')}</Link>
+              <Link href="/backoffice/hr/employees" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <Users className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('personnel_directory', 'Personnel Directory')}</span>
+              </Link>
+              <Link href="/accounting/payroll/employee-schedules" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-amber-50/70 rounded font-bold text-slate-900 border-s-2 border-primary">
+                <CalendarDays className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span className="truncate">{t('employee_schedules_day_off', 'Employee Schedules & Day Off')}</span>
+                <span className="ms-auto text-[9px] px-1 py-0.2 bg-emerald-100 text-emerald-800 rounded font-mono font-bold">2026</span>
+              </Link>
+              <Link href="/backoffice/hr/payroll" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <DollarSign className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('payroll_runs', 'Payroll Runs')}</span>
+              </Link>
+              <Link href="/backoffice/hr/attendance" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('biometric_attendance', 'Biometric Attendance')}</span>
+              </Link>
+              <Link href="/backoffice/hr?tab=reports" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <FileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('hr_reports_hub', 'HR Reports Hub')}</span>
+              </Link>
 
               {/* Organization Setup */}
               <div className="pt-0.5">
@@ -1115,6 +1133,7 @@ export default function Sidebar({
                 </button>
                 {expandedGroups['hr_attendance'] && (
                   <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    <Link href="/accounting/payroll/employee-schedules" className="block p-1 hover:text-primary hover:bg-slate-50 rounded font-bold text-amber-700">{t('schedules_shift_manager', 'Schedules & Shift Manager (2026)')}</Link>
                     <Link href="/backoffice/hr?section=time_off_requests" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('time_off_requests', 'Time Off Requests')}</Link>
                     <Link href="/backoffice/hr?section=schedule_templates" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('schedule_templates', 'Schedule Templates')}</Link>
                     <Link href="/backoffice/hr?section=time_off_reasons" className="block p-1 hover:text-primary hover:bg-slate-50 rounded">{t('time_off_reasons', 'Time Off Reasons')}</Link>
