@@ -29,6 +29,7 @@ const DEPARTMENTS_LIST = [
   'IT Information Technology',
   'Legal',
   'Maintenance Management',
+  'Management',
   'Marketing',
   'Owners',
   'Production',
@@ -52,11 +53,13 @@ const DESIGNATIONS_LIST = [
   'Customer Service Representative',
   'Digital Marketing Specialist',
   'General Manager',
+  'General Operations Manager',
   'Human Resources Manager',
   'IT Specialist',
   'Marketing Manager',
   'Operations Manager',
   'Owner',
+  'Owner / Director',
   'Procurement Officer',
   'Quality Control Inspector',
   'Receptionist',
@@ -583,6 +586,8 @@ export default function PersonnelMasterConsole() {
         }}
         onEmployeeCreated={handleEmployeeSaved}
         initialEmployee={editingEmployee}
+        initialData={editingEmployee}
+        employee={editingEmployee}
         hideScheduleTab={false}
       />
     </div>

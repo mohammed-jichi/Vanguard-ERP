@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   HREmployeeRecord,
   HRPersonnelService,
@@ -38,11 +38,132 @@ import {
   Check,
 } from 'lucide-react';
 
+export interface EmployeeFormData {
+  firstName: string;
+  lastName: string;
+  countryCode: string;
+  phone: string;
+  email: string;
+  dateOfBirth: string;
+  gender: 'Male' | 'Female';
+  maritalStatus: HREmployeeRecord['maritalStatus'];
+  numberOfChildren: number;
+  contactPerson: string;
+  contactPhone: string;
+  department: string;
+  designation: string;
+  location: 'Office' | 'Remote' | 'Hybrid' | 'Field Based';
+  attendanceMacId: string;
+  dateHired: string;
+  dateLeft: string;
+  country: string;
+  city: string;
+  address: string;
+  nationalId: string;
+  socialSecurityNumber: string;
+  status: 'Active' | 'Inactive';
+  posEmployeeId: string;
+  brand: string;
+  useBranch: boolean;
+  branchName: string;
+  createBackoffice: boolean;
+}
+
+export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
+  firstName: '',
+  lastName: '',
+  countryCode: '+961',
+  phone: '',
+  email: '',
+  dateOfBirth: '1995-01-01',
+  gender: 'Male',
+  maritalStatus: 'Single',
+  numberOfChildren: 0,
+  contactPerson: '',
+  contactPhone: '',
+  department: 'Management',
+  designation: 'General Operations Manager',
+  location: 'Office',
+  attendanceMacId: '',
+  dateHired: '2024-05-15',
+  dateLeft: '',
+  country: 'Lebanon',
+  city: 'Choueifat (معمل الشويفات) - Aley',
+  address: '',
+  nationalId: '',
+  socialSecurityNumber: '',
+  status: 'Active',
+  posEmployeeId: '1',
+  brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
+  useBranch: true,
+  branchName: '1300 Choueifat Central Plant (معمل الشويفات)',
+  createBackoffice: true,
+};
+
+export function extractEmployeeFormData(data: any): EmployeeFormData {
+  if (!data) return DEFAULT_EMPLOYEE_FORM_DATA;
+
+  let fName = data.firstName || data.first_name || '';
+  let lName = data.lastName || data.last_name || '';
+  if (!fName && data.name) {
+    const parts = data.name.trim().split(' ');
+    fName = parts[0] || '';
+    lName = parts.slice(1).join(' ') || '';
+  } else if (!fName && data.fullName) {
+    const parts = data.fullName.trim().split(' ');
+    fName = parts[0] || '';
+    lName = parts.slice(1).join(' ') || '';
+  }
+
+  let phoneVal = data.phone || data.contact || '';
+  let codeVal = data.countryCode || '+961';
+  if (phoneVal.startsWith('+')) {
+    const parts = phoneVal.split(' ');
+    if (parts.length > 1) {
+      codeVal = parts[0];
+      phoneVal = parts.slice(1).join(' ');
+    }
+  }
+
+  return {
+    firstName: fName,
+    lastName: lName,
+    countryCode: codeVal,
+    phone: phoneVal,
+    email: data.email || '',
+    dateOfBirth: data.dateOfBirth || data.date_of_birth || '1995-01-01',
+    gender: data.gender === 'Female' ? 'Female' : 'Male',
+    maritalStatus: data.maritalStatus || data.marital_status || 'Single',
+    numberOfChildren: data.numberOfChildren ?? data.number_of_children ?? data.childrenCount ?? 0,
+    contactPerson: data.contactPerson || data.created_by || '',
+    contactPhone: data.contactPhone || '',
+    department: data.department || 'Management',
+    designation: data.designation || 'General Operations Manager',
+    location: data.location || 'Office',
+    attendanceMacId: data.attendanceMacId || '',
+    dateHired: data.dateHired || data.created_at || '2024-05-15',
+    dateLeft: data.dateLeft || '',
+    country: data.country || 'Lebanon',
+    city: data.city || 'Choueifat (معمل الشويفات) - Aley',
+    address: data.address || '',
+    nationalId: data.nationalId || '',
+    socialSecurityNumber: data.socialSecurityNumber || data.socialSecurityNo || '',
+    status: (data.status === 'ACTIVE' || data.status === 'Active' || data.active === true || data.is_active === true) ? 'Active' : 'Inactive',
+    posEmployeeId: data.posEmployeeId || data.pos_login_id || (data.user_code ? String(data.user_code) : '1'),
+    brand: data.brand || 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
+    useBranch: data.useBranch ?? true,
+    branchName: data.branch || data.branchName || '1300 Choueifat Central Plant (معمل الشويفات)',
+    createBackoffice: data.isBackoffice ?? data.createBackoffice ?? true,
+  };
+}
+
 interface NewEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEmployeeCreated: (employee: HREmployeeRecord) => void;
   initialEmployee?: HREmployeeRecord | null;
+  initialData?: any;
+  employee?: any;
   hideScheduleTab?: boolean;
 }
 
@@ -56,6 +177,7 @@ const DEPARTMENTS_LIST = [
   'IT Information Technology',
   'Legal',
   'Maintenance Management',
+  'Management',
   'Marketing',
   'Owners',
   'Production',
@@ -79,11 +201,13 @@ const DESIGNATIONS_LIST = [
   'Customer Service Representative',
   'Digital Marketing Specialist',
   'General Manager',
+  'General Operations Manager',
   'Human Resources Manager',
   'IT Specialist',
   'Marketing Manager',
   'Operations Manager',
   'Owner',
+  'Owner / Director',
   'Procurement Officer',
   'Quality Control Inspector',
   'Receptionist',
@@ -100,68 +224,85 @@ export default function NewEmployeeModal({
   onClose,
   onEmployeeCreated,
   initialEmployee,
+  initialData,
+  employee,
   hideScheduleTab = false,
 }: NewEmployeeModalProps) {
+  const activeRecord = initialData || employee || initialEmployee;
+
   // Tabs: 'personal' (Tab 1: Personal *) | 'work_location' (Tab 2: Work Location *) | 'schedule' (Tab 3: Schedule)
   const [activeTab, setActiveTab] = useState<'personal' | 'work_location' | 'schedule'>('personal');
 
-  // Top Toggle
-  const [isActive, setIsActive] = useState<boolean>(initialEmployee ? initialEmployee.active : true);
+  // Unified Form Data State with Instant Dynamic Binding
+  const [formData, setFormData] = useState<EmployeeFormData>(() => {
+    return extractEmployeeFormData(activeRecord);
+  });
 
-  // Tab 1: Personal Information
-  const [firstName, setFirstName] = useState(initialEmployee?.firstName || '');
-  const [lastName, setLastName] = useState(initialEmployee?.lastName || '');
-  const [countryCode, setCountryCode] = useState(initialEmployee?.countryCode || '+961');
-  const [dialCodeSearchQuery, setDialCodeSearchQuery] = useState('');
-  const [isDialCodeDropdownOpen, setIsDialCodeDropdownOpen] = useState(false);
-  const [phone, setPhone] = useState(initialEmployee?.phone || '');
-  const [email, setEmail] = useState(initialEmployee?.email || '');
-  const [dob, setDob] = useState(initialEmployee?.dateOfBirth || '1995-01-01');
-  const [gender, setGender] = useState<'Male' | 'Female'>(initialEmployee?.gender || 'Male');
-  const [maritalStatus, setMaritalStatus] = useState<HREmployeeRecord['maritalStatus']>(
-    initialEmployee?.maritalStatus || 'Single'
-  );
-  const [childrenCount, setChildrenCount] = useState<number>(initialEmployee?.childrenCount || 0);
-  const [contactPerson, setContactPerson] = useState(initialEmployee?.contactPerson || '');
-  const [contactPhone, setContactPhone] = useState(initialEmployee?.contactPhone || '');
+  // Reactive synchronizer to pre-fill formData when opening in Edit mode
+  useEffect(() => {
+    const target = initialData || employee || initialEmployee;
+    if (target) {
+      setFormData(extractEmployeeFormData(target));
 
+      if (target.profilePicture) setProfilePicture(target.profilePicture);
+      if (target.jobOfferDoc) setJobOfferDoc(target.jobOfferDoc);
+
+      const fName = target.firstName || target.first_name || (target.name ? target.name.split(' ')[0] : '');
+      const lName = target.lastName || target.last_name || (target.name ? target.name.split(' ').slice(1).join(' ') : '');
+      const des = target.designation || 'Manager';
+
+      if (target.posCredentials) {
+        setPosNickName(target.posCredentials.nickName || fName || 'Operator');
+        setPosLanguage(target.posCredentials.language || 'ARABIC');
+        setPosActive(target.posCredentials.active ?? true);
+        setPosAccessBackOffice(target.posCredentials.accessBackOffice ?? true);
+        setPosSalesman(target.posCredentials.salesman ?? true);
+        setPosDriver(target.posCredentials.driver ?? false);
+        setPosTraining(target.posCredentials.training ?? false);
+        setPosBackOfficeRole(target.posCredentials.backOfficeRole || 'MANAGER');
+        setPosPassword(target.posCredentials.password || '123');
+        setPosSecPassword(target.posCredentials.secPassword || '');
+        setPosCloudLoginId(target.posCredentials.posCloudLoginId || '1300');
+        setPosCloudPassword(target.posCredentials.posCloudPassword || '••••••');
+        setPosConfiguration(target.posCredentials.configuration || 'Standard POS Retail Config ✔');
+        setPosCashDrawerPort(target.posCredentials.cashDrawerPort || 'Usb');
+        setPosPrinterType(target.posCredentials.printerType || 'TM-267');
+        setPosOpenCashDrawer(target.posCredentials.openCashDrawer ?? true);
+        setPosHideInTimeAtt(target.posCredentials.hideInTimeAttendance ?? false);
+        setPosAutoTimeAtt(target.posCredentials.autoTimeAtt ?? true);
+        setPosEmailSignature(
+          target.posCredentials.emailSignature ||
+          `${fName} ${lName} - ${des}\nSouthern Olive and Oil Products S.A.R.L.`
+        );
+      } else {
+        setPosNickName(fName || 'Operator');
+        setPosEmailSignature(
+          `${fName} ${lName} - ${des}\nSouthern Olive and Oil Products S.A.R.L.`
+        );
+      }
+    } else {
+      setFormData(DEFAULT_EMPLOYEE_FORM_DATA);
+      setProfilePicture(null);
+      setJobOfferDoc(null);
+    }
+  }, [initialData, employee, initialEmployee, isOpen]);
   // Uploads
   const [profilePicture, setProfilePicture] = useState<string | null>(initialEmployee?.profilePicture || null);
   const [jobOfferDoc, setJobOfferDoc] = useState<string | null>(initialEmployee?.jobOfferDoc || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const docInputRef = useRef<HTMLInputElement>(null);
 
-  // Work Information
-  const [department, setDepartment] = useState(initialEmployee?.department || 'Production');
-  const [designation, setDesignation] = useState(initialEmployee?.designation || 'General Manager');
-  const [location, setLocation] = useState<'Office' | 'Remote' | 'Hybrid' | 'Field Based'>(
-    initialEmployee?.location || 'Office'
-  );
-  const [dateHired, setDateHired] = useState(initialEmployee?.dateHired || '2024-05-15');
-  const [dateLeft, setDateLeft] = useState(initialEmployee?.dateLeft || '');
-  const [attendanceMacId, setAttendanceMacId] = useState(initialEmployee?.attendanceMacId || '');
-
-  // Address & Identification
-  const [country, setCountry] = useState(initialEmployee?.country || 'Lebanon');
-  const [countrySearchQuery, setCountrySearchQuery] = useState('');
+  // Dropdown UI states
+  const [isDialCodeDropdownOpen, setIsDialCodeDropdownOpen] = useState(false);
+  const [dialCodeSearchQuery, setDialCodeSearchQuery] = useState('');
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
-  const [city, setCity] = useState(initialEmployee?.city || 'Choueifat (معمل الشويفات)');
-  const [citySearchQuery, setCitySearchQuery] = useState('');
+  const [countrySearchQuery, setCountrySearchQuery] = useState('');
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
-  const [address, setAddress] = useState(initialEmployee?.address || '');
-  const [nationalId, setNationalId] = useState(initialEmployee?.nationalId || '');
-  const [socialSecurityNo, setSocialSecurityNo] = useState(initialEmployee?.socialSecurityNo || '');
-
-  // Tab 2: Work Location *
-  const [brand, setBrand] = useState('Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)');
-  const [useBranch, setUseBranch] = useState(initialEmployee?.useBranch ?? true);
-  const [branchName, setBranchName] = useState('1300 Choueifat Central Plant (معمل الشويفات)');
-  const [isBackoffice, setIsBackoffice] = useState(initialEmployee?.isBackoffice ?? true);
-  const [posEmployeeId, setPosEmployeeId] = useState(initialEmployee?.posEmployeeId || '1');
+  const [citySearchQuery, setCitySearchQuery] = useState('');
 
   // Nested POS Credentials Configuration Modal State
   const [isPosConfigOpen, setIsPosConfigOpen] = useState<boolean>(false);
-  const [posNickName, setPosNickName] = useState(initialEmployee?.posCredentials?.nickName || firstName || 'Operator');
+  const [posNickName, setPosNickName] = useState(initialEmployee?.posCredentials?.nickName || activeRecord?.firstName || activeRecord?.first_name || 'Operator');
   const [posLanguage, setPosLanguage] = useState<POSCredentialsConfig['language']>(
     initialEmployee?.posCredentials?.language || 'ARABIC'
   );
@@ -199,7 +340,7 @@ export default function NewEmployeeModal({
   );
   const [posEmailSignature, setPosEmailSignature] = useState(
     initialEmployee?.posCredentials?.emailSignature ||
-      `${firstName} ${lastName} - ${designation}\nSouthern Olive and Oil Products S.A.R.L.`
+      `${activeRecord?.firstName || activeRecord?.first_name || ''} ${activeRecord?.lastName || activeRecord?.last_name || ''} - ${activeRecord?.designation || 'Manager'}\nSouthern Olive and Oil Products S.A.R.L.`
   );
 
   // Broadcast Key Prompt Modal
@@ -221,14 +362,14 @@ export default function NewEmployeeModal({
   // Active dial code details
   const activeDialCodeObj = useMemo(() => {
     return (
-      ALL_COUNTRY_DIAL_CODES.find((c) => c.code === countryCode) || {
+      ALL_COUNTRY_DIAL_CODES.find((c) => c.code === formData.countryCode) || {
         code: '+961',
         country: 'Lebanon',
         flag: '🇱🇧',
         iso: 'LB',
       }
     );
-  }, [countryCode]);
+  }, [formData.countryCode]);
 
   // Filtered dial codes
   const filteredDialCodes = useMemo(() => {
@@ -279,59 +420,60 @@ export default function NewEmployeeModal({
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!firstName.trim() || !lastName.trim()) {
+    if (!formData.firstName.trim() || !formData.lastName.trim()) {
       alert('First Name and Last Name are required.');
       return;
     }
 
-    const fullName = `${firstName.trim()} ${lastName.trim()}`;
+    const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
     const allEmployees = HRPersonnelService.getEmployees();
-    const nextId = initialEmployee?.id || `EMP-${(allEmployees.length + 1).toString().padStart(3, '0')}`;
+    const target = initialData || employee || initialEmployee;
+    const nextId = target?.id || `EMP-${(allEmployees.length + 1).toString().padStart(3, '0')}`;
 
     const newEmp: HREmployeeRecord = {
       id: nextId,
-      active: isActive,
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
+      active: formData.status === 'Active',
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
       fullName,
-      email: email.trim() || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@southernolive-lb.com`,
-      phone: phone.trim() ? `${countryCode} ${phone.trim()}` : '+961 70 000000',
-      countryCode,
-      dateOfBirth: dob,
-      gender,
-      maritalStatus,
-      childrenCount,
-      contactPerson: contactPerson.trim() || undefined,
-      contactPhone: contactPhone.trim() || undefined,
+      email: formData.email.trim() || `${formData.firstName.toLowerCase()}.${formData.lastName.toLowerCase()}@southernolive-lb.com`,
+      phone: formData.phone.trim() ? `${formData.countryCode} ${formData.phone.trim()}` : '+961 70 000000',
+      countryCode: formData.countryCode,
+      dateOfBirth: formData.dateOfBirth,
+      gender: formData.gender,
+      maritalStatus: formData.maritalStatus,
+      childrenCount: formData.numberOfChildren,
+      contactPerson: formData.contactPerson.trim() || undefined,
+      contactPhone: formData.contactPhone.trim() || undefined,
       profilePicture: profilePicture || undefined,
       jobOfferDoc: jobOfferDoc || undefined,
-      department,
-      designation,
-      location,
-      dateHired: dateHired || undefined,
-      dateLeft: dateLeft || undefined,
-      attendanceMacId: attendanceMacId.trim() || undefined,
-      country,
-      city,
-      address: address.trim() || undefined,
-      nationalId: nationalId.trim() || undefined,
-      socialSecurityNo: socialSecurityNo.trim() || undefined,
-      brand,
-      branch: branchName,
-      useBranch,
-      isBackoffice,
-      posEmployeeId: posEmployeeId || '1',
+      department: formData.department,
+      designation: formData.designation,
+      location: formData.location,
+      dateHired: formData.dateHired || undefined,
+      dateLeft: formData.dateLeft || undefined,
+      attendanceMacId: formData.attendanceMacId.trim() || undefined,
+      country: formData.country,
+      city: formData.city,
+      address: formData.address.trim() || undefined,
+      nationalId: formData.nationalId.trim() || undefined,
+      socialSecurityNo: formData.socialSecurityNumber.trim() || undefined,
+      brand: formData.brand,
+      branch: formData.branchName,
+      useBranch: formData.useBranch,
+      isBackoffice: formData.createBackoffice,
+      posEmployeeId: formData.posEmployeeId || '1',
       posCredentials: {
-        nickName: posNickName || firstName || 'Operator',
+        nickName: posNickName || formData.firstName || 'Operator',
         language: posLanguage,
         active: posActive,
         accessBackOffice: posAccessBackOffice,
         salesman: posSalesman,
         driver: posDriver,
         training: posTraining,
-        branch: branchName,
+        branch: formData.branchName,
         backOfficeRole: posBackOfficeRole,
-        employeeId: posEmployeeId || '1',
+        employeeId: formData.posEmployeeId || '1',
         password: posPassword,
         secPassword: posSecPassword,
         posCloudLoginId,
@@ -344,10 +486,10 @@ export default function NewEmployeeModal({
         autoTimeAtt: posAutoTimeAtt,
         emailSignature: posEmailSignature,
       },
-      schedule: initialEmployee?.schedule || {
-        templateName: 'Standard Factory Shift (07:00 - 15:30)',
+      schedule: target?.schedule || {
+        templateName: 'Backoffice Administration (08:00 - 16:30)',
       },
-      createdAt: initialEmployee?.createdAt || new Date().toISOString().split('T')[0],
+      createdAt: target?.createdAt || new Date().toISOString().split('T')[0],
     };
 
     HRPersonnelService.saveEmployee(newEmp);
@@ -366,7 +508,7 @@ export default function NewEmployeeModal({
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-                {initialEmployee ? `Edit Employee: ${initialEmployee.fullName}` : 'New Employee (HR Personnel Engine)'}
+                {(initialData || employee || initialEmployee) ? `Edit Employee: ${formData.firstName} ${formData.lastName}` : 'New Employee (HR Personnel Engine)'}
               </h2>
               <p className="text-xs text-slate-500 font-medium">
                 Module 6 Personnel Master Record, Biometric Clock Binding & POS Credentials
@@ -431,13 +573,12 @@ export default function NewEmployeeModal({
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
+                checked={formData.status === 'Active'} onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked ? 'Active' : 'Inactive' }))}
                 className="sr-only peer"
               />
               <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-              <span className={`ml-2 text-xs font-bold ${isActive ? 'text-emerald-700' : 'text-slate-500'}`}>
-                {isActive ? 'Active' : 'Inactive'}
+              <span className={`ml-2 text-xs font-bold ${formData.status === 'Active' ? 'text-emerald-700' : 'text-slate-500'}`}>
+                {formData.status}
               </span>
             </label>
           </div>
@@ -466,8 +607,7 @@ export default function NewEmployeeModal({
                       <input
                         type="text"
                         required
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        value={formData.firstName} onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                         placeholder="e.g. Hussien"
                         className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
@@ -477,8 +617,7 @@ export default function NewEmployeeModal({
                       <input
                         type="text"
                         required
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        value={formData.lastName} onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                         placeholder="e.g. Jichi"
                         className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
@@ -530,12 +669,12 @@ export default function NewEmployeeModal({
                                   key={`${c.code}-${c.country}-${idx}`}
                                   type="button"
                                   onClick={() => {
-                                    setCountryCode(c.code);
+                                    setFormData(prev => ({ ...prev, countryCode: c.code }));
                                     setIsDialCodeDropdownOpen(false);
                                     setDialCodeSearchQuery('');
                                   }}
                                   className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${
-                                    countryCode === c.code && activeDialCodeObj.country === c.country
+                                    formData.countryCode === c.code && activeDialCodeObj.country === c.country
                                       ? 'bg-primary/10 text-primary font-bold'
                                       : 'text-slate-800'
                                   }`}
@@ -557,8 +696,7 @@ export default function NewEmployeeModal({
                       <input
                         type="text"
                         required
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        value={formData.phone} onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                         placeholder="70 123456"
                         className="flex-1 px-3 py-2 text-xs font-bold font-mono text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary shadow-2xs"
                       />
@@ -571,8 +709,7 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">Email</label>
                       <input
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         placeholder="user@southernolive-lb.com"
                         className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
@@ -581,8 +718,7 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">Date of birth</label>
                       <input
                         type="date"
-                        value={dob}
-                        onChange={(e) => setDob(e.target.value)}
+                        value={formData.dateOfBirth} onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                         className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary font-mono"
                       />
                     </div>
@@ -593,8 +729,7 @@ export default function NewEmployeeModal({
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-700 block">Gender*</label>
                       <select
-                        value={gender}
-                        onChange={(e) => setGender(e.target.value as 'Male' | 'Female')}
+                        value={formData.gender} onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'Male' | 'Female' }))}
                         className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                       >
                         <option value="Male">Male</option>
@@ -605,8 +740,7 @@ export default function NewEmployeeModal({
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-700 block">Marital Status</label>
                       <select
-                        value={maritalStatus}
-                        onChange={(e) => setMaritalStatus(e.target.value as any)}
+                        value={formData.maritalStatus} onChange={(e) => setFormData(prev => ({ ...prev, maritalStatus: e.target.value as any }))}
                         className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                       >
                         <option value="Single">Single</option>
@@ -624,8 +758,7 @@ export default function NewEmployeeModal({
                       <input
                         type="number"
                         min="0"
-                        value={childrenCount}
-                        onChange={(e) => setChildrenCount(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                        value={formData.numberOfChildren} onChange={(e) => setFormData(prev => ({ ...prev, numberOfChildren: Math.max(0, parseInt(e.target.value, 10) || 0) }))}
                         className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary text-center font-mono"
                       />
                     </div>
@@ -637,8 +770,7 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">Contact Person</label>
                       <input
                         type="text"
-                        value={contactPerson}
-                        onChange={(e) => setContactPerson(e.target.value)}
+                        value={formData.contactPerson} onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
                         placeholder="Emergency contact name"
                         className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
@@ -647,8 +779,7 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">Contact Phone</label>
                       <input
                         type="text"
-                        value={contactPhone}
-                        onChange={(e) => setContactPhone(e.target.value)}
+                        value={formData.contactPhone} onChange={(e) => setFormData(prev => ({ ...prev, contactPhone: e.target.value }))}
                         placeholder="+961..."
                         className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary font-mono"
                       />
@@ -745,8 +876,7 @@ export default function NewEmployeeModal({
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 block">Department*</label>
                     <select
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
+                      value={formData.department} onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                     >
                       {DEPARTMENTS_LIST.map((d) => (
@@ -760,8 +890,7 @@ export default function NewEmployeeModal({
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 block">Designation*</label>
                     <select
-                      value={designation}
-                      onChange={(e) => setDesignation(e.target.value)}
+                      value={formData.designation} onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                     >
                       {DESIGNATIONS_LIST.map((des) => (
@@ -775,8 +904,7 @@ export default function NewEmployeeModal({
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 block">Location</label>
                     <select
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value as any)}
+                      value={formData.location} onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value as any }))}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                     >
                       <option value="Office">Office</option>
@@ -790,8 +918,7 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">Attendance Mac ID</label>
                     <input
                       type="text"
-                      value={attendanceMacId}
-                      onChange={(e) => setAttendanceMacId(e.target.value)}
+                      value={formData.attendanceMacId} onChange={(e) => setFormData(prev => ({ ...prev, attendanceMacId: e.target.value }))}
                       placeholder="00:1A:2B:3C:4D:5E"
                       className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
@@ -803,8 +930,7 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">Date Hired</label>
                     <input
                       type="date"
-                      value={dateHired}
-                      onChange={(e) => setDateHired(e.target.value)}
+                      value={formData.dateHired} onChange={(e) => setFormData(prev => ({ ...prev, dateHired: e.target.value }))}
                       className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
                   </div>
@@ -812,8 +938,7 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">Date Left (if resigned/terminated)</label>
                     <input
                       type="date"
-                      value={dateLeft}
-                      onChange={(e) => setDateLeft(e.target.value)}
+                      value={formData.dateLeft} onChange={(e) => setFormData(prev => ({ ...prev, dateLeft: e.target.value }))}
                       className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
                   </div>
@@ -839,7 +964,7 @@ export default function NewEmployeeModal({
                       }}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus-within:border-primary shadow-2xs hover:bg-slate-50 transition-colors"
                     >
-                      <span className="truncate">{country}</span>
+                      <span className="truncate">{formData.country}</span>
                       <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-1" />
                     </div>
 
@@ -867,12 +992,12 @@ export default function NewEmployeeModal({
                               key={ctry}
                               type="button"
                               onClick={() => {
-                                setCountry(ctry);
+                                setFormData(prev => ({ ...prev, country: ctry }));
                                 setIsCountryDropdownOpen(false);
                                 setCountrySearchQuery('');
                               }}
                               className={`w-full text-left px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${
-                                country === ctry ? 'bg-primary/10 text-primary font-bold' : 'text-slate-800'
+                                formData.country === ctry ? 'bg-primary/10 text-primary font-bold' : 'text-slate-800'
                               }`}
                             >
                               <span>{ctry}</span>
@@ -895,7 +1020,7 @@ export default function NewEmployeeModal({
                       onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus-within:border-primary shadow-2xs"
                     >
-                      <span className="truncate">{city}</span>
+                      <span className="truncate">{formData.city}</span>
                       <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-1" />
                     </div>
 
@@ -924,12 +1049,12 @@ export default function NewEmployeeModal({
                               key={c.id}
                               type="button"
                               onClick={() => {
-                                setCity(`${c.name} - ${c.caza}`);
+                                setFormData(prev => ({ ...prev, city: `${c.name} - ${c.caza}` }));
                                 setIsCityDropdownOpen(false);
                                 setCitySearchQuery('');
                               }}
                               className={`w-full text-left px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${
-                                city.startsWith(c.name) ? 'bg-primary/10 text-primary font-bold' : 'text-slate-800'
+                                formData.city.startsWith(c.name) ? 'bg-primary/10 text-primary font-bold' : 'text-slate-800'
                               }`}
                             >
                               <div>
@@ -954,8 +1079,7 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">National ID</label>
                     <input
                       type="text"
-                      value={nationalId}
-                      onChange={(e) => setNationalId(e.target.value)}
+                      value={formData.nationalId} onChange={(e) => setFormData(prev => ({ ...prev, nationalId: e.target.value }))}
                       placeholder="100..."
                       className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
@@ -965,8 +1089,7 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">Social Security Number</label>
                     <input
                       type="text"
-                      value={socialSecurityNo}
-                      onChange={(e) => setSocialSecurityNo(e.target.value)}
+                      value={formData.socialSecurityNumber} onChange={(e) => setFormData(prev => ({ ...prev, socialSecurityNumber: e.target.value }))}
                       placeholder="CNSS-..."
                       className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
@@ -977,8 +1100,7 @@ export default function NewEmployeeModal({
                   <label className="text-xs font-bold text-slate-700 block">Address</label>
                   <input
                     type="text"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    value={formData.address} onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                     placeholder="Street, building, floor, landmark"
                     className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                   />
@@ -1002,8 +1124,7 @@ export default function NewEmployeeModal({
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 block">Brand</label>
                   <select
-                    value={brand}
-                    onChange={(e) => setBrand(e.target.value)}
+                    value={formData.brand} onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
                     className="w-full px-3 py-2.5 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
                   >
                     <option value="Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)">
@@ -1028,37 +1149,35 @@ export default function NewEmployeeModal({
                         <td className="py-3.5 px-4 text-center">
                           <input
                             type="checkbox"
-                            checked={useBranch}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
-                              setUseBranch(checked);
-                              if (!checked) {
-                                setIsBackoffice(false);
-                              }
-                            }}
+                            checked={formData.useBranch}
+  onChange={(e) => {
+    const checked = e.target.checked;
+    setFormData(prev => ({
+      ...prev,
+      useBranch: checked,
+      createBackoffice: checked ? prev.createBackoffice : false
+    }));
+  }}
                             className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                           />
                         </td>
-                        <td className="py-3.5 px-4 text-xs font-bold text-slate-900">
-                          {branchName}
-                        </td>
+                        <td className="py-3.5 px-4 text-xs font-bold text-slate-900">{formData.branchName}</td>
                         <td className="py-3.5 px-4">
-                          {!useBranch ? (
+                          {!formData.useBranch ? (
                             <span className="text-slate-400 font-bold text-sm select-none">-</span>
                           ) : (
                             <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
                               <input
                                 type="checkbox"
-                                checked={isBackoffice}
-                                onChange={(e) => {
-                                  const checked = e.target.checked;
-                                  setIsBackoffice(checked);
-                                  if (checked && (!posEmployeeId || posEmployeeId === '0')) {
-                                    const allEmps = HRPersonnelService.getEmployees();
-                                    const nextId = (allEmps.length + 1).toString();
-                                    setPosEmployeeId(nextId);
-                                  }
-                                }}
+                                checked={formData.createBackoffice}
+  onChange={(e) => {
+    const checked = e.target.checked;
+    setFormData(prev => ({
+      ...prev,
+      createBackoffice: checked,
+      posEmployeeId: checked && (!prev.posEmployeeId || prev.posEmployeeId === '0') ? '1' : prev.posEmployeeId
+    }));
+  }}
                                 className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                               />
                               <span>Create as backoffice employee</span>
@@ -1066,12 +1185,12 @@ export default function NewEmployeeModal({
                           )}
                         </td>
                         <td className="py-3.5 px-4 text-center">
-                          {!useBranch || !isBackoffice ? (
+                          {!formData.useBranch || !formData.createBackoffice ? (
                             <span className="text-slate-400 font-bold text-sm select-none">-</span>
                           ) : (
                             <div className="flex items-center justify-center gap-2">
                               <span className="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-xs font-mono font-bold">
-                                #{posEmployeeId}
+                                #{formData.posEmployeeId}
                               </span>
                               <button
                                 type="button"
@@ -1225,7 +1344,7 @@ export default function NewEmployeeModal({
                   <Laptop className="w-5 h-5 text-primary" />
                   <div>
                     <h3 className="text-sm sm:text-base font-black text-slate-900">
-                      POS & Backoffice Credentials: {firstName || 'Operator'} {lastName}
+                      POS & Backoffice Credentials: {formData.firstName || 'Operator'} {formData.lastName}
                     </h3>
                     <p className="text-[11px] text-slate-500">
                       Terminal interface localization, workstation authority, and hardware peripherals
@@ -1335,7 +1454,7 @@ export default function NewEmployeeModal({
                     <input
                       type="text"
                       disabled
-                      value={branchName}
+                      value={formData.branchName}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed"
                     />
                   </div>
@@ -1362,8 +1481,8 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">Employee ID</label>
                     <input
                       type="text"
-                      value={posEmployeeId}
-                      onChange={(e) => setPosEmployeeId(e.target.value)}
+                      value={formData.posEmployeeId}
+                      onChange={(e) => setFormData(prev => ({ ...prev, posEmployeeId: e.target.value }))}
                       className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl"
                     />
                   </div>
