@@ -282,7 +282,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     }
 
     // 11. Pressing Mill Engine
-    if (path.startsWith('/pressing-mill') || path.startsWith('/pressing')) {
+    if (path.startsWith('/pressing-mill')) {
       return 'pressing-mill';
     }
 

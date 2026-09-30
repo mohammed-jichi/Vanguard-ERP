@@ -2,7 +2,7 @@
  * Vanguard ERP — HR Personnel & Scheduling Engine Service
  * Shared persistent employee directory for Module 6: HR Personnel, Settings Users, and Payroll Schedules.
  */
-
+import { supabase } from '@/lib/supabaseClient';
 export interface POSCredentialsConfig {
   nickName: string;
   language: 'ARABIC' | 'ENGLISH' | 'FRENCH' | 'SPANISH' | 'PERSIAN';
@@ -425,8 +425,51 @@ export class HRPersonnelService {
       } catch (err) {
         console.warn('[HRPersonnelService] Failed saving to localStorage:', err);
       }
+      // Background persistence to data/vanguard_accounting_db.json and Supabase workstation_configs table
+      if (emp.posCredentials) {
+        this.syncWorkstationProfile(emp).catch((err) =>
+          console.warn('[HRPersonnelService] Workstation profile sync warning:', err)
+        );
+      }
     }
     return nextList;
+  }
+
+  public static async syncWorkstationProfile(emp: HREmployeeRecord): Promise<void> {
+    if (!emp.posCredentials) return;
+    try {
+      await fetch('/api/hr/sync-workstation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          employeeId: emp.id,
+          employeeName: emp.fullName,
+          branch: emp.branch,
+          workstationAuthority: {
+            accessBackOffice: emp.posCredentials.accessBackOffice,
+            backOfficeRole: emp.posCredentials.backOfficeRole,
+            salesman: emp.posCredentials.salesman,
+            driver: emp.posCredentials.driver,
+            training: emp.posCredentials.training,
+            active: emp.posCredentials.active,
+          },
+          drawerKickSettings: {
+            openCashDrawer: emp.posCredentials.openCashDrawer,
+            cashDrawerPort: emp.posCredentials.cashDrawerPort,
+            pin: 2,
+          },
+          printerConfig: {
+            printerType: emp.posCredentials.printerType,
+            configuration: emp.posCredentials.configuration,
+            protocol: 'ESC_POS',
+          },
+          posCredentials: emp.posCredentials,
+          employeeRecord: emp,
+        }),
+      });
+    } catch (err) {
+      console.warn('[HRPersonnelService] Workstation sync API notice:', err);
+    }
   }
 
   public static deleteEmployee(empId: string): HREmployeeRecord[] {
@@ -466,10 +509,69 @@ export class HRPersonnelService {
       try {
         localStorage.setItem(DAY_OFF_STORAGE_KEY, JSON.stringify(nextList));
         window.dispatchEvent(new CustomEvent('vanguard_day_off_updated', { detail: nextList }));
+        // Automated background sync routine to mirror records into hr_leave_requests Supabase table
+        this.syncDayOffToSupabase(dayOff).catch((err) =>
+          console.warn('[HRPersonnelService] Background leave sync error:', err)
+        );
       } catch (err) {
         console.warn('[HRPersonnelService] Failed saving day off:', err);
       }
     }
     return nextList;
   }
+
+  public static async syncDayOffToSupabase(dayOff: DayOffRecord): Promise<{ success: boolean; error?: string }> {
+    if (typeof window === 'undefined') return { success: false, error: 'Server context' };
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      return { success: false, error: 'Offline - stored locally' };
+    }
+    try {
+      const { error } = await supabase
+        .from('hr_leave_requests')
+        .upsert(
+          {
+            id: dayOff.id,
+            employee_id: dayOff.employeeId,
+            employee_name: dayOff.employeeName,
+            start_date: dayOff.startDate,
+            end_date: dayOff.endDate,
+            reason: dayOff.reason,
+            leave_type: dayOff.type,
+            hours_off: dayOff.hoursOff || null,
+            paid: dayOff.paid === 'Yes',
+            notes: dayOff.notes || null,
+            approved: dayOff.approved,
+            created_at: dayOff.createdAt,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'id' }
+        );
+
+      if (error) {
+        console.warn('[HRPersonnelService] Supabase hr_leave_requests sync notice:', error.message);
+        return { success: false, error: error.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      console.warn('[HRPersonnelService] Supabase hr_leave_requests sync exception:', err?.message || err);
+      return { success: false, error: err?.message || 'Sync failed' };
+    }
+  }
+
+  public static async syncAllDaysOffToSupabase(): Promise<void> {
+    const list = this.getDaysOff();
+    if (!list.length) return;
+    for (const item of list) {
+      await this.syncDayOffToSupabase(item);
+    }
+  }
+}
+
+// Background online re-synchronization routine
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    HRPersonnelService.syncAllDaysOffToSupabase().catch((err) =>
+      console.warn('[HRPersonnelService] Auto online sync notice:', err)
+    );
+  });
 }

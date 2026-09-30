@@ -492,10 +492,41 @@ export default function NewEmployeeModal({
       createdAt: target?.createdAt || new Date().toISOString().split('T')[0],
     };
 
-    HRPersonnelService.saveEmployee(newEmp);
-    onEmployeeCreated(newEmp);
-    onClose();
-  };
+      // Persist workstation profile, authority, drawer kick, and ESC/POS printer settings to DB and Supabase
+      fetch('/api/hr/sync-workstation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          employeeId: newEmp.id,
+          employeeName: newEmp.fullName,
+          branch: newEmp.branch,
+          workstationAuthority: {
+            accessBackOffice: posAccessBackOffice,
+            backOfficeRole: posBackOfficeRole,
+            salesman: posSalesman,
+            driver: posDriver,
+            training: posTraining,
+            active: posActive,
+          },
+          drawerKickSettings: {
+            openCashDrawer: posOpenCashDrawer,
+            cashDrawerPort: posCashDrawerPort,
+            pin: 2,
+          },
+          printerConfig: {
+            printerType: posPrinterType,
+            configuration: posConfiguration,
+            protocol: 'ESC_POS',
+          },
+          posCredentials: newEmp.posCredentials,
+          employeeRecord: newEmp,
+        }),
+      }).catch((err) => console.warn('[NewEmployeeModal] Workstation persistence notice:', err));
+
+      HRPersonnelService.saveEmployee(newEmp);
+      onEmployeeCreated(newEmp);
+      onClose();
+    };
 
   return (
     <div className="fixed inset-0 z-80 flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 backdrop-blur-xs">

@@ -176,11 +176,10 @@ export default function Sidebar({
         acc_setup: prev.acc_setup || pathname.includes('setup') || pathname.includes('currencies') || pathname.includes('rates') || pathname.includes('aux') || pathname.includes('classes') || pathname.includes('department'),
       }));
     }
-    if (pathname && (pathname.includes('/pressing-mill') || pathname.includes('/pressing'))) {
+    if (pathname && pathname.includes('/pressing-mill')) {
       setExpandedGroups(prev => ({
         ...prev,
         'pressing-mill': true,
-        pressing: true,
       }));
     }
     if (pathname && (pathname.includes('/purchas') || pathname.includes('/purchase-orders'))) {

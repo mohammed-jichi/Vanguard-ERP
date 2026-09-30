@@ -126,6 +126,9 @@ export interface HardwareJobDispatchResult {
   status: 'DISPATCHED' | 'FAILED';
   dispatched_at: string;
   message?: string;
+  transport_mode?: 'WEB_SERIAL' | 'LOCAL_DAEMON' | 'SIMULATION_FALLBACK';
+  daemon_status?: string;
+  serial_status?: string;
 }
 
 export interface DeviceTestConnectionResult {
