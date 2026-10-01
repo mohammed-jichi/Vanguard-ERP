@@ -156,11 +156,15 @@ export const ReportPaperSizeContext = React.createContext<{
   setPaperSize: (size: PaperSize) => void;
   orientation: ReportOrientation;
   setOrientation: (orientation: ReportOrientation) => void;
+  isForcedOrientation?: boolean;
+  setIsForcedOrientation?: (forced: boolean) => void;
 }>({
   paperSize: 'A4',
   setPaperSize: () => {},
   orientation: 'portrait',
   setOrientation: () => {},
+  isForcedOrientation: false,
+  setIsForcedOrientation: () => {},
 });
 
 export interface ExportButtonsProps {
@@ -422,6 +426,20 @@ export function ExportButtons({
         className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer transition-colors shadow-2xs"
       >
         <ZoomOut className="w-3.5 h-3.5" />
+      </button>
+
+      {/* Orientation Toggle Button */}
+      <button
+        type="button"
+        onClick={() => {
+          const next = orientation === 'landscape' ? 'portrait' : 'landscape';
+          onOrientationChange?.(next);
+        }}
+        className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs rounded-lg font-semibold border border-slate-200 transition-colors cursor-pointer shadow-2xs"
+        title={t('toggle_orientation', `Orientation: ${orientation === 'landscape' ? 'Landscape' : 'Portrait'}`)}
+      >
+        <RotateCcw className="w-3.5 h-3.5" />
+        <span className="capitalize">{orientation === 'landscape' ? t('landscape', 'Landscape') : t('portrait', 'Portrait')}</span>
       </button>
 
       {/* Print Button */}
@@ -809,6 +827,7 @@ export function ReportTableWrapper({
   const context = React.useContext(ReportPaperSizeContext);
   const activePaperSize = propPaperSize || context.paperSize || 'A4';
   const activeOrientation = propOrientation || context.orientation || 'portrait';
+  const isForced = propOrientation !== undefined || Boolean(context.isForcedOrientation);
   const paperClasses = getPaperSizeClasses(activePaperSize, activeOrientation);
 
   const displayDate =
@@ -825,8 +844,12 @@ export function ReportTableWrapper({
       <style>{`
         @media print {
           @page {
-            size: ${activeOrientation === 'landscape' ? 'landscape' : 'auto'};
-            margin: ${activeOrientation === 'landscape' ? '8mm 6mm' : '12mm 10mm'};
+            size: ${isForced ? activeOrientation : 'auto'};
+            margin: 8mm;
+          }
+          html, body {
+            width: 100% !important;
+            height: auto !important;
           }
           .report-sheet {
             width: 100% !important;
@@ -974,7 +997,14 @@ export default function ReportPageLayout({
 }: ReportPageLayoutProps) {
   const { t } = useLanguage();
   const [paperSize, setPaperSize] = useState<PaperSize>('A4');
-  const [orientation, setOrientation] = useState<ReportOrientation>('portrait');
+  const [orientation, setOrientationState] = useState<ReportOrientation>('portrait');
+  const [isForcedOrientation, setIsForcedOrientation] = useState<boolean>(false);
+
+  const setOrientation = (newOrientation: ReportOrientation) => {
+    setOrientationState(newOrientation);
+    setIsForcedOrientation(true);
+  };
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const [internalSelectedReport, setInternalSelectedReport] = useState(
@@ -997,7 +1027,7 @@ export default function ReportPageLayout({
   };
 
   return (
-    <ReportPaperSizeContext.Provider value={{ paperSize, setPaperSize, orientation, setOrientation }}>
+    <ReportPaperSizeContext.Provider value={{ paperSize, setPaperSize, orientation, setOrientation, isForcedOrientation, setIsForcedOrientation }}>
       <ReportLayoutContext.Provider value={{ isSidebarOpen, setIsSidebarOpen, toggleSidebar }}>
         <div
           className={`min-h-screen p-4 md:p-6 bg-background font-sans text-foreground select-none ${className}`}
@@ -1067,7 +1097,7 @@ export default function ReportPageLayout({
           @media print {
             @page {
               size: auto;
-              margin: 12mm 10mm 12mm 10mm;
+              margin: 8mm;
             }
             html,
             body {

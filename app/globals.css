@@ -67,8 +67,8 @@
 
 @media print {
   @page {
-    size: auto; /* Allows browser-level layout control without explicit orientation lock */
-    margin: 12mm 10mm 12mm 10mm;
+    size: auto;
+    margin: 8mm;
   }
 
   .print-landscape {
@@ -77,6 +77,11 @@
 
   .print-portrait {
     page-orientation: portrait;
+  }
+
+  html, body {
+    width: 100% !important;
+    height: auto !important;
   }
 
   html, body, #__next, #root, main, .min-h-screen, .h-screen {

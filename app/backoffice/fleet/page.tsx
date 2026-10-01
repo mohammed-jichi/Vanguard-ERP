@@ -384,7 +384,7 @@ function SuperSonicFleetPageContent() {
       {/* A4 PRINT CSS */}
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          @page { size: auto; margin: 12mm 10mm 12mm 10mm; }
+          @page { size: auto; margin: 8mm; } html, body { width: 100% !important; height: auto !important; }
           .print-landscape { page-orientation: landscape; }
           .print-portrait { page-orientation: portrait; }
           body { background: #fff !important; margin: 0 !important; visibility: hidden !important; }

@@ -2680,7 +2680,7 @@ textarea:focus {
 @media print {
   @page {
     size: auto;
-    margin: 12mm 10mm 12mm 10mm;
+    margin: 8mm;
   }
 
   .print-landscape {

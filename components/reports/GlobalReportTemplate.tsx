@@ -135,8 +135,12 @@ export default function GlobalReportTemplate<T = any>({
       <style>{`
         @media print {
           @page {
-            size: ${isLandscape ? 'landscape' : 'auto'};
-            margin: ${isLandscape ? '8mm 6mm' : '12mm 10mm'};
+            size: ${orientation === 'auto' ? 'auto' : (isLandscape ? 'landscape' : 'portrait')};
+            margin: 8mm;
+          }
+          html, body {
+            width: 100% !important;
+            height: auto !important;
           }
           .report-sheet {
             width: 100% !important;

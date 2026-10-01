@@ -115,7 +115,11 @@ export default function UnifiedModuleReportsHub({
         @media print {
           @page {
             size: auto;
-            margin: 12mm 10mm 12mm 10mm;
+            margin: 8mm;
+          }
+          html, body {
+            width: 100% !important;
+            height: auto !important;
           }
           .print-landscape {
             page-orientation: landscape;

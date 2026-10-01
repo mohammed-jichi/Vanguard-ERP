@@ -691,7 +691,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           /* 1. Maximize paper usage */
           @page {
             size: auto; 
-            margin: 12mm 10mm 12mm 10mm; 
+            margin: 8mm; 
+          }
+
+          html, body {
+            width: 100% !important;
+            height: auto !important;
           }
 
           .print-landscape {

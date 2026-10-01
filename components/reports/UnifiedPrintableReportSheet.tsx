@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
-import { Printer, Download, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
+import { Printer, Download, ZoomIn, ZoomOut, RefreshCw, RotateCcw } from 'lucide-react';
 
 export type PaperSize = 'A4' | 'A3' | 'A5' | 'POS' | 'Barcode' | 'Auto';
 
@@ -297,11 +297,15 @@ export default function UnifiedPrintableReportSheet({
   const [internalOrientation, setInternalOrientation] = React.useState<'portrait' | 'landscape'>(
     propOrientation || 'portrait'
   );
+  const [isForcedOrientation, setIsForcedOrientation] = React.useState<boolean>(
+    Boolean(propOrientation)
+  );
 
   const orientation = propOrientation || internalOrientation;
 
   const handleOrientationChange = (newOrientation: 'portrait' | 'landscape') => {
     setInternalOrientation(newOrientation);
+    setIsForcedOrientation(true);
     if (onOrientationChange) {
       onOrientationChange(newOrientation);
     }
@@ -325,12 +329,16 @@ export default function UnifiedPrintableReportSheet({
 
   return (
     <div dir={dir} className={`w-full font-sans text-foreground text-left select-none bg-background ${className}`}>
-      {/* Dynamic Print Styles for fully fluid print sizing */}
+      {/* Dynamic Print Styles for fully fluid print sizing & browser layout orientation option */}
       <style>{`
         @media print {
           @page {
-            size: ${orientation === 'landscape' ? 'landscape' : 'auto'};
-            margin: ${orientation === 'landscape' ? '8mm 6mm' : '12mm 10mm'};
+            size: ${isForcedOrientation ? orientation : 'auto'};
+            margin: 8mm;
+          }
+          html, body {
+            width: 100% !important;
+            height: auto !important;
           }
           .report-sheet {
             width: 100% !important;
@@ -399,6 +407,17 @@ export default function UnifiedPrintableReportSheet({
                 <span>{t('Export CSV', 'Export CSV')}</span>
               </button>
             )}
+
+            {/* In-App Orientation Toggle (Portrait / Landscape) */}
+            <button
+              type="button"
+              onClick={() => handleOrientationChange(orientation === 'landscape' ? 'portrait' : 'landscape')}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold cursor-pointer transition-colors border border-slate-200 shadow-2xs"
+              title={t('Toggle Orientation', `Orientation: ${orientation === 'landscape' ? 'Landscape' : 'Portrait'}`)}
+            >
+              <RotateCcw size={13} />
+              <span className="capitalize">{orientation === 'landscape' ? t('Landscape', 'Landscape') : t('Portrait', 'Portrait')}</span>
+            </button>
 
             <button
               type="button"
