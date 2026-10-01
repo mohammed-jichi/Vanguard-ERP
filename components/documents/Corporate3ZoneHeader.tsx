@@ -69,7 +69,7 @@ export function Corporate3ZoneHeader({
   companyArabicName = 'منتوجات زيت وزيتون الجنوب ش.م.م',
   hqAddress = 'Choueifat Central Highway, Lebanon',
   companyWebsite = 'www.southernolive-lb.com',
-  hqPhone = 'Tel: +961 05 430 000',
+  hqPhone = 'Tel / Support: +961 05 430 000',
   printDate,
   documentTitle,
   voucherCode,
@@ -126,7 +126,7 @@ export function Corporate3ZoneHeader({
             </a>
           </div>
           <div className="text-slate-600 font-mono text-[10.5px]">
-            {hqPhone.startsWith('Tel') ? hqPhone : `Tel: ${hqPhone}`}
+            {hqPhone.startsWith('Tel') ? hqPhone : `Tel / Support: ${hqPhone}`}
           </div>
           <div className="text-slate-500 font-mono text-[10px] pt-0.5">
             {displayDate}
