@@ -267,7 +267,7 @@ export const SalesDetailsForOneSalesItemTemplate: React.FC<SalesDetailsForOneSal
           executionDate={executionDate || '29-Aug-2026'}
           periodText={dynamicPeriodText || 'From Date: 01-Aug-2026 To Date: 29-Aug-2026'}
           pageInfo="Page 1 of 1"
-          branchInfo={`Branch: ${branch} (Zeit w zaytoun ljanoub)`}
+          branchInfo={branch || 'Facility: Choueifat Main Plant'}
           hideToolbar={hideToolbar}
           zoomLevel={zoomLevel}
           setZoomLevel={setZoomLevel}

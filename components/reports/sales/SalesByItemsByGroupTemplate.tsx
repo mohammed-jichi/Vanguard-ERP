@@ -517,7 +517,7 @@ export const SalesByItemsByGroupTemplate: React.FC<SalesByItemsByGroupTemplatePr
           executionDate={executionDate || '29-Aug-2026'}
           periodText={dynamicPeriodText || 'Year: 2026 - Month: 8'}
           pageInfo="Page 1 of 1"
-          branchInfo={`Branch: ${branch} (Zeit w zaytoun ljanoub)`}
+          branchInfo={branch || 'Facility: Choueifat Main Plant'}
           hideToolbar={hideToolbar}
           zoomLevel={zoomLevel}
           setZoomLevel={setZoomLevel}

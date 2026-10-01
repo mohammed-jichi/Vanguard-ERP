@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StandardReportHeader, StandardReportFooter } from '../UnifiedPrintableReportSheet';
 import {
   getDefaultInitialDateRange,
   resolveDateRangeFromPreset,
@@ -111,7 +112,7 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
           </div>
 
           <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px]">
-            <option>Vanguard Enterprise Ledger</option>
+            <option>Southern Olive Oil S.A.R.L.</option>
           </select>
           
           <div className="flex items-center gap-2 ml-2">
@@ -151,24 +152,25 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
             className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            <div className="w-full relative mb-2">
-              <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Vanguard Enterprise Ledger</div>
-              <h3 className="font-bold text-[14px] text-black text-center">Time report (By date)</h3>
-              
-              <div className="flex justify-between items-end text-[11px] font-bold w-full mt-6 border-b border-black pb-1">
-                <div className="w-[150px] text-left">{executionDate || formatDisplayDate(new Date())}</div>
-                <div className="flex-1 flex justify-center gap-16">
-                   <span>From Date: {formatDisplayDate(parseISODate(fromDate))}</span>
-                   <span>To Date: {formatDisplayDate(parseISODate(toDate))}</span>
-                </div>
-                <div className="w-[150px] text-right">Page 1 of 1</div>
-              </div>
+            {/* Standardized 3-Zone Corporate Header */}
+            <StandardReportHeader
+              companyName="Southern Olive Oil S.A.R.L."
+              hqAddress="Choueifat Central Highway, Lebanon"
+              companyWebsite="www.southernolive-lb.com"
+              hqPhone="Tel / Support: +961 05 430 000"
+              printDate={executionDate || formatDisplayDate(new Date())}
+              reportTitle="Time report (By date)"
+              periodText={`Period: ${formatDisplayDate(parseISODate(fromDate))} - ${formatDisplayDate(parseISODate(toDate))}`}
+              facilityName="Facility: Choueifat Main Plant"
+              facilityAddress="Industrial Zone, Old Saida Rd"
+              facilityDirect="Dispatch / Cell: +961 70 000000"
+              pageInfo="Page 1 of 1"
+            />
               
               <div className="text-left font-bold text-[11px] mt-1 mb-6 leading-tight">
                 This report will show the transactions done by date and not by EOD date, so the Total shown is not the total sales of<br/>
                 the day. use this report for statistics reasons only.
               </div>
-            </div>
 
             {/* 3. DYNAMIC RENDERING ENGINE */}
             {chunkedDates.map((chunk, chunkIdx) => {
@@ -185,7 +187,7 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
                         
                         {/* Branch Name (Spans dates + Light Blue total if last chunk) */}
                         <th colSpan={isLastChunk ? chunk.length + 1 : chunk.length} className="border border-black p-1.5 text-left font-bold bg-white">
-                          Vanguard Enterprise Ledger
+                          Facility: Choueifat Main Plant
                         </th>
 
                         {/* Deep Blue Total Header (Only on last chunk) */}
@@ -246,12 +248,12 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
               );
             })}
             
-            {/* PRINT FOOTER */}
-            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-              <div className="text-left w-1/3">REP_TR_00312</div>
-              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-            </div>
+            {/* Standardized Corporate Printable Footer */}
+            <StandardReportFooter
+              reportCode="REP_TR_00312"
+              copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+              websiteUrl="www.vanguard-erp.net"
+            />
 
           </div>
         )}

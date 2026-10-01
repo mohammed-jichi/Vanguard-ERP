@@ -138,13 +138,13 @@ export function TransactionsByDateMasterDocument({
 
   // Report Metadata
   const meta: ReportMetadata = useMemo(() => ({
-    companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Vanguard Enterprise Ledger',
+    companyName: 'Southern Olive Oil S.A.R.L.',
+    subtitle: 'Operational Transactions Register',
     reportTitle: config.title,
     code: code || config.omegaReportCode || 'REP_S_00188',
     dateRange: cleanPeriod,
     generatedDate: executionDate,
-    branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+    branch: branch,
     filterSummary,
     systemSource: 'Vanguard ERP Master Transaction Engine',
     pageNumber: 1,

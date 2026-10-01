@@ -956,12 +956,12 @@ export default function ProductRequestReportsView() {
                             </div>
                             <div>
                               <a
-                                href="https://www.vanguarderp.com"
+                                href="https://www.vanguard-erp.net"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="font-mono text-blue-700 hover:underline"
                               >
-                                &quot;www.vanguarderp.com&quot;
+                                www.vanguard-erp.net
                               </a>
                             </div>
                           </div>

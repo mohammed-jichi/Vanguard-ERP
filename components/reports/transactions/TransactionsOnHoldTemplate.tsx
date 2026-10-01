@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { StandardReportHeader, StandardReportFooter } from '../UnifiedPrintableReportSheet';
 
 interface TransactionsOnHoldTemplateProps {
   fromDate?: string;
@@ -40,25 +41,20 @@ export const TransactionsOnHoldTemplate: React.FC<TransactionsOnHoldTemplateProp
 
   return (
     <div className="w-full max-w-5xl mx-auto font-sans text-slate-800">
-      {/* Top Header Area */}
-      <div className="flex justify-between items-start mb-2">
-        <div className="text-blue-700 font-bold text-[14px]">
-          Vanguard Enterprise Ledger
-        </div>
-        <div className="text-right text-[11px] font-mono text-slate-500">
-          Internal Control Reports
-        </div>
-      </div>
-
-      <div className="text-center font-bold text-[16px] text-slate-900 mb-2">
-        History of Transactions on Hold
-      </div>
-
-      <div className="flex justify-between items-center text-[11px] font-mono border-b border-black pb-1 text-slate-800 mb-4">
-        <span>Printed: 27-Aug-2026</span>
-        <span>From Date: {fromDate} To Date: {toDate}</span>
-        <span>Page 1 of 1</span>
-      </div>
+      {/* Standardized 3-Zone Corporate Header */}
+      <StandardReportHeader
+        companyName="Southern Olive Oil S.A.R.L."
+        hqAddress="Choueifat Central Highway, Lebanon"
+        companyWebsite="www.southernolive-lb.com"
+        hqPhone="Tel / Support: +961 05 430 000"
+        printDate="27-Aug-2026"
+        reportTitle="History of Transactions on Hold"
+        periodText={`Period: ${fromDate} - ${toDate}`}
+        facilityName="Facility: Choueifat Main Plant"
+        facilityAddress="Industrial Zone, Old Saida Rd"
+        facilityDirect="Dispatch / Cell: +961 70 000000"
+        pageInfo="Page 1 of 1"
+      />
 
       {/* Tables for each hold session */}
       <div className="space-y-6">
@@ -105,6 +101,13 @@ export const TransactionsOnHoldTemplate: React.FC<TransactionsOnHoldTemplateProp
         <span>Total Transactions on Hold: 2</span>
         <span>Consolidated Total: 1,935,000.0 LBP</span>
       </div>
+
+      {/* Standardized Corporate Printable Footer */}
+      <StandardReportFooter
+        reportCode="REP_S_00188"
+        copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+        websiteUrl="www.vanguard-erp.net"
+      />
     </div>
   );
 };

@@ -2015,7 +2015,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00134</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -2098,7 +2098,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00134</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -2174,7 +2174,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00334</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -2783,7 +2783,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00042</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -3193,7 +3193,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00193</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -3364,7 +3364,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
                         <div className="text-black text-left">REP_S_00247</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                        <div className="text-blue-700 text-right">www.vanguard-erp.net</div>
                       </div>
                     </div>
                   ) : selectedReport === 'Profit by category by department' ? (
@@ -3556,7 +3556,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00247</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -3670,7 +3670,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00247</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -3799,7 +3799,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00247</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -3928,7 +3928,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
                         <div className="text-black text-left">REP_S_00357</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                        <div className="text-blue-700 text-right">www.vanguard-erp.net</div>
                       </div>
                     </div>
                   ) : selectedReport === 'Transactions on Hold' ? (
@@ -4012,7 +4012,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00098</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -4084,7 +4084,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         <div className="font-mono font-bold tracking-wider text-slate-900">REP_S_00247</div>
                         <div className="text-slate-700 font-medium text-center flex-1">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
                         <div className="text-right">
-                          <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguarderp.com&quot;</a>
+                          <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer">&quot;www.vanguard-erp.net&quot;</a>
                         </div>
                       </div>
                     </div>
@@ -4158,7 +4158,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
                         <div className="text-black text-left">REP_S_00247</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                        <div className="text-blue-700 text-right">www.vanguard-erp.net</div>
                       </div>
                     </div>
                   ) : (selectedReport === 'Layaway History' || selectedReport === 'Layaway History.') ? (
@@ -4240,7 +4240,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
                         <div className="text-black text-left">REP_S_00247</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                        <div className="text-blue-700 text-right">www.vanguard-erp.net</div>
                       </div>
                     </div>
                   ) : selectedReport === 'List of Layaway Sales' ? (
@@ -4333,7 +4333,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       <div className="grid grid-cols-[1fr_auto_1fr] text-[10px] font-bold">
                         <div className="text-black text-left">REP_S_00247</div>
                         <div className="text-blue-700 text-center">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-                        <div className="text-blue-700 text-right">www.vanguarderp.com</div>
+                        <div className="text-blue-700 text-right">www.vanguard-erp.net</div>
                       </div>
                     </div>
                   ) : selectedReport === 'Customer Payments' ? (
@@ -4440,12 +4440,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -4540,12 +4540,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -4619,12 +4619,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -4751,12 +4751,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -4879,12 +4879,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5007,12 +5007,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5083,12 +5083,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5211,12 +5211,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5275,12 +5275,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5350,12 +5350,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5443,12 +5443,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5515,12 +5515,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5603,12 +5603,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5705,12 +5705,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5773,12 +5773,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5874,12 +5874,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -5966,12 +5966,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -6111,12 +6111,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -6251,12 +6251,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -6340,12 +6340,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -6478,12 +6478,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -6622,12 +6622,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -6760,12 +6760,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -6878,12 +6878,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -6984,12 +6984,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -7087,12 +7087,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>
@@ -7217,12 +7217,12 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         </div>
                         <div>
                           <a
-                            href="https://www.vanguarderp.com"
+                            href="https://www.vanguard-erp.net"
                             target="_blank"
                             rel="noreferrer"
                             className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
                           >
-                            www.vanguarderp.com
+                            www.vanguard-erp.net
                           </a>
                         </div>
                       </div>

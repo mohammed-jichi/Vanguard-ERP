@@ -75,12 +75,12 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
 
   const meta: ReportMetadata = {
     reportTitle: resolvedTitle,
-    companyName: 'Zeit w zaytoun ljanoub',
+    companyName: 'Southern Olive Oil S.A.R.L.',
     subtitle: 'HR & Payroll Operational Control',
     code: resolvedCode,
     dateRange: dynamicPeriodText || 'Audit Cycle: August 2026',
     generatedDate: executionDate,
-    branch: `Facility: ${branch}`,
+    branch: branch,
     filterSummary,
     systemSource: 'Vanguard ERP HR & Workforce Kernel',
     pageNumber: 1,

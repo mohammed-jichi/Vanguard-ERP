@@ -104,13 +104,13 @@ export const SummaryOfSalesByItemsTemplate: React.FC<SummaryOfSalesByItemsTempla
   }, [filteredRows]);
 
   const meta: ReportMetadata = useMemo(() => ({
-    companyName: 'Zeit w zaytoun ljanoub',
+    companyName: 'Southern Olive Oil S.A.R.L.',
     subtitle: 'Item Sales Velocity & Margin Register',
     reportTitle: 'Summary of Sales by Items',
     code: 'REP_S_00251',
     dateRange: cleanPeriod,
     generatedDate: executionDate,
-    branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+    branch: branch,
     filterSummary,
     systemSource: 'Vanguard ERP Commercial Inventory Kernel',
     pageNumber: 1,

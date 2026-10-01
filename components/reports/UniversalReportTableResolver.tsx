@@ -128,13 +128,13 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
     }
 
     return {
-      companyName: 'Zeit w zaytoun ljanoub',
-      subtitle: t('report_subtitle_default', 'Southern Olive Oil Products S.A.R.L - Universal Master Enterprise Ledger'),
+      companyName: 'Southern Olive Oil S.A.R.L.',
+      subtitle: t('report_subtitle_default', 'Southern Olive Oil S.A.R.L. - Universal Operations Register'),
       reportTitle: t(schema.title || reportName, schema.title || reportName),
       code: schema.id || reportCode || 'REP_UNIVERSAL',
       dateRange: cleanPeriod,
       generatedDate: executionDate,
-      branch: branch.startsWith('Branch:') ? `${t('branch', 'Branch')}: ${branch.replace(/^Branch:\s*/i, '')}` : `${t('branch', 'Branch')}: ${branch}`,
+      branch: branch,
       filterSummary: filterSummaryParts.length > 0 ? filterSummaryParts.join(' • ') : undefined,
       systemSource: `Vanguard ERP Universal Engine [${domain.toUpperCase()}_SCHEMA${isExplicitSchema ? '_REGISTRY' : '_INFERRED'}]`,
       pageNumber: 1,

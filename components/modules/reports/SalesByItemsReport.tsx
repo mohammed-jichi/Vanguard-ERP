@@ -439,7 +439,7 @@ export default function SalesByItemsReport({
           <div className="absolute bottom-4 left-8 right-8 pt-2 border-t border-slate-300 flex justify-between items-center text-[9px] text-slate-500 font-sans">
             <span>REP_S_00191</span>
             <span>Copyright © 2026 Vanguard ERP. All Rights Reserved.</span>
-            <span>www.vanguarderp.com</span>
+            <span>www.vanguard-erp.net</span>
           </div>
 
         </div>

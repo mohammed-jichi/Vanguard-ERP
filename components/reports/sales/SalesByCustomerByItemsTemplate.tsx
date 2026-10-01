@@ -59,7 +59,7 @@ export const SalesByCustomerByItemsTemplate: React.FC<SalesByCustomerByItemsTemp
       executionDate={executionDate}
       periodText={dynamicPeriodText || `From Date: ${fromDate} To Date: ${toDate}`}
       pageInfo="Page 1 of 1"
-      branchInfo="Branch: Main Branch (Zeit w zaytoun ljanoub)"
+      branchInfo="Facility: Choueifat Main Plant"
       hideToolbar={hideToolbar}
     >
       {isNotSold ? (

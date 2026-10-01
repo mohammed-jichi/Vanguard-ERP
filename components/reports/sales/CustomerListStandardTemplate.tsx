@@ -194,12 +194,12 @@ export const CustomerListStandardTemplate: React.FC<CustomerListStandardTemplate
 
   const meta: ReportMetadata = {
     reportTitle,
-    companyName: 'Zeit w zaytoun ljanoub',
+    companyName: 'Southern Olive Oil S.A.R.L.',
     subtitle: 'Lists & Customer Master Register',
     code: reportCode,
     dateRange: dynamicPeriodText || 'Master Directory Audit Window',
     generatedDate: executionDate,
-    branch: `Facility: ${branch}`,
+    branch: branch,
     systemSource: 'Vanguard ERP Customer Master Kernel',
     pageNumber: 1,
     totalPages: 1,

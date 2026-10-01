@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import ReportSidebarNav from './ReportSidebarNav';
 import DynamicReportFilterRenderer from './DynamicReportFilterRenderer';
+import { StandardReportHeader, StandardReportFooter } from './UnifiedPrintableReportSheet';
 import {
   getStandardPeriodOptions,
   resolveDateRangeFromPreset,
@@ -845,49 +846,21 @@ export function ReportTableWrapper({
       >
         <div>
           {/* ================================================================= */}
-          {/* A. AUTHENTIC CORPORATE TOPPER (CENTERED BLUE)                     */}
+          {/* AUTHENTIC 3-ZONE HEADER ACROSS ALL VANGUARD REPORTS              */}
           {/* ================================================================= */}
-          <div className="text-center">
-            <h1 className="font-bold text-report-company text-blue-700 text-[15px] tracking-wide uppercase font-sans">
-              {t('company_name_brand', 'Zeit w zaytoun ljanoub')}
-            </h1>
-            <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
-              {t('company_legal_name', 'Southern Olive Oil Products S.A.R.L')}
-            </div>
-          </div>
-
-          {/* ================================================================= */}
-          {/* B. REPORT TITLE (CENTERED BOLD)                                   */}
-          {/* ================================================================= */}
-          {title && (
-            <div className="text-center font-extrabold text-report-title text-slate-900 text-[13.5px] mt-2.5 mb-1 font-sans">
-              {t(title, title)}
-            </div>
-          )}
-
-          {/* ================================================================= */}
-          {/* C. EXECUTION SUBHEADER (DATE, PERIOD, PAGE)                       */}
-          {/* ================================================================= */}
-          <div className="flex items-center justify-between text-report-meta text-[11px] text-slate-800 font-mono mt-3 mb-1">
-            <span className="font-medium">{displayDate}</span>
-            <span className="font-bold text-center flex-1">
-              {(periodText ? t(periodText, periodText) : '') || (subtitle ? t(subtitle, subtitle) : '') || t('current_active_period', 'Current Active Period')}
-            </span>
-            <span className="font-medium">{pageInfo ? t(pageInfo, pageInfo) : ''}</span>
-          </div>
-
-          {/* ================================================================= */}
-          {/* D. TOP SOLID DIVIDING RULE                                        */}
-          {/* ================================================================= */}
-          <div className="border-b-report-master border-b-2 border-report-borderMaster border-slate-900 mb-2"></div>
-
-          {/* Branch Subtitle & Ledger Source */}
-          {branchInfo && (
-            <div className="flex items-center justify-between text-[10.5px] font-semibold text-slate-700 mb-2 font-sans">
-              <span>{branchInfo ? t(branchInfo, branchInfo) : ''}</span>
-              <span className="font-mono text-slate-500">{t('system_source_ledger', 'System Source: Vanguard ERP Live Ledger')}</span>
-            </div>
-          )}
+          <StandardReportHeader
+            companyName="Southern Olive Oil S.A.R.L."
+            hqAddress="Choueifat Central Highway, Lebanon"
+            companyWebsite="www.southernolive-lb.com"
+            hqPhone="Tel / Support: +961 05 430 000"
+            printDate={displayDate}
+            reportTitle={title || 'Transactions by Date'}
+            periodText={periodText || subtitle}
+            facilityName={branchInfo}
+            facilityAddress="Industrial Zone, Old Saida Rd"
+            facilityDirect="Dispatch / Cell: +961 70 000000"
+            pageInfo={pageInfo || 'Page 1 of 1'}
+          />
 
           {/* Custom actions (if explicitly provided, but NO duplicate export buttons) */}
           {actions && <div className="mb-3 flex justify-end print:hidden">{actions}</div>}
@@ -921,29 +894,13 @@ export function ReportTableWrapper({
         </div>
 
         {/* =================================================================== */}
-        {/* F. AUTHENTIC CORPORATE FOOTER WITH REPORT CODE, COPYRIGHT & LINK    */}
+        {/* STANDARDIZED CORPORATE FOOTER                                      */}
         {/* =================================================================== */}
-        <div className="pt-12 mt-6 print:pt-6">
-          {/* Bottom Solid Dividing Rule */}
-          <div className="border-b-report-master border-b-2 border-report-borderMaster border-slate-900 mb-1.5"></div>
-
-          <div className="flex items-center justify-between text-[10px] text-slate-800 font-sans">
-            <span className="font-mono font-bold tracking-wider text-slate-900">{reportCode}</span>
-            <span className="text-slate-700 font-medium text-center flex-1">
-              {t('copyright_vanguard', 'Copyright © 2026 Vanguard ERP. All Rights Reserved.')}
-            </span>
-            <div className="text-right">
-              <a
-                href="https://www.vanguarderp.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer"
-              >
-                &quot;www.vanguarderp.com&quot;
-              </a>
-            </div>
-          </div>
-        </div>
+        <StandardReportFooter
+          reportCode={reportCode}
+          copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+          websiteUrl="www.vanguard-erp.net"
+        />
       </div>
     </div>
   );
@@ -1045,20 +1002,6 @@ export default function ReportPageLayout({
         <div
           className={`min-h-screen p-4 md:p-6 bg-background font-sans text-foreground select-none ${className}`}
         >
-          {/* Top floating hamburger toggle when sidebar is closed and custom header didn't render it */}
-          {!isSidebarOpen && (
-            <div className="mb-3 print:hidden">
-              <button
-                type="button"
-                onClick={() => setIsSidebarOpen(true)}
-                title={t('show_report_menu', 'Show Report Categories Menu')}
-                className="inline-flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
-              >
-                <Menu className="w-4 h-4 text-slate-700" />
-                <span>{t('show_report_menu', 'Show Report Menu')}</span>
-              </button>
-            </div>
-          )}
 
           {/* 2-Column Master Layout */}
           <div className="flex flex-col lg:flex-row gap-5 items-start">

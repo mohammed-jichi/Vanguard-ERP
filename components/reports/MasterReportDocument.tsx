@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { ReportMetadata, ReportColumn, ReportSection, GrandTotal, PaperSize } from '@/types/reports';
+import { StandardReportHeader, StandardReportFooter } from './UnifiedPrintableReportSheet';
 
 export interface MasterReportDocumentProps<T = any> {
   meta: ReportMetadata;
@@ -65,36 +66,26 @@ export function MasterReportDocument<T = any>({
         }
       `}</style>
 
-      {/* 1. Header Section */}
-      <div className="text-center mb-5">
-        <h1 className="text-foreground text-base sm:text-lg font-bold tracking-wide uppercase">
-          {t(meta.companyName, meta.companyName)}
-        </h1>
-        {meta.subtitle && (
-          <p className="text-slate-500 text-xs font-normal mt-0.5">{t(meta.subtitle, meta.subtitle)}</p>
-        )}
-        <h2 className="text-foreground text-sm sm:text-base font-extrabold mt-2.5 tracking-tight">
-          {t(meta.reportTitle, meta.reportTitle)}
-        </h2>
-      </div>
+      {/* 1. Standardized 3-Zone Corporate Header */}
+      <StandardReportHeader
+        companyName="Southern Olive Oil S.A.R.L."
+        hqAddress="Choueifat Central Highway, Lebanon"
+        companyWebsite="www.southernolive-lb.com"
+        hqPhone="Tel / Support: +961 05 430 000"
+        printDate={meta.generatedDate}
+        reportTitle={meta.reportTitle}
+        periodText={meta.dateRange}
+        facilityName={meta.branch}
+        facilityAddress="Industrial Zone, Old Saida Rd"
+        facilityDirect="Dispatch / Cell: +961 70 000000"
+        pageInfo={`Page ${meta.pageNumber || 1} of ${meta.totalPages || 1}`}
+      />
 
-      {/* 2. Audit Meta Bar */}
-      <div className="flex justify-between items-center text-slate-700 text-xs font-medium py-1 border-b border-slate-300 mb-1">
-        <span>{meta.generatedDate}</span>
-        <span>{t('Period', 'Period')}: {meta.dateRange}</span>
-        <span>{t('Page', 'Page')} {meta.pageNumber || 1} {t('of', 'of')} {meta.totalPages || 1}</span>
-      </div>
-      <div className="flex flex-wrap justify-between items-center text-slate-500 text-[11px] pb-2.5 mb-3 gap-y-1">
-        <span>
-          {t('Branch', 'Branch')}: {meta.branch}
-          {meta.filterSummary && (
-            <span className="ml-2 pl-2 border-l border-slate-300 text-slate-600 font-medium">
-              {meta.filterSummary}
-            </span>
-          )}
-        </span>
-        <span>{t('System Source', 'System Source')}: {t(meta.systemSource, meta.systemSource)}</span>
-      </div>
+      {meta.filterSummary && (
+        <div className="text-[10.5px] font-mono text-slate-600 mb-2 px-2 py-1 bg-slate-50 border border-slate-200 rounded">
+          <span className="font-semibold text-slate-700">Filter Applied:</span> {meta.filterSummary}
+        </div>
+      )}
 
       {/* 3. Document Table Canvas with Horizontal Overflow Protection */}
       <div className="w-full overflow-x-auto print:overflow-visible">
@@ -240,11 +231,12 @@ export function MasterReportDocument<T = any>({
         </table>
       </div>
 
-      {/* 5. Document Footer */}
-      <div className="border-t border-slate-300 mt-6 pt-2.5 flex justify-between items-center text-[10px] text-slate-500 font-mono">
-        <span>{meta.code}</span>
-        <span>{t('Copyright © 2026 Vanguard ERP. All Rights Reserved.', 'Copyright © 2026 Vanguard ERP. All Rights Reserved.')}</span>
-      </div>
+      {/* 5. Standardized Corporate Printable Footer */}
+      <StandardReportFooter
+        reportCode={meta.code}
+        copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+        websiteUrl="www.vanguard-erp.net"
+      />
     </div>
   );
 }

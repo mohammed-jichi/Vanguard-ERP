@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { StandardReportHeader, StandardReportFooter } from '../UnifiedPrintableReportSheet';
 
 interface DiscountSummaryTemplateProps {
   fromDate?: string;
@@ -23,18 +24,20 @@ export const DiscountSummaryTemplate: React.FC<DiscountSummaryTemplateProps> = (
 
   return (
     <div className="w-full max-w-5xl mx-auto font-sans text-slate-800">
-      {/* Top Header */}
-      <div className="flex justify-between items-start text-xs font-bold mb-1">
-        <span className="text-blue-700 text-sm">Vanguard Enterprise Ledger</span>
-        <span className="text-base text-slate-900 font-bold">Discount Summary Report</span>
-        <span className="text-slate-500 font-mono text-[11px]">Financial & Sales Control</span>
-      </div>
-
-      <div className="flex justify-between items-center text-[10.5px] font-mono border-b border-black pb-1 mb-4 text-slate-800">
-        <span>Printed: 27-Aug-2026</span>
-        <span>From Date: {fromDate} To Date: {toDate}</span>
-        <span>Page 1 of 1</span>
-      </div>
+      {/* Standardized 3-Zone Corporate Header */}
+      <StandardReportHeader
+        companyName="Southern Olive Oil S.A.R.L."
+        hqAddress="Choueifat Central Highway, Lebanon"
+        companyWebsite="www.southernolive-lb.com"
+        hqPhone="Tel / Support: +961 05 430 000"
+        printDate="27-Aug-2026"
+        reportTitle="Discount Summary Report"
+        periodText={`Period: ${fromDate} - ${toDate}`}
+        facilityName="Facility: Choueifat Main Plant"
+        facilityAddress="Industrial Zone, Old Saida Rd"
+        facilityDirect="Dispatch / Cell: +961 70 000000"
+        pageInfo="Page 1 of 1"
+      />
 
       <div className="border border-black rounded overflow-hidden bg-white shadow-xs">
         <table className="w-full table-fixed text-left border-collapse text-xs">
@@ -92,6 +95,13 @@ export const DiscountSummaryTemplate: React.FC<DiscountSummaryTemplateProps> = (
         <span>Discount Policy: Authorizations strictly recorded</span>
         <span>Currency: Lebanese Pound (LBP)</span>
       </div>
+
+      {/* Standardized Corporate Printable Footer */}
+      <StandardReportFooter
+        reportCode="REP_S_00250"
+        copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+        websiteUrl="www.vanguard-erp.net"
+      />
     </div>
   );
 };

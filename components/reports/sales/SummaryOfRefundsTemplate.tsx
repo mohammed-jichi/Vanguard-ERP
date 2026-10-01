@@ -234,7 +234,7 @@ export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> =
   }, [filteredRefunds]);
 
   const meta: ReportMetadata = useMemo(() => ({
-    companyName: 'Zeit w zaytoun ljanoub',
+    companyName: 'Southern Olive Oil S.A.R.L.',
     subtitle: isDetails
       ? 'Granular Customer Refund & Credit Notes Audit'
       : 'Reimbursed Returns & Credit Notes Register',
@@ -242,7 +242,7 @@ export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> =
     code: isDetails ? 'REP_S_00274' : 'REP_S_00185',
     dateRange: cleanPeriod,
     generatedDate: executionDate,
-    branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+    branch: branch,
     filterSummary,
     systemSource: 'Vanguard ERP Fiscal Reimbursement & AR Subsystem',
     pageNumber: 1,

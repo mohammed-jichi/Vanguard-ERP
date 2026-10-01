@@ -238,19 +238,19 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`bg-white border-e border-gray-200 shadow-2xs transition-all duration-300 flex flex-col shrink-0 z-30 font-sans select-none ${
+      className={`bg-white border-e border-gray-200 shadow-2xs transition-all duration-300 flex flex-col shrink-0 z-30 font-sans select-none overflow-hidden ${
         isOpen ? 'w-64' : 'w-16'
       } ${className || 'min-h-[calc(100vh-96px)] h-full'}`}
       dir={dir}
     >
       {/* 1. SIDEBAR TOP CONTROL HEADER (HAMBURGER & HOME) */}
-      <div className="p-3 border-b border-gray-200 flex flex-col gap-2 bg-white">
-        <div className="flex items-center justify-between w-full">
+      <div className={`border-b border-gray-200 flex flex-col gap-2 bg-white overflow-hidden ${isOpen ? 'p-3' : 'py-2.5 px-2 items-center'}`}>
+        <div className={`w-full flex ${isOpen ? 'items-center justify-between' : 'flex-col items-center justify-center gap-1.5'} overflow-hidden`}>
           {/* HAMBURGER TOGGLE ICON (☰) */}
           <button
             onClick={handleToggle}
             title={isOpen ? t('collapse_sidebar', 'Collapse Sidebar') : t('expand_sidebar', 'Expand Sidebar')}
-            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-700 transition-colors cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-lg text-gray-700 transition-colors cursor-pointer shrink-0"
           >
             <Menu strokeWidth={1.5} className="w-5 h-5 text-gray-700" />
           </button>
@@ -260,7 +260,7 @@ export default function Sidebar({
             href="/backoffice"
             onClick={() => handleNav('grid-dash')}
             title={t('enterprise_main_hub', 'Enterprise Main Hub')}
-            className="p-1.5 hover:bg-amber-50 rounded-lg text-amber-600 transition-colors cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center hover:bg-amber-50 rounded-lg text-amber-600 transition-colors cursor-pointer shrink-0 overflow-hidden"
           >
             <Home strokeWidth={1.5} className="w-5 h-5" />
           </Link>

@@ -92,7 +92,7 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
     });
   }, [filterValues.paymentType, filterValues.paymentMode, filterValues.tender, filterValues.currency]);
 
-  const branchDisplay = branch ? (branch.startsWith('Branch:') ? branch : `Branch: ${branch}`) : 'Branch: Main Branch (Zeit w zaytoun ljanoub)';
+  const branchDisplay = branch || 'Facility: Choueifat Main Plant';
 
   return (
     <UnifiedPrintableReportSheet

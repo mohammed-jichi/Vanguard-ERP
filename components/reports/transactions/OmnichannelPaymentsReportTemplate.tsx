@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StandardReportHeader, StandardReportFooter } from '../UnifiedPrintableReportSheet';
 
 interface OmnichannelPaymentsReportTemplateProps {
   hideToolbar?: boolean;
@@ -135,13 +136,20 @@ export const OmnichannelPaymentsReportTemplate: React.FC<OmnichannelPaymentsRepo
             className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            <div className="text-left font-bold text-[15px] mb-6">Omnichannel Payments & Sales Source Report</div>
-            
-            <div className="flex justify-between items-end text-[12px] font-bold w-full border-b-2 border-black pb-2 mb-2">
-              <div>Date: 28-Aug-2026</div>
-              <div className="text-center flex-1">From Date: 01-Aug-2026 To Date: 31-Aug-2026</div>
-              <div>Page 1 of 1</div>
-            </div>
+            {/* Standardized 3-Zone Corporate Header */}
+            <StandardReportHeader
+              companyName="Southern Olive Oil S.A.R.L."
+              hqAddress="Choueifat Central Highway, Lebanon"
+              companyWebsite="www.southernolive-lb.com"
+              hqPhone="Tel / Support: +961 05 430 000"
+              printDate="28-Aug-2026"
+              reportTitle="Omnichannel Payments & Sales Source Report"
+              periodText="Period: 2026-08-01 - 2026-08-31"
+              facilityName="Facility: Choueifat Main Plant"
+              facilityAddress="Industrial Zone, Old Saida Rd"
+              facilityDirect="Dispatch / Cell: +961 70 000000"
+              pageInfo="Page 1 of 1"
+            />
 
             <table className="w-full border-collapse text-[11px] whitespace-nowrap mt-4">
               <thead>
@@ -192,11 +200,12 @@ export const OmnichannelPaymentsReportTemplate: React.FC<OmnichannelPaymentsRepo
               </tbody>
             </table>
             
-            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-              <div className="text-left w-1/3">REP_S_00250</div>
-              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-            </div>
+            {/* Standardized Corporate Printable Footer */}
+            <StandardReportFooter
+              reportCode="REP_S_00250"
+              copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+              websiteUrl="www.vanguard-erp.net"
+            />
           </div>
         )}
       </div>

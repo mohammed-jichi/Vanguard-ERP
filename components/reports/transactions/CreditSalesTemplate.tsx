@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { ZoomIn, ZoomOut, Printer, Download } from 'lucide-react';
+import { StandardReportHeader, StandardReportFooter } from '../UnifiedPrintableReportSheet';
 import { applyGlobalReportFilters, resolveActiveCurrencyFromFilters } from '@/lib/reportFilterEngine';
 import { convertCurrency, formatCurrencyAmount } from '@/lib/currencyEngine';
 
@@ -225,15 +226,20 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
             className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            <div className="text-blue-700 font-bold text-[12px] mb-6">Vanguard Enterprise Ledger</div>
-            
-            <div className="text-center font-bold text-[12px] mb-4">Credit Sales</div>
-            
-            <div className="flex justify-between items-end text-[11px] font-bold w-full border-b border-black pb-1 mb-1">
-              <div>{executionDate}</div>
-              <div className="text-center flex-1">{periodDisplay}</div>
-              <div>Page 1 of 1</div>
-            </div>
+            {/* Standardized 3-Zone Corporate Header */}
+            <StandardReportHeader
+              companyName="Southern Olive Oil S.A.R.L."
+              hqAddress="Choueifat Central Highway, Lebanon"
+              companyWebsite="www.southernolive-lb.com"
+              hqPhone="Tel / Support: +961 05 430 000"
+              printDate={executionDate}
+              reportTitle="Credit Sales"
+              periodText={periodDisplay}
+              facilityName="Facility: Choueifat Main Plant"
+              facilityAddress="Industrial Zone, Old Saida Rd"
+              facilityDirect="Dispatch / Cell: +961 70 000000"
+              pageInfo="Page 1 of 1"
+            />
 
             <div className="w-full overflow-x-auto print:overflow-visible pb-4">
               <table className="w-full border-collapse text-[11px] whitespace-nowrap">
@@ -341,12 +347,12 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
               </table>
             </div>
 
-            {/* STANDARDIZED FOOTER */}
-            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-              <div className="text-left w-1/3">REP_S_00247</div>
-              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-            </div>
+            {/* Standardized Corporate Printable Footer */}
+            <StandardReportFooter
+              reportCode="REP_S_00247"
+              copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+              websiteUrl="www.vanguard-erp.net"
+            />
 
           </div>
         )}

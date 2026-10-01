@@ -215,13 +215,13 @@ export const SummaryOfVoidsTemplate: React.FC<SummaryOfVoidsTemplateProps> = ({
   }, [filteredRows]);
 
   const meta: ReportMetadata = useMemo(() => ({
-    companyName: 'Zeit w zaytoun ljanoub',
+    companyName: 'Southern Olive Oil S.A.R.L.',
     subtitle: 'Cashier Void & Transaction Cancellation Audit',
     reportTitle: 'Summary of Voids',
     code: 'REP_S_00184',
     dateRange: cleanPeriod,
     generatedDate: executionDate,
-    branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+    branch: branch,
     filterSummary,
     systemSource: 'Vanguard ERP Fiscal Security Kernel',
     pageNumber: 1,

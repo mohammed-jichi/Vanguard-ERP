@@ -1270,8 +1270,8 @@ export class ProductRequestService {
               <span style="font-family: ui-monospace, monospace; font-weight: 700; color: #0f172a; letter-spacing: 0.05em;">REP_OP_003</span>
               <span style="color: #475569; font-weight: 500; text-align: center; flex: 1;">Copyright © 2026 Vanguard ERP. All Rights Reserved.</span>
               <div>
-                <a href="https://www.vanguarderp.com" target="_blank" rel="noopener noreferrer" style="color: #1d4ed8; font-family: ui-monospace, monospace; text-decoration: none;">
-                  &quot;www.vanguarderp.com&quot;
+                <a href="https://www.vanguard-erp.net" target="_blank" rel="noopener noreferrer" style="color: #1d4ed8; font-family: ui-monospace, monospace; text-decoration: none;">
+                  &quot;www.vanguard-erp.net&quot;
                 </a>
               </div>
             </div>

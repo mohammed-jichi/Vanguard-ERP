@@ -240,13 +240,13 @@ export const ElectronicJournalTemplate: React.FC<ElectronicJournalTemplateProps>
 
   // Report Metadata
   const meta: ReportMetadata = useMemo(() => ({
-    companyName: 'Zeit w zaytoun ljanoub',
+    companyName: 'Southern Olive Oil S.A.R.L.',
     subtitle: 'Terminal Electronic Journal Audit',
     reportTitle: 'Electronic Journal',
     code: 'REP_S_00248',
     dateRange: cleanPeriod,
     generatedDate: executionDate,
-    branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+    branch: branch,
     filterSummary,
     systemSource: 'Vanguard ERP POS Security & Fiscal Kernel',
     pageNumber: 1,

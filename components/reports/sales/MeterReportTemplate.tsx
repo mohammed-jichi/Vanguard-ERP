@@ -942,13 +942,13 @@ export const MeterReportTemplate: React.FC<MeterReportTemplateProps> = ({
 
   // Report Document Metadata
   const meta: ReportMetadata = useMemo(() => ({
-    companyName: 'Zeit w zaytoun ljanoub',
+    companyName: 'Southern Olive Oil S.A.R.L.',
     subtitle: 'Fiscal Cash Register Reading Log & Shift Audit',
     reportTitle,
     code,
     dateRange: cleanPeriod,
     generatedDate: executionDate,
-    branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+    branch: branch,
     filterSummary,
     systemSource: 'Vanguard ERP Fiscal Security Kernel (REP_S_00189)',
     pageNumber: 1,

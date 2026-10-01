@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StandardReportHeader, StandardReportFooter } from '../UnifiedPrintableReportSheet';
 
 interface TimerReportTemplateProps {
   hideToolbar?: boolean;
@@ -77,7 +78,7 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
           </select>
           <input type="text" defaultValue="Aug, 2026" className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[100px] text-center" />
           <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px]">
-            <option>Vanguard Enterprise Ledger</option>
+            <option>Southern Olive Oil S.A.R.L.</option>
           </select>
           <label className="flex items-center gap-1.5 text-[13px] font-bold text-slate-800 cursor-pointer ml-2">
             <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-400" />
@@ -116,11 +117,20 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
             className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            {/* Report Title */}
-            <div className="w-full relative mb-6">
-              <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Vanguard Enterprise Ledger</div>
-              <h3 className="font-bold text-[14px] text-black text-center mt-4">Timer Report Group by transaction count</h3>
-            </div>
+            {/* Standardized 3-Zone Corporate Header */}
+            <StandardReportHeader
+              companyName="Southern Olive Oil S.A.R.L."
+              hqAddress="Choueifat Central Highway, Lebanon"
+              companyWebsite="www.southernolive-lb.com"
+              hqPhone="Tel / Support: +961 05 430 000"
+              printDate="28-Aug-2026"
+              reportTitle="Timer Report Group by transaction count"
+              periodText="Period: 2026-08-01 - 2026-08-29"
+              facilityName="Facility: Choueifat Main Plant"
+              facilityAddress="Industrial Zone, Old Saida Rd"
+              facilityDirect="Dispatch / Cell: +961 70 000000"
+              pageInfo="Page 1 of 137"
+            />
 
             {/* RENDER DYNAMIC BLOCKS */}
             {reportBlocks.map((block) => (
@@ -158,7 +168,7 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
                       <tr key={time}>
                         {rIdx === 0 && (
                           <td rowSpan={block.times.length} className="border border-black p-2 font-bold text-center align-middle bg-white w-[150px]">
-                            Vanguard Enterprise Ledger
+                            Southern Olive Oil S.A.R.L.
                           </td>
                         )}
                         
@@ -209,11 +219,12 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
               </div>
             ))}
             
-            <div className="w-full mt-12 border-t border-black pt-2 flex justify-between items-center text-[10px] font-bold text-black">
-              <div className="text-left w-1/3">REP_S_00200</div>
-              <div className="text-center w-1/3">Copyright © 2026 Vanguard ERP. All Rights Reserved.</div>
-              <div className="text-right w-1/3 text-blue-600">www.vanguarderp.com</div>
-            </div>
+            {/* Standardized Corporate Printable Footer */}
+            <StandardReportFooter
+              reportCode="REP_S_00200"
+              copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+              websiteUrl="www.vanguard-erp.net"
+            />
 
           </div>
         )}

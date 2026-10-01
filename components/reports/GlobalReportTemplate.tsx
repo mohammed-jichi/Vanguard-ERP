@@ -8,7 +8,7 @@ import {
   GrandTotal,
   PaperSize,
 } from '@/types/reportEngine';
-import { getPaperSizeClasses } from '@/components/reports/UnifiedPrintableReportSheet';
+import { getPaperSizeClasses, StandardReportHeader, StandardReportFooter } from '@/components/reports/UnifiedPrintableReportSheet';
 import { Printer, Download, ZoomIn, ZoomOut } from 'lucide-react';
 
 export interface GlobalReportTemplateProps<T = any> {
@@ -157,51 +157,21 @@ export default function GlobalReportTemplate<T = any>({
       >
         <div>
           {/* ================================================================= */}
-          {/* A. AUTHENTIC CORPORATE TOPPER (CENTERED BLUE)                     */}
+          {/* AUTHENTIC 3-ZONE HEADER ACROSS ALL VANGUARD REPORTS              */}
           {/* ================================================================= */}
-          <div className="text-center">
-            <h1 className="font-bold text-report-company text-blue-700 text-[15px] tracking-wide uppercase font-sans">
-              {metadata.companyName || 'Zeit w zaytoun ljanoub'}
-            </h1>
-            {metadata.subtitle && (
-              <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
-                {metadata.subtitle}
-              </div>
-            )}
-          </div>
-
-          {/* ================================================================= */}
-          {/* B. REPORT TITLE (CENTERED BOLD)                                   */}
-          {/* ================================================================= */}
-          <div className="text-center font-extrabold text-report-title text-slate-900 text-[13.5px] mt-2.5 mb-1.5 font-sans">
-            {metadata.reportTitle}
-          </div>
-
-          {/* ================================================================= */}
-          {/* C. EXECUTION SUBHEADER (DATE, PERIOD, PAGE)                       */}
-          {/* ================================================================= */}
-          <div className="flex items-center justify-between text-report-meta text-[11px] text-slate-800 font-mono mt-3 mb-1">
-            <span className="font-medium">{metadata.generatedDate}</span>
-            <span className="font-bold text-center flex-1">
-              {metadata.dateRange || 'Current Active Period'}
-            </span>
-            <span className="font-medium">
-              Page {metadata.pageNumber || 1} of {metadata.totalPages || 1}
-            </span>
-          </div>
-
-          {/* ================================================================= */}
-          {/* D. TOP SOLID DIVIDING RULE                                        */}
-          {/* ================================================================= */}
-          <div className="border-b-report-master border-b-2 border-report-borderMaster border-slate-900 mb-2"></div>
-
-          {/* Branch Subtitle & System Ledger Source */}
-          <div className="flex items-center justify-between text-[10.5px] font-semibold text-slate-700 mb-2 font-sans">
-            <span>Branch: {metadata.branch || 'Zeit w zaytoun ljanoub'}</span>
-            <span className="font-mono text-slate-500">
-              System Source: {metadata.systemSource || 'Vanguard ERP Live Ledger'}
-            </span>
-          </div>
+          <StandardReportHeader
+            companyName={metadata.companyName || 'Southern Olive Oil S.A.R.L.'}
+            hqAddress="Choueifat Central Highway, Lebanon"
+            companyWebsite="www.southernolive-lb.com"
+            hqPhone="Tel / Support: +961 05 430 000"
+            printDate={metadata.generatedDate}
+            reportTitle={metadata.reportTitle}
+            periodText={metadata.dateRange}
+            facilityName={metadata.branch}
+            facilityAddress="Industrial Zone, Old Saida Rd"
+            facilityDirect="Dispatch / Cell: +961 70 000000"
+            pageInfo={`Page ${metadata.pageNumber || 1} of ${metadata.totalPages || 1}`}
+          />
 
           {/* ================================================================= */}
           {/* E. REPORT CONTENT: DATA-DRIVEN TABLE OR FREE-FORM CHILDREN        */}
@@ -376,31 +346,13 @@ export default function GlobalReportTemplate<T = any>({
         </div>
 
         {/* =================================================================== */}
-        {/* F. AUTHENTIC CORPORATE FOOTER WITH REPORT CODE, COPYRIGHT & LINK    */}
+        {/* STANDARDIZED CORPORATE FOOTER                                      */}
         {/* =================================================================== */}
-        <div className="pt-16 mt-8 print:pt-6">
-          {/* Bottom Solid Dividing Rule */}
-          <div className="border-b-report-master border-b-2 border-report-borderMaster border-slate-900 mb-1.5"></div>
-
-          <div className="flex items-center justify-between text-[10px] text-slate-800 font-sans">
-            <span className="font-mono font-bold tracking-wider text-slate-900">
-              {metadata.code}
-            </span>
-            <span className="text-slate-700 font-medium text-center flex-1">
-              Copyright © 2026 Vanguard ERP. All Rights Reserved.
-            </span>
-            <div className="text-right">
-              <a
-                href="https://www.vanguarderp.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 hover:underline font-mono text-[10px] cursor-pointer"
-              >
-                &quot;www.vanguarderp.com&quot;
-              </a>
-            </div>
-          </div>
-        </div>
+        <StandardReportFooter
+          reportCode={metadata.code}
+          copyrightNotice="Copyright © 2026 Vanguard ERP. All Rights Reserved."
+          websiteUrl="www.vanguard-erp.net"
+        />
       </div>
     </div>
   );

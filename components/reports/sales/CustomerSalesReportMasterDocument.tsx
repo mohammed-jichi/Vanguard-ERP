@@ -124,13 +124,13 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
   }, [filterValues]);
 
   const meta: ReportMetadata = useMemo(() => ({
-    companyName: 'Zeit w zaytoun ljanoub',
+    companyName: 'Southern Olive Oil S.A.R.L.',
     subtitle: 'Commercial Distribution & Accounts Register',
     reportTitle: resolvedTitle,
     code: resolvedCode,
     dateRange: cleanPeriod,
     generatedDate: executionDate,
-    branch: branch.startsWith('Branch:') ? branch : `Branch: ${branch}`,
+    branch: branch,
     filterSummary,
     systemSource: 'Vanguard ERP Customer Accounts & Dispatch Kernel',
     pageNumber: 1,
