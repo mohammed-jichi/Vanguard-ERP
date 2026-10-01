@@ -21,7 +21,8 @@ import {
   ZoomOut,
   Settings,
   X,
-  Check
+  Check,
+  Menu
 } from 'lucide-react';
 import ReportSidebarNav from './ReportSidebarNav';
 import DynamicReportFilterRenderer from './DynamicReportFilterRenderer';
@@ -137,6 +138,18 @@ export function getPaperSizeClasses(size: PaperSize = 'A4', orientation: ReportO
   }
 }
 
+export interface ReportLayoutContextType {
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  toggleSidebar: () => void;
+}
+
+export const ReportLayoutContext = React.createContext<ReportLayoutContextType>({
+  isSidebarOpen: true,
+  setIsSidebarOpen: () => {},
+  toggleSidebar: () => {},
+});
+
 export const ReportPaperSizeContext = React.createContext<{
   paperSize: PaperSize;
   setPaperSize: (size: PaperSize) => void;
@@ -243,28 +256,45 @@ export function ReportHeader({
   actions,
 }: ReportHeaderProps) {
   const { t } = useLanguage();
+  const { isSidebarOpen, toggleSidebar } = React.useContext(ReportLayoutContext);
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 select-none print:hidden">
       <div>
-        {breadcrumbs.length > 0 && (
-          <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-1">
-            {breadcrumbs.map((crumb, idx) => (
-              <React.Fragment key={idx}>
-                {idx > 0 && <span className="text-slate-400">/</span>}
-                {crumb.href ? (
-                  <Link
-                    href={crumb.href}
-                    className="hover:text-slate-800 transition-colors"
-                  >
-                    {t(crumb.label, crumb.label)}
-                  </Link>
-                ) : (
-                  <span className="text-slate-700 font-semibold">{t(crumb.label, crumb.label)}</span>
-                )}
-              </React.Fragment>
-            ))}
-          </nav>
-        )}
+        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+          {toggleSidebar && (
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              title={isSidebarOpen ? t('hide_navigation', 'Hide Report Menu') : t('show_navigation', 'Show Report Menu')}
+              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-700 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 text-xs font-semibold shadow-2xs"
+            >
+              <Menu className="w-4 h-4 text-slate-700" />
+              <span className="hidden sm:inline">
+                {isSidebarOpen ? t('hide_menu', 'Hide Menu') : t('show_menu', 'Show Menu')}
+              </span>
+            </button>
+          )}
+
+          {breadcrumbs.length > 0 && (
+            <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+              {breadcrumbs.map((crumb, idx) => (
+                <React.Fragment key={idx}>
+                  {idx > 0 && <span className="text-slate-400">/</span>}
+                  {crumb.href ? (
+                    <Link
+                      href={crumb.href}
+                      className="hover:text-slate-800 transition-colors"
+                    >
+                      {t(crumb.label, crumb.label)}
+                    </Link>
+                  ) : (
+                    <span className="text-slate-700 font-semibold">{t(crumb.label, crumb.label)}</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </nav>
+          )}
+        </div>
         <div className="flex items-center gap-2.5 flex-wrap">
           <h1 className="text-2xl font-normal text-slate-800 tracking-tight">
             {t(title, title)}
@@ -988,6 +1018,8 @@ export default function ReportPageLayout({
   const { t } = useLanguage();
   const [paperSize, setPaperSize] = useState<PaperSize>('A4');
   const [orientation, setOrientation] = useState<ReportOrientation>('portrait');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const [internalSelectedReport, setInternalSelectedReport] = useState(
     categories[0]?.items?.[0]
       ? typeof categories[0].items[0] === 'string'
@@ -1009,31 +1041,51 @@ export default function ReportPageLayout({
 
   return (
     <ReportPaperSizeContext.Provider value={{ paperSize, setPaperSize, orientation, setOrientation }}>
-      <div
-        className={`min-h-screen p-4 md:p-6 bg-background font-sans text-foreground select-none ${className}`}
-      >
-        {/* 2-Column Master Layout */}
-        <div className="flex flex-col lg:flex-row gap-5 items-start">
-          
-          {/* ===================================================================
-              A. LEFT COLUMN: REPORT CATEGORIES & SEARCH NAVIGATION (w-72 shrink-0)
-              =================================================================== */}
-          {sidebar ? (
-            sidebar
-          ) : (
-            <ReportSidebarNav
-              moduleKey={moduleKey}
-              storageKeyOverride={storageKeyOverride}
-              categories={categories}
-              activeReport={activeReport}
-              onSelectReport={handleSelect}
-            />
+      <ReportLayoutContext.Provider value={{ isSidebarOpen, setIsSidebarOpen, toggleSidebar }}>
+        <div
+          className={`min-h-screen p-4 md:p-6 bg-background font-sans text-foreground select-none ${className}`}
+        >
+          {/* Top floating hamburger toggle when sidebar is closed and custom header didn't render it */}
+          {!isSidebarOpen && (
+            <div className="mb-3 print:hidden">
+              <button
+                type="button"
+                onClick={() => setIsSidebarOpen(true)}
+                title={t('show_report_menu', 'Show Report Categories Menu')}
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              >
+                <Menu className="w-4 h-4 text-slate-700" />
+                <span>{t('show_report_menu', 'Show Report Menu')}</span>
+              </button>
+            </div>
           )}
 
-          {/* ===================================================================
-              B. RIGHT COLUMN: MAIN REPORT WORKPLACE (flex-1 space-y-4)
-              =================================================================== */}
-          <main className="flex-1 w-full space-y-4 min-w-0">
+          {/* 2-Column Master Layout */}
+          <div className="flex flex-col lg:flex-row gap-5 items-start">
+            
+            {/* ===================================================================
+                A. LEFT COLUMN: REPORT CATEGORIES & SEARCH NAVIGATION (w-72 shrink-0)
+                =================================================================== */}
+            {isSidebarOpen && (
+              <div className="w-72 shrink-0 transition-all duration-300 print:hidden">
+                {sidebar ? (
+                  sidebar
+                ) : (
+                  <ReportSidebarNav
+                    moduleKey={moduleKey}
+                    storageKeyOverride={storageKeyOverride}
+                    categories={categories}
+                    activeReport={activeReport}
+                    onSelectReport={handleSelect}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* ===================================================================
+                B. RIGHT COLUMN: MAIN REPORT WORKPLACE (flex-1 space-y-4)
+                =================================================================== */}
+            <main className="flex-1 w-full space-y-4 min-w-0 transition-all duration-300">
             {/* Top Workplace Header */}
             {header ? (
               header
@@ -1118,7 +1170,8 @@ export default function ReportPageLayout({
             }
           }
         `}</style>
-      </div>
+        </div>
+      </ReportLayoutContext.Provider>
     </ReportPaperSizeContext.Provider>
   );
 }

@@ -86,7 +86,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     }
   }, []);
 
-  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [quickDrawerOpen, setQuickDrawerOpen] = useState(false);
   const [activeDrawerTab, setActiveDrawerTab] = useState<'UPDATES' | 'ALERTS' | 'ACTIVITIES' | 'HELP' | 'DARK'>('UPDATES');

@@ -48,6 +48,7 @@ interface DispatchedOrder {
   vehiclePlate: string;
   status: 'QUEUED' | 'ON_ROUTE' | 'DELIVERED' | 'REJECTED' | 'PENDING' | 'MOVED_TO_POS_PICKUP';
   repName?: string;
+  driverNotes?: string;
   deliveredAt?: string;
   signatureSvg?: string;
   fulfillmentSwitchedBy?: FulfillmentAudit;
