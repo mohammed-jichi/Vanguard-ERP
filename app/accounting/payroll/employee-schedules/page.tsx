@@ -30,6 +30,7 @@ import {
   X,
   CalendarDays,
   FileText,
+  Globe,
 } from 'lucide-react';
 
 const MONTH_NAMES = [
@@ -122,6 +123,8 @@ export default function EmployeeSchedulesPage() {
   ]);
   const [applyToAllMonths, setApplyToAllMonths] = useState<boolean>(false);
   const [applyToAllDept, setApplyToAllDept] = useState<boolean>(false);
+  const [applyToAllCompany, setApplyToAllCompany] = useState<boolean>(false);
+  const [daySelectionError, setDaySelectionError] = useState<boolean>(false);
 
   // Apply Day Off Modal State
   const [isDayOffModalOpen, setIsDayOffModalOpen] = useState(false);
@@ -198,7 +201,12 @@ export default function EmployeeSchedulesPage() {
       .toString()
       .padStart(2, '0')}`;
 
-    // Check if employee has a day off recorded for this date
+    // 1. Explicit date overrides take top precedence
+    if (emp.schedule?.dateOverrides?.[dateStr]) {
+      return emp.schedule.dateOverrides[dateStr];
+    }
+
+    // 2. Check if employee has a day off recorded for this date
     const hasDayOff = daysOffList.some(
       (d) =>
         d.employeeId === emp.id &&
@@ -209,12 +217,7 @@ export default function EmployeeSchedulesPage() {
       return 'OFF';
     }
 
-    // Check date overrides
-    if (emp.schedule?.dateOverrides?.[dateStr]) {
-      return emp.schedule.dateOverrides[dateStr];
-    }
-
-    // Fallback to template
+    // 3. Fallback to assigned template
     const templateName = emp.schedule?.templateName || 'Backoffice Administration (08:00 - 16:30)';
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
     if (template) {
@@ -227,6 +230,16 @@ export default function EmployeeSchedulesPage() {
     // Default: Mon-Fri working, Sat-Sun OFF
     if (dayAbbr === 'Sat' || dayAbbr === 'Sun') {
       return 'OFF';
+    }
+    return '08:00 - 16:30';
+  };
+
+  // Helper to extract default working shift timing for an employee
+  const getDefaultWorkingShift = (emp: HREmployeeRecord, dayAbbr: string): string => {
+    const templateName = emp.schedule?.templateName || 'Backoffice Administration (08:00 - 16:30)';
+    const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
+    if (template && template.slots && template.slots.length > 0) {
+      return `${template.slots[0].start} - ${template.slots[0].end}`;
     }
     return '08:00 - 16:30';
   };
@@ -247,12 +260,88 @@ export default function EmployeeSchedulesPage() {
       setSelectedDays(tpl.workDays);
       setCustomSlots(tpl.slots.map((s, idx) => ({ id: String(idx + 1), start: s.start, end: s.end })));
       setIsSetSelectedToOff(false);
+      setDaySelectionError(false);
       showToast(`Copied timings from "${tpl.name}".`);
     }
   };
 
-  // Apply to Selected Days with Validation
+  // Direct Inline ON / OFF Day Toggler
+  const handleToggleDayOnOff = (emp: HREmployeeRecord, dayNumber: number) => {
+    const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, dayNumber);
+    const dateStr = `${yearNum}-${(activeMonthIndex + 1).toString().padStart(2, '0')}-${dayNumber
+      .toString()
+      .padStart(2, '0')}`;
+    const currentShift = getEmployeeShiftForDay(emp, dayNumber);
+    const isCurrentlyOff = currentShift === 'OFF';
+
+    const updatedOverrides = { ...(emp.schedule?.dateOverrides || {}) };
+
+    if (isCurrentlyOff) {
+      // Turn ON: restore to working shift
+      const workingShift = getDefaultWorkingShift(emp, dayAbbr);
+      updatedOverrides[dateStr] = workingShift;
+
+      // Strip any day-off records for this date
+      HRPersonnelService.removeDayOffForEmployeeDate(emp.id, dateStr);
+      setDaysOffList(HRPersonnelService.getDaysOff());
+
+      const updatedEmp: HREmployeeRecord = {
+        ...emp,
+        schedule: {
+          ...(emp.schedule || {}),
+          dateOverrides: updatedOverrides,
+        },
+      };
+
+      HRPersonnelService.saveEmployee(updatedEmp);
+      setEmployees(HRPersonnelService.getEmployees());
+      showToast(`${MONTH_SHORT[activeMonthIndex]} ${dayNumber}: Reverted to active working day (${workingShift}) for ${emp.fullName}.`);
+    } else {
+      // Turn OFF
+      updatedOverrides[dateStr] = 'OFF';
+
+      const quickRecord: DayOffRecord = {
+        id: `DO-${Date.now()}`,
+        employeeId: emp.id,
+        employeeName: emp.fullName,
+        startDate: dateStr,
+        endDate: dateStr,
+        reason: 'Personal leave',
+        type: 'Full Day',
+        paid: 'Yes',
+        notes: 'Direct schedule toggle to OFF',
+        approved: true,
+        createdAt: new Date().toISOString(),
+      };
+
+      HRPersonnelService.saveDayOff(quickRecord);
+      setDaysOffList(HRPersonnelService.getDaysOff());
+
+      const updatedEmp: HREmployeeRecord = {
+        ...emp,
+        schedule: {
+          ...(emp.schedule || {}),
+          dateOverrides: updatedOverrides,
+        },
+      };
+
+      HRPersonnelService.saveEmployee(updatedEmp);
+      setEmployees(HRPersonnelService.getEmployees());
+      showToast(`${MONTH_SHORT[activeMonthIndex]} ${dayNumber}: Marked OFF for ${emp.fullName}.`);
+    }
+  };
+
+  // Apply to Selected Days with Validation and Scope Control
   const handleApplyToSelectedDays = () => {
+    // 1. Validate Day Selection
+    if (!selectedDays || selectedDays.length === 0) {
+      setDaySelectionError(true);
+      showToast('Please select at least one day of the week (e.g., Sat, Sun) before applying.');
+      return;
+    }
+    setDaySelectionError(false);
+
+    // 2. Validate Time Slots if not set to OFF
     if (!isSetSelectedToOff) {
       for (const slot of customSlots) {
         if (!slot.start.trim() || !slot.end.trim()) {
@@ -268,46 +357,100 @@ export default function EmployeeSchedulesPage() {
       ? 'OFF'
       : customSlots.map((s) => `${s.start} - ${s.end}`).join(', ');
 
-    const updatedOverrides = { ...(activeEmployee.schedule?.dateOverrides || {}) };
-
-    for (let day = 1; day <= daysInCurrentMonth; day++) {
-      const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, day);
-      if (selectedDays.includes(dayAbbr)) {
-        const dateStr = `${yearNum}-${(activeMonthIndex + 1).toString().padStart(2, '0')}-${day
-          .toString()
-          .padStart(2, '0')}`;
-        updatedOverrides[dateStr] = slotStr;
-      }
+    // 3. Resolve Target Employees based on Scope Controls
+    let targetEmployees: HREmployeeRecord[] = [];
+    if (applyToAllCompany) {
+      targetEmployees = [...employees];
+    } else if (applyToAllDept) {
+      targetEmployees = employees.filter((e) => e.department === activeEmployee.department);
+    } else {
+      // Default: strictly individual employee only
+      targetEmployees = [activeEmployee];
     }
 
-    const updatedEmp: HREmployeeRecord = {
-      ...activeEmployee,
-      schedule: {
-        ...(activeEmployee.schedule || {}),
-        dateOverrides: updatedOverrides,
-      },
-    };
+    const monthsToProcess = applyToAllMonths
+      ? Array.from({ length: 12 }, (_, i) => i)
+      : [activeMonthIndex];
 
-    HRPersonnelService.saveEmployee(updatedEmp);
+    for (const targetEmp of targetEmployees) {
+      const updatedOverrides = { ...(targetEmp.schedule?.dateOverrides || {}) };
+
+      for (const mIdx of monthsToProcess) {
+        const daysInMonth = getDaysInMonth(yearNum, mIdx);
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+          if (selectedDays.includes(dayAbbr)) {
+            const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+              .toString()
+              .padStart(2, '0')}`;
+            updatedOverrides[dateStr] = slotStr;
+
+            // When applying working slots, strip any OFF day-off records for this date
+            if (!isSetSelectedToOff) {
+              HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+            }
+          }
+        }
+      }
+
+      const updatedEmp: HREmployeeRecord = {
+        ...targetEmp,
+        schedule: {
+          ...(targetEmp.schedule || {}),
+          dateOverrides: updatedOverrides,
+        },
+      };
+
+      HRPersonnelService.saveEmployee(updatedEmp);
+    }
+
+    setDaysOffList(HRPersonnelService.getDaysOff());
     setEmployees(HRPersonnelService.getEmployees());
-    showToast(`Custom shift schedule applied for ${activeEmployee.fullName}.`);
+
+    if (applyToAllCompany) {
+      showToast(`Global override applied to all ${targetEmployees.length} employees across the company.`);
+    } else if (applyToAllDept) {
+      showToast(`Schedule applied to all ${targetEmployees.length} staff in ${activeEmployee.department}.`);
+    } else {
+      showToast(`Custom shift schedule applied exclusively for ${activeEmployee.fullName}.`);
+    }
   };
 
-  // Save Schedule Handler in Tab 2
+  // Save Schedule Handler in Tab 2 with Scope Control
   const handleSaveSchedule = () => {
     if (!activeEmployee) return;
 
-    const updatedEmp: HREmployeeRecord = {
-      ...activeEmployee,
-      schedule: {
-        ...(activeEmployee.schedule || {}),
-        templateName: selectedTemplateName,
-      },
-    };
+    let targetEmployees: HREmployeeRecord[] = [];
+    if (applyToAllCompany) {
+      targetEmployees = [...employees];
+    } else if (applyToAllDept) {
+      targetEmployees = employees.filter((e) => e.department === activeEmployee.department);
+    } else {
+      // Default: strictly individual employee only
+      targetEmployees = [activeEmployee];
+    }
 
-    HRPersonnelService.saveEmployee(updatedEmp);
+    for (const targetEmp of targetEmployees) {
+      const updatedEmp: HREmployeeRecord = {
+        ...targetEmp,
+        schedule: {
+          ...(targetEmp.schedule || {}),
+          templateName: selectedTemplateName,
+        },
+      };
+
+      HRPersonnelService.saveEmployee(updatedEmp);
+    }
+
     setEmployees(HRPersonnelService.getEmployees());
-    showToast(`Schedule for ${activeEmployee.fullName} saved successfully.`);
+
+    if (applyToAllCompany) {
+      showToast(`Template "${selectedTemplateName}" assigned globally to all ${targetEmployees.length} employees.`);
+    } else if (applyToAllDept) {
+      showToast(`Template "${selectedTemplateName}" assigned to all ${targetEmployees.length} staff in ${activeEmployee.department}.`);
+    } else {
+      showToast(`Schedule template "${selectedTemplateName}" saved for ${activeEmployee.fullName}.`);
+    }
   };
 
   // Open Apply Day Off Modal
@@ -325,6 +468,45 @@ export default function EmployeeSchedulesPage() {
     setDayOffNotes('');
     setIsDayOffModalOpen(true);
   };
+
+  // Revert Day Off Back to Working Day in Modal
+  const handleRevertToWorkingDay = () => {
+    const emp = employees.find((e) => e.id === dayOffEmpId) || activeEmployee;
+    if (!emp) return;
+
+    // 1. Remove day off records for this employee on this date
+    HRPersonnelService.removeDayOffForEmployeeDate(emp.id, dayOffStartDate);
+    setDaysOffList(HRPersonnelService.getDaysOff());
+
+    // 2. Set date override to working shift
+    const dayNum = parseInt(dayOffStartDate.split('-')[2], 10) || 1;
+    const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, dayNum);
+    const workingShift = getDefaultWorkingShift(emp, dayAbbr);
+
+    const updatedOverrides = { ...(emp.schedule?.dateOverrides || {}) };
+    updatedOverrides[dayOffStartDate] = workingShift;
+
+    const updatedEmp: HREmployeeRecord = {
+      ...emp,
+      schedule: {
+        ...(emp.schedule || {}),
+        dateOverrides: updatedOverrides,
+      },
+    };
+
+    HRPersonnelService.saveEmployee(updatedEmp);
+    setEmployees(HRPersonnelService.getEmployees());
+    setIsDayOffModalOpen(false);
+    showToast(`Day ${dayOffStartDate} reverted to active working hours (${workingShift}) for ${emp.fullName}.`);
+  };
+
+  // Check if current date inspected in modal is currently OFF
+  const isModalDateCurrentlyOff = useMemo(() => {
+    const emp = employees.find((e) => e.id === dayOffEmpId) || activeEmployee;
+    if (!emp) return false;
+    const dayNum = parseInt(dayOffStartDate.split('-')[2], 10) || 1;
+    return getEmployeeShiftForDay(emp, dayNum) === 'OFF';
+  }, [employees, dayOffEmpId, activeEmployee, dayOffStartDate, daysOffList, activeMonthIndex, yearNum]);
 
   // Submit Day Off Request
   const handleSubmitDayOff = (e: React.FormEvent) => {
@@ -810,6 +992,29 @@ export default function EmployeeSchedulesPage() {
                     </span>
                   </div>
 
+                  {/* Scope Indicator Badge */}
+                  <div className="flex items-center justify-between bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-500 font-medium">Broadcast Scope:</span>
+                      {applyToAllCompany ? (
+                        <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                          <Globe className="w-3.5 h-3.5 text-amber-700" />
+                          <span>Target: All Employees in Company (Global Override — {employees.length} Staff)</span>
+                        </span>
+                      ) : applyToAllDept ? (
+                        <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-900 border border-blue-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                          <Users className="w-3.5 h-3.5 text-blue-700" />
+                          <span>Target: All Staff in Department ({activeEmployee?.department || 'Department'})</span>
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                          <span>Target: {activeEmployee?.fullName} (Individual)</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-700 block">Select Template</label>
                     <select
@@ -823,6 +1028,36 @@ export default function EmployeeSchedulesPage() {
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  {/* Scope Checkboxes for Template Mode */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2 border-t border-slate-100 text-xs font-bold text-slate-700">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={applyToAllDept}
+                        onChange={(e) => {
+                          const val = e.target.checked;
+                          setApplyToAllDept(val);
+                          if (val) setApplyToAllCompany(false);
+                        }}
+                        className="w-4 h-4 rounded text-primary"
+                      />
+                      <span>Apply to All Staff in Department ({activeEmployee?.department})</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={applyToAllCompany}
+                        onChange={(e) => {
+                          const val = e.target.checked;
+                          setApplyToAllCompany(val);
+                          if (val) setApplyToAllDept(false);
+                        }}
+                        className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500"
+                      />
+                      <span className="text-amber-800">Apply to ALL Employees in Company (Global Override)</span>
+                    </label>
                   </div>
 
                   {/* Template Details Card */}
@@ -862,6 +1097,36 @@ export default function EmployeeSchedulesPage() {
                     </span>
                   </div>
 
+                  {/* Scope Indicator Badge */}
+                  <div className="flex items-center justify-between bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-500 font-medium">Broadcast Scope:</span>
+                      {applyToAllCompany ? (
+                        <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                          <Globe className="w-3.5 h-3.5 text-amber-700" />
+                          <span>Target: All Employees in Company (Global Override — {employees.length} Staff)</span>
+                        </span>
+                      ) : applyToAllDept ? (
+                        <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-900 border border-blue-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                          <Users className="w-3.5 h-3.5 text-blue-700" />
+                          <span>Target: All Staff in Department ({activeEmployee?.department || 'Department'})</span>
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold flex items-center gap-1.5 shadow-2xs">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                          <span>Target: {activeEmployee?.fullName} (Individual)</span>
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
+                      {applyToAllCompany
+                        ? 'Updates entire organization'
+                        : applyToAllDept
+                        ? `Updates ${employees.filter(e => e.department === activeEmployee?.department).length} staff in dept`
+                        : 'Changes isolate strictly to this profile'}
+                    </span>
+                  </div>
+
                   {/* Copy from Schedule Ribbon */}
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center gap-2">
                     <span className="text-xs font-bold text-slate-600 shrink-0">Copy from Schedule:</span>
@@ -886,10 +1151,55 @@ export default function EmployeeSchedulesPage() {
                     </button>
                   </div>
 
-                  {/* Days Selector */}
+                  {/* Days Selector with Validation Focus */}
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-700 block">Select Days of Week</label>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-700 block">
+                        Select Days of Week <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedDays(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
+                            setDaySelectionError(false);
+                          }}
+                          className="text-[11px] font-bold text-primary hover:underline cursor-pointer"
+                        >
+                          Weekdays
+                        </button>
+                        <span className="text-slate-300">|</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedDays(['Sat', 'Sun']);
+                            setDaySelectionError(false);
+                          }}
+                          className="text-[11px] font-bold text-primary hover:underline cursor-pointer"
+                        >
+                          Weekends
+                        </button>
+                        <span className="text-slate-300">|</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedDays([...DAYS_OF_WEEK]);
+                            setDaySelectionError(false);
+                          }}
+                          className="text-[11px] font-bold text-primary hover:underline cursor-pointer"
+                        >
+                          All 7 Days
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`flex flex-wrap items-center gap-2 p-2 rounded-2xl transition-all ${
+                        daySelectionError
+                          ? 'ring-2 ring-rose-500 border border-rose-300 bg-rose-50/50 animate-pulse'
+                          : 'border border-transparent'
+                      }`}
+                    >
                       {DAYS_OF_WEEK.map((d) => {
                         const isSelected = selectedDays.includes(d);
                         return (
@@ -897,11 +1207,12 @@ export default function EmployeeSchedulesPage() {
                             key={d}
                             type="button"
                             onClick={() => {
+                              setDaySelectionError(false);
                               setSelectedDays((prev) =>
                                 isSelected ? prev.filter((item) => item !== d) : [...prev, d]
                               );
                             }}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                               isSelected
                                 ? 'bg-primary text-white border-primary shadow-xs'
                                 : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -912,6 +1223,13 @@ export default function EmployeeSchedulesPage() {
                         );
                       })}
                     </div>
+
+                    {daySelectionError && (
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl">
+                        <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                        <span>Please select at least one day of the week (e.g., Sat, Sun) before applying.</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Set Selected Days to OFF Toggle */}
@@ -990,7 +1308,7 @@ export default function EmployeeSchedulesPage() {
                     </div>
                   )}
 
-                  {/* Checkboxes: Apply to All Months & All Employees */}
+                  {/* Checkboxes: Apply to All Months, Department Staff, and Company-Wide Scope */}
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2 border-t border-slate-100 text-xs font-bold text-slate-700">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input
@@ -999,16 +1317,33 @@ export default function EmployeeSchedulesPage() {
                         onChange={(e) => setApplyToAllMonths(e.target.checked)}
                         className="w-4 h-4 rounded text-primary"
                       />
-                      <span>Apply to All Months</span>
+                      <span>Apply to All Months (Jan - Dec)</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={applyToAllDept}
-                        onChange={(e) => setApplyToAllDept(e.target.checked)}
+                        onChange={(e) => {
+                          const val = e.target.checked;
+                          setApplyToAllDept(val);
+                          if (val) setApplyToAllCompany(false);
+                        }}
                         className="w-4 h-4 rounded text-primary"
                       />
-                      <span>Apply to All Employees in same department</span>
+                      <span>Apply to All Staff in Department ({activeEmployee?.department})</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={applyToAllCompany}
+                        onChange={(e) => {
+                          const val = e.target.checked;
+                          setApplyToAllCompany(val);
+                          if (val) setApplyToAllDept(false);
+                        }}
+                        className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500"
+                      />
+                      <span className="text-amber-800">Apply to ALL Employees in Company (Global Override)</span>
                     </label>
                   </div>
 
@@ -1057,15 +1392,50 @@ export default function EmployeeSchedulesPage() {
                         </div>
 
                         {isOff ? (
-                          <button
-                            type="button"
-                            onClick={() => activeEmployee && handleOpenDayOffModal(activeEmployee.id, d)}
-                            className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200 font-black text-[11px] cursor-pointer hover:bg-rose-100 transition-colors"
-                          >
-                            OFF
-                          </button>
+                          <div className="flex items-center gap-1.5">
+                            {/* Option A: Quick Revert to Standard Working Shift */}
+                            <button
+                              type="button"
+                              onClick={() => activeEmployee && handleToggleDayOnOff(activeEmployee, d)}
+                              title="Click to quickly turn ON (reverts to standard working shift)"
+                              className="px-2.5 py-0.5 rounded-md bg-rose-50 hover:bg-emerald-50 text-rose-600 hover:text-emerald-700 border border-rose-200 hover:border-emerald-300 font-black text-[11px] cursor-pointer transition-all flex items-center gap-1 group shadow-2xs"
+                            >
+                              <span className="group-hover:hidden">OFF</span>
+                              <span className="hidden group-hover:inline text-[10px]">Revert ON</span>
+                            </button>
+
+                            {/* Option B: Open Apply Day Off Request Modal */}
+                            <button
+                              type="button"
+                              onClick={() => activeEmployee && handleOpenDayOffModal(activeEmployee.id, d)}
+                              title="Inspect or edit Day Off request"
+                              className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         ) : (
-                          <span className="font-mono text-slate-800 font-bold text-[11px]">{shift}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-slate-800 font-bold text-[11px] px-2 py-0.5 rounded-md bg-emerald-50/70 text-emerald-800 border border-emerald-200/70">
+                              {shift}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => activeEmployee && handleToggleDayOnOff(activeEmployee, d)}
+                              title="Click to directly toggle to OFF"
+                              className="px-1.5 py-0.5 text-[10px] font-bold text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded border border-transparent hover:border-rose-200 transition-colors cursor-pointer"
+                            >
+                              Set OFF
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => activeEmployee && handleOpenDayOffModal(activeEmployee.id, d)}
+                              title="Log formal Day Off request"
+                              className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors cursor-pointer"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         )}
                       </div>
                     );
@@ -1267,20 +1637,36 @@ export default function EmployeeSchedulesPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsDayOffModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs"
-                >
-                  Save Request
-                </button>
+              <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-100">
+                {isModalDateCurrentlyOff ? (
+                  <button
+                    type="button"
+                    onClick={handleRevertToWorkingDay}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                    title="Remove OFF status and restore standard working hours"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Revert to Working Day</span>
+                  </button>
+                ) : (
+                  <div />
+                )}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsDayOffModalOpen(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs cursor-pointer"
+                  >
+                    Save Request
+                  </button>
+                </div>
               </div>
             </form>
           </div>

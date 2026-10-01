@@ -520,6 +520,58 @@ export class HRPersonnelService {
     return nextList;
   }
 
+  public static deleteDayOff(dayOffId: string): DayOffRecord[] {
+    const list = this.getDaysOff();
+    const nextList = list.filter((d) => d.id !== dayOffId);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(DAY_OFF_STORAGE_KEY, JSON.stringify(nextList));
+        window.dispatchEvent(new CustomEvent('vanguard_day_off_updated', { detail: nextList }));
+        if (typeof navigator !== 'undefined' && navigator.onLine) {
+          (async () => {
+            try {
+              await supabase.from('hr_leave_requests').delete().eq('id', dayOffId);
+            } catch (err) {
+              console.warn('[HRPersonnelService] Supabase delete day off notice:', err);
+            }
+          })();
+        }
+      } catch (err) {
+        console.warn('[HRPersonnelService] Failed deleting day off:', err);
+      }
+    }
+    return nextList;
+  }
+
+  public static removeDayOffForEmployeeDate(employeeId: string, dateStr: string): DayOffRecord[] {
+    const list = this.getDaysOff();
+    const toDelete = list.filter(
+      (d) => d.employeeId === employeeId && dateStr >= d.startDate && dateStr <= d.endDate
+    );
+    const nextList = list.filter(
+      (d) => !(d.employeeId === employeeId && dateStr >= d.startDate && dateStr <= d.endDate)
+    );
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(DAY_OFF_STORAGE_KEY, JSON.stringify(nextList));
+        window.dispatchEvent(new CustomEvent('vanguard_day_off_updated', { detail: nextList }));
+        if (typeof navigator !== 'undefined' && navigator.onLine && toDelete.length > 0) {
+          const ids = toDelete.map((d) => d.id);
+          (async () => {
+            try {
+              await supabase.from('hr_leave_requests').delete().in('id', ids);
+            } catch (err) {
+              console.warn('[HRPersonnelService] Supabase delete days off notice:', err);
+            }
+          })();
+        }
+      } catch (err) {
+        console.warn('[HRPersonnelService] Failed removing days off for date:', err);
+      }
+    }
+    return nextList;
+  }
+
   public static async syncDayOffToSupabase(dayOff: DayOffRecord): Promise<{ success: boolean; error?: string }> {
     if (typeof window === 'undefined') return { success: false, error: 'Server context' };
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
