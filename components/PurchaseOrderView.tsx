@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
+import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabase';
 
@@ -382,6 +383,8 @@ export default function PurchaseOrderView() {
   const [searchItemInput, setSearchItemInput] = useState('');
   const [showOtherCosts, setShowOtherCosts] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isPrintPoModalOpen, setIsPrintPoModalOpen] = useState(false);
+  const [formStatus, setFormStatus] = useState('APPROVED');
 
   // Modals state
   const [showSupplierModal, setShowSupplierModal] = useState(false);
@@ -1200,7 +1203,7 @@ export default function PurchaseOrderView() {
                       <span>{t('update_items_sp', 'Update Items Selling Price')}</span>
                     </button>
                     <button
-                      onClick={() => { window.print(); setActionsMenuOpen(false); }}
+                      onClick={() => { setIsPrintPoModalOpen(true); setActionsMenuOpen(false); }}
                       className="w-full text-left px-4 py-2 hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
                     >
                       <i className="fa fa-print text-gray-500"></i>
@@ -2379,6 +2382,126 @@ export default function PurchaseOrderView() {
           </div>
         </div>
       )}
-    </div>
+    
+      {/* PRINT PURCHASE ORDER MODAL */}
+      {isPrintPoModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
+          <div className="bg-white text-slate-900 border border-slate-300 rounded-xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
+            <div className="px-5 py-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between print:hidden">
+              <span className="font-bold text-xs uppercase text-slate-700 tracking-wider">
+                Purchase Order &mdash; {formPoNumber}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="h-8 px-4 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                >
+                  <i className="fa fa-print"></i>
+                  <span>{t('print', 'Print')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsPrintPoModalOpen(false)}
+                  className="h-8 px-3 text-slate-500 hover:text-slate-800 hover:bg-slate-200 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  <i className="fa fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-8 overflow-y-auto flex-1 bg-white font-sans text-xs">
+              <Corporate3ZoneHeader
+                documentTitle="PURCHASE ORDER"
+                voucherCode={formPoNumber}
+                transactionDate={formOrderDate}
+                status={formStatus}
+                facilityName={formBranch}
+              />
+
+              {/* Supplier & Logistics Details */}
+              <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6">
+                <div>
+                  <span className="text-slate-500 block text-[10px] font-bold uppercase tracking-wider">
+                    Purchased From (Supplier):
+                  </span>
+                  <span className="text-sm font-black text-slate-900">{formSupplier.name}</span>
+                  <p className="text-slate-600 text-xs mt-0.5">{formSupplier.address || 'Industrial Avenue, Beirut'}</p>
+                  <p className="text-slate-500 text-[11px] font-mono mt-0.5">Contact: {formSupplier.contact || 'Main Office'}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-slate-500 block text-[10px] font-bold uppercase tracking-wider">
+                    Destination & Delivery:
+                  </span>
+                  <span className="font-bold text-slate-800">{formBranch}</span>
+                  <p className="text-slate-600 text-xs mt-0.5">Location: {formLocation}</p>
+                  <p className="text-slate-500 text-[11px]">Due Date: {formDeliveryDate || formOrderDate}</p>
+                </div>
+              </div>
+
+              {/* Items Table */}
+              <table className="w-full text-left text-xs border border-slate-300 mb-6">
+                <thead className="bg-slate-100 font-bold border-b border-slate-300">
+                  <tr>
+                    <th className="p-2 border-r border-slate-300 w-10">#</th>
+                    <th className="p-2 border-r border-slate-300">Item Code & Description</th>
+                    <th className="p-2 border-r border-slate-300 text-center w-16">Unit</th>
+                    <th className="p-2 border-r border-slate-300 text-right w-20">Qty</th>
+                    <th className="p-2 border-r border-slate-300 text-right w-24">Unit Price</th>
+                    <th className="p-2 text-right w-28">Total ({formCurrency})</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {formItems.map((it, idx) => (
+                    <tr key={it.id}>
+                      <td className="p-2 border-r border-slate-200 font-mono text-slate-400">{idx + 1}</td>
+                      <td className="p-2 border-r border-slate-200 font-semibold text-slate-900">
+                        {it.description}
+                        <span className="block text-[10px] font-mono text-slate-400">{it.code}</span>
+                      </td>
+                      <td className="p-2 border-r border-slate-200 text-center text-slate-600">{it.unit}</td>
+                      <td className="p-2 border-r border-slate-200 text-right font-mono font-bold">{it.qty}</td>
+                      <td className="p-2 border-r border-slate-200 text-right font-mono">{it.priceUnit.toFixed(2)}</td>
+                      <td className="p-2 text-right font-mono font-bold text-slate-900">{it.amount.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot className="bg-slate-50 font-bold border-t-2 border-slate-400">
+                  <tr>
+                    <td colSpan={3} className="p-2 text-right">Totals:</td>
+                    <td className="p-2 text-right font-mono">{totalQuantities}</td>
+                    <td></td>
+                    <td className="p-2 text-right font-mono text-emerald-800 font-black text-sm">
+                      {grandTotal.toFixed(2)} {formCurrency}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              {/* Signatures */}
+              <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-300 text-center text-xs">
+                <div>
+                  <div className="h-10 border-b border-dashed border-slate-400"></div>
+                  <p className="font-bold text-slate-800 mt-1">Purchasing Officer</p>
+                  <p className="text-[10px] text-slate-500">Prepared & Issued</p>
+                </div>
+                <div>
+                  <div className="h-10 border-b border-dashed border-slate-400"></div>
+                  <p className="font-bold text-slate-800 mt-1">Procurement Director</p>
+                  <p className="text-[10px] text-slate-500">Authorized & Approved</p>
+                </div>
+                <div>
+                  <div className="h-10 border-b border-dashed border-slate-400"></div>
+                  <p className="font-bold text-slate-800 mt-1">Supplier Acceptance</p>
+                  <p className="text-[10px] text-slate-500">Confirmed Order</p>
+                </div>
+              </div>
+
+              <CorporatePrintableFooter voucherCode={formPoNumber} />
+            </div>
+          </div>
+        </div>
+      )}
+</div>
   );
 }

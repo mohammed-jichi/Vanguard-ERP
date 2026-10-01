@@ -1,5 +1,7 @@
 'use client';
 
+import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
+
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search,
@@ -2848,25 +2850,14 @@ export default function AuthenticOmegaSalesWorkstation({
           {/* Printable Report Document */}
           <div className="flex-1 p-6 flex justify-center">
             <div className="bg-white border border-slate-300 shadow-xl rounded-sm w-full max-w-[850px] p-8 text-slate-800 font-sans space-y-6">
-              {/* Document Header */}
-              <div className="flex justify-between items-start border-b-2 border-slate-300 pb-4">
-                <div>
-                  <h1 className="text-xl font-black text-slate-900 tracking-tight">SOUTHERN OLIVE OIL PRODUCTS S.A.L.</h1>
-                  <div className="text-xs text-slate-600 font-medium mt-0.5">Vanguard ERP Enterprise • Financial & Sales Division</div>
-                  <div className="text-xs text-slate-500 mt-1">Branch: Zeit w zaytoun ljanoub | Tax ID: 3049281-601</div>
-                  <div className="text-xs text-slate-500">Address: Nabatieh Industrial Zone, Building B, South Lebanon</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-base font-black text-blue-900 uppercase">
-                    {previewSalesFilter === 'Quotations' ? 'Sales Quotation' : 'Official Sales Invoice'}
-                  </div>
-                  <div className="text-xs font-mono font-bold text-slate-900 mt-1">
-                    Doc #: {reportTargetInvoice?.invoiceNumber || invoiceNumber}
-                  </div>
-                  <div className="text-xs text-slate-600 mt-0.5">Date: {reportTargetInvoice?.date || '10-Sep-2026'}</div>
-                  <div className="text-xs text-slate-500 mt-0.5">Currency: {currency} (Rate: 89,500 LBP/$)</div>
-                </div>
-              </div>
+              {/* Standardized 3-Zone Corporate Header */}
+              <Corporate3ZoneHeader
+                documentTitle={previewSalesFilter === 'Quotations' ? 'SALES QUOTATION' : 'SALES INVOICE'}
+                voucherCode={reportTargetInvoice?.invoiceNumber || invoiceNumber}
+                transactionDate={reportTargetInvoice?.date || '10-Sep-2026'}
+                status="POSTED"
+                facilityName="Facility: Choueifat Main Plant"
+              />
 
               {/* Customer Info */}
               <div className="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded border border-slate-200 text-xs">
@@ -2947,6 +2938,9 @@ export default function AuthenticOmegaSalesWorkstation({
                   <div className="text-[11px] text-slate-500 mt-1">Customer Signature</div>
                 </div>
               </div>
+
+              {/* Standardized Corporate Footer */}
+              <CorporatePrintableFooter voucherCode={reportTargetInvoice?.invoiceNumber || invoiceNumber} />
             </div>
           </div>
         </div>
@@ -4346,22 +4340,14 @@ export default function AuthenticOmegaSalesWorkstation({
             {/* Printable Document Paper */}
             <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
               <div className="bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
-                {/* Header Letterhead */}
-                <div className="flex justify-between items-start border-b border-slate-300 pb-3">
-                  <div>
-                    <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Southern Olive Oil Products S.A.R.L</h2>
-                    <p className="text-[11px] text-slate-500 font-arabic">Southern Olive Oil Products S.A.R.L - Olive Mills & Manufacturing</p>
-                    <p className="text-[11px] text-slate-500">Commercial Reg: 102488 | MOF: 3819200-01</p>
-                    <p className="text-[11px] text-slate-500">Nabatieh - Tyre Highway, South Lebanon</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="inline-block bg-slate-100 text-slate-800 font-mono font-bold px-2.5 py-1 rounded text-xs border border-slate-300">
-                      {invoiceNumber}
-                    </span>
-                    <p className="text-[11px] text-slate-600 mt-1">Date: <span className="font-semibold">{invoiceDate}</span></p>
-                    <p className="text-[11px] text-slate-600">Delivery: <span className="font-semibold">{deliveryDate}</span></p>
-                  </div>
-                </div>
+                {/* Standardized 3-Zone Corporate Header */}
+                <Corporate3ZoneHeader
+                  documentTitle="SALES INVOICE"
+                  voucherCode={invoiceNumber}
+                  transactionDate={invoiceDate}
+                  status="POSTED"
+                  facilityName="Facility: Choueifat Main Plant"
+                />
 
                 {/* Customer Details Box */}
                 <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
@@ -4445,6 +4431,9 @@ export default function AuthenticOmegaSalesWorkstation({
                     <span className="mt-1 block">Client Signature & Stamp</span>
                   </div>
                 </div>
+
+                {/* Standardized Corporate Footer */}
+                <CorporatePrintableFooter voucherCode={invoiceNumber} />
               </div>
             </div>
 
@@ -4500,20 +4489,14 @@ export default function AuthenticOmegaSalesWorkstation({
 
             <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
               <div className="bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
-                <div className="flex justify-between items-start border-b border-slate-300 pb-3">
-                  <div>
-                    <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Southern Olive Oil Products S.A.R.L</h2>
-                    <p className="text-[11px] text-slate-500">Warehouse Dispatch & Logistics Division</p>
-                    <p className="text-[11px] text-slate-500">Facility: Main Depot #1, South Industrial Zone</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="inline-block bg-amber-50 text-amber-900 font-mono font-bold px-2.5 py-1 rounded text-xs border border-amber-300">
-                      DN-{invoiceNumber.replace('INV-', '')}
-                    </span>
-                    <p className="text-[11px] text-slate-600 mt-1">Ref Invoice: <span className="font-semibold">{invoiceNumber}</span></p>
-                    <p className="text-[11px] text-slate-600">Dispatch Date: <span className="font-semibold">{deliveryDate}</span></p>
-                  </div>
-                </div>
+                {/* Standardized 3-Zone Corporate Header */}
+                <Corporate3ZoneHeader
+                  documentTitle="DELIVERY NOTE"
+                  voucherCode={`DN-${invoiceNumber.replace('INV-', '')}`}
+                  transactionDate={deliveryDate}
+                  status="DISPATCHED"
+                  facilityName="Facility: Choueifat Main Plant"
+                />
 
                 <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
                   <div>
@@ -4571,6 +4554,9 @@ export default function AuthenticOmegaSalesWorkstation({
                     <span className="mt-1 block">Customer Received (Full & Intact)</span>
                   </div>
                 </div>
+
+                {/* Standardized Corporate Footer */}
+                <CorporatePrintableFooter voucherCode={`DN-${invoiceNumber.replace('INV-', '')}`} />
               </div>
             </div>
 

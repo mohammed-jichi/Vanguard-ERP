@@ -1,5 +1,6 @@
 'use client';
 import { useLanguage } from '@/lib/LanguageContext';
+import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
@@ -1240,14 +1241,15 @@ export default function ItemAssemblyView() {
 
         {/* Printable Sheet */}
         <div className="w-full max-w-4xl bg-white p-10 rounded-xl shadow-lg border border-slate-200 print:border-none print:shadow-none font-sans text-slate-900">
-          <div className="text-center border-b border-slate-300 pb-4 mb-6">
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-wide">
-              {t('item_assembly_sheet', 'Item Assembly Sheet')}
-            </h1>
-            <p className="text-xs text-slate-500 mt-1">
-              {t('zeit_w_zaytoun_production_formulation', 'Zeit w Zaytoun • Production & Formulation Registry')}
-            </p>
-          </div>
+          {/* Standardized 3-Zone Corporate Header */}
+          <Corporate3ZoneHeader
+            documentTitle="ITEM ASSEMBLY REPORT"
+            voucherCode={`ASM-${reportVoucher.id}`}
+            transactionDate={reportVoucher.date}
+            status={reportVoucher.posted === -1 ? 'POSTED' : 'DRAFT'}
+            facilityName={reportVoucher.branchName}
+            facilityAddress={reportVoucher.locationName ? `Location: ${reportVoucher.locationName}` : undefined}
+          />
 
           <div className="grid grid-cols-2 gap-4 text-xs mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
             <div>
@@ -1338,6 +1340,9 @@ export default function ItemAssemblyView() {
               <p className="text-slate-500 mt-1">{t('signature', 'Signature')}</p>
             </div>
           </div>
+
+          {/* Standardized Corporate Footer */}
+          <CorporatePrintableFooter voucherCode={`ASM-${reportVoucher.id}`} />
         </div>
       </div>
     );

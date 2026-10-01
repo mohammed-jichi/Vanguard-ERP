@@ -1,5 +1,7 @@
 'use client';
 import { useLanguage } from '@/lib/LanguageContext';
+import { AccountingPrintableVoucherModal, AccountingVoucherData } from './AccountingPrintableVoucherModal';
+import { Printer } from 'lucide-react';
 
 /**
  * Vanguard ERP - Module 4: Accounting Receipt (RV)
@@ -114,6 +116,7 @@ export function Module4ReceiptVouchers({
   // Preview Modal
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewSearch, setPreviewSearch] = useState('');
+  const [printableVoucher, setPrintableVoucher] = useState<AccountingVoucherData | null>(null);
   const [isSavingRv, setIsSavingRv] = useState(false);
 
   // Persistent RV Records from Database (Zero Mock State)
@@ -644,6 +647,7 @@ export function Module4ReceiptVouchers({
                     <th className="p-2.5 text-right">Amount ($)</th>
                     <th className="p-2.5 min-w-[180px]">{t('description', 'Description')}</th>
                     <th className="p-2.5 text-center">{t('posted', 'Posted')}</th>
+                    <th className="p-2.5 text-center">{t('print', 'Print')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -673,6 +677,27 @@ export function Module4ReceiptVouchers({
                               {t('draft', 'Draft')}
                             </span>
                           )}
+                        </td>
+                        <td className="p-2.5 text-center">
+                          <button
+                            type="button"
+                            onClick={() => setPrintableVoucher({
+                              type: 'RV',
+                              voucherNumber: r.rv,
+                              date: r.date,
+                              accountName: r.fromAccount,
+                              bankOrCashAccount: 'Cash Drawer Main Vault',
+                              amount: r.amount,
+                              description: r.description,
+                              department: 'Sales & Receipts Division',
+                              enteredBy: 'Cashier / Collector',
+                              posted: r.posted
+                            })}
+                            className="text-primary hover:text-primary/80 font-bold text-xs inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <Printer className="w-3 h-3" />
+                            <span>{t('print', 'Print')}</span>
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -706,6 +731,13 @@ export function Module4ReceiptVouchers({
           </div>
         </div>
       )}
+
+      {/* PRINTABLE OFFICIAL RECEIPT MODAL */}
+      <AccountingPrintableVoucherModal
+        isOpen={!!printableVoucher}
+        onClose={() => setPrintableVoucher(null)}
+        voucher={printableVoucher}
+      />
 
       {/* Quick Add Modal */}
       <QuickAddAccountModal

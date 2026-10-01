@@ -7,10 +7,13 @@ import { Sparkles, X, CheckCircle2, ArrowRight, Eye, EyeOff, AlertCircle } from 
 import { useLanguage } from "@/lib/LanguageContext";
 import { supabase } from "@/lib/supabaseClient";
 import { resolveUserTenantAndRole, persistTenantSession, getPostLoginDestination, getTenantPreview } from "@/lib/authTenantResolver";
+import { getTenantBranding, isTenant1300 } from "@/lib/tenantBranding";
 
 export default function LoginPage() {
   const router = useRouter();
   const [companyId, setCompanyId] = useState("");
+  const is1300 = isTenant1300(companyId);
+  const tenant1300Profile = getTenantBranding('1300');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -256,7 +259,24 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className="relative min-h-screen w-full flex bg-slate-50 font-sans overflow-hidden">
+    <div className={`relative min-h-screen w-full flex font-sans overflow-hidden transition-all duration-700 ease-in-out ${
+      is1300 ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'
+    }`}>
+      {/* REACTIVE TENANT 1300 INDUSTRY BACKDROP WITH SMOOTH 700MS FADE */}
+      <div
+        className={`absolute inset-0 z-0 transition-opacity duration-700 ease-in-out pointer-events-none ${
+          is1300 ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          backgroundImage: `url('/assets/branding/tenants/1300-olive-grove-press.webp')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        {/* Ambient Dark Glassmorphism Overlay */}
+        <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-xs"></div>
+      </div>
 
       {/* 
         CENTER VANGUARD LOGO - INTERACTIVE DEMO TRIGGER WITH GLOWING BADGE & PULSE
@@ -275,40 +295,73 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#d4b055] via-amber-400 to-cyan-400 blur-[36px] opacity-75 rounded-full animate-pulse w-36 h-36 -translate-x-2 -translate-y-2 group-hover:blur-[50px] group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 pointer-events-none"></div>
 
           {/* Logo Frame with Hover Scale & Border Glow */}
-          <div className="relative w-28 h-28 md:w-32 md:h-32 max-w-[128px] max-h-[128px] rounded-full overflow-hidden border-[4px] border-[#09152b] group-hover:border-[#d4b055] shadow-[0_0_30px_rgba(171,131,32,0.6)] group-hover:shadow-[0_0_45px_rgba(6,182,212,0.8)] bg-[#09152b] z-10 transition-all duration-300 transform group-hover:scale-110 active:scale-95 shrink-0">
-            <Image src="/vanguard.jpg" alt="Vanguard Enterprise Demo" fill className="object-cover" priority />
+          <div className={`relative w-28 h-28 md:w-32 md:h-32 max-w-[128px] max-h-[128px] rounded-full overflow-hidden border-[4px] z-10 transition-all duration-500 transform group-hover:scale-110 active:scale-95 shrink-0 ${
+            is1300
+              ? 'border-emerald-500 shadow-[0_0_35px_rgba(16,185,129,0.7)] bg-slate-900'
+              : 'border-[#09152b] group-hover:border-[#d4b055] shadow-[0_0_30px_rgba(171,131,32,0.6)] group-hover:shadow-[0_0_45px_rgba(6,182,212,0.8)] bg-[#09152b]'
+          }`}>
+            <Image
+              src={is1300 ? "/assets/branding/tenants/1300-logo.webp" : "/vanguard.jpg"}
+              alt={is1300 ? "Southern Olive Oil" : "Vanguard Enterprise Demo"}
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
 
           {/* Subtle Elegant Glowing Badge / Tooltip Directly Below */}
           <div className="mt-3.5 z-20 pointer-events-auto">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#09152b]/95 border border-[#d4b055]/70 text-[#d4b055] text-[11px] font-bold tracking-wide shadow-[0_4px_20px_rgba(212,176,85,0.4)] backdrop-blur-md group-hover:border-cyan-400 group-hover:text-cyan-300 group-hover:shadow-[0_4px_25px_rgba(6,182,212,0.5)] group-hover:scale-105 transition-all duration-300 select-none animate-pulse">
-              <span className="text-xs">✨</span>
-              <span>Click logo to request a demo</span>
+            <div className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-bold tracking-wide backdrop-blur-md transition-all duration-500 select-none animate-pulse ${
+              is1300
+                ? 'bg-emerald-950/95 border border-emerald-400 text-emerald-300 shadow-[0_4px_20px_rgba(16,185,129,0.5)]'
+                : 'bg-[#09152b]/95 border border-[#d4b055]/70 text-[#d4b055] shadow-[0_4px_20px_rgba(212,176,85,0.4)] group-hover:border-cyan-400 group-hover:text-cyan-300'
+            }`}>
+              <span className="text-xs">{is1300 ? "🌿" : "✨"}</span>
+              <span>{is1300 ? "✓ منتوجات زيت وزيتون الجنوب ش.م.م (#1300)" : "Click logo to request a demo"}</span>
             </div>
           </div>
         </button>
       </div>
 
-      {/* ================= القسم الأيسر - الأزرق ================= */}
-      <div className="hidden lg:flex w-1/2 flex-1 bg-[#09152b] flex-col justify-center items-center p-8 lg:p-12 relative overflow-hidden text-center">
+      {/* ================= القسم الأيسر ================= */}
+      <div className={`hidden lg:flex w-1/2 flex-1 flex-col justify-center items-center p-8 lg:p-12 relative overflow-hidden text-center z-10 transition-all duration-700 ${
+        is1300 ? 'bg-slate-950/40' : 'bg-[#09152b]'
+      }`}>
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#123b70]/60 to-transparent z-0"></div>
         <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-[#ab8320] rounded-full blur-[150px] opacity-15 z-0 pointer-events-none"></div>
 
         <div className="relative z-10 w-full max-w-lg space-y-8">
 
           <div className="space-y-6">
-            {/* 
-              العنوان مع التحديد الذهبي للأطراف (Stroke) وتوهج ذهبي متناسق 
-            */}
-            <h1 className="text-3xl xl:text-4xl font-black text-white tracking-widest animate-pulse [-webkit-text-stroke:_1.5px_#ab8320] drop-shadow-[0_0_20px_rgba(212,176,85,0.7)]">
-              VANGUARD ERP SYSTEM
-            </h1>
-
-            {tenantPreview && tenantPreview.companyId !== 'ADMIN' && (
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#d4b055]/15 border border-[#d4b055]/50 text-[#d4b055] text-xs font-bold tracking-wide shadow-md">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Active Enterprise: {tenantPreview.brandNameAr} (#{tenantPreview.companyId})</span>
+            {is1300 ? (
+              <div className="space-y-3 animate-fadeIn">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/60 text-emerald-300 text-xs font-bold tracking-wide shadow-md">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>✓ منتوجات زيت وزيتون الجنوب ش.م.م (#1300)</span>
+                </div>
+                <h1 className="text-3xl xl:text-4xl font-black text-white tracking-wider drop-shadow-[0_0_25px_rgba(16,185,129,0.7)]">
+                  SOUTHERN OLIVE OIL S.A.R.L.
+                </h1>
+                <p className="text-emerald-400 font-bold text-lg font-arabic">
+                  منتوجات زيت وزيتون الجنوب ش.م.م
+                </p>
+                <p className="text-slate-300 text-sm font-medium">
+                  Olive Oil Extraction, Agro-Processing & FMCG
+                </p>
               </div>
+            ) : (
+              <>
+                <h1 className="text-3xl xl:text-4xl font-black text-white tracking-widest animate-pulse [-webkit-text-stroke:_1.5px_#ab8320] drop-shadow-[0_0_20px_rgba(212,176,85,0.7)]">
+                  VANGUARD ERP SYSTEM
+                </h1>
+
+                {tenantPreview && tenantPreview.companyId !== 'ADMIN' && (
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#d4b055]/15 border border-[#d4b055]/50 text-[#d4b055] text-xs font-bold tracking-wide shadow-md">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Active Enterprise: {tenantPreview.brandNameAr} (#{tenantPreview.companyId})</span>
+                  </div>
+                )}
+              </>
             )}
 
             <div className="space-y-2">
@@ -343,9 +396,17 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ================= القسم الأيمن - الأبيض ================= */}
-      <div className="w-full lg:w-1/2 flex-1 flex items-center justify-center p-8 sm:p-12 lg:p-12 relative bg-gradient-to-br from-white to-slate-100">
-        <div className="w-full max-w-md space-y-8">
+      {/* ================= القسم الأيمن ================= */}
+      <div className={`w-full lg:w-1/2 flex-1 flex items-center justify-center p-6 sm:p-10 lg:p-12 relative z-10 transition-all duration-700 ${
+        is1300
+          ? 'bg-transparent text-white'
+          : 'bg-gradient-to-br from-white to-slate-100 text-slate-900'
+      }`}>
+        <div className={`w-full max-w-md space-y-7 p-6 sm:p-8 rounded-3xl transition-all duration-700 ${
+          is1300
+            ? 'bg-slate-900/85 backdrop-blur-md border border-emerald-500/40 shadow-[0_0_50px_rgba(0,0,0,0.6)] text-white'
+            : 'bg-transparent text-slate-900'
+        }`}>
 
           <div className="lg:hidden relative flex flex-col items-center justify-center mb-8">
             <button
@@ -369,9 +430,37 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center lg:text-left mt-8 lg:mt-0">
-            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">Sign In</h3>
-            <p className="text-slate-500 mt-2 font-medium">Access your Vanguard dashboard</p>
+            <h3 className={`text-3xl font-extrabold tracking-tight ${is1300 ? 'text-white' : 'text-slate-900'}`}>
+              Sign In
+            </h3>
+            <p className={`mt-2 font-medium ${is1300 ? 'text-slate-300' : 'text-slate-500'}`}>
+              {is1300 ? 'Access Southern Olive Oil Enterprise Portal' : 'Access your Vanguard dashboard'}
+            </p>
           </div>
+
+          {/* TENANT 1300 IMMEDIATE CONFIRMATION BADGE */}
+          {is1300 && (
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/90 to-slate-900/90 border-2 border-emerald-500/60 text-white shadow-xl animate-fadeIn transition-all duration-500">
+              <div className="flex items-center gap-3">
+                <div className="relative w-12 h-12 rounded-xl bg-emerald-500/10 p-1 border border-emerald-400/50 overflow-hidden shrink-0 flex items-center justify-center shadow-inner">
+                  <img
+                    src="/assets/branding/tenants/1300-logo.webp"
+                    alt="Southern Olive Oil"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/25 text-emerald-300 border border-emerald-400/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>✓ منتوجات زيت وزيتون الجنوب ش.م.م (#1300)</span>
+                  </div>
+                  <p className="text-[11px] text-slate-300 truncate font-medium mt-1">
+                    Olive Oil Extraction, Agro-Processing & FMCG
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* DYNAMIC TENANT BRANDING PREVIEW CARD */}
           {tenantPreview && (
@@ -473,7 +562,11 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
-                className="w-full px-5 py-4 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold"
+                className={`w-full px-5 py-4 rounded-xl border backdrop-blur-sm transition-all shadow-sm font-semibold ${
+                  is1300
+                    ? 'border-slate-700 bg-slate-800/90 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500'
+                    : 'border-slate-200/80 bg-white/80 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70]'
+                }`}
               />
             </div>
 
@@ -509,7 +602,11 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-[#123b70] to-[#0a2342] hover:from-[#0a2342] hover:to-[#051324] text-white font-bold text-lg tracking-wide shadow-xl hover:shadow-2xl transition-all duration-300 mt-4 border border-[#123b70]/50 disabled:opacity-50"
+              className={`w-full py-4 px-4 rounded-xl text-white font-bold text-lg tracking-wide shadow-xl hover:shadow-2xl transition-all duration-300 mt-4 disabled:opacity-50 cursor-pointer ${
+                is1300
+                  ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 shadow-[0_0_25px_rgba(16,185,129,0.4)] border border-emerald-500/50'
+                  : 'bg-gradient-to-r from-[#123b70] to-[#0a2342] hover:from-[#0a2342] hover:to-[#051324] border border-[#123b70]/50'
+              }`}
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </button>

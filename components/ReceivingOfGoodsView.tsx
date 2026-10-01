@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
+import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import {
   Truck,
   CheckCircle2,
@@ -588,16 +589,15 @@ export default function ReceivingOfGoodsView() {
             </div>
 
             <div className="p-8 text-slate-800 font-mono text-xs space-y-5">
-              <div className="flex justify-between items-start border-b pb-4">
-                <div>
-                  <h2 className="text-lg font-bold">{t('goods_receipt_note_grn', 'GOODS RECEIPT NOTE (GRN)')}</h2>
-                  <p className="text-[11px] text-slate-500">{t('omega_erp_operations', 'Omega ERP Operations')}</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-base font-extrabold text-teal-700">{activePr.REQUESTNB}</span>
-                  <p className="text-slate-500 text-[10px]">{t('date', 'Date')}: {new Date().toLocaleDateString()}</p>
-                </div>
-              </div>
+              {/* Standardized 3-Zone Corporate Header */}
+              <Corporate3ZoneHeader
+                documentTitle="GOODS RECEIPT NOTE (GRN)"
+                voucherCode={`GRN-${activePr.REQUESTNB}`}
+                transactionDate={new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                status="CONFIRMED"
+                facilityName={activePr.TOBRANCH}
+                facilityAddress={activePr.LOCATIONDESCRIPTION ? `Location: ${activePr.LOCATIONDESCRIPTION}` : undefined}
+              />
 
               <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded">
                 <div>
@@ -643,6 +643,9 @@ export default function ReceivingOfGoodsView() {
                   <span className="text-slate-400">{t('received_by_store_clerk', 'Received By Store Clerk')}</span>
                 </div>
               </div>
+
+              {/* Standardized Corporate Footer */}
+              <CorporatePrintableFooter voucherCode={`GRN-${activePr.REQUESTNB}`} />
             </div>
           </div>
         </div>

@@ -38,6 +38,8 @@ import {
   Barcode
 } from 'lucide-react';
 import SearchInventoryItemsModal, { SelectedTransferItemPayload } from '@/components/SearchInventoryItemsModal';
+import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
+
 import { OMEGA_ITEM_BRANDS } from '@/lib/omegaProductsData';
 
 export interface TransferItem {
@@ -908,21 +910,14 @@ export default function TransfersView() {
 
           {/* Printable Report Document */}
           <div className="bg-slate-50 border border-slate-300 rounded-lg p-8 shadow-inner font-sans max-w-5xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="flex justify-between items-start border-b-2 border-primary pb-4">
-              <div>
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">{t('vanguard_artisan_foods_sal', 'VANGUARD ARTISAN FOODS SAL')}</h1>
-                <p className="text-xs text-slate-600 font-medium">{t('operations_center_interbranch_logistics', 'Operations Center • Inter-Branch Logistics & Inventory Transfer')}</p>
-                <p className="text-xs text-slate-500 font-mono mt-0.5">{t('commercial_registry_1049281_vat', 'Commercial Registry: 1049281 • VAT: 601-829103')}</p>
-              </div>
-              <div className="text-right">
-                <span className="inline-block px-3 py-1 rounded bg-primary text-white text-xs font-black tracking-wider uppercase">
-                  {t('transfer_note', 'TRANSFER NOTE')}
-                </span>
-                <p className="text-sm font-mono font-bold text-slate-800 mt-1">{transferNumber}</p>
-                <p className="text-xs text-slate-500 font-mono">Date: {transferDate}</p>
-              </div>
-            </div>
+            {/* Standardized 3-Zone Corporate Header */}
+            <Corporate3ZoneHeader
+              documentTitle="GOODS TRANSFER VOUCHER"
+              voucherCode={transferNumber}
+              transactionDate={transferDate}
+              status="CONFIRMED"
+              facilityName={fromBranch}
+            />
 
             {/* Metadata Logistics Grid */}
             <div className="grid grid-cols-2 gap-4 bg-white p-4 rounded-lg border border-slate-200 text-xs">
@@ -1018,6 +1013,9 @@ export default function TransfersView() {
                 <p className="text-[10px] text-slate-500 mt-1">{t('destination_branch_manager', 'Destination Branch Manager')}</p>
               </div>
             </div>
+
+            {/* Standardized Corporate Footer */}
+            <CorporatePrintableFooter voucherCode={transferNumber} />
           </div>
         </div>
       ) : (

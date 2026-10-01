@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
+import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import {
   Search,
   Plus,
@@ -3955,18 +3956,14 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   }`}
                 >
                   <div>
-                    {/* Header: Clean Typography, NO logo */}
-                    <div className="flex items-center justify-between pb-3 border-b-2 border-slate-800">
-                      <div className="flex flex-col">
-                        <span className="text-2xl font-black text-slate-900 tracking-wider uppercase">{t('quotation', 'QUOTATION')}</span>
-                        <span className="text-xs text-slate-600 font-medium">Branch: {doc.branch || 'Zeit w zaytoun ljanoub'}</span>
-                      </div>
-
-                      <div className="text-right">
-                        <div className="text-sm font-bold text-slate-900">No: #{doc.quotationNo || '27'}</div>
-                        <div className="text-xs text-slate-600">Date: {doc.date || '08-Sep-26'}</div>
-                      </div>
-                    </div>
+                    {/* Standardized 3-Zone Corporate Header */}
+                    <Corporate3ZoneHeader
+                      documentTitle="QUOTATION"
+                      voucherCode={`QUOT-${doc.quotationNo || '27'}`}
+                      transactionDate={doc.date || '08-Sep-26'}
+                      status="ACTIVE"
+                      facilityName={doc.branch || 'Facility: Choueifat Main Plant'}
+                    />
 
                     {/* Customer Info and Quotation Info Boxes */}
                     <div className="grid grid-cols-2 gap-4 mt-6">

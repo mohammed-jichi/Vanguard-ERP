@@ -42,6 +42,7 @@ import {
   SEED_ADJUSTMENT_ITEMS,
   INITIAL_SAVED_ADJUSTMENTS
 } from '@/lib/adjustmentsData';
+import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { getDefaultInitialDateRange } from '@/lib/dateRangeEngine';
 
 export default function AdjustmentsView() {
@@ -558,21 +559,15 @@ export default function AdjustmentsView() {
 
         {/* Printable Document Paper */}
         <div className="max-w-4xl mx-auto bg-white border border-slate-300 rounded-lg p-8 sm:p-10 shadow-lg text-slate-900 print:border-none print:shadow-none print:p-0">
-          {/* Company Document Header */}
-          <div className="border-b-2 border-slate-900 pb-5 mb-6 flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">{t('vanguard_erp_systems', 'Vanguard ERP Systems')}</h1>
-              <p className="text-xs text-slate-600 font-medium mt-0.5">{t('zeit_w_zaytoun_ljanoub_operational', 'Zeit w zaytoun ljanoub • Operational Control Center')}</p>
-              <p className="text-xs text-slate-500">Facility: {branchName} — Location: {locName}</p>
-            </div>
-            <div className="text-right">
-              <span className="inline-block px-3 py-1 bg-slate-100 text-slate-800 border border-slate-300 rounded text-xs font-bold uppercase tracking-wider">
-                {isPosted ? 'POSTED ADJUSTMENT' : 'DRAFT ADJUSTMENT'}
-              </span>
-              <p className="text-xs text-slate-500 mt-1 font-mono">Ref #: ADJ-{adjustmentId || 'NEW'}</p>
-              <p className="text-xs text-slate-500 font-mono">Date: {adjustmentDate}</p>
-            </div>
-          </div>
+          {/* Standardized 3-Zone Corporate Header */}
+          <Corporate3ZoneHeader
+            documentTitle="INVENTORY ADJUSTMENTS VOUCHER"
+            voucherCode={`ADJ-${adjustmentId || 'NEW'}`}
+            transactionDate={adjustmentDate}
+            status={isPosted ? 'POSTED' : 'DRAFT'}
+            facilityName={branchName}
+            facilityAddress={locName ? `Location: ${locName}` : undefined}
+          />
 
           <div className="text-center my-4">
             <h2 className="text-lg font-bold uppercase tracking-wide text-slate-800">{t('inventory_stock_count_adjustment_summary', 'Inventory Stock Count & Adjustment Summary')}</h2>
@@ -655,6 +650,9 @@ export default function AdjustmentsView() {
               <p className="text-[10px] text-slate-500">{t('general_ledger_posting', 'General Ledger Posting')}</p>
             </div>
           </div>
+
+          {/* Standardized Corporate Footer */}
+          <CorporatePrintableFooter voucherCode={`ADJ-${adjustmentId || 'NEW'}`} />
         </div>
       </div>
     );

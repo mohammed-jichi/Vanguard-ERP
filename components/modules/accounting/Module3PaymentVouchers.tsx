@@ -37,6 +37,8 @@ import {
 } from '@/lib/accountingPersistenceService';
 import { SupportingDocModal } from './ModalsShared';
 import QuickAddAccountModal, { QuickAddPreset } from './QuickAddAccountModal';
+import { AccountingPrintableVoucherModal, AccountingVoucherData } from './AccountingPrintableVoucherModal';
+import { Printer } from 'lucide-react';
 
 interface Module3PaymentVouchersProps {
   accounts: AccountDetail[];
@@ -115,6 +117,7 @@ export function Module3PaymentVouchers({
 
   // Modals state
   const [showDocModal, setShowDocModal] = useState(false);
+  const [printableVoucher, setPrintableVoucher] = useState<AccountingVoucherData | null>(null);
   const [docUrl, setDocUrl] = useState('');
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewSearch, setPreviewSearch] = useState('');
@@ -628,6 +631,7 @@ export function Module3PaymentVouchers({
                     <th className="p-2.5">{t('entered_by', 'Entered By')}</th>
                     <th className="p-2.5">{t('department', 'Department')}</th>
                     <th className="p-2.5 text-center">{t('posted', 'Posted')}</th>
+                    <th className="p-2.5 text-center">{t('print', 'Print')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border font-medium">
@@ -655,6 +659,27 @@ export function Module3PaymentVouchers({
                               {t('draft', 'Draft')}
                             </span>
                           )}
+                        </td>
+                        <td className="p-2.5 text-center">
+                          <button
+                            type="button"
+                            onClick={() => setPrintableVoucher({
+                              type: 'PV',
+                              voucherNumber: r.pv,
+                              date: r.dateOfPv || r.date,
+                              accountName: r.toAccount,
+                              bankOrCashAccount: 'Blom Bank Commercial Vault',
+                              amount: r.amount,
+                              description: r.description,
+                              department: r.department,
+                              enteredBy: r.enteredBy,
+                              posted: r.posted
+                            })}
+                            className="text-primary hover:text-primary/80 font-bold text-xs inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <Printer className="w-3 h-3" />
+                            <span>{t('print', 'Print')}</span>
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -691,6 +716,13 @@ export function Module3PaymentVouchers({
           setDocUrl(url);
           onShowToast('Supporting document link saved to payment voucher.');
         }}
+      />
+
+      {/* PRINTABLE PAYMENT VOUCHER MODAL */}
+      <AccountingPrintableVoucherModal
+        isOpen={!!printableVoucher}
+        onClose={() => setPrintableVoucher(null)}
+        voucher={printableVoucher}
       />
 
       {/* QUICK ADD ACCOUNT MODAL (LEBANESE PCG STANDARD) */}

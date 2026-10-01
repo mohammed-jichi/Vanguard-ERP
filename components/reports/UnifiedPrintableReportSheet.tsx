@@ -460,4 +460,7 @@ export default function UnifiedPrintableReportSheet({
 export { UnifiedPrintableReportSheet };
 export { default as GlobalReportTemplate } from './GlobalReportTemplate';
 export { MasterReportDocument } from './MasterReportDocument';
+export { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
+export type { Corporate3ZoneHeaderProps, CorporatePrintableFooterProps } from '@/components/documents/Corporate3ZoneHeader';
 export * from '@/types/reports';
+
