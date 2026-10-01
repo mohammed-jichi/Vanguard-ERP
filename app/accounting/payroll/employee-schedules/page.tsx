@@ -194,10 +194,14 @@ export default function EmployeeSchedulesPage() {
     return employees.find((e) => e.id === selectedEmpId) || employees[0];
   }, [employees, selectedEmpId]);
 
-  // Compute shift timing for employee on a specific day
-  const getEmployeeShiftForDay = (emp: HREmployeeRecord, dayNumber: number): string => {
-    const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, dayNumber);
-    const dateStr = `${yearNum}-${(activeMonthIndex + 1).toString().padStart(2, '0')}-${dayNumber
+  // Compute shift timing for employee on a specific day (supports arbitrary month)
+  const getEmployeeShiftForDay = (
+    emp: HREmployeeRecord,
+    dayNumber: number,
+    monthIdx: number = activeMonthIndex
+  ): string => {
+    const dayAbbr = getDayOfWeekAbbr(yearNum, monthIdx, dayNumber);
+    const dateStr = `${yearNum}-${(monthIdx + 1).toString().padStart(2, '0')}-${dayNumber
       .toString()
       .padStart(2, '0')}`;
 
@@ -233,6 +237,39 @@ export default function EmployeeSchedulesPage() {
     }
     return '08:00 - 16:30';
   };
+
+  // Helper to compute total OFF days for an employee in a given month
+  const getEmployeeMonthOffDaysCount = (
+    emp: HREmployeeRecord | undefined,
+    monthIdx: number
+  ): number => {
+    if (!emp) return 0;
+    const daysInMonth = getDaysInMonth(yearNum, monthIdx);
+    let count = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (getEmployeeShiftForDay(emp, d, monthIdx) === 'OFF') {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  // Total OFF Days across the entire year for active employee
+  const totalYearlyOffDays = useMemo(() => {
+    if (!activeEmployee) return 0;
+    let total = 0;
+    for (let m = 0; m < 12; m++) {
+      total += getEmployeeMonthOffDaysCount(activeEmployee, m);
+    }
+    return total;
+  }, [activeEmployee, daysOffList, yearNum, employees]);
+
+  // Sync selectedTemplateName with activeEmployee's assigned template
+  useEffect(() => {
+    if (activeEmployee?.schedule?.templateName) {
+      setSelectedTemplateName(activeEmployee.schedule.templateName);
+    }
+  }, [activeEmployee?.id, activeEmployee?.schedule?.templateName]);
 
   // Helper to extract default working shift timing for an employee
   const getDefaultWorkingShift = (emp: HREmployeeRecord, dayAbbr: string): string => {
@@ -416,10 +453,18 @@ export default function EmployeeSchedulesPage() {
     }
   };
 
-  // Save Schedule Handler in Tab 2 with Scope Control
-  const handleSaveSchedule = () => {
-    if (!activeEmployee) return;
+  // Reactive Template Selection & Application across month/year
+  const handleSelectTemplate = (templateName: string) => {
+    setSelectedTemplateName(templateName);
+    const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
+    if (!template || !activeEmployee) return;
 
+    const templateTiming =
+      template.slots && template.slots.length > 0
+        ? `${template.slots[0].start} - ${template.slots[0].end}`
+        : '07:00 - 15:30';
+
+    // 1. Resolve Target Employees based on Scope Controls
     let targetEmployees: HREmployeeRecord[] = [];
     if (applyToAllCompany) {
       targetEmployees = [...employees];
@@ -430,26 +475,73 @@ export default function EmployeeSchedulesPage() {
       targetEmployees = [activeEmployee];
     }
 
+    const monthsToProcess = applyToAllMonths
+      ? Array.from({ length: 12 }, (_, i) => i)
+      : [activeMonthIndex];
+
     for (const targetEmp of targetEmployees) {
+      const updatedOverrides = { ...(targetEmp.schedule?.dateOverrides || {}) };
+
+      for (const mIdx of monthsToProcess) {
+        const daysInMonth = getDaysInMonth(yearNum, mIdx);
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+          const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+            .toString()
+            .padStart(2, '0')}`;
+
+          if (template.offDays.includes(dayAbbr) || !template.workDays.includes(dayAbbr)) {
+            // Day off according to template
+            updatedOverrides[dateStr] = 'OFF';
+          } else {
+            // Working day according to template
+            updatedOverrides[dateStr] = templateTiming;
+            // Clear any conflicting day off record for this working date
+            HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+          }
+        }
+      }
+
       const updatedEmp: HREmployeeRecord = {
         ...targetEmp,
         schedule: {
           ...(targetEmp.schedule || {}),
-          templateName: selectedTemplateName,
+          templateName: template.name,
+          dateOverrides: updatedOverrides,
         },
       };
 
       HRPersonnelService.saveEmployee(updatedEmp);
     }
 
+    setDaysOffList(HRPersonnelService.getDaysOff());
     setEmployees(HRPersonnelService.getEmployees());
 
+    const monthDesc =
+      monthsToProcess.length === 12
+        ? 'all 12 months'
+        : `${MONTH_NAMES[activeMonthIndex]} ${selectedYear}`;
+
     if (applyToAllCompany) {
-      showToast(`Template "${selectedTemplateName}" assigned globally to all ${targetEmployees.length} employees.`);
+      showToast(
+        `Template "${template.name}" applied globally to all ${targetEmployees.length} employees (${monthDesc}).`
+      );
     } else if (applyToAllDept) {
-      showToast(`Template "${selectedTemplateName}" assigned to all ${targetEmployees.length} staff in ${activeEmployee.department}.`);
+      showToast(
+        `Template "${template.name}" applied to all ${targetEmployees.length} staff in ${activeEmployee.department} (${monthDesc}).`
+      );
     } else {
-      showToast(`Schedule template "${selectedTemplateName}" saved for ${activeEmployee.fullName}.`);
+      showToast(`Template "${template.name}" applied to ${activeEmployee.fullName} (${monthDesc}).`);
+    }
+  };
+
+  // Save Schedule Handler in Tab 2 with Scope Control
+  const handleSaveSchedule = () => {
+    if (!activeEmployee) return;
+    if (manageSubView === 'schedule') {
+      handleSelectTemplate(selectedTemplateName);
+    } else {
+      handleApplyToSelectedDays();
     }
   };
 
@@ -1019,7 +1111,7 @@ export default function EmployeeSchedulesPage() {
                     <label className="text-xs font-bold text-slate-700 block">Select Template</label>
                     <select
                       value={selectedTemplateName}
-                      onChange={(e) => setSelectedTemplateName(e.target.value)}
+                      onChange={(e) => handleSelectTemplate(e.target.value)}
                       className="w-full px-3 py-2.5 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary shadow-2xs cursor-pointer"
                     >
                       {STANDARD_SCHEDULE_TEMPLATES.map((t) => (
@@ -1032,6 +1124,15 @@ export default function EmployeeSchedulesPage() {
 
                   {/* Scope Checkboxes for Template Mode */}
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2 border-t border-slate-100 text-xs font-bold text-slate-700">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={applyToAllMonths}
+                        onChange={(e) => setApplyToAllMonths(e.target.checked)}
+                        className="w-4 h-4 rounded text-primary"
+                      />
+                      <span>Apply to All Months (Jan - Dec)</span>
+                    </label>
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <input
                         type="checkbox"
@@ -1082,6 +1183,20 @@ export default function EmployeeSchedulesPage() {
                       </div>
                     );
                   })()}
+
+                  {/* Apply Template Action */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectTemplate(selectedTemplateName)}
+                      className="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-2"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>
+                        Apply Template to Schedule {applyToAllMonths ? '(All 12 Months)' : `(${MONTH_NAMES[activeMonthIndex]} ${selectedYear})`}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -1450,17 +1565,13 @@ export default function EmployeeSchedulesPage() {
                     Yearly Overview ({selectedYear})
                   </h4>
                   <span className="text-[11px] font-bold text-rose-600">
-                    {daysOffList.filter((d) => d.employeeId === activeEmployee?.id).length} Days Off
+                    {totalYearlyOffDays} Total OFF Days
                   </span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
                   {MONTH_SHORT.map((m, idx) => {
-                    const daysOffCount = daysOffList.filter((d) => {
-                      if (d.employeeId !== activeEmployee?.id) return false;
-                      const monthNum = idx + 1;
-                      return d.startDate.includes(`-${monthNum.toString().padStart(2, '0')}-`);
-                    }).length;
+                    const offDaysCount = getEmployeeMonthOffDaysCount(activeEmployee, idx);
 
                     return (
                       <div
@@ -1468,14 +1579,14 @@ export default function EmployeeSchedulesPage() {
                         onClick={() => setActiveMonthIndex(idx)}
                         className={`p-2 rounded-xl text-center cursor-pointer border transition-all ${
                           activeMonthIndex === idx
-                            ? 'bg-primary/10 border-primary text-primary font-bold'
+                            ? 'bg-primary/10 border-primary text-primary font-bold shadow-2xs'
                             : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                         }`}
                       >
                         <div className="text-xs font-bold">{m}</div>
                         <div className="text-[10px] text-slate-500 mt-0.5">
-                          {daysOffCount > 0 ? (
-                            <span className="text-rose-600 font-bold">{daysOffCount} OFF</span>
+                          {offDaysCount > 0 ? (
+                            <span className="text-rose-600 font-bold">{offDaysCount} OFF</span>
                           ) : (
                             '0 OFF'
                           )}
