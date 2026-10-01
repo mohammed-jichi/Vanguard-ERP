@@ -535,6 +535,7 @@ export default function VDriverApp() {
   // 5. Doorstep Confirmation Handler
   const handleConfirmAction = async () => {
     if (!selectedStopForAction || !actionType) return;
+    let cloudSignatureUrl: string | undefined = undefined;
 
     if (actionType === 'DELIVERED') {
       if (!hasSignature) {
@@ -549,7 +550,7 @@ export default function VDriverApp() {
       const canvas = canvasRef.current;
       const signatureData = canvas ? canvas.toDataURL('image/png') : 'data:image/svg+xml;utf8,<svg></svg>';
       const signatureSvg = `<svg viewBox="0 0 100 40"><path d="M10 20 Q 30 5 50 20 T 90 20" stroke="#10b981" fill="none"/></svg>`;
-      let cloudSignatureUrl = signatureData;
+      cloudSignatureUrl = signatureData;
 
       // Upload signature PNG directly to Supabase Storage bucket 'organization-media' (Gap 9.1)
       try {
@@ -706,7 +707,32 @@ export default function VDriverApp() {
             : s
         )
       );
-      setSystemAlertMessage(`⚠️ Order #${selectedStopForAction.orderNo} Marked Customer Returned (${rejectionReason}). Fee: ${deliveryFeeRefused ? 0 : selectedStopForAction.deliveryFeeUsd}. Custody updated.`);
+      setSystemAlertMessage(`⚠️ Order #${selectedStopForAction.orderNo} Marked Returned to Hub (${rejectionReason}). Fee: $${deliveryFeeRefused ? 0 : selectedStopForAction.deliveryFeeUsd}. Custody updated.`);
+    }
+
+    // Synchronize package status update with Backoffice Fleet Dispatch & Ledger
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('vanguard_driver_order_status_updated', {
+          detail: {
+            orderId: selectedStopForAction.id,
+            orderNo: selectedStopForAction.orderNo,
+            status:
+              actionType === 'DELIVERED'
+                ? 'DELIVERED'
+                : actionType === 'FAILED_REATTEMPT' || actionType === 'PENDING'
+                ? 'FAILED_REATTEMPT'
+                : 'CUSTOMER_RETURNED',
+            paymentUsd: inputUsd + inputWhish,
+            paymentLbp: inputLbp,
+            deliveryFeeUsd: deliveryFeeRefused ? 0 : selectedStopForAction.deliveryFeeUsd,
+            rejectionReason: rejectionReason || undefined,
+            driverName,
+            deliveredAt: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            signatureSvg: cloudSignatureUrl || undefined,
+          },
+        })
+      );
     }
 
     setSelectedStopForAction(null);
@@ -1040,7 +1066,7 @@ export default function VDriverApp() {
                           : 'bg-slate-800 text-slate-400'
                       }`}
                     >
-                      {stop.status === 'FAILED_REATTEMPT' ? 'RE-ATTEMPT' : stop.status === 'CUSTOMER_RETURNED' ? 'RETURNED' : stop.status}
+                      {stop.status === 'FAILED_REATTEMPT' ? 'RE-ATTEMPT' : stop.status === 'CUSTOMER_RETURNED' ? 'RETURNED TO HUB' : stop.status}
                     </span>
                   </div>
 
@@ -1126,7 +1152,7 @@ export default function VDriverApp() {
                       title="Customer Returned"
                     >
                       <XCircle className="w-3 h-3" />
-                      <span>Returned</span>
+                      <span>Returned to Hub</span>
                     </button>
                   </div>
                 </div>
@@ -1247,7 +1273,7 @@ export default function VDriverApp() {
                     className="px-4 py-3 bg-rose-800 hover:bg-rose-700 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5 shadow"
                   >
                     <XCircle className="w-4 h-4" />
-                    <span>Customer Returned</span>
+                    <span>Returned to Hub</span>
                   </button>
                 </div>
               </div>
@@ -1522,7 +1548,7 @@ export default function VDriverApp() {
                 <h3 className="font-bold text-white text-sm">
                   {actionType === 'DELIVERED' && '✓ Confirm Delivery & Collect Payment (COD)'}
                   {actionType === 'FAILED_REATTEMPT' && '🔄 Failed Delivery / Schedule Re-attempt'}
-                  {actionType === 'CUSTOMER_RETURNED' && '✕ Customer Returned Package'}
+                  {actionType === 'CUSTOMER_RETURNED' && '✕ Returned to Hub / Customer Returned'}
                   {actionType === 'REJECTED' && '✕ Mark Stop as Rejected'}
                   {actionType === 'PENDING' && '⏳ Postpone Stop to Tomorrow'}
                 </h3>
@@ -1707,7 +1733,7 @@ export default function VDriverApp() {
             {(actionType === 'CUSTOMER_RETURNED' || actionType === 'REJECTED') && (
               <div className="space-y-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Return Reason (Customer Returned):</label>
+                  <label className="text-[11px] text-slate-400 block mb-1">Return Reason (Returned to Hub):</label>
                   <select
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
@@ -1715,8 +1741,9 @@ export default function VDriverApp() {
                   >
                     <option value="Customer refused package / cancelled order">Customer refused package / cancelled order</option>
                     <option value="Disputed price or exchange rate calculation">Disputed price or exchange rate calculation</option>
-                    <option value="Damaged packaging or wrong item variant">Damaged packaging or wrong item variant</option>
+                    <option value="Damaged packaging or wrong item variant - returning to hub">Damaged packaging or wrong item variant - returning to hub</option>
                     <option value="Customer could not be located at delivery address">Customer could not be located at delivery address</option>
+                    <option value="Delivery window expired / customer unreachable - return to hub">Delivery window expired / customer unreachable - return to hub</option>
                   </select>
                 </div>
 

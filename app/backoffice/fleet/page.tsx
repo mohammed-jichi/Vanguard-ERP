@@ -112,9 +112,60 @@ function SuperSonicFleetPageContent() {
         ]);
       }
     };
+
+    const handleOrderStatusUpdated = (e: any) => {
+      const detail = e.detail;
+      if (!detail) return;
+      setOrders((prev) =>
+        prev.map((o) => {
+          if (o.id === detail.orderId || o.orderNo === detail.orderNo) {
+            return {
+              ...o,
+              status:
+                detail.status === 'DELIVERED'
+                  ? 'DELIVERED'
+                  : detail.status === 'FAILED_REATTEMPT'
+                  ? 'PENDING'
+                  : 'REJECTED',
+              deliveredAt: detail.deliveredAt || o.deliveredAt,
+              signatureSvg: detail.signatureSvg || o.signatureSvg,
+              driverNotes: detail.rejectionReason
+                ? `${detail.status === 'FAILED_REATTEMPT' ? 'Failed Attempt' : 'Returned to Hub'}: ${detail.rejectionReason}`
+                : o.driverNotes,
+            };
+          }
+          return o;
+        })
+      );
+
+      // If delivered, automatically record live delivery fee & COD into dispatch ledger
+      if (detail.status === 'DELIVERED' && (detail.deliveryFeeUsd > 0 || detail.paymentUsd > 0)) {
+        setLedger((prev) => [
+          {
+            id: `TX-${Date.now().toString().slice(-4)}`,
+            voucherNo: `REV-${detail.orderNo}`,
+            date: 'Today ' + (detail.deliveredAt || ''),
+            description: `Delivery Fee & COD Collected — #${detail.orderNo} (${detail.driverName || 'Courier'})`,
+            type: 'DELIVERY_REVENUE',
+            amountUsd: detail.deliveryFeeUsd || 0,
+            amountLbp: Math.round((detail.deliveryFeeUsd || 0) * 89500),
+            account: 'SuperSonic Operating Revenue',
+            driverName: detail.driverName,
+            recipient: 'Layla Bazzi (Settlements Desk)',
+            status: 'COMPLETED' as const,
+          },
+          ...prev,
+        ]);
+      }
+    };
+
     if (typeof window !== 'undefined') {
       window.addEventListener('vanguard_driver_settlement_created', handleSettlementCreated);
-      return () => window.removeEventListener('vanguard_driver_settlement_created', handleSettlementCreated);
+      window.addEventListener('vanguard_driver_order_status_updated', handleOrderStatusUpdated);
+      return () => {
+        window.removeEventListener('vanguard_driver_settlement_created', handleSettlementCreated);
+        window.removeEventListener('vanguard_driver_order_status_updated', handleOrderStatusUpdated);
+      };
     }
   }, []);
 
