@@ -76,7 +76,46 @@ function SuperSonicFleetPageContent() {
   const [vendors, setVendors] = useState<SuperSonicVendor[]>(initialVendors);
   const [staffList, setStaffList] = useState<StaffMember[]>(initialStaff);
   const [complaints, setComplaints] = useState<CustomerComplaintTicket[]>(initialComplaints);
-  const [ledger] = useState(initialLedger);
+  const [ledger, setLedger] = useState(initialLedger);
+  const [driverSettlements, setDriverSettlements] = useState<any[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('vanguard_driver_settlements');
+        return saved ? JSON.parse(saved) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    const handleSettlementCreated = (e: any) => {
+      if (e.detail) {
+        setDriverSettlements((prev) => [e.detail, ...prev]);
+        setLedger((prev) => [
+          {
+            id: `TX-${Date.now().toString().slice(-4)}`,
+            voucherNo: e.detail.id,
+            date: e.detail.date || 'Today',
+            description: `End-of-Shift Driver Cash Handover — ${e.detail.corridorName || 'Regional Run'}`,
+            type: 'DRIVER_SETTLEMENT',
+            amountUsd: e.detail.handedOverUsd || 0,
+            amountLbp: e.detail.handedOverLbp || Math.round((e.detail.handedOverUsd || 0) * 89500),
+            account: 'Choueifat Central Cash Vault',
+            driverName: e.detail.driverName,
+            recipient: e.detail.recipient,
+            status: 'RECONCILED' as const,
+          },
+          ...prev,
+        ]);
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('vanguard_driver_settlement_created', handleSettlementCreated);
+      return () => window.removeEventListener('vanguard_driver_settlement_created', handleSettlementCreated);
+    }
+  }, []);
 
   // Top-Level State (Strictly compliant with React Rules of Hooks)
   const [selectedCorridorId, setSelectedCorridorId] = useState<number>(1);
@@ -344,6 +383,39 @@ function SuperSonicFleetPageContent() {
         </div>
       </div>
 
+      {/* TOP NAVIGATION TAB BAR */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-200 text-xs font-bold scrollbar-none print:hidden">
+        {[
+          { id: 'dispatch', label: '🚚 Corridors & Regional Dispatch' },
+          { id: 'path-cards', label: '📋 Route Cards & Manifests' },
+          { id: 'southern-olive', label: '🫒 Southern Olive Orders' },
+          { id: '3pl-orders', label: '📦 3PL Commercial Orders' },
+          { id: 'accounting', label: '💵 Financial Ledger & Settlements' },
+          { id: 'settlements', label: '📑 Driver COD Settlements & Reports' },
+          { id: 'hr', label: '👥 Drivers & Staff Roster' },
+          { id: 'vehicles', label: '🚐 Fleet Vehicles Log' },
+          { id: 'vendors', label: '🏢 3PL Merchants' },
+          { id: 'complaints', label: '⚠️ Customer Complaints' },
+          { id: 'radar', label: '📡 Live Fleet Radar' },
+          { id: 'pod', label: '✍️ POD Archives' },
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <Link
+              key={tab.id}
+              href={`/backoffice/fleet?tab=${tab.id}`}
+              className={`px-3 py-2 rounded-xl whitespace-nowrap transition-all border ${
+                isActive
+                  ? 'bg-primary text-white border-primary shadow-xs font-black'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
+      </div>
+
             {/* =================================================================== */}
       {/* 1. DISPATCH: EN-ROUTE CROSS-CORRIDOR BUNDLING & ONE-CLICK DISPATCH  */}
       {/* =================================================================== */}
@@ -552,11 +624,22 @@ function SuperSonicFleetPageContent() {
                           </td>
                           <td className="py-2.5 px-3">
                             <strong className="text-slate-900 block">{order.customerName}</strong>
-                            <span className="text-[10px] text-slate-500 font-mono block">{order.destinationTown} — {order.addressDetails}</span>
+                            <div className="flex items-center gap-1.5 text-[10px] text-slate-600 font-mono mt-0.5">
+                              <span>{order.destinationTown} — {order.addressDetails}</span>
+                              <span className="text-primary font-bold">📞 {order.phone}</span>
+                            </div>
+                            {order.driverNotes && (
+                              <div className="text-[10px] text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mt-1 font-sans">
+                                <strong>📝 Notes:</strong> {order.driverNotes}
+                              </div>
+                            )}
                           </td>
                           <td className="py-2.5 px-3 text-slate-700 text-[11px]">{order.items}</td>
-                          <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                            {order.productAmountLbp > 0 ? `${order.productAmountLbp.toLocaleString()} LBP` : `$${order.productAmountUsd}`}
+                          <td className="py-2.5 px-3 text-right font-mono text-slate-900">
+                            <strong className="text-emerald-700 block">${order.productAmountUsd} USD</strong>
+                            <span className="text-[10px] text-slate-500 block">
+                              {(order.productAmountLbp > 0 ? order.productAmountLbp : Math.round(order.productAmountUsd * 89500)).toLocaleString()} LBP
+                            </span>
                           </td>
                           
                           {/* Manual Delivery Fee Input */}
@@ -902,22 +985,191 @@ function SuperSonicFleetPageContent() {
 
       {activeTab === 'accounting' && (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3.5">
+          {/* A. Summary Metric Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs">
-              <span className="text-[10px] font-bold text-slate-400 block">SuperSonic Delivery Revenue</span>
+              <span className="text-[10px] font-bold text-slate-400 block uppercase">SuperSonic Delivery Revenue</span>
               <span className="text-xl font-extrabold text-blue-800">$1,840.00 USD</span>
+              <span className="text-[11px] font-mono text-slate-500 block">164,680,000 LBP (@ 89,500)</span>
             </div>
             <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs">
-              <span className="text-[10px] font-bold text-slate-400 block">Total COD in Vault</span>
+              <span className="text-[10px] font-bold text-slate-400 block uppercase">Total COD in Vault</span>
               <span className="text-xl font-extrabold text-emerald-700">$12,450.00 USD</span>
+              <span className="text-[11px] font-mono text-slate-500 block">1,114,275,000 LBP (@ 89,500)</span>
             </div>
             <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs">
-              <span className="text-[10px] font-bold text-slate-400 block">Whish Wallet Balance</span>
+              <span className="text-[10px] font-bold text-slate-400 block uppercase">Whish Wallet Balance</span>
               <span className="text-xl font-extrabold text-purple-800">$3,210.00 USD</span>
+              <span className="text-[11px] font-mono text-slate-500 block">287,295,000 LBP (@ 89,500)</span>
             </div>
             <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs">
-              <span className="text-[10px] font-bold text-slate-400 block">Fleet Expenses</span>
+              <span className="text-[10px] font-bold text-slate-400 block uppercase">Fleet Fuel &amp; Expenses</span>
               <span className="text-xl font-extrabold text-rose-700">-$410.00 USD</span>
+              <span className="text-[11px] font-mono text-slate-500 block">-36,695,000 LBP (@ 89,500)</span>
+            </div>
+          </div>
+
+          {/* Official Currency Peg Banner */}
+          <div className="p-3 bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🇱🇧</span>
+              <div>
+                <strong className="text-emerald-950 font-bold">Official Central Bank &amp; SuperSonic Operational Peg: 1 USD = 89,500 LBP</strong>
+                <p className="text-slate-600 text-[11px]">Enforced across all driver manifests, doorstep COD collections, and daily treasury vault reconciliations.</p>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 bg-white font-mono font-extrabold text-emerald-800 border border-emerald-300 rounded-lg shadow-2xs">
+              89,500 LBP / USD
+            </span>
+          </div>
+
+          {/* B. Driver End-of-Shift Cash Settlements Panel */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">End-of-Shift Driver Cash Settlement Vouchers</h3>
+                <p className="text-[11px] text-slate-500 font-mono">
+                  Live cash handovers performed by couriers from the mobile driver app (/v-driver) upon returning to Choueifat Gateway.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    const saved = localStorage.getItem('vanguard_driver_settlements');
+                    setDriverSettlements(saved ? JSON.parse(saved) : []);
+                  } catch (e) {}
+                }}
+                className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold border border-slate-300 cursor-pointer"
+              >
+                🔄 Refresh Settlements
+              </button>
+            </div>
+
+            <div className="overflow-x-auto border border-slate-200 rounded-xl">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-50 border-b font-bold text-[11px] text-slate-700">
+                    <th className="py-2.5 px-3 normal-case">voucher #</th>
+                    <th className="py-2.5 px-3 normal-case">driver name</th>
+                    <th className="py-2.5 px-3 normal-case">corridor</th>
+                    <th className="py-2.5 px-3 normal-case text-right">handed usd ($)</th>
+                    <th className="py-2.5 px-3 normal-case text-right">handed lbp (l.l)</th>
+                    <th className="py-2.5 px-3 normal-case text-right">total equiv lbp (@ 89,500)</th>
+                    <th className="py-2.5 px-3 normal-case">treasury recipient</th>
+                    <th className="py-2.5 px-3 normal-case text-center">status</th>
+                    <th className="py-2.5 px-3 normal-case text-center">action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {driverSettlements.map((s: any) => (
+                    <tr key={s.id} className="hover:bg-slate-50">
+                      <td className="py-2.5 px-3 font-mono font-bold text-primary">{s.id}</td>
+                      <td className="py-2.5 px-3 font-bold text-slate-900">{s.driverName}</td>
+                      <td className="py-2.5 px-3 text-slate-600">{s.corridorName}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">${s.handedOverUsd}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">{s.handedOverLbp?.toLocaleString()} LBP</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
+                        {(s.totalEquivalentLbp || Math.round(s.handedOverUsd * 89500 + (s.handedOverLbp || 0))).toLocaleString()} LBP
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-700">{s.recipient}</td>
+                      <td className="py-2.5 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold font-mono">
+                          ✓ {s.status || 'RECONCILED'}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-center">
+                        <button
+                          type="button"
+                          onClick={() => alert(`Voucher ${s.id} audit confirmed! Custody settled with ${s.recipient}.`)}
+                          className="px-2.5 py-1 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded text-[10px] shadow-2xs cursor-pointer"
+                        >
+                          Audit &amp; Stamp
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {driverSettlements.length === 0 && (
+                    <tr>
+                      <td colSpan={9} className="py-6 text-center text-slate-400 font-mono text-xs">
+                        No mobile driver settlements submitted yet today. End-of-shift handovers completed in /v-driver will populate here instantly.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* C. Master Financial & Treasury Ledger Table */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">SuperSonic Master Financial &amp; Treasury Ledger</h3>
+                <p className="text-[11px] text-slate-500 font-mono">
+                  Multi-currency journal displaying revenue, vault deposits, and fuel disbursements with 89,500 LBP parity.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold border border-slate-300 cursor-pointer"
+              >
+                🖨️ Print Ledger Sheet
+              </button>
+            </div>
+
+            <div className="overflow-x-auto border border-slate-200 rounded-xl">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-50 border-b font-bold text-[11px] text-slate-700">
+                    <th className="py-2.5 px-3 normal-case">tx / voucher #</th>
+                    <th className="py-2.5 px-3 normal-case">date &amp; time</th>
+                    <th className="py-2.5 px-3 normal-case">description &amp; corridor</th>
+                    <th className="py-2.5 px-3 normal-case">category</th>
+                    <th className="py-2.5 px-3 normal-case">account / courier</th>
+                    <th className="py-2.5 px-3 normal-case text-right">amount ($ usd)</th>
+                    <th className="py-2.5 px-3 normal-case text-right">amount (l.l @ 89,500)</th>
+                    <th className="py-2.5 px-3 normal-case text-center">status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {ledger.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50">
+                      <td className="py-2.5 px-3 font-mono font-bold text-primary">{item.voucherNo || item.id}</td>
+                      <td className="py-2.5 px-3 text-slate-500 font-mono text-[11px]">{item.date}</td>
+                      <td className="py-2.5 px-3 font-semibold text-slate-900">{item.description}</td>
+                      <td className="py-2.5 px-3">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                          item.type === 'DELIVERY_REVENUE'
+                            ? 'bg-blue-50 text-blue-800 border-blue-200'
+                            : item.type === 'DRIVER_SETTLEMENT' || item.type === 'VAULT_COD'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : item.type === 'WHISH_DEPOSIT'
+                            ? 'bg-purple-50 text-purple-800 border-purple-200'
+                            : item.type === 'FUEL_EXPENSE'
+                            ? 'bg-rose-50 text-rose-800 border-rose-200'
+                            : 'bg-amber-50 text-amber-800 border-amber-200'
+                        }`}>
+                          {item.type}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-600 font-mono text-[11px]">{item.account}</td>
+                      <td className={`py-2.5 px-3 text-right font-mono font-bold ${item.amountUsd >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+                        {item.amountUsd >= 0 ? `+${item.amountUsd.toFixed(2)}` : `-${Math.abs(item.amountUsd).toFixed(2)}`}
+                      </td>
+                      <td className={`py-2.5 px-3 text-right font-mono font-bold ${(item.amountLbp || 0) >= 0 ? 'text-slate-900' : 'text-rose-700'}`}>
+                        {(item.amountLbp || Math.round(item.amountUsd * 89500)).toLocaleString()} LBP
+                      </td>
+                      <td className="py-2.5 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold font-mono">
+                          ✓ {item.status || 'COMPLETED'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

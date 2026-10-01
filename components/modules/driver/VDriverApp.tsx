@@ -24,7 +24,14 @@ import {
   PenTool,
   ShieldCheck,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  MessageSquare,
+  Receipt,
+  Printer,
+  Check,
+  FileText,
+  Filter,
+  ArrowRight
 } from 'lucide-react';
 
 // ============================================================================
@@ -32,7 +39,7 @@ import {
 // ============================================================================
 
 export type ShiftState = 'OFF_DUTY' | 'ON_DUTY_LOADING' | 'DEPARTED' | 'RETURNING';
-export type StopStatus = 'QUEUED' | 'EN_ROUTE' | 'DELIVERED' | 'REJECTED' | 'PENDING';
+export type StopStatus = 'QUEUED' | 'EN_ROUTE' | 'DELIVERED' | 'FAILED_REATTEMPT' | 'CUSTOMER_RETURNED' | 'REJECTED' | 'PENDING';
 
 export interface DriverStop {
   id: string;
@@ -42,6 +49,9 @@ export interface DriverStop {
   phone: string;
   town: string;
   address: string;
+  corridorId: number;
+  corridorName: string;
+  deliveryNotes?: string;
   itemsList: string;
   productAmountLbp: number;
   productAmountUsd: number;
@@ -58,6 +68,48 @@ export interface DriverStop {
   whishProofUrl?: string;
   customerSignatureSvg?: string;
   synced?: boolean;
+}
+
+export interface DriverSettlementVoucher {
+  id: string;
+  date: string;
+  driverId: string;
+  driverName: string;
+  corridorName: string;
+  deliveredStopsCount: number;
+  expectedUsd: number;
+  expectedLbp: number;
+  expectedWhish: number;
+  handedOverUsd: number;
+  handedOverLbp: number;
+  recipient: string;
+  notes: string;
+  officialRate: number;
+  totalEquivalentLbp: number;
+  totalEquivalentUsd: number;
+  varianceUsd: number;
+  status: 'RECONCILED' | 'PENDING_AUDIT' | 'VAULT_DEPOSITED';
+}
+
+export const OFFICIAL_USD_LBP_RATE = 89500;
+
+export function formatWhatsAppUrl(stop: DriverStop): string {
+  const cleanPhone = stop.phone.replace(/[^0-9]/g, '');
+  let waNumber = cleanPhone;
+  if (waNumber.startsWith('0')) {
+    waNumber = '961' + waNumber.slice(1);
+  } else if (!waNumber.startsWith('961')) {
+    waNumber = '961' + waNumber;
+  }
+  const totalUsd = stop.productAmountUsd + stop.deliveryFeeUsd;
+  const totalLbp = Math.round(totalUsd * OFFICIAL_USD_LBP_RATE);
+  const text = `مرحباً ${stop.customerName}، معك سائق شركة سوبرسونيك لتوصيل طلبك #${stop.orderNo} (${stop.town}).\nالمبلغ المطلوب عند الاستلام (COD): ${totalUsd} (${totalLbp.toLocaleString()} ل.ل بسعر الصرف الرسمي 89,500).\nيرجى تأكيد التواجد في: ${stop.address}. شكراً!`;
+  return `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
+}
+
+export function formatCallUrl(phone: string): string {
+  const cleanPhone = phone.replace(/[^0-9+]/g, '');
+  return `tel:${cleanPhone}`;
 }
 
 export interface QueuedOfflineDelivery {
@@ -83,8 +135,11 @@ const INITIAL_STOPS: DriverStop[] = [
     phone: '03-112233',
     town: 'Beirut - Hamra',
     address: 'Sadat Street, Al-Noor Building, 3rd Floor, Hamra',
+    corridorId: 1,
+    corridorName: 'Corridor 1: Beirut & Suburbs',
+    deliveryNotes: 'Call 10 mins prior. Customer pays in USD or LBP at official 89,500 rate.',
     itemsList: '1x 17.5L Extra Virgin Olive Oil Tin + 2x Pomegranate Molasses (500ml)',
-    productAmountLbp: 9900000,
+    productAmountLbp: 9845000,
     productAmountUsd: 110,
     deliveryFeeUsd: 4.0,
     repName: 'Ahmad Ali Kassem',
@@ -97,20 +152,23 @@ const INITIAL_STOPS: DriverStop[] = [
     synced: true,
   },
   {
-    id: 'ord-crm-002',
-    orderNo: 'ORD-IG-7412',
-    invoiceId: 'inv-ref-7412',
-    customerName: 'Zeina Barjawi',
-    phone: '70-998877',
-    town: 'Saida - Qayaa',
-    address: 'Qayaa Highway, Doctors Crossroad, Al-Zuhour Bldg',
-    itemsList: '1x 17.5L Extra Virgin Olive Oil Tin + 1x Pickled Olives Box',
-    productAmountLbp: 10800000,
-    productAmountUsd: 120,
-    deliveryFeeUsd: 5.0,
-    repName: 'Hiba Aloulou',
-    repCode: 'REP-004',
-    repPhone: '71223344',
+    id: 'ord-crm-004',
+    orderNo: 'ORD-WA-8924',
+    invoiceId: 'inv-ref-8924',
+    customerName: 'Apex Electronics Hub (Client Karim)',
+    phone: '01-205930',
+    town: 'Beirut - Achrafieh',
+    address: 'Sassine Square, Rue Huvelin, Bldg 8',
+    corridorId: 1,
+    corridorName: 'Corridor 1: Beirut & Suburbs',
+    deliveryNotes: 'Fragile component carton. Deliver directly to 2nd floor desk. COD $50 USD or 4,475,000 LBP.',
+    itemsList: '2x Hardware Component Cartons',
+    productAmountLbp: 4475000,
+    productAmountUsd: 50,
+    deliveryFeeUsd: 4.0,
+    repName: 'Ahmad Ali Kassem',
+    repCode: 'REP-002',
+    repPhone: '03445566',
     status: 'QUEUED',
     paymentLbp: 0,
     paymentUsd: 0,
@@ -125,13 +183,112 @@ const INITIAL_STOPS: DriverStop[] = [
     phone: '01-852963',
     town: 'Aley - Central Souk',
     address: 'Aley Central Souk, near Bank of Beirut',
+    corridorId: 2,
+    corridorName: 'Corridor 2: Mount Lebanon',
+    deliveryNotes: 'Heavy bulk commercial delivery. Hand unload using warehouse trolley.',
     itemsList: '3x 17.5L Extra Virgin Olive Oil Tin (Bulk Commercial)',
-    productAmountLbp: 27000000,
+    productAmountLbp: 26850000,
     productAmountUsd: 300,
     deliveryFeeUsd: 6.0,
     repName: 'Mahdi Kassem',
     repCode: 'REP-001',
     repPhone: '03778899',
+    status: 'QUEUED',
+    paymentLbp: 0,
+    paymentUsd: 0,
+    paymentWhish: 0,
+    synced: true,
+  },
+  {
+    id: 'ord-crm-002',
+    orderNo: 'ORD-IG-7412',
+    invoiceId: 'inv-ref-7412',
+    customerName: 'Zeina Barjawi',
+    phone: '70-998877',
+    town: 'Saida - Qayaa',
+    address: 'Qayaa Highway, Doctors Crossroad, Al-Zuhour Bldg',
+    corridorId: 3,
+    corridorName: 'Corridor 3: South Lebanon',
+    deliveryNotes: 'Gate code: #4092. Customer accepts COD cash or instant Whish transfer.',
+    itemsList: '1x 17.5L Extra Virgin Olive Oil Tin + 1x Pickled Olives Box',
+    productAmountLbp: 10740000,
+    productAmountUsd: 120,
+    deliveryFeeUsd: 5.0,
+    repName: 'Hiba Aloulou',
+    repCode: 'REP-004',
+    repPhone: '71223344',
+    status: 'QUEUED',
+    paymentLbp: 0,
+    paymentUsd: 0,
+    paymentWhish: 0,
+    synced: true,
+  },
+  {
+    id: 'ord-crm-005',
+    orderNo: 'ORD-SS-9912',
+    invoiceId: 'inv-ref-9912',
+    customerName: 'Tyre Phoenician Kitchen',
+    phone: '07-391200',
+    town: 'Tyre (Sour) - Rest House Coast',
+    address: 'Al-Kharab Seaside Corniche, Dock 2',
+    corridorId: 3,
+    corridorName: 'Corridor 3: South Lebanon',
+    deliveryNotes: 'Kitchen receiving dock. Call chef Ali upon arrival. COD $220 USD or 19,690,000 LBP.',
+    itemsList: '2x 17.5L Extra Virgin Tin + 6x Vinegar 1L Glass',
+    productAmountLbp: 19690000,
+    productAmountUsd: 220,
+    deliveryFeeUsd: 8.0,
+    repName: 'Mahdi Kassem',
+    repCode: 'REP-001',
+    repPhone: '03778899',
+    status: 'QUEUED',
+    paymentLbp: 0,
+    paymentUsd: 0,
+    paymentWhish: 0,
+    synced: true,
+  },
+  {
+    id: 'ord-crm-006',
+    orderNo: 'ORD-NO-4410',
+    invoiceId: 'inv-ref-4410',
+    customerName: 'Batroun Old Souk Olive House',
+    phone: '06-742110',
+    town: 'Batroun - Old Port Souk',
+    address: 'Saint Stephen Church Road, Stone Bldg',
+    corridorId: 4,
+    corridorName: 'Corridor 4: North Lebanon',
+    deliveryNotes: 'Cobblestone pedestrian zone. Park near port and deliver by hand trolley. COD $140 USD.',
+    itemsList: '1x 17.5L Extra Virgin Tin + 12x 500ml Extra Virgin Bottles',
+    productAmountLbp: 12530000,
+    productAmountUsd: 140,
+    deliveryFeeUsd: 7.0,
+    repName: 'Ahmad Ali Kassem',
+    repCode: 'REP-002',
+    repPhone: '03445566',
+    status: 'QUEUED',
+    paymentLbp: 0,
+    paymentUsd: 0,
+    paymentWhish: 0,
+    synced: true,
+  },
+  {
+    id: 'ord-crm-007',
+    orderNo: 'ORD-BK-3310',
+    invoiceId: 'inv-ref-3310',
+    customerName: 'Zahle Bardawni Restaurant Co.',
+    phone: '08-805400',
+    town: 'Zahle - Bardawni Valley',
+    address: 'Wadi El Arayesh, Casino Arabi Axis',
+    corridorId: 5,
+    corridorName: 'Corridor 5: Bekaa',
+    deliveryNotes: 'Deliver to central restaurant storehouse. Collect $350 USD cash or 31,325,000 LBP.',
+    itemsList: '4x 17.5L Extra Virgin Bulk Tins + 5x Pickled Olives Box',
+    productAmountLbp: 31325000,
+    productAmountUsd: 350,
+    deliveryFeeUsd: 9.0,
+    repName: 'Hiba Aloulou',
+    repCode: 'REP-004',
+    repPhone: '71223344',
     status: 'QUEUED',
     paymentLbp: 0,
     paymentUsd: 0,
@@ -165,9 +322,21 @@ export default function VDriverApp() {
   const [stops, setStops] = useState<DriverStop[]>(INITIAL_STOPS);
   const [selectedStopId, setSelectedStopId] = useState<string>(INITIAL_STOPS[0].id);
 
+  // Corridor Filtering State
+  const [selectedCorridorFilter, setSelectedCorridorFilter] = useState<number | 'ALL'>('ALL');
+
   // Action Modal State
   const [selectedStopForAction, setSelectedStopForAction] = useState<DriverStop | null>(null);
-  const [actionType, setActionType] = useState<'DELIVERED' | 'REJECTED' | 'PENDING' | null>(null);
+  const [actionType, setActionType] = useState<'DELIVERED' | 'FAILED_REATTEMPT' | 'CUSTOMER_RETURNED' | 'REJECTED' | 'PENDING' | null>(null);
+
+  // End of Shift Cash Settlement State
+  const [showSettlementModal, setShowSettlementModal] = useState<boolean>(false);
+  const [settleHandedUsd, setSettleHandedUsd] = useState<number>(0);
+  const [settleHandedLbp, setSettleHandedLbp] = useState<number>(0);
+  const [settleRecipient, setSettleRecipient] = useState<string>('Layla Bazzi (Settlements & Treasury Desk — Choueifat Hub)');
+  const [settleNotes, setSettleNotes] = useState<string>('End of shift daily COD cash count & handover');
+  const [activeVoucher, setActiveVoucher] = useState<DriverSettlementVoucher | null>(null);
+  const [settlementHistory, setSettlementHistory] = useState<DriverSettlementVoucher[]>([]);
 
   // Payment Inputs
   const [inputUsd, setInputUsd] = useState<number>(0);
@@ -230,6 +399,18 @@ export default function VDriverApp() {
           setOfflineQueue(JSON.parse(savedQueue));
         } catch (e) {
           console.error('Failed to parse offline queue', e);
+        }
+      }
+
+      // Load driver cash settlement history
+      const savedSettlements = localStorage.getItem('vanguard_driver_settlements');
+      if (savedSettlements) {
+        try {
+          const parsed = JSON.parse(savedSettlements);
+          setSettlementHistory(parsed);
+          if (parsed.length > 0) setActiveVoucher(parsed[0]);
+        } catch (e) {
+          console.error('Failed to parse driver settlements', e);
         }
       }
 
@@ -337,7 +518,7 @@ export default function VDriverApp() {
   };
 
   // 4. Modal Open/Close
-  const handleOpenActionModal = (stop: DriverStop, type: 'DELIVERED' | 'REJECTED' | 'PENDING') => {
+  const handleOpenActionModal = (stop: DriverStop, type: 'DELIVERED' | 'FAILED_REATTEMPT' | 'CUSTOMER_RETURNED' | 'REJECTED' | 'PENDING') => {
     setSelectedStopForAction(stop);
     setActionType(type);
     setInputLbp(0);
@@ -498,13 +679,26 @@ export default function VDriverApp() {
       if (remainingQueued.length > 0) {
         setSelectedStopId(remainingQueued[0].id);
       }
-    } else if (actionType === 'REJECTED') {
+    } else if (actionType === 'FAILED_REATTEMPT' || actionType === 'PENDING') {
       setStops((prev) =>
         prev.map((s) =>
           s.id === selectedStopForAction.id
             ? {
                 ...s,
-                status: 'REJECTED',
+                status: 'FAILED_REATTEMPT',
+                rejectionReason,
+              }
+            : s
+        )
+      );
+      setSystemAlertMessage(`⏳ Order #${selectedStopForAction.orderNo} marked as Failed Delivery / Re-attempt (${rejectionReason}). Parcel remains on van inventory.`);
+    } else if (actionType === 'CUSTOMER_RETURNED' || actionType === 'REJECTED') {
+      setStops((prev) =>
+        prev.map((s) =>
+          s.id === selectedStopForAction.id
+            ? {
+                ...s,
+                status: 'CUSTOMER_RETURNED',
                 rejectionReason,
                 deliveryFeePaid: !deliveryFeeRefused,
                 paymentUsd: deliveryFeeRefused ? 0 : selectedStopForAction.deliveryFeeUsd,
@@ -512,24 +706,56 @@ export default function VDriverApp() {
             : s
         )
       );
-      setSystemAlertMessage(`⚠️ Order #${selectedStopForAction.orderNo} Marked Rejected (${rejectionReason}). Fee: $${deliveryFeeRefused ? 0 : selectedStopForAction.deliveryFeeUsd}`);
-    } else if (actionType === 'PENDING') {
-      setStops((prev) =>
-        prev.map((s) =>
-          s.id === selectedStopForAction.id
-            ? {
-                ...s,
-                status: 'PENDING',
-                rejectionReason,
-              }
-            : s
-        )
-      );
-      setSystemAlertMessage(`⏳ Order #${selectedStopForAction.orderNo} Postponed for next route.`);
+      setSystemAlertMessage(`⚠️ Order #${selectedStopForAction.orderNo} Marked Customer Returned (${rejectionReason}). Fee: ${deliveryFeeRefused ? 0 : selectedStopForAction.deliveryFeeUsd}. Custody updated.`);
     }
 
     setSelectedStopForAction(null);
     setActionType(null);
+  };
+
+  // 6. End of Shift Settle Cash Handler
+  const handleConfirmSettlement = () => {
+    const totalEquivUsd = settleHandedUsd + (settleHandedLbp / OFFICIAL_USD_LBP_RATE);
+    const totalEquivLbp = (settleHandedUsd * OFFICIAL_USD_LBP_RATE) + settleHandedLbp;
+    const expectedTotalUsd = totalCollectedUsd + (totalCollectedLbp / OFFICIAL_USD_LBP_RATE);
+    const varianceUsd = totalEquivUsd - expectedTotalUsd;
+
+    const voucher: DriverSettlementVoucher = {
+      id: `SETTL-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      driverId,
+      driverName,
+      corridorName: 'Corridor 1: Beirut & Suburbs (Hamra, Achrafieh)',
+      deliveredStopsCount: completedStops.length,
+      expectedUsd: totalCollectedUsd,
+      expectedLbp: totalCollectedLbp,
+      expectedWhish: totalCollectedWhish,
+      handedOverUsd: settleHandedUsd,
+      handedOverLbp: settleHandedLbp,
+      recipient: settleRecipient,
+      notes: settleNotes,
+      officialRate: OFFICIAL_USD_LBP_RATE,
+      totalEquivalentLbp: Math.round(totalEquivLbp),
+      totalEquivalentUsd: Number(totalEquivUsd.toFixed(2)),
+      varianceUsd: Number(varianceUsd.toFixed(2)),
+      status: 'RECONCILED',
+    };
+
+    const existingStr = localStorage.getItem('vanguard_driver_settlements');
+    const list: DriverSettlementVoucher[] = existingStr ? JSON.parse(existingStr) : [];
+    const updated = [voucher, ...list];
+    localStorage.setItem('vanguard_driver_settlements', JSON.stringify(updated));
+    setSettlementHistory(updated);
+    setActiveVoucher(voucher);
+    setShowSettlementModal(false);
+    setShiftState('RETURNING');
+
+    // Notify other components & backoffice
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('vanguard_driver_settlement_created', { detail: voucher }));
+    }
+
+    setSystemAlertMessage(`✓ End-of-Shift Settlement ${voucher.id} Generated & Reconciled with Ledger! Cash handed over to ${settleRecipient}.`);
   };
 
   const saveToOfflineQueue = (payload: QueuedOfflineDelivery) => {
@@ -548,7 +774,14 @@ export default function VDriverApp() {
   const totalCollectedWhish = completedStops.reduce((acc, s) => acc + s.paymentWhish, 0);
   const totalDeliveryFeesEarnedUsd = completedStops.reduce((acc, s) => acc + s.deliveryFeeUsd, 0);
 
-  const activeStop = stops.find((s) => s.id === selectedStopId) || stops[0];
+  const consolidatedLbpTotal = (totalCollectedUsd * OFFICIAL_USD_LBP_RATE) + totalCollectedLbp + (totalCollectedWhish * OFFICIAL_USD_LBP_RATE);
+  const consolidatedUsdTotal = totalCollectedUsd + (totalCollectedLbp / OFFICIAL_USD_LBP_RATE) + totalCollectedWhish;
+
+  const filteredStops = selectedCorridorFilter === 'ALL'
+    ? stops
+    : stops.filter((s) => s.corridorId === selectedCorridorFilter);
+
+  const activeStop = stops.find((s) => s.id === selectedStopId) || filteredStops[0] || stops[0];
 
   return (
     <div className="w-full min-h-screen bg-slate-950 text-slate-100 font-sans select-none flex flex-col">
@@ -731,15 +964,46 @@ export default function VDriverApp() {
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
           {/* LEFT PANEL: STOPS LIST (MOBILE FULL WIDTH / TABLET & DESKTOP 5 COLS) */}
           <div className="lg:col-span-5 border-r border-slate-800 overflow-y-auto p-3 space-y-3 bg-slate-950/60 max-h-[calc(100vh-170px)]">
-            <div className="flex justify-between items-center px-1 text-xs text-slate-400">
-              <span className="font-bold">Beirut &amp; Coastal Corridor</span>
-              <span className="font-mono text-emerald-400 font-bold">
-                {completedStops.length} / {stops.length} Delivered
-              </span>
+            {/* Corridor Filter Pills */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center px-1 text-xs text-slate-400">
+                <span className="font-bold flex items-center gap-1">
+                  <Filter className="w-3 h-3 text-emerald-400" />
+                  <span>Lebanese Delivery Corridors</span>
+                </span>
+                <span className="font-mono text-emerald-400 font-bold">
+                  {completedStops.length} / {stops.length} Delivered
+                </span>
+              </div>
+              <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none text-[10px]">
+                {[
+                  { id: 'ALL', label: `All (${stops.length})` },
+                  { id: 1, label: `1. Beirut & Suburbs (${stops.filter(s => s.corridorId === 1).length})` },
+                  { id: 2, label: `2. Mount Lebanon (${stops.filter(s => s.corridorId === 2).length})` },
+                  { id: 3, label: `3. South (${stops.filter(s => s.corridorId === 3).length})` },
+                  { id: 4, label: `4. North (${stops.filter(s => s.corridorId === 4).length})` },
+                  { id: 5, label: `5. Bekaa (${stops.filter(s => s.corridorId === 5).length})` },
+                ].map((c) => (
+                  <button
+                    key={String(c.id)}
+                    type="button"
+                    onClick={() => setSelectedCorridorFilter(c.id as any)}
+                    className={`px-2.5 py-1 rounded-lg font-bold whitespace-nowrap border transition-all ${
+                      selectedCorridorFilter === c.id
+                        ? 'bg-emerald-600 text-white border-emerald-500 shadow-sm'
+                        : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {stops.map((stop, idx) => {
+            {filteredStops.map((stop, idx) => {
               const isSelected = selectedStopId === stop.id;
+              const totalStopUsd = stop.productAmountUsd + stop.deliveryFeeUsd;
+              const totalStopLbp = Math.round(totalStopUsd * OFFICIAL_USD_LBP_RATE);
               return (
                 <div
                   key={stop.id}
@@ -749,14 +1013,16 @@ export default function VDriverApp() {
                       ? 'bg-slate-900 border-emerald-500 shadow-lg ring-1 ring-emerald-500/40'
                       : stop.status === 'DELIVERED'
                       ? 'bg-slate-900/50 border-emerald-500/30 opacity-75'
-                      : stop.status === 'REJECTED'
+                      : stop.status === 'FAILED_REATTEMPT'
+                      ? 'bg-amber-950/20 border-amber-600/40'
+                      : stop.status === 'CUSTOMER_RETURNED' || stop.status === 'REJECTED'
                       ? 'bg-rose-950/20 border-rose-600/40'
                       : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
                   }`}
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10.5px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
                         Stop #{idx + 1}
                       </span>
                       <h3 className="font-bold text-white text-xs">{stop.customerName}</h3>
@@ -767,17 +1033,30 @@ export default function VDriverApp() {
                           ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                           : stop.status === 'EN_ROUTE'
                           ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 animate-pulse'
-                          : stop.status === 'REJECTED'
+                          : stop.status === 'FAILED_REATTEMPT'
+                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                          : stop.status === 'CUSTOMER_RETURNED' || stop.status === 'REJECTED'
                           ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                           : 'bg-slate-800 text-slate-400'
                       }`}
                     >
-                      {stop.status}
+                      {stop.status === 'FAILED_REATTEMPT' ? 'RE-ATTEMPT' : stop.status === 'CUSTOMER_RETURNED' ? 'RETURNED' : stop.status}
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-slate-400 mt-1 font-medium">{stop.town}</p>
-                  <p className="text-[10.5px] text-slate-500 font-mono mt-0.5 line-clamp-1">{stop.address}</p>
+                  <div className="mt-1 flex items-center justify-between text-[11px]">
+                    <span className="text-slate-300 font-semibold">{stop.town}</span>
+                    <span className="text-[10px] font-mono font-bold text-blue-400">{stop.corridorName}</span>
+                  </div>
+                  <p className="text-[10.5px] text-slate-400 font-mono mt-0.5 line-clamp-1">{stop.address}</p>
+
+                  {/* Delivery Notes for Driver */}
+                  {stop.deliveryNotes && (
+                    <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-[11px] text-amber-200">
+                      <span className="font-bold text-amber-400">📝 Notes: </span>
+                      <span>{stop.deliveryNotes}</span>
+                    </div>
+                  )}
 
                   <div className="mt-2 p-2 bg-slate-950 rounded-xl border border-slate-800/80 text-[11px]">
                     <span className="text-slate-300 font-medium line-clamp-2">{stop.itemsList}</span>
@@ -785,32 +1064,69 @@ export default function VDriverApp() {
 
                   <div className="mt-2 flex justify-between items-center text-xs font-mono">
                     <span className="text-emerald-400 font-bold">
-                      ${stop.productAmountUsd} ({stop.productAmountLbp.toLocaleString()} LBP)
+                      COD: ${totalStopUsd} (${totalStopLbp.toLocaleString()} LBP)
                     </span>
                     <span className="text-blue-400 font-bold">Fee: ${stop.deliveryFeeUsd}</span>
                   </div>
 
-                  {/* Mobile-only Quick Doorstep Buttons */}
-                  <div className="lg:hidden mt-3 pt-2 border-t border-slate-800 flex gap-2">
+                  {/* Direct WhatsApp & Call Buttons */}
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <a
+                      href={formatWhatsAppUrl(stop)}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex-1 py-1.5 px-2 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 font-bold rounded-xl text-[11px] flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>WhatsApp ({stop.phone})</span>
+                    </a>
+                    <a
+                      href={formatCallUrl(stop.phone)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="py-1.5 px-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold rounded-xl text-[11px] flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Call</span>
+                    </a>
+                  </div>
+
+                  {/* Quick Doorstep Action Buttons */}
+                  <div className="mt-2.5 pt-2 border-t border-slate-800 flex flex-wrap gap-1.5">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleOpenActionModal(stop, 'DELIVERED');
                       }}
-                      className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow"
+                      className="flex-1 min-w-[110px] py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-[11px] shadow flex items-center justify-center gap-1 transition-all"
                     >
-                      ✓ Deliver &amp; POD
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>Mark as Delivered</span>
                     </button>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleOpenActionModal(stop, 'REJECTED');
+                        handleOpenActionModal(stop, 'FAILED_REATTEMPT');
                       }}
-                      className="px-3 py-1.5 bg-rose-800 hover:bg-rose-700 text-white font-bold rounded-xl text-xs"
+                      className="py-1.5 px-2.5 bg-amber-600/80 hover:bg-amber-600 text-white font-bold rounded-xl text-[11px] flex items-center justify-center gap-1 transition-all"
+                      title="Failed Delivery / Re-attempt"
                     >
-                      ✕ Reject
+                      <Clock className="w-3 h-3" />
+                      <span>Failed / Re-attempt</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenActionModal(stop, 'CUSTOMER_RETURNED');
+                      }}
+                      className="py-1.5 px-2.5 bg-rose-700 hover:bg-rose-600 text-white font-bold rounded-xl text-[11px] flex items-center justify-center gap-1 transition-all"
+                      title="Customer Returned"
+                    >
+                      <XCircle className="w-3 h-3" />
+                      <span>Returned</span>
                     </button>
                   </div>
                 </div>
@@ -870,49 +1186,68 @@ export default function VDriverApp() {
                   </div>
                 </div>
 
-                {/* Quick Actions (Call, Google Maps) */}
-                <div className="flex gap-3">
+                {/* Delivery Notes for Driver */}
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs text-amber-200">
+                  <span className="font-bold text-amber-400 flex items-center gap-1 mb-1">
+                    <span>📝 Dispatcher &amp; Customer Delivery Notes:</span>
+                  </span>
+                  <p>{activeStop.deliveryNotes || 'Standard delivery corridor. Verify address and collect COD accurately in USD or LBP at 89,500.'}</p>
+                </div>
+
+                {/* Quick Communication & Navigation Actions */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <a
+                    href={formatWhatsAppUrl(activeStop)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="py-2.5 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold rounded-xl border border-emerald-500/40 flex items-center justify-center gap-2 shadow"
+                  >
+                    <MessageSquare className="w-4 h-4 text-emerald-400" />
+                    <span>WhatsApp Chat</span>
+                  </a>
+                  <a
+                    href={formatCallUrl(activeStop.phone)}
+                    className="py-2.5 px-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 text-xs font-bold rounded-xl border border-blue-500/40 flex items-center justify-center gap-2 shadow"
+                  >
+                    <Phone className="w-4 h-4 text-blue-400" />
+                    <span>Call ({activeStop.phone})</span>
+                  </a>
                   <a
                     href={`https://maps.google.com/?q=${encodeURIComponent(activeStop.address)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-2 shadow"
+                    className="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-2 shadow"
                   >
-                    <Navigation className="w-4 h-4 text-blue-400" />
-                    <span>{t('open_in_google_maps_navigation', 'Open in Google Maps Navigation')}</span>
-                  </a>
-                  <a
-                    href={`tel:${activeStop.phone}`}
-                    className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-2 shadow"
-                  >
-                    <Phone className="w-4 h-4" />
-                    <span>Call ({activeStop.phone})</span>
+                    <Navigation className="w-4 h-4 text-amber-400" />
+                    <span>Google Maps</span>
                   </a>
                 </div>
 
                 {/* Doorstep Action Triggers */}
-                <div className="pt-3 border-t border-slate-800 flex gap-3">
+                <div className="pt-3 border-t border-slate-800 flex flex-wrap gap-2.5">
                   <button
                     type="button"
                     onClick={() => handleOpenActionModal(activeStop, 'DELIVERED')}
-                    className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-xl flex items-center justify-center gap-2 transition-transform active:scale-98"
+                    className="flex-1 min-w-[200px] py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 transition-transform active:scale-98"
                   >
-                    <CheckCircle2 className="w-5 h-5" />
-                    <span>Confirm Delivery &amp; Collect (Delivered = Post)</span>
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>Mark as Delivered &amp; Collect</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleOpenActionModal(activeStop, 'REJECTED')}
-                    className="px-5 py-3 bg-rose-800 hover:bg-rose-700 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5"
+                    onClick={() => handleOpenActionModal(activeStop, 'FAILED_REATTEMPT')}
+                    className="px-4 py-3 bg-amber-700 hover:bg-amber-600 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5 shadow"
                   >
-                    <XCircle className="w-4 h-4" /> {t('reject', 'Reject')}
+                    <Clock className="w-4 h-4" />
+                    <span>Failed / Re-attempt</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleOpenActionModal(activeStop, 'PENDING')}
-                    className="px-4 py-3 bg-amber-700 hover:bg-amber-600 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5"
+                    onClick={() => handleOpenActionModal(activeStop, 'CUSTOMER_RETURNED')}
+                    className="px-4 py-3 bg-rose-800 hover:bg-rose-700 text-white font-bold rounded-2xl text-xs flex items-center gap-1.5 shadow"
                   >
-                    <Clock className="w-4 h-4" /> {t('postpone', 'Postpone')}
+                    <XCircle className="w-4 h-4" />
+                    <span>Customer Returned</span>
                   </button>
                 </div>
               </div>
@@ -926,36 +1261,138 @@ export default function VDriverApp() {
       )}
 
       {/* =================================================================== */}
-      {/* TAB 2: CASH LEDGER & MULTI-CURRENCY RUNNING TOTALS                  */}
+      {/* TAB 2: CASH LEDGER & MULTI-CURRENCY RUNNING TOTALS & RECONCILIATION */}
       {/* =================================================================== */}
       {activeTab === 'LEDGER' && (
         <div className="p-4 md:p-6 max-w-4xl mx-auto w-full space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-bold text-white">Daily Multi-Currency Cash &amp; Whish Custody</h2>
-            <span className="text-xs font-mono text-emerald-400 font-bold">{completedStops.length} Collections</span>
+            <div>
+              <h2 className="text-sm font-bold text-white">Daily Multi-Currency Cash &amp; Whish Custody</h2>
+              <span className="text-[11px] text-slate-400">Official Lebanese Central Bank Rate: 1 USD = 89,500 LBP</span>
+            </div>
+            <span className="text-xs font-mono text-emerald-400 font-bold">{completedStops.length} Collections Today</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Running Totals Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl">
-              <span className="text-[10.5px] text-slate-500 block uppercase font-bold">{t('total_usd_cash_in_custody', 'Total USD Cash in Custody')}</span>
+              <span className="text-[10px] text-slate-400 block uppercase font-bold">USD Cash in Custody</span>
               <strong className="text-2xl font-mono text-emerald-400 font-bold">${totalCollectedUsd.toFixed(2)}</strong>
             </div>
             <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl">
-              <span className="text-[10.5px] text-slate-500 block uppercase font-bold">{t('total_lbp_cash_in_custody', 'Total LBP Cash in Custody')}</span>
+              <span className="text-[10px] text-slate-400 block uppercase font-bold">LBP Cash in Custody</span>
               <strong className="text-2xl font-mono text-emerald-400 font-bold">{totalCollectedLbp.toLocaleString()} LBP</strong>
             </div>
             <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl">
-              <span className="text-[10.5px] text-purple-400 block uppercase font-bold">{t('total_whish_remittances', 'Total Whish Remittances')}</span>
+              <span className="text-[10px] text-purple-400 block uppercase font-bold">Whish Remittances</span>
               <strong className="text-2xl font-mono text-purple-400 font-bold">${totalCollectedWhish.toFixed(2)}</strong>
+            </div>
+            <div className="p-4 bg-gradient-to-br from-emerald-950 to-slate-900 border border-emerald-500/40 rounded-2xl">
+              <span className="text-[10px] text-emerald-300 block uppercase font-bold">Total LBP (@ 89,500)</span>
+              <strong className="text-xl font-mono text-white font-extrabold block">{Math.round(consolidatedLbpTotal).toLocaleString()} LBP</strong>
+              <span className="text-[10px] font-mono text-emerald-400 font-medium">~${consolidatedUsdTotal.toFixed(2)} USD Eqv.</span>
             </div>
           </div>
 
+          {/* End of Shift / Settle Cash Reconciliation Banner */}
+          <div className="p-4 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-950 border border-emerald-500/40 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xl">
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <span>💰 End of Shift / Settle Cash Handover</span>
+                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-mono rounded">
+                  Reconciliation Action
+                </span>
+              </h3>
+              <p className="text-xs text-slate-300 max-w-xl">
+                Submit counted collected cash amounts to Choueifat Treasury Desk. Generates official settlement voucher for the accounting ledger.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSettleHandedUsd(totalCollectedUsd);
+                setSettleHandedLbp(totalCollectedLbp);
+                setShowSettlementModal(true);
+              }}
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-xs flex items-center gap-2 shadow-lg transition-transform active:scale-95"
+            >
+              <Receipt className="w-4 h-4" />
+              <span>Settle Cash Handover</span>
+            </button>
+          </div>
+
+          {/* Active Settlement Voucher Card */}
+          {activeVoucher && (
+            <div className="bg-slate-900 border-2 border-emerald-500/50 rounded-2xl p-4 space-y-3 shadow-2xl">
+              <div className="flex justify-between items-start border-b border-slate-800 pb-2">
+                <div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold">
+                    VOUCHER #{activeVoucher.id}
+                  </span>
+                  <h3 className="text-sm font-bold text-white mt-1">SuperSonic Driver Shift Settlement Voucher</h3>
+                  <p className="text-[11px] text-slate-400">Timestamp: {activeVoucher.date} • Courier: {activeVoucher.driverName}</p>
+                </div>
+                <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full text-xs font-bold font-mono">
+                  ✓ {activeVoucher.status}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+                <div className="p-2.5 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] text-slate-500 block">USD CASH HANDED</span>
+                  <strong className="text-emerald-400 text-sm font-bold">${activeVoucher.handedOverUsd}</strong>
+                </div>
+                <div className="p-2.5 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] text-slate-500 block">LBP CASH HANDED</span>
+                  <strong className="text-emerald-400 text-sm font-bold">{activeVoucher.handedOverLbp.toLocaleString()} LBP</strong>
+                </div>
+                <div className="p-2.5 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] text-slate-500 block">TOTAL EQUIV LBP</span>
+                  <strong className="text-white text-sm font-bold">{activeVoucher.totalEquivalentLbp.toLocaleString()} LBP</strong>
+                </div>
+                <div className="p-2.5 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] text-slate-500 block">HANDOVER RECIPIENT</span>
+                  <strong className="text-blue-300 text-[11px] font-sans truncate block">{activeVoucher.recipient}</strong>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center pt-2 text-xs">
+                <span className="text-[11px] text-slate-400 font-mono">Enforced Official Rate: 1 USD = 89,500 LBP</span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== 'undefined') window.print();
+                    }}
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg border border-slate-700 flex items-center gap-1.5"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    <span>Print Voucher</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`SuperSonic Settlement Voucher ${activeVoucher.id}: USD ${activeVoucher.handedOverUsd} + LBP ${activeVoucher.handedOverLbp.toLocaleString()} (Total ${activeVoucher.totalEquivalentLbp.toLocaleString()} LBP @ 89,500). Handed over to ${activeVoucher.recipient}.`);
+                      alert('✓ Settlement summary copied to clipboard for WhatsApp/SMS accounting dispatch!');
+                    }}
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow flex items-center gap-1.5"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Copy Summary</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Completed Order Breakdown */}
           <div className="space-y-2">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Completed Route Stops Breakdown:</h4>
             {completedStops.map((stop) => (
               <div key={stop.id} className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 text-xs font-mono flex items-center justify-between">
                 <div>
                   <strong className="text-white font-sans text-sm block">{stop.customerName}</strong>
-                  <span className="text-slate-400 text-[11px]">#{stop.orderNo} — {stop.town}</span>
+                  <span className="text-slate-400 text-[11px]">#{stop.orderNo} — {stop.town} ({stop.corridorName})</span>
                 </div>
                 <div className="text-right space-y-0.5">
                   <div className="text-emerald-400 font-bold">${stop.paymentUsd} USD / {stop.paymentLbp.toLocaleString()} LBP</div>
@@ -1083,12 +1520,14 @@ export default function VDriverApp() {
             <div className="flex justify-between items-center border-b border-slate-800 pb-2.5">
               <div>
                 <h3 className="font-bold text-white text-sm">
-                  {actionType === 'DELIVERED' && '✓ Confirm Delivery & Collect Payment'}
+                  {actionType === 'DELIVERED' && '✓ Confirm Delivery & Collect Payment (COD)'}
+                  {actionType === 'FAILED_REATTEMPT' && '🔄 Failed Delivery / Schedule Re-attempt'}
+                  {actionType === 'CUSTOMER_RETURNED' && '✕ Customer Returned Package'}
                   {actionType === 'REJECTED' && '✕ Mark Stop as Rejected'}
                   {actionType === 'PENDING' && '⏳ Postpone Stop to Tomorrow'}
                 </h3>
                 <span className="text-[11px] text-slate-400">
-                  {selectedStopForAction.customerName} (#{selectedStopForAction.orderNo})
+                  {selectedStopForAction.customerName} (#{selectedStopForAction.orderNo}) • {selectedStopForAction.town}
                 </span>
               </div>
               <button
@@ -1102,19 +1541,85 @@ export default function VDriverApp() {
 
             {actionType === 'DELIVERED' && (
               <div className="space-y-3.5">
-                {/* Total Due Banner */}
-                <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex justify-between items-center font-mono">
-                  <div>
-                    <span className="text-slate-500 text-[10px] block">{t('total_amount_due', 'TOTAL AMOUNT DUE')}</span>
-                    <strong className="text-base text-emerald-400 font-bold">
-                      ${selectedStopForAction.productAmountUsd + selectedStopForAction.deliveryFeeUsd} USD
-                    </strong>
-                  </div>
-                  <div className="text-right text-[11px] text-slate-400">
-                    <div>Product: ${selectedStopForAction.productAmountUsd}</div>
-                    <div>Delivery Fee: ${selectedStopForAction.deliveryFeeUsd}</div>
-                  </div>
-                </div>
+                {/* Total Due Banner with Official 89,500 LBP Conversion */}
+                {(() => {
+                  const totalDueUsd = selectedStopForAction.productAmountUsd + selectedStopForAction.deliveryFeeUsd;
+                  const totalDueLbp = Math.round(totalDueUsd * OFFICIAL_USD_LBP_RATE);
+                  return (
+                    <div className="space-y-2">
+                      <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex justify-between items-center font-mono">
+                        <div>
+                          <span className="text-slate-500 text-[10px] block">{t('total_amount_due', 'TOTAL AMOUNT DUE')}</span>
+                          <strong className="text-base text-emerald-400 font-bold">
+                            ${totalDueUsd} USD
+                          </strong>
+                          <div className="text-xs text-slate-300 font-semibold">
+                            (${totalDueLbp.toLocaleString()} LBP @ 89,500)
+                          </div>
+                        </div>
+                        <div className="text-right text-[11px] text-slate-400">
+                          <div>Product: ${selectedStopForAction.productAmountUsd}</div>
+                          <div>Delivery Fee: ${selectedStopForAction.deliveryFeeUsd}</div>
+                          <div className="text-[10px] text-emerald-400">Official Rate: 89,500</div>
+                        </div>
+                      </div>
+
+                      {/* Quick 1-Click Currency Split Presets */}
+                      <div className="grid grid-cols-2 gap-1.5 text-[10.5px] font-mono">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInputUsd(totalDueUsd);
+                            setInputLbp(0);
+                            setInputWhish(0);
+                          }}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold flex items-center justify-between"
+                        >
+                          <span>💵 Full USD:</span>
+                          <strong className="text-emerald-400">${totalDueUsd}</strong>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInputUsd(0);
+                            setInputLbp(totalDueLbp);
+                            setInputWhish(0);
+                          }}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold flex items-center justify-between"
+                        >
+                          <span>🇱🇧 Full LBP:</span>
+                          <strong className="text-emerald-400">${(totalDueLbp / 1000000).toFixed(2)}M</strong>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setInputUsd(0);
+                            setInputLbp(0);
+                            setInputWhish(totalDueUsd);
+                          }}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 border border-slate-700 font-bold flex items-center justify-between"
+                        >
+                          <span>📲 Full Whish:</span>
+                          <strong className="text-purple-400">${totalDueUsd}</strong>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const halfUsd = Math.round(totalDueUsd / 2);
+                            const remUsd = totalDueUsd - halfUsd;
+                            setInputUsd(halfUsd);
+                            setInputLbp(Math.round(remUsd * OFFICIAL_USD_LBP_RATE));
+                            setInputWhish(0);
+                          }}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-300 border border-slate-700 font-bold flex items-center justify-between"
+                        >
+                          <span>⚖️ 50/50 Split</span>
+                          <strong className="text-blue-400">USD + LBP</strong>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Multi-Currency Payment Split */}
                 <div className="space-y-2 bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
@@ -1199,25 +1704,25 @@ export default function VDriverApp() {
               </div>
             )}
 
-            {actionType === 'REJECTED' && (
+            {(actionType === 'CUSTOMER_RETURNED' || actionType === 'REJECTED') && (
               <div className="space-y-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">{t('reason_for_rejection', 'Reason for Rejection:')}</label>
+                  <label className="text-[11px] text-slate-400 block mb-1">Return Reason (Customer Returned):</label>
                   <select
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs"
                   >
-                    <option value="Customer not available at location">{t('customer_not_available_at_location', 'Customer not available at location')}</option>
-                    <option value="Customer cancelled order / changed mind">{t('customer_cancelled_order_changed_mind', 'Customer cancelled order / changed mind')}</option>
-                    <option value="Customer disputed price or total">{t('customer_disputed_price_or_total', 'Customer disputed price or total')}</option>
-                    <option value="Delivery arrival delayed">{t('delivery_arrival_delayed', 'Delivery arrival delayed')}</option>
+                    <option value="Customer refused package / cancelled order">Customer refused package / cancelled order</option>
+                    <option value="Disputed price or exchange rate calculation">Disputed price or exchange rate calculation</option>
+                    <option value="Damaged packaging or wrong item variant">Damaged packaging or wrong item variant</option>
+                    <option value="Customer could not be located at delivery address">Customer could not be located at delivery address</option>
                   </select>
                 </div>
 
                 <div className={`p-3 rounded-xl border ${deliveryFeeRefused ? 'bg-rose-950/40 border-rose-500' : 'bg-slate-950 border-slate-800'}`}>
                   <div className="flex justify-between items-center text-xs">
-                    <span>{t('mandatory_delivery_fee', 'Mandatory Delivery Fee:')}</span>
+                    <span>Delivery Fee Incurred:</span>
                     <strong className="text-blue-400 font-mono">${selectedStopForAction.deliveryFeeUsd}</strong>
                   </div>
                   <label className="mt-2 flex items-center gap-2 text-[11px] text-rose-400 font-bold cursor-pointer">
@@ -1229,26 +1734,30 @@ export default function VDriverApp() {
                     <span>Customer Refused to Pay Delivery Fee ($0 Collected)</span>
                   </label>
                 </div>
+                <p className="text-[11px] text-rose-300">
+                  ⚠️ This package will be logged as Customer Returned and handed back to Choueifat Central Depot at shift end.
+                </p>
               </div>
             )}
 
-            {actionType === 'PENDING' && (
+            {(actionType === 'FAILED_REATTEMPT' || actionType === 'PENDING') && (
               <div className="space-y-3 text-xs">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">{t('reason_for_postponement', 'Reason for Postponement:')}</label>
+                  <label className="text-[11px] text-slate-400 block mb-1">Failure / Re-attempt Reason:</label>
                   <select
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs"
                   >
-                    <option value="Customer requested rescheduling for tomorrow">{t('customer_requested_rescheduling_for', 'Customer requested rescheduling for tomorrow')}</option>
-                    <option value="Customer phone unreachable / no answer">{t('customer_phone_unreachable_no_answer', 'Customer phone unreachable / no answer')}</option>
-                    <option value="Route blocked / severe traffic delay">{t('route_blocked_severe_traffic_delay', 'Route blocked / severe traffic delay')}</option>
+                    <option value="Customer phone unreachable / no answer">Customer phone unreachable / no answer</option>
+                    <option value="Customer requested rescheduling for tomorrow">Customer requested rescheduling for tomorrow</option>
+                    <option value="Route blocked / severe traffic or security delay">Route blocked / severe traffic or security delay</option>
+                    <option value="Customer requested evening delivery window">Customer requested evening delivery window</option>
                   </select>
                 </div>
-                <p className="text-[11px] text-amber-300">
-                  {t('this_parcel_remains_on_van_inventory', 'This parcel remains on van inventory and will be rescheduled automatically for tomorrow\'s run.')}
-                </p>
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-300">
+                  📦 <strong>Parcel remains on van inventory:</strong> Will be rescheduled automatically for tomorrow's dispatch run in {selectedStopForAction.corridorName}.
+                </div>
               </div>
             )}
 
@@ -1259,6 +1768,117 @@ export default function VDriverApp() {
             >
               Confirm &amp; Record Doorstep Outcome
             </button>
+          </div>
+        </div>
+      )}
+      {/* =================================================================== */}
+      {/* END OF SHIFT / SETTLE CASH RECONCILIATION MODAL                     */}
+      {/* =================================================================== */}
+      {showSettlementModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 z-50">
+          <div className="bg-slate-900 rounded-3xl border border-slate-700 max-w-lg w-full p-6 space-y-4 text-xs text-slate-200 max-h-[92vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+              <div>
+                <h3 className="font-bold text-white text-base">💰 End of Shift / Settle Cash Handover</h3>
+                <p className="text-[11px] text-slate-400">Reconcile Daily Run Collections with Vanguard Accounting</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSettlementModal(false)}
+                className="text-slate-400 hover:text-white font-bold text-sm px-2"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Expected Summary */}
+            <div className="p-3.5 bg-slate-950 rounded-2xl border border-slate-800 space-y-2">
+              <span className="text-[10px] text-slate-400 uppercase font-bold block">System Expected Collections ({completedStops.length} Orders):</span>
+              <div className="grid grid-cols-3 gap-2 font-mono text-center">
+                <div className="p-2 bg-slate-900 rounded-xl border border-slate-800">
+                  <span className="text-[10px] text-slate-500 block">USD CASH</span>
+                  <strong className="text-emerald-400 text-sm">${totalCollectedUsd.toFixed(2)}</strong>
+                </div>
+                <div className="p-2 bg-slate-900 rounded-xl border border-slate-800">
+                  <span className="text-[10px] text-slate-500 block">LBP CASH</span>
+                  <strong className="text-emerald-400 text-sm">{totalCollectedLbp.toLocaleString()}</strong>
+                </div>
+                <div className="p-2 bg-slate-900 rounded-xl border border-slate-800">
+                  <span className="text-[10px] text-slate-500 block">WHISH MONEY</span>
+                  <strong className="text-purple-400 text-sm">${totalCollectedWhish.toFixed(2)}</strong>
+                </div>
+              </div>
+              <div className="text-[11px] text-slate-300 font-mono text-center pt-1 border-t border-slate-800">
+                Official Consolidated Rate: <strong>{Math.round(consolidatedLbpTotal).toLocaleString()} LBP</strong> (1 USD = 89,500 LBP)
+              </div>
+            </div>
+
+            {/* Physical Cash Handover Form */}
+            <div className="space-y-3 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+              <span className="text-[11px] font-bold text-slate-300 block uppercase">Physical Currency Handover Count:</span>
+
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Handed Over USD Cash ($):</label>
+                <input
+                  type="number"
+                  value={settleHandedUsd}
+                  onChange={(e) => setSettleHandedUsd(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl font-mono font-bold text-emerald-400 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Handed Over LBP Cash (L.L):</label>
+                <input
+                  type="number"
+                  value={settleHandedLbp}
+                  onChange={(e) => setSettleHandedLbp(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl font-mono font-bold text-emerald-400 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Treasury Handover Recipient:</label>
+                <select
+                  value={settleRecipient}
+                  onChange={(e) => setSettleRecipient(e.target.value)}
+                  className="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs"
+                >
+                  <option value="Layla Bazzi (Settlements & Treasury Desk — Choueifat Hub)">Layla Bazzi (Settlements &amp; Treasury Desk — Choueifat Hub)</option>
+                  <option value="Choueifat Central Cash Vault Desk">Choueifat Central Cash Vault Desk</option>
+                  <option value="Rami Al-Hajj (SuperSonic Operations Manager)">Rami Al-Hajj (SuperSonic Operations Manager)</option>
+                  <option value="SuperSonic Central Safe Deposit">SuperSonic Central Safe Deposit</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Driver Memo &amp; Odometer Notes:</label>
+                <input
+                  type="text"
+                  value={settleNotes}
+                  onChange={(e) => setSettleNotes(e.target.value)}
+                  placeholder="e.g. End of shift daily run cash count, Van 01"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowSettlementModal(false)}
+                className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmSettlement}
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl text-xs shadow-xl transition-all"
+              >
+                ✓ Confirm Settlement &amp; Issue Voucher
+              </button>
+            </div>
           </div>
         </div>
       )}
