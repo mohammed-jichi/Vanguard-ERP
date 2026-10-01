@@ -12,7 +12,7 @@ export const InlineDuplicateInvoices: React.FC<InlineDuplicateInvoicesProps> = (
       <div className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]">
         {/* Header */}
         <div className="text-blue-700 font-bold text-[13px] mb-2">
-          Southern Olive Oil Products S.A.R.L
+          Vanguard Enterprise Ledger
         </div>
         
         <div className="text-center font-bold text-[13px] mb-4">

@@ -139,7 +139,7 @@ export function TransactionsByDateMasterDocument({
   // Report Metadata
   const meta: ReportMetadata = useMemo(() => ({
     companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Southern Olive Oil Products S.A.R.L',
+    subtitle: 'Vanguard Enterprise Ledger',
     reportTitle: config.title,
     code: code || config.omegaReportCode || 'REP_S_00188',
     dateRange: cleanPeriod,

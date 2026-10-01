@@ -195,7 +195,7 @@ export const CustomerListStandardTemplate: React.FC<CustomerListStandardTemplate
   const meta: ReportMetadata = {
     reportTitle,
     companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Southern Olive Oil Products S.A.R.L - Lists & Customer Master Register',
+    subtitle: 'Lists & Customer Master Register',
     code: reportCode,
     dateRange: dynamicPeriodText || 'Master Directory Audit Window',
     generatedDate: executionDate,

@@ -105,7 +105,7 @@ export const SummaryOfSalesByItemsTemplate: React.FC<SummaryOfSalesByItemsTempla
 
   const meta: ReportMetadata = useMemo(() => ({
     companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Southern Olive Oil Products S.A.R.L - Item Sales Velocity & Margin Register',
+    subtitle: 'Item Sales Velocity & Margin Register',
     reportTitle: 'Summary of Sales by Items',
     code: 'REP_S_00251',
     dateRange: cleanPeriod,

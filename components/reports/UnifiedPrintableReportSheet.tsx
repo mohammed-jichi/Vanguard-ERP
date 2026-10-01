@@ -87,14 +87,14 @@ export interface UnifiedPrintableReportSheetProps {
  * ============================================================================
  */
 export default function UnifiedPrintableReportSheet({
-  topperTitle = 'Zeit w zaytoun ljanoub',
-  subtitle = 'Southern Olive Oil Products S.A.R.L',
+  topperTitle = 'Vanguard ERP',
+  subtitle = 'Enterprise Master Ledger & Operations',
   reportTitle,
   reportCode,
   executionDate,
   periodText,
   pageInfo = 'Page 1 of 1',
-  branchInfo = 'Branch: Zeit w zaytoun ljanoub',
+  branchInfo = 'Branch: Choueifat Main Facility',
   hideToolbar = false,
   onPrint,
   onExportCSV,
@@ -166,7 +166,7 @@ export default function UnifiedPrintableReportSheet({
         <div className="flex flex-wrap items-center justify-between gap-3 bg-card border border-border rounded-xl p-3 mb-4 shadow-xs print:hidden">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-foreground uppercase tracking-wider">{t('Report Action', 'Report Action')}:</span>
-            <span className="font-mono font-bold text-xs text-primary bg-muted px-2.5 py-1 rounded border border-border">
+            <span className="font-mono font-bold text-xs text-slate-800 bg-slate-100 px-2.5 py-1 rounded border border-slate-200">
               {reportCode}
             </span>
           </div>
@@ -178,7 +178,7 @@ export default function UnifiedPrintableReportSheet({
                 <button
                   type="button"
                   onClick={() => setZoomLevel((prev) => Math.min(prev + 0.1, 1.4))}
-                  className="p-1.5 rounded-lg bg-muted hover:bg-slate-200 text-foreground border border-border cursor-pointer transition-colors shadow-xs"
+                  className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer transition-colors shadow-2xs"
                   title={t('Zoom In', 'Zoom In')}
                 >
                   <ZoomIn size={14} />
@@ -186,7 +186,7 @@ export default function UnifiedPrintableReportSheet({
                 <button
                   type="button"
                   onClick={() => setZoomLevel((prev) => Math.max(prev - 0.1, 0.7))}
-                  className="p-1.5 rounded-lg bg-muted hover:bg-slate-200 text-foreground border border-border cursor-pointer transition-colors shadow-xs"
+                  className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer transition-colors shadow-2xs"
                   title={t('Zoom Out', 'Zoom Out')}
                 >
                   <ZoomOut size={14} />
@@ -198,7 +198,7 @@ export default function UnifiedPrintableReportSheet({
               <button
                 type="button"
                 onClick={onRefresh}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-muted hover:bg-slate-200 text-foreground rounded-lg text-xs font-semibold cursor-pointer transition-colors border border-border shadow-xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold cursor-pointer transition-colors border border-slate-200 shadow-2xs"
                 title={t('Refresh', 'Refresh')}
               >
                 <RefreshCw size={13} />
@@ -210,7 +210,7 @@ export default function UnifiedPrintableReportSheet({
               <button
                 type="button"
                 onClick={onExportCSV}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary hover:bg-slate-800 text-primary-foreground rounded-lg text-xs font-medium cursor-pointer transition-colors shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
                 title={t('Export CSV', 'Export CSV')}
               >
                 <Download size={13} />
@@ -221,7 +221,7 @@ export default function UnifiedPrintableReportSheet({
             <button
               type="button"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-primary hover:bg-slate-800 text-primary-foreground rounded-lg text-xs font-medium cursor-pointer transition-colors shadow-xs"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
               title={t('Print Report', 'Print Report')}
             >
               <Printer size={13} />
@@ -238,49 +238,53 @@ export default function UnifiedPrintableReportSheet({
       >
         <div>
           {/* ================================================================= */}
-          {/* A. AUTHENTIC CORPORATE TOPPER (CENTERED BLUE)                     */}
+          {/* AUTHENTIC 3-ZONE HEADER ACROSS ALL VANGUARD REPORTS              */}
           {/* ================================================================= */}
-          <div className="text-center">
-            <h1 className="font-bold text-report-company text-blue-700 text-[15px] tracking-wide uppercase font-sans">
-              {t(topperTitle, topperTitle)}
-            </h1>
-            {subtitle && (
-              <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
-                {t(subtitle, subtitle)}
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-3 pb-2.5 font-sans">
+            {/* ZONE 1 (LEFT): Corporate / System Identity Indicator */}
+            <div className="text-left flex flex-col justify-center">
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-slate-800 shrink-0"></span>
+                <span className="font-bold text-[14px] text-slate-900 tracking-tight uppercase">
+                  {topperTitle ? t(topperTitle, topperTitle) : 'Vanguard ERP'}
+                </span>
               </div>
-            )}
-          </div>
-
-          {/* ================================================================= */}
-          {/* B. REPORT TITLE (CENTERED BOLD)                                   */}
-          {/* ================================================================= */}
-          <div className="text-center font-extrabold text-report-title text-slate-900 text-[13.5px] mt-2.5 mb-1.5 font-sans">
-            {t(reportTitle, reportTitle)}
-          </div>
-
-          {/* ================================================================= */}
-          {/* C. EXECUTION SUBHEADER (DATE, PERIOD, PAGE)                       */}
-          {/* ================================================================= */}
-          <div className="flex items-center justify-between text-report-meta text-[11px] text-slate-800 font-mono mt-3 mb-1">
-            <span className="font-medium">{displayDate}</span>
-            <span className="font-bold text-center flex-1">
-              {periodText ? t(periodText, periodText) : t('Current Active Period', 'Current Active Period')}
-            </span>
-            <span className="font-medium">{pageInfo}</span>
-          </div>
-
-          {/* ================================================================= */}
-          {/* D. TOP SOLID DIVIDING RULE                                        */}
-          {/* ================================================================= */}
-          <div className="border-b-report-master border-b-2 border-report-borderMaster border-slate-900 mb-2"></div>
-
-          {/* Optional Branch Subtitle */}
-          {branchInfo && (
-            <div className="flex items-center justify-between text-[10.5px] font-semibold text-slate-700 mb-2 font-sans">
-              <span>{branchInfo}</span>
-              <span className="font-mono text-slate-500">{t('System Source', 'System Source')}: {t('Vanguard ERP Live Ledger', 'Vanguard ERP Live Ledger')}</span>
+              <div className="text-[11px] font-medium text-slate-500 tracking-normal mt-0.5">
+                {subtitle ? t(subtitle, subtitle) : t('Corporate Ledger & Analytics', 'Corporate Ledger & Analytics')}
+              </div>
+              <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                {t('System Source', 'System Source')}: {t('Vanguard ERP Live Cloud', 'Vanguard ERP Live Cloud')}
+              </div>
             </div>
-          )}
+
+            {/* ZONE 2 (CENTER): Active Report Title & Period Indicator */}
+            <div className="text-center flex flex-col items-center justify-center">
+              <h1 className="font-black text-[16px] text-slate-950 tracking-tight uppercase">
+                {t(reportTitle, reportTitle)}
+              </h1>
+              <div className="inline-flex items-center gap-1.5 mt-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[10.5px] font-semibold font-mono">
+                <span>📅</span>
+                <span>{periodText ? t(periodText, periodText) : t('Current Active Period', 'Current Active Period')}</span>
+              </div>
+            </div>
+
+            {/* ZONE 3 (RIGHT): Branch Name, Execution Date & Pagination */}
+            <div className="text-right flex flex-col justify-center items-end">
+              <div className="text-[12px] font-bold text-slate-900 font-sans">
+                {branchInfo ? t(branchInfo, branchInfo) : t('Main Branch - Central Facility', 'Main Branch - Central Facility')}
+              </div>
+              <div className="text-[11px] font-mono text-slate-600 mt-0.5">
+                <span>{t('Date', 'Date')}: </span>
+                <span className="font-semibold text-slate-800">{displayDate}</span>
+              </div>
+              <div className="text-[10px] font-mono text-slate-500 mt-0.5">
+                {pageInfo}
+              </div>
+            </div>
+          </div>
+
+          {/* TOP SOLID DIVIDING RULE */}
+          <div className="border-b-2 border-slate-900 mb-3"></div>
 
           {/* ================================================================= */}
           {/* E. REPORT DATA CONTENT (TABLE / MATRIX)                           */}

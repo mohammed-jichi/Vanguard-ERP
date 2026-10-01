@@ -225,7 +225,7 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
             className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
             style={{ transform: `scale(${zoomLevel})` }}
           >
-            <div className="text-blue-700 font-bold text-[12px] mb-6">Southern Olive Oil Products S.A.R.L</div>
+            <div className="text-blue-700 font-bold text-[12px] mb-6">Vanguard Enterprise Ledger</div>
             
             <div className="text-center font-bold text-[12px] mb-4">Credit Sales</div>
             

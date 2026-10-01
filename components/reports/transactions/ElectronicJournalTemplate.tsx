@@ -241,7 +241,7 @@ export const ElectronicJournalTemplate: React.FC<ElectronicJournalTemplateProps>
   // Report Metadata
   const meta: ReportMetadata = useMemo(() => ({
     companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Southern Olive Oil Products S.A.R.L - Terminal Electronic Journal Audit',
+    subtitle: 'Terminal Electronic Journal Audit',
     reportTitle: 'Electronic Journal',
     code: 'REP_S_00248',
     dateRange: cleanPeriod,

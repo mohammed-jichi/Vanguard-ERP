@@ -25,7 +25,7 @@ export const DiscountSummaryTemplate: React.FC<DiscountSummaryTemplateProps> = (
     <div className="w-full max-w-5xl mx-auto font-sans text-slate-800">
       {/* Top Header */}
       <div className="flex justify-between items-start text-xs font-bold mb-1">
-        <span className="text-blue-700 text-sm">Southern Olive Oil Products S.A.R.L</span>
+        <span className="text-blue-700 text-sm">Vanguard Enterprise Ledger</span>
         <span className="text-base text-slate-900 font-bold">Discount Summary Report</span>
         <span className="text-slate-500 font-mono text-[11px]">Financial & Sales Control</span>
       </div>

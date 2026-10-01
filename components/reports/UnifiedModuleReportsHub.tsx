@@ -479,7 +479,7 @@ export default function UnifiedModuleReportsHub({
               <button
                 type="button"
                 onClick={onFilterReport}
-                className="bg-primary hover:bg-slate-800 text-primary-foreground px-4 py-2 rounded-lg text-xs font-medium shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                className="bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <Filter size={14} />
                 <span>{t('Filter Report', 'Filter Report')}</span>
@@ -489,7 +489,7 @@ export default function UnifiedModuleReportsHub({
               <button
                 type="button"
                 onClick={onResetFilters}
-                className="bg-muted hover:bg-slate-200 text-foreground border border-border px-4 py-2 rounded-lg text-xs font-medium shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3.5 py-2 rounded-lg text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <RotateCcw size={14} />
                 <span>{t('Reset Filters', 'Reset Filters')}</span>
@@ -507,7 +507,7 @@ export default function UnifiedModuleReportsHub({
               <button
                 type="button"
                 onClick={() => setZoomLevel((z) => Math.min(z + 10, 150))}
-                className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg shadow-xs transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 shadow-2xs transition-colors cursor-pointer"
                 title={t('Zoom In', 'Zoom In')}
               >
                 <ZoomIn className="w-3.5 h-3.5" />
@@ -515,7 +515,7 @@ export default function UnifiedModuleReportsHub({
               <button
                 type="button"
                 onClick={() => setZoomLevel((z) => Math.max(z - 10, 70))}
-                className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg shadow-xs transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 shadow-2xs transition-colors cursor-pointer"
                 title={t('Zoom Out', 'Zoom Out')}
               >
                 <ZoomOut className="w-3.5 h-3.5" />
@@ -523,7 +523,7 @@ export default function UnifiedModuleReportsHub({
               <button
                 type="button"
                 onClick={handlePrint}
-                className="bg-primary hover:bg-slate-800 text-primary-foreground font-medium text-xs py-2 px-4 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2 px-3.5 rounded-lg shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>{t('Print Report', 'Print Report')}</span>
@@ -531,7 +531,7 @@ export default function UnifiedModuleReportsHub({
               <button
                 type="button"
                 onClick={handleExport}
-                className="bg-primary hover:bg-slate-800 text-primary-foreground font-medium text-xs py-2 px-4 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2 px-3.5 rounded-lg shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>{t('Export Report', 'Export Report')}</span>

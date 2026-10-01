@@ -111,7 +111,7 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
           </div>
 
           <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px]">
-            <option>Southern Olive Oil Products S.A.R.L</option>
+            <option>Vanguard Enterprise Ledger</option>
           </select>
           
           <div className="flex items-center gap-2 ml-2">
@@ -152,7 +152,7 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
             style={{ transform: `scale(${zoomLevel})` }}
           >
             <div className="w-full relative mb-2">
-              <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
+              <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Vanguard Enterprise Ledger</div>
               <h3 className="font-bold text-[14px] text-black text-center">Time report (By date)</h3>
               
               <div className="flex justify-between items-end text-[11px] font-bold w-full mt-6 border-b border-black pb-1">
@@ -185,7 +185,7 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
                         
                         {/* Branch Name (Spans dates + Light Blue total if last chunk) */}
                         <th colSpan={isLastChunk ? chunk.length + 1 : chunk.length} className="border border-black p-1.5 text-left font-bold bg-white">
-                          Southern Olive Oil Products S.A.R.L
+                          Vanguard Enterprise Ledger
                         </th>
 
                         {/* Deep Blue Total Header (Only on last chunk) */}

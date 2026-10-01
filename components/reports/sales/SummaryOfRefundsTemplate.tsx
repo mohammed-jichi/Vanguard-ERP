@@ -236,8 +236,8 @@ export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> =
   const meta: ReportMetadata = useMemo(() => ({
     companyName: 'Zeit w zaytoun ljanoub',
     subtitle: isDetails
-      ? 'Southern Olive Oil Products S.A.R.L - Granular Customer Refund & Credit Notes Audit'
-      : 'Southern Olive Oil Products S.A.R.L - Reimbursed Returns & Credit Notes Register',
+      ? 'Granular Customer Refund & Credit Notes Audit'
+      : 'Reimbursed Returns & Credit Notes Register',
     reportTitle: isDetails ? 'Details of Refunds' : 'Summary of Refunds',
     code: isDetails ? 'REP_S_00274' : 'REP_S_00185',
     dateRange: cleanPeriod,

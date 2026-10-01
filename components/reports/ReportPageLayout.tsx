@@ -411,14 +411,14 @@ export function ExportButtons({
       <button
         type="button"
         title={t('zoom_in', 'Zoom In')}
-        className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg transition-colors cursor-pointer shadow-xs"
+        className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer transition-colors shadow-2xs"
       >
         <ZoomIn className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         title={t('zoom_out', 'Zoom Out')}
-        className="bg-muted hover:bg-slate-200 text-foreground border border-border p-2 rounded-lg transition-colors cursor-pointer shadow-xs"
+        className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer transition-colors shadow-2xs"
       >
         <ZoomOut className="w-3.5 h-3.5" />
       </button>
@@ -427,7 +427,7 @@ export function ExportButtons({
       <button
         type="button"
         onClick={handlePrint}
-        className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-slate-800 text-primary-foreground text-xs rounded-lg font-medium shadow-xs transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs rounded-lg font-semibold shadow-2xs transition-colors cursor-pointer"
         title={t('print_report', 'Print Report')}
       >
         <Printer className="w-3.5 h-3.5" />
@@ -439,7 +439,7 @@ export function ExportButtons({
         type="button"
         onClick={handleExport}
         disabled={isLoadingPdf || isLoadingExcel}
-        className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-slate-800 text-primary-foreground text-xs rounded-lg font-medium shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs rounded-lg font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
         title={t('export_report', 'Export Report')}
       >
         <FileDown className="w-3.5 h-3.5" />
@@ -641,7 +641,7 @@ export function ReportFilters({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-slate-800 text-primary-foreground text-xs px-3 py-2 rounded-lg font-medium shadow-xs transition-colors cursor-pointer whitespace-nowrap"
+            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs px-3.5 py-2 rounded-lg font-semibold shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
           >
             <Filter className="w-3.5 h-3.5 shrink-0" />
             <span>{t('filter_report', 'Filter Report')}</span>
@@ -651,7 +651,7 @@ export function ReportFilters({
           <button
             type="button"
             onClick={onResetFilters}
-            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-muted hover:bg-slate-200 text-foreground border border-border text-xs px-3 py-2 rounded-lg font-medium shadow-xs transition-colors cursor-pointer whitespace-nowrap"
+            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs px-3.5 py-2 rounded-lg font-semibold shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
           >
             <RotateCcw className="w-3.5 h-3.5 shrink-0" />
             <span>{t('reset_filters', 'Reset Filters')}</span>

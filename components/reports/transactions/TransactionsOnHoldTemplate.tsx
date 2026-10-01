@@ -43,7 +43,7 @@ export const TransactionsOnHoldTemplate: React.FC<TransactionsOnHoldTemplateProp
       {/* Top Header Area */}
       <div className="flex justify-between items-start mb-2">
         <div className="text-blue-700 font-bold text-[14px]">
-          Southern Olive Oil Products S.A.R.L
+          Vanguard Enterprise Ledger
         </div>
         <div className="text-right text-[11px] font-mono text-slate-500">
           Internal Control Reports

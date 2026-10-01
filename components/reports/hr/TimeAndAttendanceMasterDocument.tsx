@@ -76,7 +76,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
   const meta: ReportMetadata = {
     reportTitle: resolvedTitle,
     companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Southern Olive Oil Products S.A.R.L - HR & Payroll Operational Control',
+    subtitle: 'HR & Payroll Operational Control',
     code: resolvedCode,
     dateRange: dynamicPeriodText || 'Audit Cycle: August 2026',
     generatedDate: executionDate,

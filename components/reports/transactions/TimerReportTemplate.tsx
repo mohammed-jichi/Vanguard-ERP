@@ -77,7 +77,7 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
           </select>
           <input type="text" defaultValue="Aug, 2026" className="force-black border border-slate-400 rounded p-1.5 text-[13px] w-[100px] text-center" />
           <select className="force-black border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px]">
-            <option>Southern Olive Oil Products S.A.R.L</option>
+            <option>Vanguard Enterprise Ledger</option>
           </select>
           <label className="flex items-center gap-1.5 text-[13px] font-bold text-slate-800 cursor-pointer ml-2">
             <input type="checkbox" defaultChecked className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-400" />
@@ -118,7 +118,7 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
           >
             {/* Report Title */}
             <div className="w-full relative mb-6">
-              <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Southern Olive Oil Products S.A.R.L</div>
+              <div className="text-blue-700 font-bold text-[12px] absolute top-0 left-0">Vanguard Enterprise Ledger</div>
               <h3 className="font-bold text-[14px] text-black text-center mt-4">Timer Report Group by transaction count</h3>
             </div>
 
@@ -158,7 +158,7 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
                       <tr key={time}>
                         {rIdx === 0 && (
                           <td rowSpan={block.times.length} className="border border-black p-2 font-bold text-center align-middle bg-white w-[150px]">
-                            Southern Olive Oil Products S.A.R.L
+                            Vanguard Enterprise Ledger
                           </td>
                         )}
                         

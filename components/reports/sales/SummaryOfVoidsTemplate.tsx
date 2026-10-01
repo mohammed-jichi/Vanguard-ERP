@@ -216,7 +216,7 @@ export const SummaryOfVoidsTemplate: React.FC<SummaryOfVoidsTemplateProps> = ({
 
   const meta: ReportMetadata = useMemo(() => ({
     companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Southern Olive Oil Products S.A.R.L - Cashier Void & Transaction Cancellation Audit',
+    subtitle: 'Cashier Void & Transaction Cancellation Audit',
     reportTitle: 'Summary of Voids',
     code: 'REP_S_00184',
     dateRange: cleanPeriod,

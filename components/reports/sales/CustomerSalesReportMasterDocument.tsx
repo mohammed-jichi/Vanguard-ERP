@@ -125,7 +125,7 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
 
   const meta: ReportMetadata = useMemo(() => ({
     companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Southern Olive Oil Products S.A.R.L - Commercial Distribution & Accounts Register',
+    subtitle: 'Commercial Distribution & Accounts Register',
     reportTitle: resolvedTitle,
     code: resolvedCode,
     dateRange: cleanPeriod,

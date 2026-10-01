@@ -943,7 +943,7 @@ export const MeterReportTemplate: React.FC<MeterReportTemplateProps> = ({
   // Report Document Metadata
   const meta: ReportMetadata = useMemo(() => ({
     companyName: 'Zeit w zaytoun ljanoub',
-    subtitle: 'Southern Olive Oil Products S.A.R.L - Fiscal Cash Register Reading Log & Shift Audit',
+    subtitle: 'Fiscal Cash Register Reading Log & Shift Audit',
     reportTitle,
     code,
     dateRange: cleanPeriod,
