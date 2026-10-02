@@ -17,7 +17,7 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
   reportTitle = 'Reading / X-Report',
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   filterValues = {},
 }) => {
   const isPaymentSummary = reportTitle.toLowerCase().includes('payment');

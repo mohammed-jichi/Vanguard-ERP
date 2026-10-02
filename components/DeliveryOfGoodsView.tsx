@@ -117,10 +117,10 @@ export default function DeliveryOfGoodsView() {
   const [serialNumbersModalOpen, setSerialNumbersModalOpen] = useState(false);
   const [serialTargetInvoice, setSerialTargetInvoice] = useState<string>('');
   const [availableSerials] = useState([
-    { id: 'SN-OLV-2026-001', code: 'EVOO-1L', desc: 'Extra Virgin Olive Oil 1L', loc: 'Choueifat Main Facility' },
-    { id: 'SN-OLV-2026-002', code: 'EVOO-1L', desc: 'Extra Virgin Olive Oil 1L', loc: 'Choueifat Main Facility' },
-    { id: 'SN-OLV-2026-003', code: 'EVOO-5L', desc: 'Virgin Olive Oil 5L Tin', loc: 'Choueifat Main Facility' },
-    { id: 'SN-OLV-2026-004', code: 'ZTR-500G', desc: 'Premium Wild Zaatar 500g', loc: 'Choueifat Main Facility' }
+    { id: 'SN-OLV-2026-001', code: 'EVOO-1L', desc: 'Extra Virgin Olive Oil 1L', loc: 'Southern Olive and Oil Products - Main' },
+    { id: 'SN-OLV-2026-002', code: 'EVOO-1L', desc: 'Extra Virgin Olive Oil 1L', loc: 'Southern Olive and Oil Products - Main' },
+    { id: 'SN-OLV-2026-003', code: 'EVOO-5L', desc: 'Virgin Olive Oil 5L Tin', loc: 'Southern Olive and Oil Products - Main' },
+    { id: 'SN-OLV-2026-004', code: 'ZTR-500G', desc: 'Premium Wild Zaatar 500g', loc: 'Southern Olive and Oil Products - Main' }
   ]);
   const [selectedSerials, setSelectedSerials] = useState<string[]>(['SN-OLV-2026-001']);
 

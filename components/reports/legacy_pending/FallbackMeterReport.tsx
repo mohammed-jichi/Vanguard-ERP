@@ -13,7 +13,7 @@ interface FallbackMeterReportProps {
 export const FallbackMeterReport: React.FC<FallbackMeterReportProps> = ({
   fromDate = '01-Aug-2026',
   toDate = '27-Aug-2026',
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   filterValues = {},
 }) => {
   return (

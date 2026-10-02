@@ -201,7 +201,7 @@ function HRPageContent() {
             setFromDate={setFromDate}
             toDate={toDate}
             setToDate={setToDate}
-            branchOptions={['Main Branch', 'Choueifat Main Facility', 'Nabatieh Pressing Unit', 'Beirut Administration']}
+            branchOptions={['Southern Olive and Oil Products - Main']}
             filterControls={
               <>
                 <select

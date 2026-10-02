@@ -1425,7 +1425,7 @@ export const INITIAL_AP_AGING: APAgingItem[] = [
     vatReg: true,
     vatNb: 'VAT-COOP-88210',
     grade: 'A',
-    bankInfo: 'BLOM Bank Saida Branch - Account #88129031'
+    bankInfo: 'BLOM Bank - Account #88129031'
   },
   {
     vendorCode: '40110-02',

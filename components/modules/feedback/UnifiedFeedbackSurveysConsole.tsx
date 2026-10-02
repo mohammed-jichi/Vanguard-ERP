@@ -68,7 +68,7 @@ const INITIAL_COMPLAINTS: ComplaintTicket[] = [
     customerPhone: '+961 1 789 450',
     category: 'Delivery Delay',
     channel: 'WhatsApp',
-    branch: 'Choueifat Main Facility',
+    branch: 'Southern Olive and Oil Products - Main',
     severity: 'CRITICAL',
     submissionDate: '2026-09-15',
     assignedRep: 'Lara Khoury',
@@ -87,7 +87,7 @@ const INITIAL_COMPLAINTS: ComplaintTicket[] = [
     customerPhone: '+961 3 451 229',
     category: 'Packaging Seal Check',
     channel: 'Portal',
-    branch: 'Choueifat Main Facility',
+    branch: 'Southern Olive and Oil Products - Main',
     severity: 'MEDIUM',
     submissionDate: '2026-09-14',
     assignedRep: 'Sami Nader',
@@ -106,7 +106,7 @@ const INITIAL_COMPLAINTS: ComplaintTicket[] = [
     customerPhone: '+961 3 881 204',
     category: 'Invoice Discrepancy',
     channel: 'Email',
-    branch: 'Sidon Hub',
+    branch: 'Southern Olive and Oil Products - Main',
     severity: 'LOW',
     submissionDate: '2026-09-14',
     assignedRep: 'Walid Sleiman',
@@ -125,7 +125,7 @@ const INITIAL_COMPLAINTS: ComplaintTicket[] = [
     customerPhone: '+961 7 721 340',
     category: 'Order Volume Mismatch',
     channel: 'Call',
-    branch: 'Sidon Hub',
+    branch: 'Southern Olive and Oil Products - Main',
     severity: 'CRITICAL',
     submissionDate: '2026-09-13',
     assignedRep: 'Lara Khoury',
@@ -294,7 +294,7 @@ export default function UnifiedFeedbackSurveysConsole() {
 
   // New Complaint Form
   const [addComplaintForm, setAddComplaintForm] = useState({
-    branch: 'Choueifat Main Facility',
+    branch: 'Southern Olive and Oil Products - Main',
     customerName: '',
     customerPhone: '',
     channel: 'WhatsApp' as 'WhatsApp' | 'Call' | 'In-Store' | 'Portal' | 'Email',
@@ -330,7 +330,7 @@ export default function UnifiedFeedbackSurveysConsole() {
             customerPhone: t.customer_phone || '',
             category: t.category,
             channel: t.channel || 'WhatsApp',
-            branch: t.branch || 'Choueifat Main Facility',
+            branch: t.branch || 'Southern Olive and Oil Products - Main',
             severity: t.severity || 'MEDIUM',
             submissionDate: t.created_at ? t.created_at.split('T')[0] : '2026-09-01',
             assignedRep: t.assigned_rep || 'Customer Care Desk',
@@ -444,7 +444,7 @@ export default function UnifiedFeedbackSurveysConsole() {
     setComplaints(prev => [newTicket, ...prev]);
     showToast(t('complaint_ticket_created_toast', `Complaint ticket ${ticketId} successfully created and written to database!`));
     setAddComplaintForm({
-      branch: 'Choueifat Main Facility',
+      branch: 'Southern Olive and Oil Products - Main',
       customerName: '',
       customerPhone: '',
       channel: 'WhatsApp',

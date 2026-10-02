@@ -50,7 +50,7 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
   filterValues = {},
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   data,
   activeCurrency = 'USD',
   hideToolbar = false,

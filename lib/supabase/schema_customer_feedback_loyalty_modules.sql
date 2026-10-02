@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS feedback_complaints (
     customer_phone VARCHAR(64) NOT NULL,
     category_id UUID REFERENCES feedback_complaint_categories(id) ON DELETE SET NULL,
     source_id UUID REFERENCES feedback_complaint_sources(id) ON DELETE SET NULL,
-    branch_name VARCHAR(128) DEFAULT 'Choueifat Main Facility',
+    branch_name VARCHAR(128) DEFAULT 'Southern Olive and Oil Products - Main',
     priority VARCHAR(32) DEFAULT 'NORMAL', -- HIGH, NORMAL, LOW
     status VARCHAR(32) DEFAULT 'INVESTIGATING', -- NEW, INVESTIGATING, IN_PROGRESS, RESOLVED, CLOSED
     handled_by VARCHAR(128) DEFAULT 'Lara Khoury',

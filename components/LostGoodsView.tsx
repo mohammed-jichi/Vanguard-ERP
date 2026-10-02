@@ -66,7 +66,7 @@ export interface LostGoodsVoucher {
 
 const AUTHENTIC_BRANCHES = [
   { id: 1, name: 'Zeit w zaytoun ljanoub' },
-  { id: 2, name: 'Choueifat Main Facility' }
+  { id: 2, name: 'Southern Olive and Oil Products - Main' }
 ];
 
 const AUTHENTIC_LOCATIONS = [
@@ -442,7 +442,7 @@ export default function LostGoodsView() {
             ser: a.ser,
             waistId: a.waist_id || a.ser,
             branchId: a.branch_id || 1,
-            branchName: a.branch_name || 'Zeit w zaytoun ljanoub',
+            branchName: a.branch_name || 'Southern Olive and Oil Products - Main',
             date: a.created_at ? a.created_at.split('T')[0] : '2026-09-11',
             locationId: a.location_id || 2,
             locationDescription: a.location_description || 'Showroom',
@@ -1633,7 +1633,7 @@ function PreviewLostGoodsModal({
               >
                 <option value="ALL">Select branch (All)</option>
                 <option value="Zeit w zaytoun ljanoub">{t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}</option>
-                <option value="Choueifat Main Facility">{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
+                <option value="Southern Olive and Oil Products - Main">{t('choueifat_main_facility', 'Southern Olive and Oil Products - Main')}</option>
               </select>
             </div>
 

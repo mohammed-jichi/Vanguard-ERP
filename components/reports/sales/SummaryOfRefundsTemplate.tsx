@@ -37,7 +37,7 @@ export interface SummaryOfRefundsTemplateProps {
 
 const DEFAULT_REFUNDS: RefundRecord[] = [
   {
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     eodDate: '11-08-2026',
     date: '2026-08-11',
     invoiceNumber: '103098',
@@ -54,7 +54,7 @@ const DEFAULT_REFUNDS: RefundRecord[] = [
     grandTotal: '-630,000.00',
   },
   {
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     eodDate: '14-08-2026',
     date: '2026-08-14',
     invoiceNumber: '103142',
@@ -88,7 +88,7 @@ const DEFAULT_REFUNDS: RefundRecord[] = [
     grandTotal: '-520,000.00',
   },
   {
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     eodDate: '20-08-2026',
     date: '2026-08-20',
     invoiceNumber: '103215',
@@ -105,7 +105,7 @@ const DEFAULT_REFUNDS: RefundRecord[] = [
     grandTotal: '-480,000.00',
   },
   {
-    branch: 'Sidon Hub',
+    branch: 'Southern Olive and Oil Products - Main',
     eodDate: '22-08-2026',
     date: '2026-08-22',
     invoiceNumber: '103248',
@@ -139,7 +139,7 @@ const DEFAULT_REFUNDS: RefundRecord[] = [
     grandTotal: '-810,000.00',
   },
   {
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     eodDate: '26-08-2026',
     date: '2026-08-26',
     invoiceNumber: '103295',
@@ -156,7 +156,7 @@ const DEFAULT_REFUNDS: RefundRecord[] = [
     grandTotal: '-950,000.00',
   },
   {
-    branch: 'Sidon Hub',
+    branch: 'Southern Olive and Oil Products - Main',
     eodDate: '27-08-2026',
     date: '2026-08-27',
     invoiceNumber: '103310',
@@ -184,7 +184,7 @@ const DEFAULT_REFUNDS: RefundRecord[] = [
 export const SummaryOfRefundsTemplate: React.FC<SummaryOfRefundsTemplateProps> = ({
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   fromDate = '01-Aug-2026',
   toDate = '27-Aug-2026',
   reportTitle = 'Summary of refunds',

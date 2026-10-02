@@ -102,7 +102,7 @@ export interface MultipleAssemblyRecord {
 
 const AUTHENTIC_BRANCHES = [
   { id: 1, name: 'Zeit w zaytoun ljanoub' },
-  { id: 2, name: 'Choueifat Main Facility' }
+  { id: 2, name: 'Southern Olive and Oil Products - Main' }
 ];
 
 const AUTHENTIC_LOCATIONS = [

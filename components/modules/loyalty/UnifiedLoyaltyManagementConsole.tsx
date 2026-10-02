@@ -222,7 +222,7 @@ const INITIAL_LOGS: PointsTransactionLog[] = [
     type: 'GIFT_REDEMPTION',
     pointsDelta: -1500,
     usdEquivalent: -15.00,
-    cashierSource: 'POS Terminal 2 - Sidon Hub',
+    cashierSource: 'POS Terminal 2 - Southern Olive and Oil Products - Main',
     date: '2026-09-14 11:20',
     balanceAfter: 3400
   },

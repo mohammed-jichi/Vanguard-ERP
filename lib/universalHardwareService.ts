@@ -343,7 +343,7 @@ export function generateEscPosReceipt(input: EscPosReceiptInput): {
   chunks.push(Buffer.from([0x1d, 0x21, 0x00]));
   chunks.push(Buffer.from([0x1b, 0x45, 0x00])); // Bold OFF
 
-  const branchName = input.branch_name || '001 - Choueifat Main Production & Distribution Center';
+  const branchName = input.branch_name || 'Southern Olive and Oil Products - Main';
   chunks.push(Buffer.from(`${branchName}\n`, 'utf-8'));
   chunks.push(Buffer.from('VAT Reg #: 601-382910 | Phone: +961 5 432 100\n', 'utf-8'));
   chunks.push(Buffer.from('------------------------------------------------\n', 'ascii'));

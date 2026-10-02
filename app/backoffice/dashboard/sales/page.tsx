@@ -3743,7 +3743,7 @@ export default function AuthenticVanguardSalesDashboard() {
                       <div className="flex items-center gap-2">
                         <span className="w-3 h-3 rounded-full bg-amber-400"></span>
                         <div>
-                          <span className="font-bold text-white text-xs block">Mount Lebanon (Choueifat Main Facility)</span>
+                          <span className="font-bold text-white text-xs block">Mount Lebanon (Southern Olive and Oil Products - Main)</span>
                           <span className="text-[10px] text-slate-300">Central Hub Depot - POS Touch active</span>
                         </div>
                       </div>
@@ -3787,22 +3787,10 @@ export default function AuthenticVanguardSalesDashboard() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="text-left font-bold">Mount Lebanon</td>
-                        <td className="text-left">Choueifat Main Facility</td>
-                        <td className="text-right font-bold font-mono">{formatVal(85200000)}</td>
-                        <td className="text-right font-bold text-blue-700">64.3%</td>
-                      </tr>
-                      <tr>
-                        <td className="text-left font-bold">South Lebanon</td>
-                        <td className="text-left">Saida Southern Center</td>
-                        <td className="text-right font-bold font-mono">{formatVal(32100000)}</td>
-                        <td className="text-right font-bold text-blue-700">24.2%</td>
-                      </tr>
-                      <tr>
-                        <td className="text-left font-bold">Greater Beirut</td>
-                        <td className="text-left">Hamra Distribution Hub</td>
-                        <td className="text-right font-bold font-mono">{formatVal(15160000)}</td>
-                        <td className="text-right font-bold text-blue-700">11.5%</td>
+                        <td className="text-left font-bold">Mount Lebanon (Choueifat Facility)</td>
+                        <td className="text-left">Southern Olive and Oil Products - Main</td>
+                        <td className="text-right font-bold font-mono">{formatVal(132460000)}</td>
+                        <td className="text-right font-bold text-blue-700">100.0%</td>
                       </tr>
                     </tbody>
                   </table>

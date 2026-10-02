@@ -52,7 +52,7 @@ export default function ProductInsightsView() {
   const { t, dir } = useLanguage();
 
   // 1. TOP FILTER STATES
-  const [branch, setBranch] = useState<string>('Main Branch');
+  const [branch, setBranch] = useState<string>('Southern Olive and Oil Products - Main');
   const [currency, setCurrency] = useState<string>('LBP');
   const [year, setYear] = useState<string>('2026');
   const [dateRange, setDateRange] = useState<string>('September');
@@ -127,7 +127,7 @@ export default function ProductInsightsView() {
 
   // Dynamic Sales Trend Chart Data
   const salesTrendData = useMemo(() => {
-    const baseMult = branch === 'Beirut Branch' ? 0.4 : (branch === 'Southern Olive SARL' ? 0.72 : 1.0);
+    const baseMult = 1.0;
     return [
       { day: 'Sep 1', sales: Math.round(18 * baseMult) },
       { day: 'Sep 3', sales: Math.round(24 * baseMult) },
@@ -253,7 +253,7 @@ export default function ProductInsightsView() {
               style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}
               className="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs !text-black !opacity-100 font-extrabold focus:outline-none focus:border-blue-500"
             >
-              <option value="Main Branch" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>{t('main_branch', 'Main Branch')}</option>
+              <option value="Southern Olive and Oil Products - Main" style={{ color: '#000000', opacity: 1, WebkitTextFillColor: '#000000', backgroundColor: '#ffffff' }}>Southern Olive and Oil Products - Main</option>
             </select>
           </div>
 

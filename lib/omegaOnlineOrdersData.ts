@@ -258,10 +258,7 @@ export const INITIAL_ONLINE_ORDERS: OmegaOnlineOrder[] = [
 
 export const ONLINE_ORDER_BRANCHES = [
   { BRANCHID: -1, OMEGA_CUSTID: -1, BARANCHNAME: 'All Branches' },
-  { BRANCHID: 1, OMEGA_CUSTID: 22901, BARANCHNAME: 'Zeit w zaytoun ljanoub' },
-  { BRANCHID: 2, OMEGA_CUSTID: 22902, BARANCHNAME: 'Beirut Distribution Hub' },
-  { BRANCHID: 3, OMEGA_CUSTID: 22903, BARANCHNAME: 'Saida Showroom Depot' },
-  { BRANCHID: 4, OMEGA_CUSTID: 22904, BARANCHNAME: 'Tyre Coastal Center' }
+  { BRANCHID: 1, OMEGA_CUSTID: 22901, BARANCHNAME: 'Southern Olive and Oil Products - Main' }
 ];
 
 export const ONLINE_ORDER_STATUSES = [

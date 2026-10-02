@@ -17,11 +17,12 @@ export function sanitizeFacilityName(branch?: string): string {
 
   // Purge legacy distortions
   cleaned = cleaned.replace(/\s*\(\s*Zeit w zaytoun ljanoub\s*\)/gi, '');
-  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Choueifat Main Plant');
+  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Southern Olive and Oil Products - Main');
+  cleaned = cleaned.replace(/Choueifat Main Facility/gi, 'Southern Olive and Oil Products - Main');
   cleaned = cleaned.replace(/\s*\(\s*Choueifat Main Facility\s*\)/gi, '');
 
   if (!cleaned || cleaned.toLowerCase() === 'main branch') {
-    cleaned = 'Choueifat Main Plant';
+    cleaned = 'Southern Olive and Oil Products - Main';
   }
 
   return `Facility: ${cleaned}`;

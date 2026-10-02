@@ -205,10 +205,7 @@ export const REPORT_FILTER_SCHEMAS: ReportFilterSchema[] = [
         defaultValue: 'ALL',
         options: [
           { label: 'All Branches (Consolidated)', value: 'ALL' },
-          { label: 'Main Branch (Choueifat Facility)', value: 'Main Branch' },
-          { label: 'Sidon Hub & Plant', value: 'Sidon Hub' },
-          { label: 'Beirut Gourmet Depot (Verdun)', value: 'Beirut Gourmet Depot' },
-          { label: 'Tripoli Northern Depot', value: 'Tripoli Depot' },
+          { label: 'Southern Olive and Oil Products - Main', value: 'Southern Olive and Oil Products - Main' },
         ],
       },
       {

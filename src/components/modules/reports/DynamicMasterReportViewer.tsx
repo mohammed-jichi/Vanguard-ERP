@@ -139,8 +139,7 @@ export default function DynamicMasterReportViewer({
                 className="p-1 bg-white border border-slate-300 rounded font-semibold focus:outline-none cursor-pointer"
               >
                 <option value="ALL">All Branches</option>
-                <option value="Choueifat">Choueifat Main Branch</option>
-                <option value="Beirut">Beirut Branch</option>
+                <option value="Southern Olive and Oil Products - Main">SO-HQ-MAIN-01 &bull; Southern Olive and Oil Products - Main</option>
               </select>
             </div>
           )}

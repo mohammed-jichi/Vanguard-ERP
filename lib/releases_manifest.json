@@ -1,5 +1,30 @@
 [
   {
+    "id": "d6dfc8c7-bfe3-4c1b-a1da-6010b8101bc9",
+    "commit_hash": "d6dfc8c7bfe34c1b01da6010b8101bc9b1256e9a",
+    "short_hash": "d6dfc8c",
+    "version": "v2.0.0",
+    "title": "Enforce auto-shrink and responsive column scaling to prevent horizontal table clipping",
+    "category": "fix",
+    "description": "fix(print): enforce auto-shrink and responsive column scaling to prevent horizontal table clipping",
+    "bullet_points": [
+      "Resolved: enforce auto-shrink and responsive column scaling to prevent horizontal table clipping",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Fleet & Distribution",
+      "Core Shell & UI",
+      "Sales & POS",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-02T12:54:41.000Z",
+    "created_at": "2026-10-02T13:53:01.124Z"
+  },
+  {
     "id": "ff21dd2b-d1b9-4d1b-aaf0-781d381e68c9",
     "commit_hash": "ff21dd2bd1b97d1bfaf0781d381e68c9fcdf4e77",
     "short_hash": "ff21dd2",

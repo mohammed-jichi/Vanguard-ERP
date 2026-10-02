@@ -92,7 +92,7 @@ export function TransactionsByDateMasterDocument({
   executionDate = '06-Sep-2026',
   showRate = true,
   groupByDate = true,
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   invoices,
   reportTitle,
   code,

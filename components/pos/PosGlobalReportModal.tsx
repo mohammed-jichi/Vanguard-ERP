@@ -40,7 +40,7 @@ export default function PosGlobalReportModal({
       day: 'numeric',
     }),
     generatedAt: new Date().toLocaleTimeString('en-US', { hour12: false }),
-    facility: 'Choueifat Main Facility',
+    facility: 'Southern Olive and Oil Products - Main',
     grossSalesUsd: 4850.0,
     discountsUsd: 125.0,
     netSalesUsd: 4725.0,

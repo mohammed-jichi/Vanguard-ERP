@@ -38,10 +38,7 @@ export const platformOptions: { type: PlatformType; icon: string; label: string 
 ];
 
 export const branchesList = [
-  { id: '001', code: 'BR_001', name: '001 - Choueifat Main Facility', region: 'Mount Lebanon' },
-  { id: '002', code: 'BR_002', name: '002 - Beirut Distribution Hub', region: 'Beirut' },
-  { id: '003', code: 'BR_003', name: '003 - Saida Southern Center', region: 'South Lebanon' },
-  { id: '004', code: 'BR_004', name: '004 - Zahle Bekaa Branch', region: 'Bekaa' },
+  { id: '1300', code: 'SO-HQ-MAIN-01', name: 'Southern Olive and Oil Products - Main', region: 'Mount Lebanon' },
 ];
 
 export const initialOrdersList: OnlineOrder[] = [
@@ -61,7 +58,7 @@ export const initialOrdersList: OnlineOrder[] = [
     commissionAmount: '12,420,000.00 LBP ($138.00)',
     commissionCredited: false,
     zoneName: 'Choueifat Showroom Counter',
-    branchName: '001 - Choueifat Main Facility',
+    branchName: 'Southern Olive and Oil Products - Main',
     itemsSummary: '30x 17.5L Extra Virgin Bulk Harvest Tins',
   },
   {
@@ -80,7 +77,7 @@ export const initialOrdersList: OnlineOrder[] = [
     commissionAmount: '110,600.00 LBP',
     commissionCredited: false,
     zoneName: 'Choueifat Showroom Counter',
-    branchName: '001 - Choueifat Main Facility',
+    branchName: 'Southern Olive and Oil Products - Main',
     itemsSummary: '12x Cold Press Extra Virgin Glass Bottles 1L',
   },
   {
@@ -99,7 +96,7 @@ export const initialOrdersList: OnlineOrder[] = [
     commissionAmount: '450,000.00 LBP',
     commissionCredited: true,
     zoneName: 'Beirut - Hamra',
-    branchName: '002 - Beirut Distribution Hub',
+    branchName: 'Southern Olive and Oil Products - Main',
     itemsSummary: '1x 17.5L Extra Virgin Olive Oil Tin (Harvest 2026)',
   },
   {
@@ -118,7 +115,7 @@ export const initialOrdersList: OnlineOrder[] = [
     commissionAmount: '23,000.00 LBP',
     commissionCredited: false,
     zoneName: 'Beirut - Achrafieh',
-    branchName: '002 - Beirut Distribution Hub',
+    branchName: 'Southern Olive and Oil Products - Main',
     itemsSummary: '6x Pomegranate Molasses (500ml), 4x Pickled Olives Glass 1Kg',
   },
 ];

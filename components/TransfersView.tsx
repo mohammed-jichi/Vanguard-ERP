@@ -3,6 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTenant } from '@/lib/TenantContext';
+import { useTenantFacilities, CANONICAL_FACILITY_1300 } from '@/lib/tenantFacilities';
 import { supabase } from '@/lib/supabaseClient';
 import {
   Plus,
@@ -141,10 +142,10 @@ const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
     id: 'TRN-201',
     reqNo: 'REQ-2026-201',
     reqDate: '2026-09-05',
-    branchSource: 'Main Branch',
-    locSource: 'Choueifat Main Facility',
-    branchDest: 'Main Branch',
-    locDest: 'Choueifat Main Facility',
+    branchSource: 'Southern Olive and Oil Products - Main',
+    locSource: 'Old Saida Road, Choueifat, Lebanon',
+    branchDest: 'Southern Olive and Oil Products - Main',
+    locDest: 'Central Production & Press Store',
     status: 'POSTED',
     posted: true,
     prNumber: 'PR-890',
@@ -172,10 +173,10 @@ const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
     id: 'TRN-202',
     reqNo: 'REQ-2026-202',
     reqDate: '2026-09-06',
-    branchSource: 'Main Branch',
-    locSource: 'Choueifat Main Facility',
-    branchDest: 'Main Branch',
-    locDest: 'Choueifat Main Facility',
+    branchSource: 'Southern Olive and Oil Products - Main',
+    locSource: 'Old Saida Road, Choueifat, Lebanon',
+    branchDest: 'Southern Olive and Oil Products - Main',
+    locDest: 'Showroom & Distribution Warehouse',
     status: 'POSTED',
     posted: true,
     fromReqNo: 'REQ-2026-201',
@@ -203,10 +204,10 @@ const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
     id: 'TRN-203',
     reqNo: 'REQ-2026-203',
     reqDate: '2026-09-09',
-    branchSource: 'Main Branch',
-    locSource: 'Choueifat Main Facility',
-    branchDest: 'Main Branch',
-    locDest: 'Choueifat Main Facility',
+    branchSource: 'Southern Olive and Oil Products - Main',
+    locSource: 'Old Saida Road, Choueifat, Lebanon',
+    branchDest: 'Southern Olive and Oil Products - Main',
+    locDest: 'Tank Room Storage',
     status: 'IN_TRANSIT',
     posted: false,
     prNumber: 'PR-904',
@@ -237,15 +238,15 @@ const INITIAL_RECURRING: RecurringTransfer[] = [
     id: 'REC-1',
     date: '2026-09-01',
     description: 'Bi-Weekly Central EVOO Replenishment',
-    src: 'Main Branch',
-    dest: 'Main Branch'
+    src: 'Southern Olive and Oil Products - Main',
+    dest: 'Southern Olive and Oil Products - Main'
   },
   {
     id: 'REC-2',
     date: '2026-09-03',
     description: 'Weekly Retail Soap & Pantry Restock',
-    src: 'Main Branch',
-    dest: 'Main Branch'
+    src: 'Southern Olive and Oil Products - Main',
+    dest: 'Southern Olive and Oil Products - Main'
   }
 ];
 
@@ -267,14 +268,15 @@ export default function TransfersView() {
   const [transferDate, setTransferDate] = useState('2026-09-10');
   const [transferNumber, setTransferNumber] = useState<string>(() => 'TRN-2026-0204');
   const [fromReqNo, setFromReqNo] = useState('');
+  const { facilities, activeFacility } = useTenantFacilities();
   const [isReversed, setIsReversed] = useState(false);
   const [prNumber, setPrNumber] = useState('');
   
-  const [fromBranch, setFromBranch] = useState('Main Branch');
-  const [fromLocation, setFromLocation] = useState('Choueifat Main Facility');
+  const [fromBranch, setFromBranch] = useState(activeFacility.branchName);
+  const [fromLocation, setFromLocation] = useState(activeFacility.address);
   const [toBrand, setToBrand] = useState('Southern Olive Oil');
-  const [toBranch, setToBranch] = useState('Main Branch');
-  const [toLocation, setToLocation] = useState('Choueifat Main Facility');
+  const [toBranch, setToBranch] = useState(activeFacility.branchName);
+  const [toLocation, setToLocation] = useState(activeFacility.address);
   const [isInterBrand, setIsInterBrand] = useState(false);
 
   // Table items & details
@@ -1232,7 +1234,11 @@ export default function TransfersView() {
                     onChange={(e) => setFromBranch(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
+                    {facilities.map((f) => (
+                      <option key={f.id} value={f.branchName}>
+                        {f.branchName}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -1246,7 +1252,10 @@ export default function TransfersView() {
                       className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                     >
                       <option value="All Locations">{t('all_locations', 'All Locations')}</option>
-                      <option value="Choueifat Main Facility">{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
+                      <option value={activeFacility.address}>{activeFacility.address}</option>
+                      <option value="Central Production & Press Store">Central Production & Press Store</option>
+                      <option value="Tank Room Storage">Tank Room Storage</option>
+                      <option value="Showroom & Distribution Warehouse">Showroom & Distribution Warehouse</option>
                     </select>
                     <button
                       onClick={() => setAddLocationModalOpen(true)}
@@ -1284,7 +1293,11 @@ export default function TransfersView() {
                     onChange={(e) => setToBranch(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
-                    <option value="Main Branch">{t('main_branch', 'Main Branch')}</option>
+                    {facilities.map((f) => (
+                      <option key={f.id} value={f.branchName}>
+                        {f.branchName}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -1297,7 +1310,10 @@ export default function TransfersView() {
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
                   >
                     <option value="All Locations">{t('all_locations', 'All Locations')}</option>
-                    <option value="Choueifat Main Facility">{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
+                    <option value={activeFacility.address}>{activeFacility.address}</option>
+                    <option value="Central Production & Press Store">Central Production & Press Store</option>
+                    <option value="Tank Room Storage">Tank Room Storage</option>
+                    <option value="Showroom & Distribution Warehouse">Showroom & Distribution Warehouse</option>
                   </select>
                 </div>
               </div>

@@ -46,10 +46,7 @@ export default function VTrackDashboardPage() {
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
 
   const branches = [
-    'Southern Olive Oil Products S.A.R.L',
-    'Main Factory Southern Olive SARL (Choueifat)',
-    'Beirut Hamra Distribution Hub',
-    'Saida Southern Retail Center'
+    'Southern Olive and Oil Products - Main'
   ];
 
   const filteredBranches = branches.filter(b => 
@@ -337,21 +334,7 @@ export default function VTrackDashboardPage() {
                           <span className="font-mono font-bold text-slate-900">{formatCurrency(85200000)}</span>
                         </div>
 
-                        <div className="flex items-center justify-between text-slate-700 p-2 bg-slate-50 rounded border border-slate-200">
-                          <div>
-                            <span className="font-bold text-slate-900 block">Saida Southern Distribution Center</span>
-                            <span className="text-[10px] text-slate-500">Wholesale Depot & Fleet Terminal</span>
-                          </div>
-                          <span className="font-mono font-bold text-slate-900">{formatCurrency(32100000)}</span>
-                        </div>
 
-                        <div className="flex items-center justify-between text-slate-700 p-2 bg-slate-50 rounded border border-slate-200">
-                          <div>
-                            <span className="font-bold text-slate-900 block">Beirut Hamra Distribution Hub</span>
-                            <span className="text-[10px] text-slate-500">Retail & Van Direct Delivery</span>
-                          </div>
-                          <span className="font-mono font-bold text-slate-900">{formatCurrency(15160000)}</span>
-                        </div>
                       </div>
 
                       {/* Active Status Badge */}

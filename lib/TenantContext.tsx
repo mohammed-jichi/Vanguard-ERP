@@ -1208,3 +1208,12 @@ export const useTenant = () => {
 };
 
 export default TenantContext;
+
+// Canonical Tenant Facilities Re-exports (Single Source of Truth)
+export {
+  CANONICAL_FACILITY_1300,
+  getTenantFacilities,
+  getTenantFacilityOptions,
+  useTenantFacilities
+} from './tenantFacilities';
+export type { TenantFacility } from './tenantFacilities';

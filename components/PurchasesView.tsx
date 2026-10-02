@@ -89,7 +89,7 @@ const DEFAULT_SUPPLIERS = [
   { id: 'SUP-08', name: 'Mrs Randa', contact: 'Mrs Randa', address: 'Nabatieh Governorate, Lebanon', phone: '+961 7 760 120', email: 'randa.olives@gmail.com' },
   { id: 'SUP-09', name: 'Safa Bakery', contact: 'Safa Bakery Admin', address: 'Beirut, Lebanon', phone: '+961 1 820 400', email: 'safabakery@gmail.com' },
   { id: 'SUP-10', name: 'Sedi Hisham', contact: 'Abir', address: 'Beirut, Lebanon', phone: '+961 1 300 200', email: 'sedihisham@gmail.com' },
-  { id: 'SUP-11', name: 'SOOL', contact: 'Southern Olive Oil Products Logistics', address: 'Choueifat Main Facility, Lebanon', phone: '+961 5 432 100', email: 'procurement@sool.com.lb' },
+  { id: 'SUP-11', name: 'SOOL', contact: 'Southern Olive Oil Products Logistics', address: 'Old Saida Road, Choueifat, Lebanon', phone: '+961 5 432 100', email: 'procurement@sool.com.lb' },
   { id: 'SUP-12', name: 'Zahwe', contact: 'Zahwe Agriculture', address: 'Kfarroummane, Nabatieh, Lebanon', phone: '+961 70 798 854', email: 'zahwe.farm@gmail.com' },
   { id: 'SUP-13', name: 'Al-Dayaa', contact: 'Al Dayaa Co.', address: 'Marjeyoun District, South Lebanon', phone: '+961 70 325 417', email: 'aldayaa@gmail.com' },
   { id: 'SUP-14', name: 'Abdo Trading Est.', contact: 'Abdo Trading Est.', address: 'Saida Coastal Highway, Lebanon', phone: '+961 7 725 330', email: 'abdo.trading@gmail.com' }
@@ -124,10 +124,10 @@ export default function PurchasesView() {
   const [fromDate, setFromDate] = useState('01-Sep-2026');
   const [toDate, setToDate] = useState('08-Sep-2026');
 
-  // Locations state: All Locations and Choueifat Main Facility
+  // Locations state: All Locations and Southern Olive and Oil Products - Main
   const [locations, setLocations] = useState<string[]>([
     'All Locations',
-    'Choueifat Main Facility'
+    'Southern Olive and Oil Products - Main'
   ]);
 
   // Currencies state (audio 2: default LL, USD, EUR)
@@ -164,7 +164,7 @@ export default function PurchasesView() {
       supplierAddress: 'Hasbaya, South Governorate, Lebanon',
       supplierPhone: '+961 7 550 123',
       supplierEmail: 'info@hasbayafarmers.org',
-      location: 'Choueifat Main Facility',
+      location: 'Southern Olive and Oil Products - Main',
       currency: 'LL',
       currencyRate: 1,
       notes: 'Extra Virgin cold-press delivery - Harvest lot #12',
@@ -211,7 +211,7 @@ export default function PurchasesView() {
       supplierAddress: 'Mkalles Industrial Zone, Beirut, Lebanon',
       supplierPhone: '+961 1 432 890',
       supplierEmail: 'sales@medglass-lb.com',
-      location: 'Choueifat Main Facility',
+      location: 'Southern Olive and Oil Products - Main',
       currency: 'LL',
       currencyRate: 1,
       notes: 'Dark UV Marasca bottles pallets for upcoming bottling run',
@@ -258,7 +258,7 @@ export default function PurchasesView() {
       supplierAddress: 'Dekwaneh Industrial Park, Beirut, Lebanon',
       supplierPhone: '+961 1 689 201',
       supplierEmail: 'contact@levanttin.com',
-      location: 'Choueifat Main Facility',
+      location: 'Southern Olive and Oil Products - Main',
       currency: 'LL',
       currencyRate: 1,
       notes: 'Sealed metal cans with traditional Lebanese cedar imprint',
@@ -355,7 +355,7 @@ export default function PurchasesView() {
 
   // Form State (matching Screenshot 2)
   const [formBranch, setFormBranch] = useState('Main Branch');
-  const [formLocation, setFormLocation] = useState('Choueifat Main Facility');
+  const [formLocation, setFormLocation] = useState('Southern Olive and Oil Products - Main');
   const [formDate, setFormDate] = useState('08-Sep-2026');
   const [formDeliveryDate, setFormDeliveryDate] = useState('08-Sep-2026');
   const [formCurrency, setFormCurrency] = useState('LL');
@@ -462,7 +462,7 @@ export default function PurchasesView() {
     setActiveEditingInvoiceId(null);
     setSelectedSupplierName('');
     setFormBranch('Zeit w zaytoun ljanoub');
-    setFormLocation('Choueifat Main Facility');
+    setFormLocation('Southern Olive and Oil Products - Main');
     setFormDate('08-Sep-2026');
     setFormDeliveryDate('08-Sep-2026');
     setFormCurrency('LL');

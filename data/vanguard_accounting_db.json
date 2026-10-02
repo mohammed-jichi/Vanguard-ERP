@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-02T12:49:08.000Z",
+  "last_updated": "2026-10-02T13:53:01.129Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4532,7 +4532,7 @@
       "category": "APPROVAL",
       "subject": "Authorization Required: High-Value Payment Voucher PV-2026-9042 ($18,500.00)",
       "sender": "Sami Mansour (Financial Controller)",
-      "branch": "Choueifat Main Facility",
+      "branch": "Southern Olive and Oil Products - Main",
       "time": "10:45 AM",
       "date": "Today",
       "status": "REJECTED",
@@ -4558,7 +4558,7 @@
       "category": "APPROVAL",
       "subject": "Unclosed Expense Reconciliation: EV-2026-8979 ($4,250.00)",
       "sender": "Hassan Bazzi (Operations Supervisor)",
-      "branch": "Beirut Distribution Hub",
+      "branch": "Southern Olive and Oil Products - Main",
       "time": "09:15 AM",
       "date": "Today",
       "status": "APPROVED",
@@ -4646,6 +4646,25 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-d6dfc8c",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (d6dfc8c) - Enforce auto-shrink and responsive column scaling to prevent horizontal table clipping",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "d6dfc8c7bfe34c1b01da6010b8101bc9b1256e9a",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Fleet & Distribution",
+          "Core Shell & UI",
+          "Sales & POS",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-02T12:54:41.000Z"
+    },
     {
       "id": "act-rel-ff21dd2",
       "company_id": 1300,
@@ -5993,6 +6012,20 @@
   ],
   "system_alerts": [
     {
+      "id": "alert-rel-d6dfc8c",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Enforce auto-shrink and responsive column scaling to prevent horizontal table clipping",
+      "message": "fix(print): enforce auto-shrink and responsive column scaling to prevent horizontal table clipping",
+      "timestamp": "2026-10-02T12:54:41.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "d6dfc8c7bfe34c1b01da6010b8101bc9b1256e9a",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
       "id": "alert-rel-ff21dd2",
       "type": "SYSTEM_RELEASE",
       "severity": "INFO",
@@ -6257,7 +6290,7 @@
       "nationalId": "1001122334",
       "socialSecurityNo": "CNSS-1122334",
       "brand": "Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)",
-      "branch": "1300 Choueifat Central Plant (معمل الشويفات)",
+      "branch": "Southern Olive and Oil Products - Main",
       "useBranch": true,
       "isBackoffice": true,
       "posEmployeeId": "1",
@@ -6269,7 +6302,7 @@
         "salesman": true,
         "driver": false,
         "training": false,
-        "branch": "1300 Choueifat Central Plant (معمل الشويفات)",
+        "branch": "Southern Olive and Oil Products - Main",
         "backOfficeRole": "MANAGER",
         "employeeId": "1",
         "password": "123",
@@ -6312,7 +6345,7 @@
       "nationalId": "1002938475",
       "socialSecurityNo": "CNSS-8899201",
       "brand": "Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)",
-      "branch": "1300 Choueifat Central Plant (معمل الشويفات)",
+      "branch": "Southern Olive and Oil Products - Main",
       "useBranch": true,
       "isBackoffice": true,
       "posEmployeeId": "9",
@@ -6324,7 +6357,7 @@
         "salesman": true,
         "driver": false,
         "training": false,
-        "branch": "1300 Choueifat Central Plant (معمل الشويفات)",
+        "branch": "Southern Olive and Oil Products - Main",
         "backOfficeRole": "MANAGER",
         "employeeId": "9",
         "password": "123456",
@@ -6365,7 +6398,7 @@
       "nationalId": "1003829102",
       "socialSecurityNo": "CNSS-9933503",
       "brand": "Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)",
-      "branch": "1300 Choueifat Central Plant (معمل الشويفات)",
+      "branch": "Southern Olive and Oil Products - Main",
       "useBranch": true,
       "isBackoffice": true,
       "posEmployeeId": "5",
@@ -6377,7 +6410,7 @@
         "salesman": false,
         "driver": false,
         "training": false,
-        "branch": "1300 Choueifat Central Plant (معمل الشويفات)",
+        "branch": "Southern Olive and Oil Products - Main",
         "backOfficeRole": "MANAGER",
         "employeeId": "5",
         "password": "123",
@@ -6418,7 +6451,7 @@
       "nationalId": "1009182736",
       "socialSecurityNo": "CNSS-4422115",
       "brand": "Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)",
-      "branch": "1300 Choueifat Central Plant (معمل الشويفات)",
+      "branch": "Southern Olive and Oil Products - Main",
       "useBranch": true,
       "isBackoffice": false,
       "posEmployeeId": "10",
@@ -6430,7 +6463,7 @@
         "salesman": true,
         "driver": false,
         "training": false,
-        "branch": "1300 Choueifat Central Plant (معمل الشويفات)",
+        "branch": "Southern Olive and Oil Products - Main",
         "backOfficeRole": "CASHIER",
         "employeeId": "10",
         "password": "123",

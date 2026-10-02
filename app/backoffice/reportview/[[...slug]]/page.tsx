@@ -401,7 +401,7 @@ export default function MasterReportViewPage() {
               executionDate="06-Sep-2026"
               showRate={salesFilterValues.showRate !== undefined ? Boolean(salesFilterValues.showRate) : true}
               groupByDate={salesFilterValues.groupByDate !== undefined ? Boolean(salesFilterValues.groupByDate) : true}
-              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
               invoices={filteredInvoices}
               reportTitle={activeMeta.name || selectedReport}
               code={activeMeta.code}
@@ -450,7 +450,7 @@ export default function MasterReportViewPage() {
               hideToolbar={true}
               dynamicPeriodText={`Fiscal Cycle: ${fromDate} to ${toDate}`}
               executionDate="29-Aug-2026"
-              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
               filterValues={{
                 ...salesFilterValues,
                 branch,
@@ -468,7 +468,7 @@ export default function MasterReportViewPage() {
               executionDate="06-Sep-2026"
               fromDate={fromDate}
               toDate={toDate}
-              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
               filterValues={{
                 ...salesFilterValues,
                 branch,
@@ -489,7 +489,7 @@ export default function MasterReportViewPage() {
               fromDate={fromDate}
               toDate={toDate}
               reportTitle={activeMeta.name}
-              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
               filterValues={{
                 ...salesFilterValues,
                 branch,
@@ -509,7 +509,7 @@ export default function MasterReportViewPage() {
               hideToolbar={false}
               dynamicPeriodText={`Audit Window: ${fromDate} to ${toDate}`}
               executionDate="06-Sep-2026"
-              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
               fromDate={fromDate}
               toDate={toDate}
               reportTitle={activeMeta.name}
@@ -559,7 +559,7 @@ export default function MasterReportViewPage() {
               dynamicPeriodText="Grouping: Wholesales / Clients / Key Accounts"
               executionDate="06-Sep-2026"
               reportTitle={activeMeta.name}
-              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
               filterValues={salesFilterValues}
             />
           )}
@@ -574,7 +574,7 @@ export default function MasterReportViewPage() {
               code={activeMeta.code}
               dynamicPeriodText={`Attendance Window: ${fromDate} to ${toDate}`}
               executionDate="06-Sep-2026"
-              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
               filterValues={salesFilterValues}
             />
           )}
@@ -601,7 +601,7 @@ export default function MasterReportViewPage() {
               code={activeMeta.code}
               dynamicPeriodText={`Audit Window: ${fromDate} to ${toDate}`}
               executionDate="06-Sep-2026"
-              branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+              branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
               filterValues={salesFilterValues}
             />
           )}
@@ -659,7 +659,7 @@ export default function MasterReportViewPage() {
                 }}
                 dynamicPeriodText={`Audit Window: ${fromDate} to ${toDate}`}
                 executionDate="06-Sep-2026"
-                branch={branch === 'ALL' ? 'Main Branch (Choueifat Main Facility)' : branch}
+                branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
                 activeCurrency={activeCurrency}
                 hideToolbar={false}
               />

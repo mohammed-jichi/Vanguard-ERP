@@ -236,14 +236,14 @@ export const SCHEMA_NO_SALE: ReportSchemaDefinition = {
     },
   ],
   sampleRowsGenerator: (filters = {}) => [
-    { id: 'NS-01', timestamp: '06-Sep-2026 09:12:44', workstation: 'POS-01 (Front Register)', employee: 'Hiba Aloulou', eventType: 'NO_SALE_POP', reason: 'Customer requested change for $50 bill', overrideBy: 'Ziad Chehab (Mgr)', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'NS-02', timestamp: '06-Sep-2026 10:45:10', workstation: 'POS-01 (Front Register)', employee: 'Hiba Aloulou', eventType: 'FLOAT_COUNT', reason: 'Mid-morning till float verification', overrideBy: 'Ziad Chehab (Mgr)', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'NS-03', timestamp: '06-Sep-2026 11:30:22', workstation: 'POS-02 (Deli Counter)', employee: 'Ahmad K.', eventType: 'SCALE_TEST', reason: 'Tare check and zero weight calibration test', overrideBy: 'Rania Eid (Sup)', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'NS-04', timestamp: '06-Sep-2026 13:15:05', workstation: 'POS-01 (Front Register)', employee: 'Samer R.', eventType: 'NO_SALE_POP', reason: 'Customer coin exchange (100k LBP to 2x 50k)', overrideBy: 'Ahmad Al-Hajj (Lead)', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'NS-05', timestamp: '06-Sep-2026 15:40:19', workstation: 'POS-03 (Express)', employee: 'Nour M.', eventType: 'DRAWER_CHECK', reason: 'Shift changeover preliminary cash reconciliation', overrideBy: 'Ziad Chehab (Mgr)', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'NS-06', timestamp: '06-Sep-2026 17:05:44', workstation: 'POS-02 (Deli Counter)', employee: 'Ahmad K.', eventType: 'NO_SALE_POP', reason: 'Supplied replacement receipt paper roll into till box', overrideBy: 'None', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'NS-07', timestamp: '06-Sep-2026 18:22:11', workstation: 'POS-04 (Warehouse)', employee: 'Hussein Mahdi', eventType: 'DOC_RETRIEVE', reason: 'Retrieved delivery bill stamp seal from till lock', overrideBy: 'Walid Sleiman', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'NS-08', timestamp: '06-Sep-2026 20:10:00', workstation: 'POS-01 (Front Register)', employee: 'Samer R.', eventType: 'Z_PREP', reason: 'Pre-EOD cash clearing into safe envelope', overrideBy: 'Ziad Chehab (Mgr)', branch: 'Main Branch (Choueifat Main Facility)' },
+    { id: 'NS-01', timestamp: '06-Sep-2026 09:12:44', workstation: 'POS-01 (Front Register)', employee: 'Hiba Aloulou', eventType: 'NO_SALE_POP', reason: 'Customer requested change for $50 bill', overrideBy: 'Ziad Chehab (Mgr)', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'NS-02', timestamp: '06-Sep-2026 10:45:10', workstation: 'POS-01 (Front Register)', employee: 'Hiba Aloulou', eventType: 'FLOAT_COUNT', reason: 'Mid-morning till float verification', overrideBy: 'Ziad Chehab (Mgr)', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'NS-03', timestamp: '06-Sep-2026 11:30:22', workstation: 'POS-02 (Deli Counter)', employee: 'Ahmad K.', eventType: 'SCALE_TEST', reason: 'Tare check and zero weight calibration test', overrideBy: 'Rania Eid (Sup)', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'NS-04', timestamp: '06-Sep-2026 13:15:05', workstation: 'POS-01 (Front Register)', employee: 'Samer R.', eventType: 'NO_SALE_POP', reason: 'Customer coin exchange (100k LBP to 2x 50k)', overrideBy: 'Ahmad Al-Hajj (Lead)', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'NS-05', timestamp: '06-Sep-2026 15:40:19', workstation: 'POS-03 (Express)', employee: 'Nour M.', eventType: 'DRAWER_CHECK', reason: 'Shift changeover preliminary cash reconciliation', overrideBy: 'Ziad Chehab (Mgr)', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'NS-06', timestamp: '06-Sep-2026 17:05:44', workstation: 'POS-02 (Deli Counter)', employee: 'Ahmad K.', eventType: 'NO_SALE_POP', reason: 'Supplied replacement receipt paper roll into till box', overrideBy: 'None', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'NS-07', timestamp: '06-Sep-2026 18:22:11', workstation: 'POS-04 (Warehouse)', employee: 'Hussein Mahdi', eventType: 'DOC_RETRIEVE', reason: 'Retrieved delivery bill stamp seal from till lock', overrideBy: 'Walid Sleiman', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'NS-08', timestamp: '06-Sep-2026 20:10:00', workstation: 'POS-01 (Front Register)', employee: 'Samer R.', eventType: 'Z_PREP', reason: 'Pre-EOD cash clearing into safe envelope', overrideBy: 'Ziad Chehab (Mgr)', branch: 'Southern Olive and Oil Products - Main' },
   ],
 };
 registerReportSchema(SCHEMA_NO_SALE);
@@ -305,11 +305,11 @@ export const SCHEMA_TRANSACTIONS_ON_HOLD: ReportSchemaDefinition = {
     },
   ],
   sampleRowsGenerator: (filters = {}) => [
-    { id: 'HOLD-01', holdRef: 'HLD-10291', holdTime: '06-Sep-2026 11:22:15', workstation: 'POS-01', cashier: 'Hiba Aloulou', customer: 'Walk-in Client (Local)', itemsCount: 4, totalAmount: 85.00, holdReason: 'Customer fetching wallet from car', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'HOLD-02', holdRef: 'HLD-10292', holdTime: '06-Sep-2026 12:05:40', workstation: 'POS-02', cashier: 'Ahmad K.', customer: 'Al-Bustan Restaurant Group', itemsCount: 8, totalAmount: 420.00, holdReason: 'Awaiting manager price confirmation', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'HOLD-03', holdRef: 'HLD-10293', holdTime: '06-Sep-2026 14:18:10', workstation: 'POS-01', cashier: 'Samer R.', customer: 'Ziad Chehab (Wholesale)', itemsCount: 12, totalAmount: 640.00, holdReason: 'Payment method switch to Whish link', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'HOLD-04', holdRef: 'HLD-10294', holdTime: '06-Sep-2026 16:30:55', workstation: 'POS-03', cashier: 'Nour M.', customer: 'Cedar Hospitality LLC', itemsCount: 3, totalAmount: 95.00, holdReason: 'Customer checking expiration date on tin', branch: 'Main Branch (Choueifat Main Facility)' },
-    { id: 'HOLD-05', holdRef: 'HLD-10295', holdTime: '06-Sep-2026 18:12:00', workstation: 'POS-04', cashier: 'Hussein Mahdi', customer: 'Byblos Gourmet Deli', itemsCount: 15, totalAmount: 1120.00, holdReason: 'Driver loading truck pending pallet scan', branch: 'Main Branch (Choueifat Main Facility)' },
+    { id: 'HOLD-01', holdRef: 'HLD-10291', holdTime: '06-Sep-2026 11:22:15', workstation: 'POS-01', cashier: 'Hiba Aloulou', customer: 'Walk-in Client (Local)', itemsCount: 4, totalAmount: 85.00, holdReason: 'Customer fetching wallet from car', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'HOLD-02', holdRef: 'HLD-10292', holdTime: '06-Sep-2026 12:05:40', workstation: 'POS-02', cashier: 'Ahmad K.', customer: 'Al-Bustan Restaurant Group', itemsCount: 8, totalAmount: 420.00, holdReason: 'Awaiting manager price confirmation', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'HOLD-03', holdRef: 'HLD-10293', holdTime: '06-Sep-2026 14:18:10', workstation: 'POS-01', cashier: 'Samer R.', customer: 'Ziad Chehab (Wholesale)', itemsCount: 12, totalAmount: 640.00, holdReason: 'Payment method switch to Whish link', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'HOLD-04', holdRef: 'HLD-10294', holdTime: '06-Sep-2026 16:30:55', workstation: 'POS-03', cashier: 'Nour M.', customer: 'Cedar Hospitality LLC', itemsCount: 3, totalAmount: 95.00, holdReason: 'Customer checking expiration date on tin', branch: 'Southern Olive and Oil Products - Main' },
+    { id: 'HOLD-05', holdRef: 'HLD-10295', holdTime: '06-Sep-2026 18:12:00', workstation: 'POS-04', cashier: 'Hussein Mahdi', customer: 'Byblos Gourmet Deli', itemsCount: 15, totalAmount: 1120.00, holdReason: 'Driver loading truck pending pallet scan', branch: 'Southern Olive and Oil Products - Main' },
   ],
 };
 registerReportSchema(SCHEMA_TRANSACTIONS_ON_HOLD);

@@ -103,7 +103,7 @@ export default function EmployeeSchedulesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [deptFilter, setDeptFilter] = useState('ALL');
   const [brandFilter, setBrandFilter] = useState('Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)');
-  const [branchFilter, setBranchFilter] = useState('1300 Choueifat Central Plant (معمل الشويفات)');
+  const [branchFilter, setBranchFilter] = useState('Southern Olive and Oil Products - Main');
   const [selectedYear, setSelectedYear] = useState('2026');
   const [activeMonthIndex, setActiveMonthIndex] = useState(0); // 0 = Jan 2026
 
@@ -780,8 +780,8 @@ export default function EmployeeSchedulesPage() {
                 onChange={(e) => setBranchFilter(e.target.value)}
                 className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer truncate"
               >
-                <option value="1300 Choueifat Central Plant (معمل الشويفات)">
-                  1300 Choueifat Central Plant
+                <option value="Southern Olive and Oil Products - Main">
+                  Southern Olive and Oil Products - Main
                 </option>
               </select>
             </div>
@@ -991,8 +991,8 @@ export default function EmployeeSchedulesPage() {
                   onChange={(e) => setBranchFilter(e.target.value)}
                   className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary truncate"
                 >
-                  <option value="1300 Choueifat Central Plant (معمل الشويفات)">
-                    1300 Choueifat Central Plant
+                  <option value="Southern Olive and Oil Products - Main">
+                    Southern Olive and Oil Products - Main
                   </option>
                 </select>
               </div>

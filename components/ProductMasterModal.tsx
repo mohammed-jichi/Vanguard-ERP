@@ -135,10 +135,10 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
 
   // Live QTOH Branch Matrix
   const [qtohMatrix, setQtohMatrix] = useState([
-    { location: 'معرض صيدا الرئيسي (Showroom)', qtoh: 45, reserved: 5, available: 40, auditDate: '2026-08-19' },
-    { location: 'مستودع المعصرة - صيدا (Pressing Mill Store)', qtoh: 250, reserved: 30, available: 220, auditDate: '2026-08-18' },
+    { location: 'معرض الشويفات الرئيسي (Main Showroom)', qtoh: 45, reserved: 5, available: 40, auditDate: '2026-08-19' },
+    { location: 'مستودع المعصرة الرئيسي (Main Mill Store)', qtoh: 250, reserved: 30, available: 220, auditDate: '2026-08-18' },
     { location: 'خزانات الزيت المركزية (Tank Room - Main)', qtoh: 850, reserved: 100, available: 750, auditDate: '2026-08-20' },
-    { location: 'فرع بيروت للتوزيع (Beirut Branch)', qtoh: 60, reserved: 10, available: 50, auditDate: '2026-08-15' },
+    { location: 'مستودع التوزيع والتجهيز (Main Distribution Hub)', qtoh: 60, reserved: 10, available: 50, auditDate: '2026-08-15' },
     { location: 'مستودع التصدير والشحن (Export Warehouse)', qtoh: 120, reserved: 0, available: 120, auditDate: '2026-08-19' }
   ]);
 

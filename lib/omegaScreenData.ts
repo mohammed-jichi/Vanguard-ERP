@@ -232,8 +232,8 @@ export const OMEGA_INITIAL_SCREENS: OmegaScreen[] = [
     SCREENNUMBER: 3,
     SCREENNAME: 'زيتون ومخللات',
     SCPICTURE: '',
-    TOTALEXCEPTIONS: 1,
-    sd_screens_branch_exception: [{ BRANCHID: 2, BRANCHNAME: '002 - Beirut' }]
+    TOTALEXCEPTIONS: 0,
+    sd_screens_branch_exception: []
   },
   {
     ID: 7354,

@@ -372,7 +372,7 @@ export default function SearchInventoryItemsModal({
                 <label className="block font-bold text-slate-600 mb-1">Location</label>
                 <select className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary">
                   <option value="0">All Locations</option>
-                  <option value="1">Choueifat Main Facility</option>
+                  <option value="1">Southern Olive and Oil Products - Main</option>
                 </select>
               </div>
             </div>

@@ -27,7 +27,7 @@ export const POS_USERS: PosUser[] = [
     name: 'Maya Khoury',
     pin: '1234',
     role: 'Cashier',
-    branch: 'Choueifat Main Facility',
+    branch: 'Southern Olive and Oil Products - Main',
     workstation: 'W#: 1',
   },
   {
@@ -35,7 +35,7 @@ export const POS_USERS: PosUser[] = [
     name: 'Hadi Sleiman',
     pin: '0000',
     role: 'Admin',
-    branch: 'Choueifat Main Facility',
+    branch: 'Southern Olive and Oil Products - Main',
     workstation: 'W#: 1',
   },
   {
@@ -43,7 +43,7 @@ export const POS_USERS: PosUser[] = [
     name: 'Ahmad Al-Hajj',
     pin: '1111',
     role: 'Cashier',
-    branch: 'Beirut Gourmet Depot',
+    branch: 'Southern Olive and Oil Products - Main',
     workstation: 'W#: 2',
   },
 ];

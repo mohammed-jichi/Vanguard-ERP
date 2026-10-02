@@ -251,11 +251,11 @@ function OperationsDashboardContent() {
 
   // 4. Variance Dialog Records (Last 10 Transactions)
   const varianceList: VarianceRecord[] = [
-    { SER: 1, PRODUCT: 'Extra Virgin Olive Oil 500ml Glass', VARIANCE: -4, LOCATION: 'Choueifat Main Facility', ADATE: '2026-09-01', BARANCHNAME: '00001 - Main Branch' },
-    { SER: 2, PRODUCT: 'Virgin Olive Oil 1L Tin', VARIANCE: +2, LOCATION: 'Choueifat Main Facility', ADATE: '2026-08-31', BARANCHNAME: '00001 - Main Branch' },
-    { SER: 3, PRODUCT: 'Extra Virgin Olive Oil 16L Bulk Tin', VARIANCE: -1, LOCATION: 'Choueifat Main Facility', ADATE: '2026-08-28', BARANCHNAME: '00001 - Main Branch' },
-    { SER: 4, PRODUCT: 'Traditional Castile Soap Bar 150g', VARIANCE: +12, LOCATION: 'Choueifat Main Facility', ADATE: '2026-08-25', BARANCHNAME: '00001 - Main Branch' },
-    { SER: 5, PRODUCT: 'Organic Cured Green Olives 1kg Jar', VARIANCE: -3, LOCATION: 'Choueifat Main Facility', ADATE: '2026-08-22', BARANCHNAME: '00001 - Main Branch' },
+    { SER: 1, PRODUCT: 'Extra Virgin Olive Oil 500ml Glass', VARIANCE: -4, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-09-01', BARANCHNAME: '00001 - Main Branch' },
+    { SER: 2, PRODUCT: 'Virgin Olive Oil 1L Tin', VARIANCE: +2, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-31', BARANCHNAME: '00001 - Main Branch' },
+    { SER: 3, PRODUCT: 'Extra Virgin Olive Oil 16L Bulk Tin', VARIANCE: -1, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-28', BARANCHNAME: '00001 - Main Branch' },
+    { SER: 4, PRODUCT: 'Traditional Castile Soap Bar 150g', VARIANCE: +12, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-25', BARANCHNAME: '00001 - Main Branch' },
+    { SER: 5, PRODUCT: 'Organic Cured Green Olives 1kg Jar', VARIANCE: -3, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-22', BARANCHNAME: '00001 - Main Branch' },
   ];
 
   // 5. Stock Categories Breakdown
@@ -439,10 +439,10 @@ function OperationsDashboardContent() {
 
   // Expired Items in Stock Tab
   const expiredItems = [
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Traditional Cured Black Olives 500g', qty: 24.00, expiry: '2026-08-25' },
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Olive Blossom Infused Hand Balm 50ml', qty: 12.00, expiry: '2026-08-28' },
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Extra Virgin Early Harvest 250ml', qty: 18.00, expiry: '2026-09-15' },
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Castile Liquid Soap 1L Refill', qty: 8.00, expiry: '2026-09-20' },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Traditional Cured Black Olives 500g', qty: 24.00, expiry: '2026-08-25' },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Olive Blossom Infused Hand Balm 50ml', qty: 12.00, expiry: '2026-08-28' },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Extra Virgin Early Harvest 250ml', qty: 18.00, expiry: '2026-09-15' },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Castile Liquid Soap 1L Refill', qty: 8.00, expiry: '2026-09-20' },
   ];
 
   // Out of Stock Items Data
@@ -464,11 +464,11 @@ function OperationsDashboardContent() {
 
   // Below Minimum Stock Level Items Data
   const belowMinStockItems = [
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Extra Virgin Olive Oil 500ml Glass', minQty: 500, qtyOH: 120 },
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Dark Green Marasca Glass Bottles 500ml', minQty: 2500, qtyOH: 840 },
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Virgin Olive Oil 1L Tin', minQty: 200, qtyOH: 45 },
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Table Olives Stuffed with Almond 500g', minQty: 150, qtyOH: 28 },
-    { branch: '00001 - Main Branch', location: 'Choueifat Main Facility', product: 'Castile Soap Unscented 150g Bar', minQty: 300, qtyOH: 75 },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Extra Virgin Olive Oil 500ml Glass', minQty: 500, qtyOH: 120 },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Dark Green Marasca Glass Bottles 500ml', minQty: 2500, qtyOH: 840 },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Virgin Olive Oil 1L Tin', minQty: 200, qtyOH: 45 },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Table Olives Stuffed with Almond 500g', minQty: 150, qtyOH: 28 },
+    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Castile Soap Unscented 150g Bar', minQty: 300, qtyOH: 75 },
   ];
 
   // Quantity Not Received Records (Matching Omega getInventoryQtyNotReceived)

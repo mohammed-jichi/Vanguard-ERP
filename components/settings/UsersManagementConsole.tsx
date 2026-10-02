@@ -41,7 +41,7 @@ const DEFAULT_BRANCH_ACCESS: BranchAccessSetting[] = [
   {
     company_name: 'منتوجات زيت وزيتون الجنوب ش.م.م. (Southern Olive and Oil Products S.A.R.L.)',
     branch_id: '1300',
-    branch_name: 'Choueifat Central Plant (معمل الشويفات)',
+    branch_name: 'Southern Olive and Oil Products - Main',
     enabled: true,
     salesman: 'Mahdi',
     workstation_id: '2000',
@@ -266,7 +266,7 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
         formRole === 'Manager'
           ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
           : 'bg-blue-100 text-blue-800 border-blue-200',
-      branch: formBranchAccess.find((b) => b.enabled)?.branch_name || 'Choueifat Central Plant (معمل الشويفات)',
+      branch: formBranchAccess.find((b) => b.enabled)?.branch_name || 'Southern Olive and Oil Products - Main',
       status: formActive ? 'ACTIVE' : 'INACTIVE',
       is_training: formIsTraining,
       expiry_date: formExpiryDate,

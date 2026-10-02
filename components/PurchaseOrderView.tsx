@@ -64,7 +64,7 @@ const INITIAL_PURCHASE_ORDERS: PurchaseOrderRecord[] = [
     id: 'PO-REC-01',
     poNumber: 'PO-2026-601',
     branch: 'Main Branch',
-    location: 'Choueifat Main Facility',
+    location: 'Southern Olive and Oil Products - Main',
     shipmentType: 'Local Delivery',
     orderDate: '2026-09-04',
     deliveryDate: '2026-09-18',
@@ -110,7 +110,7 @@ const INITIAL_PURCHASE_ORDERS: PurchaseOrderRecord[] = [
     id: 'PO-REC-02',
     poNumber: 'PO-2026-602',
     branch: 'Main Branch',
-    location: 'Choueifat Main Facility',
+    location: 'Southern Olive and Oil Products - Main',
     shipmentType: 'Land Transport',
     orderDate: '2026-09-02',
     deliveryDate: '2026-09-12',
@@ -239,7 +239,7 @@ const SUPPLIERS_CATALOG = [
   {
     name: 'SOOL',
     contact: 'Southern Olive Oil Products Logistics',
-    address: 'Choueifat Main Facility, Lebanon',
+    address: 'Old Saida Road, Choueifat, Lebanon',
     phone: '+961 5 432 100',
     email: 'procurement@sool.com.lb',
     emailCc: 'logistics@sool.com.lb'
@@ -364,7 +364,7 @@ export default function PurchaseOrderView() {
   // Form State (when showPreviewList == false)
   const [formPoNumber, setFormPoNumber] = useState('PO-2026-603');
   const [formBranch, setFormBranch] = useState('Main Branch');
-  const [formLocation, setFormLocation] = useState('Choueifat Main Facility');
+  const [formLocation, setFormLocation] = useState('Southern Olive and Oil Products - Main');
   const [formShipment, setFormShipment] = useState('Local Delivery');
   const [formOrderDate, setFormOrderDate] = useState('2026-09-10');
   const [formDeliveryDate, setFormDeliveryDate] = useState('2026-09-24');
@@ -444,7 +444,7 @@ export default function PurchaseOrderView() {
     const nextPoNum = `PO-2026-${nextSeq}`;
     setFormPoNumber(nextPoNum);
     setFormBranch('Marjeyoun Press Mill & Silos');
-    setFormLocation('Choueifat Main Facility');
+    setFormLocation('Southern Olive and Oil Products - Main');
     setFormShipment('Local Delivery');
     setFormOrderDate('2026-09-10');
     setFormDeliveryDate('2026-09-24');
@@ -1349,7 +1349,7 @@ export default function PurchaseOrderView() {
                       className="flex-1 h-[32px] px-2 bg-white border border-border rounded text-[13px] text-foreground"
                     >
                       <option value="All Locations">{t('all_locations', 'All Locations')}</option>
-                      <option value="Choueifat Main Facility">{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
+                      <option value="Southern Olive and Oil Products - Main">{t('choueifat_main_facility', 'Southern Olive and Oil Products - Main')}</option>
                     </select>
                     <button
                       type="button"

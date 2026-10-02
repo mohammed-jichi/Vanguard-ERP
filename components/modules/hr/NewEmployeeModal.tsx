@@ -96,7 +96,7 @@ export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
   posEmployeeId: '1',
   brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
   useBranch: true,
-  branchName: '1300 Choueifat Central Plant (معمل الشويفات)',
+  branchName: 'Southern Olive and Oil Products - Main',
   createBackoffice: true,
 };
 
@@ -152,7 +152,7 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     posEmployeeId: data.posEmployeeId || data.pos_login_id || (data.user_code ? String(data.user_code) : '1'),
     brand: data.brand || 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
     useBranch: data.useBranch ?? true,
-    branchName: data.branch || data.branchName || '1300 Choueifat Central Plant (معمل الشويفات)',
+    branchName: data.branch || data.branchName || 'Southern Olive and Oil Products - Main',
     createBackoffice: data.isBackoffice ?? data.createBackoffice ?? true,
   };
 }
@@ -350,7 +350,7 @@ export default function NewEmployeeModal({
 
   // Tab 3: Schedule Tab State
   const [schedBrand, setSchedBrand] = useState('Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)');
-  const [schedBranch, setSchedBranch] = useState('1300 Choueifat Central Plant (معمل الشويفات)');
+  const [schedBranch, setSchedBranch] = useState('Southern Olive and Oil Products - Main');
   const [schedYear, setSchedYear] = useState('2026');
   const [schedMonth, setSchedMonth] = useState('January');
 
@@ -1275,8 +1275,8 @@ export default function NewEmployeeModal({
                       onChange={(e) => setSchedBranch(e.target.value)}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     >
-                      <option value="1300 Choueifat Central Plant (معمل الشويفات)">
-                        1300 Choueifat Central Plant
+                      <option value="Southern Olive and Oil Products - Main">
+                        Southern Olive and Oil Products - Main
                       </option>
                     </select>
                   </div>

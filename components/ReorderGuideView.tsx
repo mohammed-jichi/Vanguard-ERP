@@ -77,7 +77,7 @@ const SEED_SUPPLIERS = [
 
 const SEED_BRANCHES = [
   { id: 1, name: 'Zeit w zaytoun ljanoub' },
-  { id: 2, name: 'Choueifat Main Facility' },
+  { id: 2, name: 'Southern Olive and Oil Products - Main' },
   { id: 0, name: 'All Branches' }
 ];
 
@@ -2189,7 +2189,7 @@ export default function ReorderGuideView() {
                 <label className="block font-bold text-slate-700 mb-1">{t('receiving_branch', 'Receiving Branch')}</label>
                 <select className="w-full h-8 px-2 border border-slate-300 rounded text-xs">
                   <option>{t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}</option>
-                  <option>{t('choueifat_main_facility', 'Choueifat Main Facility')}</option>
+                  <option>{t('choueifat_main_facility', 'Southern Olive and Oil Products - Main')}</option>
                 </select>
               </div>
 

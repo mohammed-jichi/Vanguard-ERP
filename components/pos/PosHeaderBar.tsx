@@ -71,7 +71,7 @@ export default function PosHeaderBar({
         </div>
 
         <div className="hidden lg:flex items-center gap-2 pl-3 border-l border-slate-700 text-slate-300">
-          <span className="font-semibold">{currentUser?.branch || 'Choueifat Main Facility'}</span>
+          <span className="font-semibold">{currentUser?.branch || 'Southern Olive and Oil Products - Main'}</span>
           <span className="font-mono text-amber-400 font-bold px-1.5 py-0.5 bg-amber-950/60 border border-amber-800/60 rounded">
             {currentUser?.workstation || 'W#: 1'}
           </span>

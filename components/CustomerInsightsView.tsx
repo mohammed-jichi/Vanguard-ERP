@@ -185,7 +185,6 @@ export default function CustomerInsightsView({ hideBreadcrumbs = false }: Custom
                     >
                       <option value="All Brands" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('all_brands', 'All Brands')}</option>
                       <option value="Southern Olive SARL" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('southern_olive_sarl', 'Southern Olive SARL')}</option>
-                      <option value="Beirut Branch" style={{ color: '#0f172a', opacity: 1, WebkitTextFillColor: '#0f172a', backgroundColor: '#ffffff' }} className="text-slate-900 bg-white font-bold">{t('beirut_branch', 'Beirut Branch')}</option>
                     </select>
                     <ChevronDown className="w-4 h-4 text-slate-600 absolute right-2.5 top-2.5 pointer-events-none" />
                   </div>

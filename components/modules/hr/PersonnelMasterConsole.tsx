@@ -87,7 +87,7 @@ export default function PersonnelMasterConsole() {
 
   // Top Ribbon Controls
   const [selectedBrand, setSelectedBrand] = useState('Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)');
-  const [selectedBranch, setSelectedBranch] = useState('1300 Choueifat Central Plant (معمل الشويفات)');
+  const [selectedBranch, setSelectedBranch] = useState('Southern Olive and Oil Products - Main');
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -264,8 +264,8 @@ export default function PersonnelMasterConsole() {
               onChange={(e) => setSelectedBranch(e.target.value)}
               className="px-3 py-2 text-xs font-bold text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
             >
-              <option value="1300 Choueifat Central Plant (معمل الشويفات)">
-                1300 Choueifat Central Plant (معمل الشويفات)
+              <option value="Southern Olive and Oil Products - Main">
+                Southern Olive and Oil Products - Main
               </option>
             </select>
 

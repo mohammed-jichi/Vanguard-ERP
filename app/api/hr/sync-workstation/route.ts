@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       id: configId,
       employee_id: String(employeeId),
       employee_name: employeeName || 'Employee',
-      branch: branch || '1300 Choueifat Central Plant (معمل الشويفات)',
+      branch: branch || 'Southern Olive and Oil Products - Main',
       workstation_authority: workstationAuthority || {
         accessBackOffice: true,
         backOfficeRole: 'MANAGER',

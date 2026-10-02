@@ -16,6 +16,7 @@ import {
   hexToRgb
 } from '@/lib/omegaScreenData';
 import { useTenant } from '@/lib/TenantContext';
+import { useTenantFacilities } from '@/lib/tenantFacilities';
 import { supabase } from '@/lib/supabase';
 
 interface ToastState {
@@ -175,15 +176,13 @@ export default function ScreensView() {
   const [selectedGroupsForScreens, setSelectedGroupsForScreens] = useState<Record<number, boolean>>({});
   const [groupModalSearch, setGroupModalSearch] = useState('');
 
+  const { facilities } = useTenantFacilities();
+
   // New Screen Form State
   const [newScreenName, setNewScreenName] = useState('');
   const [newScreenImage, setNewScreenImage] = useState<string | null>(null);
   const [newScreenPredefined, setNewScreenPredefined] = useState<string>('');
-  const [newScreenBranches, setNewScreenBranches] = useState<Record<string, boolean>>({
-    'branch_1': false,
-    'branch_2': false,
-    'branch_3': false
-  });
+  const [newScreenBranches, setNewScreenBranches] = useState<Record<string, boolean>>({});
   const [newScreenImageCollapsed, setNewScreenImageCollapsed] = useState(false);
   const [newScreenBranchCollapsed, setNewScreenBranchCollapsed] = useState(false);
 
@@ -191,13 +190,20 @@ export default function ScreensView() {
   const [editScreenTarget, setEditScreenTarget] = useState<OmegaScreen | null>(null);
   const [editScreenName, setEditScreenName] = useState('');
   const [editScreenImage, setEditScreenImage] = useState<string | null>(null);
-  const [editScreenBranches, setEditScreenBranches] = useState<Record<string, boolean>>({
-    'branch_1': false,
-    'branch_2': false,
-    'branch_3': false
-  });
+  const [editScreenBranches, setEditScreenBranches] = useState<Record<string, boolean>>({});
   const [editScreenImageCollapsed, setEditScreenImageCollapsed] = useState(false);
   const [editScreenBranchCollapsed, setEditScreenBranchCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (facilities.length > 0) {
+      const initial: Record<string, boolean> = {};
+      facilities.forEach(f => {
+        initial[f.id] = true;
+      });
+      setNewScreenBranches(prev => Object.keys(prev).length === 0 ? initial : prev);
+      setEditScreenBranches(prev => Object.keys(prev).length === 0 ? initial : prev);
+    }
+  }, [facilities]);
 
   // Color Picker State
   const [applyColorToAll, setApplyColorToAll] = useState(false);
@@ -1474,39 +1480,19 @@ export default function ScreensView() {
                 </button>
                 {!newScreenBranchCollapsed && (
                   <div className="p-3 bg-white space-y-2 text-xs">
-                    <label className="flex items-center gap-2 text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={newScreenBranches['branch_1']}
-                        onChange={e =>
-                          setNewScreenBranches(prev => ({ ...prev, branch_1: e.target.checked }))
-                        }
-                        className="rounded text-blue-600"
-                      />
-                      <span>001 - Choueifat Main Facility</span>
-                    </label>
-                    <label className="flex items-center gap-2 text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={newScreenBranches['branch_2']}
-                        onChange={e =>
-                          setNewScreenBranches(prev => ({ ...prev, branch_2: e.target.checked }))
-                        }
-                        className="rounded text-blue-600"
-                      />
-                      <span>002 - Beirut Distribution Hub</span>
-                    </label>
-                    <label className="flex items-center gap-2 text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={newScreenBranches['branch_3']}
-                        onChange={e =>
-                          setNewScreenBranches(prev => ({ ...prev, branch_3: e.target.checked }))
-                        }
-                        className="rounded text-blue-600"
-                      />
-                      <span>003 - Saida Southern Center</span>
-                    </label>
+                    {facilities.map((fac) => (
+                      <label key={fac.id} className="flex items-center gap-2 text-slate-700 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={newScreenBranches[fac.id] ?? true}
+                          onChange={e =>
+                            setNewScreenBranches(prev => ({ ...prev, [fac.id]: e.target.checked }))
+                          }
+                          className="rounded text-blue-600"
+                        />
+                        <span>{fac.facilityCode} - {fac.branchName}</span>
+                      </label>
+                    ))}
                   </div>
                 )}
               </div>
@@ -1626,39 +1612,19 @@ export default function ScreensView() {
                 </button>
                 {!editScreenBranchCollapsed && (
                   <div className="p-3 bg-white space-y-2 text-xs">
-                    <label className="flex items-center gap-2 text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={editScreenBranches['branch_1']}
-                        onChange={e =>
-                          setEditScreenBranches(prev => ({ ...prev, branch_1: e.target.checked }))
-                        }
-                        className="rounded text-blue-600"
-                      />
-                      <span>001 - Choueifat Main Facility</span>
-                    </label>
-                    <label className="flex items-center gap-2 text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={editScreenBranches['branch_2']}
-                        onChange={e =>
-                          setEditScreenBranches(prev => ({ ...prev, branch_2: e.target.checked }))
-                        }
-                        className="rounded text-blue-600"
-                      />
-                      <span>002 - Beirut Distribution Hub</span>
-                    </label>
-                    <label className="flex items-center gap-2 text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={editScreenBranches['branch_3']}
-                        onChange={e =>
-                          setEditScreenBranches(prev => ({ ...prev, branch_3: e.target.checked }))
-                        }
-                        className="rounded text-blue-600"
-                      />
-                      <span>003 - Saida Southern Center</span>
-                    </label>
+                    {facilities.map((fac) => (
+                      <label key={fac.id} className="flex items-center gap-2 text-slate-700 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={editScreenBranches[fac.id] ?? true}
+                          onChange={e =>
+                            setEditScreenBranches(prev => ({ ...prev, [fac.id]: e.target.checked }))
+                          }
+                          className="rounded text-blue-600"
+                        />
+                        <span>{fac.facilityCode} - {fac.branchName}</span>
+                      </label>
+                    ))}
                   </div>
                 )}
               </div>

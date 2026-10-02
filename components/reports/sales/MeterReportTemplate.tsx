@@ -71,7 +71,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 4850.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Morning shift continuous invoice roll',
   },
   {
@@ -91,7 +91,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: undefined,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Change making & cash float audit verification',
   },
   {
@@ -111,7 +111,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 128.50,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Authorized line cancellation audit log',
   },
   {
@@ -131,7 +131,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 65.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Returned defective cap seals',
   },
   {
@@ -151,7 +151,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 4850.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Fiscal hardware memory accumulator',
   },
   {
@@ -171,7 +171,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 2450.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Physical till drawer intake',
   },
   {
@@ -191,7 +191,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 1240.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Electronic terminal bridge',
   },
   {
@@ -211,7 +211,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 140.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Managerial & promotional markdowns',
   },
   {
@@ -231,7 +231,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 312.40,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Official Lebanese VAT accrual counter',
   },
 
@@ -253,7 +253,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 6180.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Peak evening retail volume',
   },
   {
@@ -273,7 +273,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: undefined,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Cash change drawers without sales',
   },
   {
@@ -293,7 +293,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 84.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Item mis-scans corrected by supervisor',
   },
   {
@@ -313,7 +313,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 6180.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Totalizer accumulated gross revenue',
   },
 
@@ -335,7 +335,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 11030.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'End of Day Master Z-Report closure',
   },
   {
@@ -355,7 +355,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: undefined,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Total no-sale key opens verified',
   },
   {
@@ -375,7 +375,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 11030.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Full fiscal day total turnover',
   },
 
@@ -399,7 +399,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 3140.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Bulk olive oil and pressed olive packages',
   },
   {
@@ -419,7 +419,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: undefined,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Tare check and weight calibration pop',
   },
   {
@@ -439,7 +439,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 45.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Scale re-weight void ticket',
   },
   {
@@ -459,7 +459,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 0.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Zero return claims registered',
   },
   {
@@ -479,7 +479,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 3140.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Deli counter gross turnover',
   },
   {
@@ -499,7 +499,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 2090.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Mid-day non-reset X audit inspection',
   },
 
@@ -523,7 +523,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 2890.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Single bottle grab-and-go sales',
   },
   {
@@ -543,7 +543,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: undefined,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Drawer inspection verification',
   },
   {
@@ -563,7 +563,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 12.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Customer payment change void',
   },
   {
@@ -583,7 +583,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 2890.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Fast lane totalizer',
   },
   {
@@ -603,7 +603,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 980.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Late evening retail orders',
   },
 
@@ -627,7 +627,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 14200.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Commercial tin pallets dispatched',
   },
   {
@@ -647,7 +647,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: undefined,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Dispatch receipt box check',
   },
   {
@@ -667,7 +667,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 14200.00,
     currency: 'USD',
-    branch: 'Main Branch (Choueifat Main Facility)',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'High value wholesale delivery invoices',
   },
 
@@ -732,11 +732,11 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     amountValue: 3420.00,
     currency: 'USD',
     branch: 'Beirut Depot',
-    notes: 'Beirut store register counter',
+    notes: 'Main facility register counter',
   },
 
   // ==========================================
-  // Sidon Hub - POS-01
+  // Southern Olive Main Facility - POS-01
   // ==========================================
   {
     id: 'MTR-S01-01',
@@ -755,8 +755,8 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: 2680.00,
     currency: 'USD',
-    branch: 'Sidon Hub',
-    notes: 'Sidon coastal retail branch',
+    branch: 'Southern Olive and Oil Products - Main',
+    notes: 'Main facility retail counter',
   },
   {
     id: 'MTR-S01-02',
@@ -775,7 +775,7 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: false,
     amountValue: undefined,
     currency: 'USD',
-    branch: 'Sidon Hub',
+    branch: 'Southern Olive and Oil Products - Main',
     notes: 'Float change audit',
   },
   {
@@ -795,8 +795,8 @@ const MOCK_METER_RECORDS: MeterAuditRecord[] = [
     isCurrency: true,
     amountValue: 2680.00,
     currency: 'USD',
-    branch: 'Sidon Hub',
-    notes: 'Sidon till accumulator',
+    branch: 'Southern Olive and Oil Products - Main',
+    notes: 'Main till accumulator',
   },
 ];
 
@@ -809,7 +809,7 @@ export const MeterReportTemplate: React.FC<MeterReportTemplateProps> = ({
   hideToolbar = false,
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   fromDate = '01-Aug-2026',
   toDate = '27-Aug-2026',
   filterValues = {},

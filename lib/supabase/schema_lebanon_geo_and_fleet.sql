@@ -33,9 +33,7 @@ CREATE TABLE IF NOT EXISTS branches (
 );
 
 INSERT INTO branches (branch_id, tenant_id, code, name, region) VALUES
-('BR_001', '00001', 'BR_001', '001 - Choueifat Main Facility', 'Mount Lebanon'),
-('BR_002', '00001', 'BR_002', '002 - Beirut Distribution Hub', 'Beirut'),
-('BR_003', '00001', 'BR_003', '003 - Saida Southern Center', 'South Lebanon'),
+('1', '1300', 'SO-HQ-MAIN-01', 'Southern Olive and Oil Products - Main', 'Mount Lebanon'),
 ('BR_004', '00001', 'BR_004', '004 - Zahle Bekaa Branch', 'Bekaa')
 ON CONFLICT (code) DO NOTHING;
 
@@ -46,7 +44,7 @@ CREATE TABLE IF NOT EXISTS delivery_corridors (
     title_ar VARCHAR(150) NOT NULL,
     title_en VARCHAR(150) NOT NULL,
     frequency_schedule VARCHAR(100) NOT NULL,
-    origin_point VARCHAR(100) DEFAULT 'Choueifat Main Facility',
+    origin_point VARCHAR(100) DEFAULT 'Southern Olive and Oil Products - Main',
     highway_route TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

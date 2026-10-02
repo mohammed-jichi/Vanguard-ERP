@@ -23,12 +23,7 @@ export interface MasterCategory {
 }
 
 export const branchesList = [
-  { id: '001', code: 'BR_001', name: '001 - Choueifat Main Facility', region: 'Mount Lebanon' },
-  { id: '002', code: 'BR_002', name: '002 - Beirut Distribution Hub', region: 'Beirut' },
-  { id: '003', code: 'BR_003', name: '003 - Saida Southern Center', region: 'South Lebanon' },
-  { id: '004', code: 'BR_004', name: '004 - Zahle Bekaa Branch', region: 'Bekaa' },
-  { id: '005', code: 'BR_005', name: '005 - Tripoli North Depot', region: 'North Lebanon' },
-  { id: '006', code: 'BR_006', name: '006 - Nabatieh Center', region: 'South Lebanon' },
+  { id: '1300', code: 'SO-HQ-MAIN-01', name: 'Southern Olive and Oil Products - Main', region: 'Mount Lebanon' },
 ];
 
 export function getEodDateOptions() {

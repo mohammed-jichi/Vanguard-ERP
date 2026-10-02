@@ -497,10 +497,10 @@ export default function AuthenticOmegaSalesWorkstation({
   const [salesSerialModalOpen, setSalesSerialModalOpen] = useState(false);
   const [salesSerialTargetItem, setSalesSerialTargetItem] = useState<any>(null);
   const [salesAvailableSerials] = useState([
-    { id: 'SN-VNG-9901', expiry: '2027-12-31', loc: 'Choueifat Main Facility' },
-    { id: 'SN-VNG-9902', expiry: '2027-12-31', loc: 'Choueifat Main Facility' },
-    { id: 'SN-VNG-9903', expiry: '2028-06-30', loc: 'Choueifat Main Facility' },
-    { id: 'SN-VNG-9904', expiry: '2028-06-30', loc: 'Choueifat Main Facility' }
+    { id: 'SN-VNG-9901', expiry: '2027-12-31', loc: 'Southern Olive and Oil Products - Main' },
+    { id: 'SN-VNG-9902', expiry: '2027-12-31', loc: 'Southern Olive and Oil Products - Main' },
+    { id: 'SN-VNG-9903', expiry: '2028-06-30', loc: 'Southern Olive and Oil Products - Main' },
+    { id: 'SN-VNG-9904', expiry: '2028-06-30', loc: 'Southern Olive and Oil Products - Main' }
   ]);
   const [salesSelectedSerials, setSalesSelectedSerials] = useState<string[]>(['SN-VNG-9901']);
   const [isQuotationsModalOpen, setIsQuotationsModalOpen] = useState(false);
@@ -533,7 +533,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'TIN',
           unitPrice: 115.00,
           total: 345.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         },
         {
           id: 'q-item-2',
@@ -544,7 +544,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 1.25,
           total: 75.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         }
       ]
     },
@@ -567,7 +567,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 9.50,
           total: 475.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         },
         {
           id: 'q-item-4',
@@ -578,7 +578,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 1.37,
           total: 205.50,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         }
       ]
     },
@@ -601,7 +601,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'TIN',
           unitPrice: 115.00,
           total: 1150.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         },
         {
           id: 'q-item-6',
@@ -612,7 +612,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 0.50,
           total: 90.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         }
       ]
     },
@@ -635,7 +635,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'TIN',
           unitPrice: 115.00,
           total: 920.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         },
         {
           id: 'q-item-8',
@@ -646,7 +646,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 0.60,
           total: 30.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         }
       ]
     }
@@ -688,7 +688,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 0.50,
           total: 12.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         },
         {
           id: 'OACV250MLB103',
@@ -699,7 +699,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 1.11,
           total: 22.20,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         },
         {
           id: 'PGM250MLB103',
@@ -710,7 +710,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 0.67,
           total: 20.10,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         }
       ]
     },
@@ -730,7 +730,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 0.56,
           total: 28.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         },
         {
           id: 'CARW250GB103',
@@ -741,7 +741,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 0.56,
           total: 28.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         }
       ]
     }
@@ -954,7 +954,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'TIN',
           unitPrice: 115.00,
           total: 230.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         },
         {
           id: 'item-2',
@@ -965,7 +965,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: 'BOT',
           unitPrice: 0.50,
           total: 36.00,
-          location: 'Choueifat Main Facility'
+          location: 'Southern Olive and Oil Products - Main'
         }
       ],
       subtotal: 266.00,
@@ -1171,7 +1171,7 @@ export default function AuthenticOmegaSalesWorkstation({
           unit: item.unit,
           unitPrice: item.price,
           total: item.price,
-          location: 'Choueifat Main Facility',
+          location: 'Southern Olive and Oil Products - Main',
           cost: item.cost
         };
         return [...prev, newItem];
@@ -2550,7 +2550,7 @@ export default function AuthenticOmegaSalesWorkstation({
                           className="w-full bg-white border border-slate-200 rounded px-1 py-0.5 text-[11px] font-normal text-slate-700 shadow-2xs"
                         >
                           <option value="All Locations">All Locations</option>
-                          <option value="Choueifat Main Facility">Choueifat Main Facility</option>
+                          <option value="Southern Olive and Oil Products - Main">Southern Olive and Oil Products - Main</option>
                         </select>
                       </td>
                       <td className="py-2 px-2 text-center">
@@ -3049,14 +3049,14 @@ export default function AuthenticOmegaSalesWorkstation({
                 <tbody className="divide-y divide-slate-100">
                   <tr>
                     <td className="p-2 font-medium">Zeit w zaytoun ljanoub</td>
-                    <td className="p-2 text-slate-500">Choueifat Main Facility</td>
+                    <td className="p-2 text-slate-500">Southern Olive and Oil Products - Main</td>
                     <td className="p-2 text-right font-mono font-semibold">134.50</td>
                     <td className="p-2 text-right font-mono text-amber-700">12.00</td>
                     <td className="p-2 text-right font-mono font-bold text-emerald-700">122.50</td>
                   </tr>
                   <tr>
                     <td className="p-2 font-medium">Main Branch</td>
-                    <td className="p-2 text-slate-500">Choueifat Main Facility</td>
+                    <td className="p-2 text-slate-500">Southern Olive and Oil Products - Main</td>
                     <td className="p-2 text-right font-mono font-semibold">45.00</td>
                     <td className="p-2 text-right font-mono text-amber-700">0.00</td>
                     <td className="p-2 text-right font-mono font-bold text-emerald-700">45.00</td>

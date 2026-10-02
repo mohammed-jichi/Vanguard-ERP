@@ -52,7 +52,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
   code,
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   filterValues = {},
 }) => {
   const { t } = useLanguage();

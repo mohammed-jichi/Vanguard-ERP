@@ -12,7 +12,7 @@ export const DEFAULT_BRANCH_ACCESS: BranchAccessSetting[] = [
   {
     company_name: 'منتوجات زيت وزيتون الجنوب ش.م.م.',
     branch_id: '1300',
-    branch_name: 'معمل الشويفات المركزي (Choueifat Facility)',
+    branch_name: 'Southern Olive and Oil Products - Main',
     enabled: true,
     salesman: 'Mahdi',
     workstation_id: '2000',

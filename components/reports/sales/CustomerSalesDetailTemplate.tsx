@@ -31,7 +31,7 @@ export const CustomerSalesDetailTemplate: React.FC<CustomerSalesDetailTemplatePr
   fromDate = '01-Aug-2026',
   toDate = '27-Aug-2026',
   topN = 10,
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   filterValues = {},
 }) => {
   const period = dynamicPeriodText || `Period: ${fromDate} to ${toDate}`;

@@ -87,7 +87,7 @@ const EXTENDED_FLEET_DELIVERIES: DispatchedOrder[] = [
     id: 'ORD-103354',
     orderNo: 'ORD-103354',
     sourceType: 'SOUTHERN_OLIVE',
-    customerName: 'Beirut Gourmet Depot Store',
+    customerName: 'Cedar Gourmet Boutique Store',
     phone: '01-382910',
     corridorId: 1,
     tripNo: 2,

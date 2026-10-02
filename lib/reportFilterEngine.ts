@@ -189,17 +189,17 @@ export const REASON_MAPPINGS: Record<string, string> = {
 };
 
 export const BRANCH_MAPPINGS: Record<string, string> = {
-  'main': 'Main Branch',
-  'main_branch': 'Main Branch',
-  'choueifat': 'Main Branch',
-  'choueifat_facility': 'Main Branch',
-  'beirut': 'Beirut Depot',
-  'beirut_depot': 'Beirut Depot',
-  'verdun': 'Beirut Depot',
-  'sidon': 'Sidon Hub',
-  'sidon_hub': 'Sidon Hub',
-  'tripoli': 'Tripoli Northern Depot',
-  'tripoli_depot': 'Tripoli Northern Depot',
+  'main': 'Southern Olive and Oil Products - Main',
+  'main_branch': 'Southern Olive and Oil Products - Main',
+  'choueifat': 'Southern Olive and Oil Products - Main',
+  'choueifat_facility': 'Southern Olive and Oil Products - Main',
+  'beirut': 'Southern Olive and Oil Products - Main',
+  'beirut_depot': 'Southern Olive and Oil Products - Main',
+  'verdun': 'Southern Olive and Oil Products - Main',
+  'sidon': 'Southern Olive and Oil Products - Main',
+  'sidon_hub': 'Southern Olive and Oil Products - Main',
+  'tripoli': 'Southern Olive and Oil Products - Main',
+  'tripoli_depot': 'Southern Olive and Oil Products - Main',
 };
 
 export const CHANNEL_MAPPINGS: Record<string, string> = {

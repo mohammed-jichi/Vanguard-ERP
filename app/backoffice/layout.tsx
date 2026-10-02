@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { TenantProvider, useTenant } from '@/lib/TenantContext';
+import { useTenantFacilities, TenantFacility } from '@/lib/tenantFacilities';
 import { useLanguage } from '@/lib/LanguageContext';
 import { resolveTenantRouteCode } from '@/lib/authTenantResolver';
 import { subscribeToAccountingSync } from '@/lib/accountingPersistenceService';
@@ -92,11 +93,18 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
   const [activeDrawerTab, setActiveDrawerTab] = useState<'UPDATES' | 'ALERTS' | 'ACTIVITIES' | 'HELP' | 'DARK'>('UPDATES');
   const [isSuperAdminImpersonating, setIsSuperAdminImpersonating] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const { facilities, activeFacility } = useTenantFacilities();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isLangModalOpen, setIsLangModalOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
-  const [activeBranch, setActiveBranch] = useState<string>('1300 Choueifat Central Plant (معمل الشويفات)');
+  const [activeBranch, setActiveBranch] = useState<string>(activeFacility.branchName);
   const [branchDropdownOpen, setBranchDropdownOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (activeFacility?.branchName) {
+      setActiveBranch(activeFacility.branchName);
+    }
+  }, [activeFacility?.branchName]);
 
   const { language, dir, setLanguage, t } = useLanguage();
   const orgId = currentTenant?.companyId ? String(currentTenant.companyId) : resolveTenantRouteCode(currentTenant?.id);
@@ -495,25 +503,24 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   <div className="px-3 py-1.5 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                     Select Active Facility
                   </div>
-                  {[
-                    { id: 'choueifat', name: '1300 Choueifat Central Plant (معمل الشويفات)', active: true },
-                    { id: 'beirut', name: 'Beirut Distribution Hub (مستودع بيروت)', active: false },
-                    { id: 'saida', name: 'Saida Coastal Press (معصرة صيدا)', active: false },
-                  ].map((br) => (
+                  {facilities.map((br: TenantFacility) => (
                     <button
                       key={br.id}
                       type="button"
                       onClick={() => {
-                        setActiveBranch(br.name);
+                        setActiveBranch(br.branchName);
                         setBranchDropdownOpen(false);
                       }}
                       className={`w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center justify-between transition-colors ${
-                        activeBranch === br.name ? 'bg-amber-50/70 font-bold text-amber-950' : 'text-slate-700'
+                        activeBranch === br.branchName ? 'bg-amber-50/70 font-bold text-amber-950' : 'text-slate-700'
                       }`}
                     >
-                      <span className="truncate">{br.name}</span>
-                      {activeBranch === br.name && (
-                        <span className="text-[9px] bg-emerald-100 text-emerald-800 font-black px-1.5 py-0.2 rounded shrink-0 ml-1">
+                      <div className="flex flex-col truncate pr-2">
+                        <span className="font-bold text-slate-900 truncate">{br.branchName}</span>
+                        <span className="text-[10px] text-slate-500 font-mono truncate">{br.facilityCode} &bull; {br.address}</span>
+                      </div>
+                      {activeBranch === br.branchName && (
+                        <span className="text-[9px] bg-emerald-100 text-emerald-800 font-black px-1.5 py-0.5 rounded shrink-0">
                           ACTIVE
                         </span>
                       )}

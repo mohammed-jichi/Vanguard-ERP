@@ -96,9 +96,9 @@ export const MASTER_REPORTS_SCHEMAS: Record<string, MasterReportSchema> = {
       { key: 'net', header: 'net total ($)', widthPct: '9%', align: 'right', isMonospace: true, isCurrency: true },
     ],
     sampleRowsGenerator: () => [
-      { invoice: 'INV-2026-0891', dateTime: '2026-08-28 10:45 AM', branch: 'Choueifat Main', customer: 'Al-Baraka Supermarket S.A.R.L', rep: 'Ahmad', payment: 'WHISH', subtotal: 1450.0, net: 1400.0 },
-      { invoice: 'INV-2026-0892', dateTime: '2026-08-28 11:15 AM', branch: 'Beirut Branch', customer: 'Al-Nour Food Establishment', rep: 'Hiba', payment: 'CASH', subtotal: 890.0, net: 890.0 },
-      { invoice: 'INV-2026-0893', dateTime: '2026-08-29 02:30 PM', branch: 'Choueifat Main', customer: 'Al-Kheir Olive Center', rep: 'Hussein', payment: 'CREDIT', subtotal: 3100.0, net: 3000.0 },
+      { invoice: 'INV-2026-0891', dateTime: '2026-08-28 10:45 AM', branch: 'Southern Olive and Oil Products - Main', customer: 'Al-Baraka Supermarket S.A.R.L', rep: 'Ahmad', payment: 'WHISH', subtotal: 1450.0, net: 1400.0 },
+      { invoice: 'INV-2026-0892', dateTime: '2026-08-28 11:15 AM', branch: 'Southern Olive and Oil Products - Main', customer: 'Al-Nour Food Establishment', rep: 'Hiba', payment: 'CASH', subtotal: 890.0, net: 890.0 },
+      { invoice: 'INV-2026-0893', dateTime: '2026-08-29 02:30 PM', branch: 'Southern Olive and Oil Products - Main', customer: 'Al-Kheir Olive Center', rep: 'Hussein', payment: 'CREDIT', subtotal: 3100.0, net: 3000.0 },
     ],
   },
 

@@ -11,7 +11,7 @@ export default function CostCentersPage() {
       <div className="border-b border-slate-200 pb-3">
         <h1 className="text-xl font-bold text-slate-900">{t('branches_cost_centers_title', 'Branches & Factory Cost Centers')}</h1>
         <p className="text-xs text-slate-600 font-medium">
-          {t('branches_cost_centers_desc', 'Choueifat Pressing Plant, Beirut Distribution, and Fleet Operations cost allocation')}
+          {t('branches_cost_centers_desc', 'Southern Olive and Oil Products - Main Facility cost allocation')}
         </p>
       </div>
       <div className="bg-white p-6 rounded-2xl border border-slate-200 text-center text-slate-500">

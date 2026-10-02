@@ -287,7 +287,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           {/* FACILITY CONTEXT SLOT */}
           <div className="flex items-center gap-1.5 bg-[#252538] border border-[#373752] px-3 py-1.5 rounded-full text-xs font-bold text-amber-300 shadow-inner">
             <Building2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span className="truncate max-w-[240px]">#1300 Choueifat Central Plant (معمل الشويفات)</span>
+            <span className="truncate max-w-[240px]">#1300 Southern Olive and Oil Products - Main (SO-HQ-MAIN-01)</span>
           </div>
         </div>
 

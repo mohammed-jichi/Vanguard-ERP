@@ -92,7 +92,7 @@ export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMast
   code,
   dynamicPeriodText,
   executionDate = '06-Sep-2026',
-  branch = 'Main Branch (Choueifat Main Facility)',
+  branch = 'Southern Olive and Oil Products - Main',
   filterValues,
 }) => {
   const cleanPeriod = useMemo(() => {

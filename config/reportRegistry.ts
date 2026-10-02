@@ -68,11 +68,7 @@ export const STANDARD_BRANCH_FIELD: ReportFilterFieldConfig = {
   defaultValue: 'ALL',
   options: [
     { label: 'All Branches (Consolidated)', value: 'ALL' },
-    { label: 'Main Branch (Choueifat Facility)', value: 'Main Branch' },
-    { label: 'Choueifat Main Facility', value: 'Choueifat Main Facility' },
-    { label: 'Beirut Gourmet Depot (Verdun)', value: 'Beirut Gourmet Depot' },
-    { label: 'Sidon Hub & Plant', value: 'Sidon Hub' },
-    { label: 'Tripoli Northern Depot', value: 'Tripoli Depot' },
+    { label: 'Southern Olive and Oil Products - Main', value: 'Southern Olive and Oil Products - Main' },
   ],
 };
 
@@ -83,10 +79,7 @@ export const STANDARD_MULTI_BRANCH_FIELD: ReportFilterFieldConfig = {
   defaultValue: 'ALL',
   options: [
     { label: 'All Branches (Consolidated Comparison)', value: 'ALL' },
-    { label: 'Choueifat Main vs Beirut Gourmet Depot', value: 'CHOUEIFAT_VS_BEIRUT' },
-    { label: 'Choueifat Main vs Sidon Hub', value: 'CHOUEIFAT_VS_SIDON' },
-    { label: 'Beirut Depot vs Tripoli Northern Depot', value: 'BEIRUT_VS_TRIPOLI' },
-    { label: 'Top 3 Active Retail Locations', value: 'TOP_3_RETAIL' },
+    { label: 'Southern Olive and Oil Products - Main', value: 'Southern Olive and Oil Products - Main' },
   ],
 };
 

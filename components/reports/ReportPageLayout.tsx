@@ -814,7 +814,7 @@ export function ReportTableWrapper({
   executionDate,
   periodText,
   pageInfo = 'Page 1 of 1',
-  branchInfo = 'Branch: Choueifat Main Facility (Southern Olive Oil Products S.A.R.L)',
+  branchInfo = 'Branch: Southern Olive and Oil Products - Main',
   totalRecordsCount,
   pagination,
   isLoading = false,
@@ -900,7 +900,7 @@ export function ReportTableWrapper({
           {/* ================================================================= */}
           <StandardReportHeader
             companyName="Southern Olive Oil S.A.R.L."
-            hqAddress="Choueifat Central Highway, Lebanon"
+            hqAddress="Old Saida Road, Choueifat, Lebanon"
             companyWebsite="www.southernolive-lb.com"
             hqPhone="Tel / Support: +961 05 430 000"
             printDate={displayDate}

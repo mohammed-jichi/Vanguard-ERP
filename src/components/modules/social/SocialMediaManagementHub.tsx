@@ -299,7 +299,7 @@ export default function SocialMediaManagementHub({
   // Canned Replies State
   const [cannedReplies, setCannedReplies] = useState([
     { shortcut: '/prices', text: '17.5L Olive Oil Tin: $110 | Pomegranate Molasses: $6' },
-    { shortcut: '/locations', text: 'Branches: Choueifat Main Highway | Beirut Branch' },
+    { shortcut: '/locations', text: 'Branch: Southern Olive and Oil Products - Main' },
     { shortcut: '/delivery', text: 'Fast delivery across Lebanon with Cash or Whish Money on delivery.' },
   ]);
   const [newShortcut, setNewShortcut] = useState('');

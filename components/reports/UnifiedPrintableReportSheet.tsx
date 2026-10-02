@@ -47,7 +47,7 @@ export function getPaperSizeClasses(size: PaperSize = 'A4', orientation: 'portra
  * Purges duplicate "Branch: Branch:" and legacy distortions
  */
 export function sanitizeFacilityName(branch?: string): string {
-  if (!branch) return 'Facility: Choueifat Main Plant';
+  if (!branch) return 'Facility: Southern Olive and Oil Products - Main';
   let cleaned = branch
     .replace(/^Branch:\s*/gi, '')
     .replace(/^Branch:\s*/gi, '')
@@ -56,11 +56,13 @@ export function sanitizeFacilityName(branch?: string): string {
 
   // Purge legacy distortions
   cleaned = cleaned.replace(/\s*\(\s*Zeit w zaytoun ljanoub\s*\)/gi, '');
-  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Choueifat Main Plant');
+  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Southern Olive and Oil Products - Main');
   cleaned = cleaned.replace(/\s*\(\s*Choueifat Main Facility\s*\)/gi, '');
+  cleaned = cleaned.replace(/Choueifat Main Plant/gi, 'Southern Olive and Oil Products - Main');
+  cleaned = cleaned.replace(/Choueifat Main Facility/gi, 'Southern Olive and Oil Products - Main');
 
-  if (!cleaned || cleaned.toLowerCase() === 'main branch') {
-    cleaned = 'Choueifat Main Plant';
+  if (!cleaned || cleaned.toLowerCase() === 'main branch' || cleaned.toLowerCase() === 'all' || cleaned.toLowerCase() === 'all branches') {
+    cleaned = 'Southern Olive and Oil Products - Main';
   }
 
   return `Facility: ${cleaned}`;
