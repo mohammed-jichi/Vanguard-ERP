@@ -1182,7 +1182,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     title="Filter by Facility"
                   >
                     <option value="ALL" className="!text-black !font-bold bg-white">All Facilities (Consolidated Enterprise - 1300)</option>
-                    <option value="1300-01" className="!text-black !font-bold bg-white">1300-01 - Choueifat Main Facility</option>
+                    <option value="1300-01" className="!text-black !font-bold bg-white">1300-01 - Southern Olive and Oil Products - Main</option>
                   </select>
 
                   {showInvoiceFilter && !['Profit by category summary', 'Profit by category by department', 'Profit by item summary', 'Profit by Invoices Summary', 'Profit By Invoices'].includes(selectedReport || '') && (

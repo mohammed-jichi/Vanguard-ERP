@@ -262,8 +262,8 @@ export default function ReportsMasterLayout() {
                   onChange={(e) => setBranch(e.target.value)}
                   className="p-1.5 bg-white border border-slate-300 rounded font-semibold text-xs focus:outline-none cursor-pointer"
                 >
-                  <option value="ALL">All Operating Branches</option>
-                  <option value="Southern Olive and Oil Products - Main">SO-HQ-MAIN-01 &bull; Southern Olive and Oil Products - Main</option>
+                  <option value="ALL">All Facilities (Consolidated Enterprise - 1300)</option>
+                  <option value="1300-01">1300-01 - Southern Olive and Oil Products - Main</option>
                 </select>
               </div>
 
@@ -316,7 +316,7 @@ export default function ReportsMasterLayout() {
 
               <div className="flex justify-between items-center text-[10.5px] font-mono mt-2 pt-1 border-t border-slate-200 text-slate-700">
                 <div>Period: 01-Aug-2026 to 31-Aug-2026</div>
-                <div>Branch: {branch === 'ALL' ? 'Southern Olive Oil Products S.A.R.L' : branch}</div>
+                <div>Branch: {branch === 'ALL' ? 'Consolidated - All Facilities' : 'Facility: [1300-01] Southern Olive and Oil Products - Main'}</div>
               </div>
             </div>
 

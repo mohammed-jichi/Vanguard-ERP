@@ -79,7 +79,7 @@ export default function UnifiedModuleReportsHub({
   setToDate,
   branch = 'ALL',
   setBranch,
-  branchOptions = ['All Facilities (Consolidated Enterprise - 1300)', '1300-01 - Choueifat Main Facility']
+  branchOptions = ['All Facilities (Consolidated Enterprise - 1300)', '1300-01 - Southern Olive and Oil Products - Main']
 }: UnifiedModuleReportsHubProps) {
   const { t, dir } = useLanguage();
   const [isReportListOpen, setIsReportListOpen] = useState(true);

@@ -47,18 +47,19 @@ export function getPaperSizeClasses(size: PaperSize = 'A4', orientation: 'portra
  * Purges duplicate "Branch: Branch:" and legacy distortions
  */
 export function sanitizeFacilityName(branch?: string): string {
-  if (!branch) return 'Facility: 1300-01 - Choueifat Main Facility';
+  if (!branch) return 'Facility: [1300-01] Southern Olive and Oil Products - Main';
   const lower = branch.trim().toLowerCase();
 
   // Consolidated enterprise check
   if (
     lower === 'all' ||
     lower === 'all branches' ||
+    lower === 'all operating branches' ||
     lower === 'all facilities' ||
     lower.includes('consolidated') ||
     lower.includes('enterprise - 1300')
   ) {
-    return 'Facility: Consolidated All Facilities (Enterprise - 1300)';
+    return 'Consolidated - All Facilities';
   }
 
   let cleaned = branch
@@ -69,12 +70,24 @@ export function sanitizeFacilityName(branch?: string): string {
 
   // Purge legacy distortions
   cleaned = cleaned.replace(/\s*\(\s*Zeit w zaytoun ljanoub\s*\)/gi, '');
-  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, '1300-01 - Choueifat Main Facility');
+  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Southern Olive and Oil Products - Main');
   cleaned = cleaned.replace(/\s*\(\s*Choueifat Main Facility\s*\)/gi, '');
-  cleaned = cleaned.replace(/Choueifat Main Plant/gi, '1300-01 - Choueifat Main Facility');
+  cleaned = cleaned.replace(/Choueifat Main Plant/gi, 'Southern Olive and Oil Products - Main');
+
+  if (cleaned.startsWith('[1300-') || cleaned.startsWith('Facility: [1300-')) {
+    return cleaned.startsWith('Facility:') ? cleaned : `Facility: ${cleaned}`;
+  }
+
+  if (cleaned.startsWith('1300-01')) {
+    return 'Facility: [1300-01] Southern Olive and Oil Products - Main';
+  }
 
   if (cleaned.startsWith('1300-')) {
-    return `Facility: ${cleaned}`;
+    const match = cleaned.match(/^(1300-\d+)\s*[-–•:]*\s*(.*)$/);
+    if (match) {
+      return `Facility: [${match[1]}] ${match[2] || 'Branch Facility'}`;
+    }
+    return `Facility: [${cleaned}]`;
   }
 
   if (
@@ -83,7 +96,7 @@ export function sanitizeFacilityName(branch?: string): string {
     lower.includes('southern olive and oil products - main') ||
     lower.includes('choueifat')
   ) {
-    cleaned = '1300-01 - Choueifat Main Facility';
+    return 'Facility: [1300-01] Southern Olive and Oil Products - Main';
   }
 
   return `Facility: ${cleaned}`;

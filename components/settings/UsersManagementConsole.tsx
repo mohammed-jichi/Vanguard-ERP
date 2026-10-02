@@ -565,11 +565,11 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
                         <span>{user.role}</span>
                         {user.access_scope === 'RESTRICTED_FACILITY' ? (
                           <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                            Restricted: {user.assigned_facility_id || '1300-01'}
+                            Facility Operator [{user.assigned_facility_id || '1300-01'}]
                           </span>
                         ) : (
                           <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                            Global 1300
+                            Enterprise Admin (All Facilities)
                           </span>
                         )}
                       </div>
@@ -799,6 +799,69 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
                   <option value="Manager">Manager</option>
                   <option value="Limited Access">Limited Access</option>
                 </select>
+              </div>
+
+              {/* Operational Facility Access Scope (Enterprise Admin vs Facility Operator) */}
+              <div className="space-y-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <label className="text-xs font-black text-slate-800 block uppercase tracking-wider">
+                  Operational Access Scope & Facility Permissions
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <label className={`flex items-start gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
+                    formAccessScope === 'GLOBAL_TENANT'
+                      ? 'bg-blue-50/80 border-blue-400 text-blue-950 font-bold shadow-2xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="access_scope"
+                      value="GLOBAL_TENANT"
+                      checked={formAccessScope === 'GLOBAL_TENANT'}
+                      onChange={() => setFormAccessScope('GLOBAL_TENANT')}
+                      className="mt-0.5 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <div>
+                      <div className="font-bold">Enterprise Admin (All Facilities)</div>
+                      <div className="text-[11px] opacity-75 font-normal">Unrestricted visibility across Tenant 1300 and all sub-facilities</div>
+                    </div>
+                  </label>
+
+                  <label className={`flex items-start gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
+                    formAccessScope === 'RESTRICTED_FACILITY'
+                      ? 'bg-amber-50/80 border-amber-400 text-amber-950 font-bold shadow-2xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="access_scope"
+                      value="RESTRICTED_FACILITY"
+                      checked={formAccessScope === 'RESTRICTED_FACILITY'}
+                      onChange={() => setFormAccessScope('RESTRICTED_FACILITY')}
+                      className="mt-0.5 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                    />
+                    <div>
+                      <div className="font-bold">Facility Operator</div>
+                      <div className="text-[11px] opacity-75 font-normal">Scoped strictly to assigned facility (locks POS registers, default warehouses & data)</div>
+                    </div>
+                  </label>
+                </div>
+
+                {formAccessScope === 'RESTRICTED_FACILITY' && (
+                  <div className="pt-1.5 space-y-1">
+                    <label className="text-[11px] font-bold text-amber-900 block">
+                      Assigned Facility Lock:
+                    </label>
+                    <select
+                      value={formAssignedFacilityId}
+                      onChange={(e) => setFormAssignedFacilityId(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs font-bold text-slate-900 bg-white border border-amber-300 rounded-lg outline-none focus:border-amber-500"
+                    >
+                      <option value="1300-01">1300-01 - Southern Olive and Oil Products - Main</option>
+                      <option value="1300-02">1300-02 - Beirut Distribution Hub</option>
+                      <option value="1300-03">1300-03 - Saida Southern Center</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               {/* Middle Section: Status & Metadata */}

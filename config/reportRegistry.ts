@@ -68,7 +68,7 @@ export const STANDARD_BRANCH_FIELD: ReportFilterFieldConfig = {
   defaultValue: 'ALL',
   options: [
     { label: 'All Facilities (Consolidated Enterprise - 1300)', value: 'ALL' },
-    { label: '1300-01 - Choueifat Main Facility', value: '1300-01' },
+    { label: '1300-01 - Southern Olive and Oil Products - Main', value: '1300-01' },
   ],
 };
 
@@ -79,7 +79,7 @@ export const STANDARD_MULTI_BRANCH_FIELD: ReportFilterFieldConfig = {
   defaultValue: 'ALL',
   options: [
     { label: 'All Facilities (Consolidated Enterprise - 1300)', value: 'ALL' },
-    { label: '1300-01 - Choueifat Main Facility', value: '1300-01' },
+    { label: '1300-01 - Southern Olive and Oil Products - Main', value: '1300-01' },
   ],
 };
 

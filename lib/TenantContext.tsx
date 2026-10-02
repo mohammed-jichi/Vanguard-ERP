@@ -172,6 +172,9 @@ export interface TenantCompany {
   id: string;
   companyId?: number | string;
   company_id?: number | string;
+  tenant_id?: number | string;
+  facility_id?: string;
+  facilityId?: string;
   name: string;
   slug: string;
   brandNameAr: string;
@@ -266,7 +269,7 @@ export const SOUTHERN_OLIVE_OFFICIAL_LICENSE: TenantLicense = {
   ]
 };
 
-export type FacilityAccessScope = 'GLOBAL_TENANT' | 'RESTRICTED_FACILITY';
+export type FacilityAccessScope = 'GLOBAL_TENANT' | 'RESTRICTED_FACILITY' | 'ENTERPRISE_ADMIN' | 'FACILITY_OPERATOR';
 
 export interface TenantUser {
   id: string;
@@ -305,6 +308,9 @@ const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   id: '00000000-0000-0000-0000-000000000001',
   companyId: 1300,
   company_id: 1300,
+  tenant_id: 1300,
+  facility_id: '1300-01',
+  facilityId: '1300-01',
   name: 'Southern Olive and Oil Products S.A.R.L',
   slug: 'southern-olive',
   brandNameAr: 'منتوجات زيت وزيتون الجنوب',
@@ -347,8 +353,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const facilityAccessScope: FacilityAccessScope = currentUser?.accessScope || currentUser?.facilityScope || 'GLOBAL_TENANT';
   const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN';
 
+  const isEnterpriseAdmin = isSuperAdmin || facilityAccessScope === 'GLOBAL_TENANT' || (facilityAccessScope as string) === 'ENTERPRISE_ADMIN';
+
   const canAccessFacility = (facilityId: string): boolean => {
-    if (isSuperAdmin || facilityAccessScope === 'GLOBAL_TENANT') return true;
+    if (isEnterpriseAdmin) return true;
     const assigned = currentUser?.assignedFacilityId || '1300-01';
     return facilityId === assigned || facilityId === 'ALL';
   };

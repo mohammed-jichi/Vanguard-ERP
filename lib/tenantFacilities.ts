@@ -14,11 +14,12 @@ export interface TenantFacility {
   facilityId: string | number; // '1300-01'
   compositeId: string; // '1300-01'
   tenantId: string | number; // Root Enterprise Tenant: '1300'
+  tenant_id?: string | number; // Snake-case alias for backward compatibility: '1300'
   branchIndex: number; // 1, 2, 3...
   branchId: number; // 1
   branchName: string; // 'Southern Olive and Oil Products - Main'
-  facilityName: string; // 'Choueifat Main Facility'
-  displayName: string; // '1300-01 - Choueifat Main Facility'
+  facilityName: string; // 'Southern Olive and Oil Products - Main'
+  displayName: string; // '1300-01 - Southern Olive and Oil Products - Main'
   facilityCode: string; // 'SO-HQ-MAIN-01'
   facilityType: string; // 'Corporate Mill & Commercial Hub'
   address: string; // 'Old Saida Road, Choueifat, Lebanon'
@@ -69,6 +70,7 @@ export const CONSOLIDATED_ENTERPRISE_FACILITY = {
   facilityId: 'ALL',
   compositeId: 'ALL',
   tenantId: '1300',
+  tenant_id: '1300',
   branchIndex: 0,
   branchId: 0,
   branchName: 'All Facilities (Consolidated Enterprise - 1300)',
@@ -94,17 +96,18 @@ export const CANONICAL_FACILITY_1300: TenantFacility = {
   facilityId: '1300-01',
   compositeId: '1300-01',
   tenantId: '1300',
+  tenant_id: '1300',
   branchIndex: 1,
   branchId: 1,
   branchName: 'Southern Olive and Oil Products - Main',
-  facilityName: 'Choueifat Main Facility',
-  displayName: '1300-01 - Choueifat Main Facility',
+  facilityName: 'Southern Olive and Oil Products - Main',
+  displayName: '1300-01 - Southern Olive and Oil Products - Main',
   facilityCode: 'SO-HQ-MAIN-01',
   facilityType: 'Corporate Mill & Commercial Hub',
   address: 'Old Saida Road, Choueifat, Lebanon',
   status: 'Active',
   isDefault: true,
-  name: '1300-01 - Choueifat Main Facility',
+  name: '1300-01 - Southern Olive and Oil Products - Main',
   code: 'SO-HQ-MAIN-01',
   location: 'Old Saida Road, Choueifat, Lebanon',
   region: 'Mount Lebanon',
@@ -133,6 +136,7 @@ export function createSatelliteFacility(
     facilityId: id,
     compositeId: id,
     tenantId: String(tenantId),
+    tenant_id: String(tenantId),
     branchIndex,
     branchId: branchIndex,
     branchName: `${facilityName}`,
@@ -175,6 +179,7 @@ export function getTenantFacilities(tenant?: TenantCompany | null | any): Tenant
         facilityId: compositeId,
         compositeId,
         tenantId: String(companyId),
+        tenant_id: String(companyId),
         branchIndex,
         branchId: branchIndex,
         branchName: String(f.branchName || f.name || CANONICAL_FACILITY_1300.branchName),
@@ -210,6 +215,7 @@ export function getTenantFacilities(tenant?: TenantCompany | null | any): Tenant
       facilityId: compositeId,
       compositeId,
       tenantId: String(companyId),
+      tenant_id: String(companyId),
       branchIndex: 1,
       branchId: 1,
       branchName: `${brandName} - Main`,

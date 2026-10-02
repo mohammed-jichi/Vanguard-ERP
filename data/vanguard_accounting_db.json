@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-02T14:14:15.947Z",
+  "last_updated": "2026-10-02T14:30:48.079Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,25 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-4ed0e4c",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (4ed0e4c) - Implement hierarchical facility id structure (1300-XX) with purged mock branches, multi-facility reporting, stock transfers, and RBAC scoping",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "4ed0e4c7f9a5d402c290588ca1131057a1e9ad98",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Operations & Inventory",
+          "Core Shell & UI",
+          "Settings & Governance",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-02T14:14:56.000Z"
+    },
     {
       "id": "act-rel-cabcbc6",
       "company_id": 1300,
@@ -6036,6 +6055,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-4ed0e4c",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Implement hierarchical facility id structure (1300-XX) with purged mock branches, multi-facility reporting, stock transfers, and RBAC scoping",
+      "message": "feat(core): implement hierarchical facility id structure (1300-XX) with purged mock branches, multi-facility reporting, stock transfers, and RBAC scoping",
+      "timestamp": "2026-10-02T14:14:56.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "4ed0e4c7f9a5d402c290588ca1131057a1e9ad98",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-cabcbc6",
       "type": "SYSTEM_RELEASE",

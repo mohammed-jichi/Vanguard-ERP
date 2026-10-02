@@ -1282,19 +1282,27 @@ export default function TransfersView() {
 
               {/* Right Column: Source & Destination Branches/Locations */}
               <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Source Branch */}
+                {/* Source Facility */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">{t('from_branch', 'From Branch')}</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('from_facility', 'From Facility')}</label>
                   <select
-                    value={fromBranch}
-                    onChange={(e) => setFromBranch(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
+                    value={fromFacilityId}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      setFromFacilityId(selectedId);
+                      const f = facilities.find((x) => x.id === selectedId);
+                      const label = f ? `[${f.id}] ${f.branchName}` : (selectedId === '1300-02' ? '[1300-02] Beirut Distribution Hub' : selectedId === '1300-03' ? '[1300-03] Saida Southern Center' : selectedId);
+                      setFromBranch(label);
+                    }}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-bold focus:outline-none focus:border-primary font-mono text-xs"
                   >
                     {facilities.map((f) => (
-                      <option key={f.id} value={f.branchName}>
-                        {f.branchName}
+                      <option key={f.id} value={f.id}>
+                        [{f.id}] {f.branchName}
                       </option>
                     ))}
+                    <option value="1300-02">[1300-02] Beirut Distribution Hub (Secondary Facility)</option>
+                    <option value="1300-03">[1300-03] Saida Southern Center (Secondary Facility)</option>
                   </select>
                 </div>
 
@@ -1341,19 +1349,27 @@ export default function TransfersView() {
                   </div>
                 )}
 
-                {/* Destination Branch */}
+                {/* Destination Facility */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">{t('to_branch', 'To Branch')}</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('to_facility', 'To Facility')}</label>
                   <select
-                    value={toBranch}
-                    onChange={(e) => setToBranch(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-medium focus:outline-none focus:border-primary"
+                    value={toFacilityId}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      setToFacilityId(selectedId);
+                      const f = facilities.find((x) => x.id === selectedId);
+                      const label = f ? `[${f.id}] ${f.branchName}` : (selectedId === '1300-02' ? '[1300-02] Beirut Distribution Hub' : selectedId === '1300-03' ? '[1300-03] Saida Southern Center' : selectedId);
+                      setToBranch(label);
+                    }}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 font-bold focus:outline-none focus:border-primary font-mono text-xs"
                   >
                     {facilities.map((f) => (
-                      <option key={f.id} value={f.branchName}>
-                        {f.branchName}
+                      <option key={f.id} value={f.id}>
+                        [{f.id}] {f.branchName}
                       </option>
                     ))}
+                    <option value="1300-02">[1300-02] Beirut Distribution Hub (Secondary Facility)</option>
+                    <option value="1300-03">[1300-03] Saida Southern Center (Secondary Facility)</option>
                   </select>
                 </div>
 
