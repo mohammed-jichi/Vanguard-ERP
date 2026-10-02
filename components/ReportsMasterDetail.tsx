@@ -406,7 +406,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [period, setPeriod] = useState<string>(initialMasterRange.preset);
   const [fromDate, setFromDate] = useState<string>(initialMasterRange.fromDate);
   const [toDate, setToDate] = useState<string>(initialMasterRange.toDate);
-  const [selectedBranch, setSelectedBranch] = useState<string>('All Branches');
+  const [selectedBranch, setSelectedBranch] = useState<string>('ALL');
   const [invoiceFilter, setInvoiceFilter] = useState<string>('All Invoices');
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isCustomCategoryOpen, setIsCustomCategoryOpen] = useState<boolean>(false);
@@ -455,7 +455,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [activePeriod, setActivePeriod] = useState<string>(initialMasterRange.preset);
   const [activeFromDate, setActiveFromDate] = useState<string>(initialMasterRange.fromDate);
   const [activeToDate, setActiveToDate] = useState<string>(initialMasterRange.toDate);
-  const [activeBranch, setActiveBranch] = useState<string>('All Branches');
+  const [activeBranch, setActiveBranch] = useState<string>('ALL');
   const [activeCurrency, setActiveCurrency] = useState<string>('LBP');
   const [activeTopN, setActiveTopN] = useState<number>(10);
   const [activeCustomer, setActiveCustomer] = useState<string>('All Customers');
@@ -488,7 +488,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const getDynamicPeriodText = () => {
     const isCustomerTop = selectedReport?.toLowerCase().includes('customer');
     const topText = selectedReport?.toLowerCase().includes('top n') ? ` - Top: ${activeTopN} ${isCustomerTop ? 'Customers' : 'Items'}` : '';
-    const branchText = activeBranch && activeBranch !== 'All Branches' ? ` - Branch: ${activeBranch}` : '';
+    const branchText = activeBranch && activeBranch !== 'ALL' && activeBranch !== 'All Branches' ? ` - Facility: ${activeBranch}` : ' - Consolidated Enterprise (1300)';
 
     if (activePeriod === 'Today') return `Date: 06-Sep-2026${branchText}${topText}`;
     if (activePeriod === 'Yesterday') return `Date: 05-Sep-2026${branchText}${topText}`;
@@ -628,7 +628,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     setPeriod(defRange.preset);
     setFromDate(defRange.fromDate);
     setToDate(defRange.toDate);
-    setSelectedBranch('All Branches');
+    setSelectedBranch('ALL');
     setInvoiceFilter('All Invoices');
     setTopNCount(10);
     setSelectedCustomer('All Customers');
@@ -1178,9 +1178,11 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                   <select
                     value={selectedBranch}
                     onChange={(e) => setSelectedBranch(e.target.value)}
-                    className="border border-slate-400 rounded p-1.5 text-[13px] w-48 !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
+                    className="border border-slate-400 rounded p-1.5 text-[13px] min-w-[260px] !text-black !font-bold !opacity-100 !bg-white focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm cursor-pointer"
+                    title="Filter by Facility"
                   >
-                    <option className="!text-black !font-bold bg-white">Main Branch</option>
+                    <option value="ALL" className="!text-black !font-bold bg-white">All Facilities (Consolidated Enterprise - 1300)</option>
+                    <option value="1300-01" className="!text-black !font-bold bg-white">1300-01 - Choueifat Main Facility</option>
                   </select>
 
                   {showInvoiceFilter && !['Profit by category summary', 'Profit by category by department', 'Profit by item summary', 'Profit by Invoices Summary', 'Profit By Invoices'].includes(selectedReport || '') && (

@@ -1,5 +1,36 @@
 [
   {
+    "id": "cabcbc69-85d0-4e7b-a249-cbb692c23e2e",
+    "commit_hash": "cabcbc6985d08e7bc249cbb692c23e2e96234f78",
+    "short_hash": "cabcbc6",
+    "version": "v2.0.0",
+    "title": "Eliminate hardcoded mock branches across all modules and enforce dynamic tenant facility binding",
+    "category": "fix",
+    "description": "fix(system): eliminate hardcoded mock branches across all modules and enforce dynamic tenant facility binding",
+    "bullet_points": [
+      "Resolved: eliminate hardcoded mock branches across all modules and enforce dynamic tenant facility binding",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Accounting & Finance",
+      "HR & Payroll",
+      "Sales & POS",
+      "Fleet & Distribution",
+      "Core Shell & UI",
+      "Operations & Inventory",
+      "Customer Relations (CRM)",
+      "Procurement & Purchasing",
+      "Settings & Governance",
+      "Multilingual Engine (i18n)"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-02T13:53:38.000Z",
+    "created_at": "2026-10-02T14:14:15.942Z"
+  },
+  {
     "id": "d6dfc8c7-bfe3-4c1b-a1da-6010b8101bc9",
     "commit_hash": "d6dfc8c7bfe34c1b01da6010b8101bc9b1256e9a",
     "short_hash": "d6dfc8c",

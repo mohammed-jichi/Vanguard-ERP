@@ -216,46 +216,46 @@ function OperationsDashboardContent() {
 
   // 1. Sales Dialog Records (Last 10 Transactions)
   const salesList: SalesRecord[] = [
-    { id: 1, REFERENCE: 'INV-4000035', CUSTOMER: 'Abou Hamza', COMPANY: 'Abou Hamza Nuts & Oils', TOTAL: 23940000 / 89500, DATE: '2026-09-04', BARANCHNAME: '00001 - Main Branch' },
-    { id: 2, REFERENCE: 'INV-4000036', CUSTOMER: 'George Haddad', COMPANY: 'Beirut Gourmet House', TOTAL: 18450000 / 89500, DATE: '2026-09-04', BARANCHNAME: '00001 - Main Branch' },
-    { id: 3, REFERENCE: 'INV-4000037', CUSTOMER: 'Fadi Mroueh', COMPANY: 'Nabatieh Southern Hub', TOTAL: 34100000 / 89500, DATE: '2026-09-03', BARANCHNAME: '00001 - Main Branch' },
-    { id: 4, REFERENCE: 'INV-4000038', CUSTOMER: 'Salim Kassir', COMPANY: 'Saida Wholesalers', TOTAL: 12500000 / 89500, DATE: '2026-09-03', BARANCHNAME: '00001 - Main Branch' },
-    { id: 5, REFERENCE: 'INV-4000039', CUSTOMER: 'Karim Daher', COMPANY: 'Tyre Hospitality Stores', TOTAL: 9800000 / 89500, DATE: '2026-09-02', BARANCHNAME: '00001 - Main Branch' },
-    { id: 6, REFERENCE: 'INV-4000040', CUSTOMER: 'Ziad Al-Amin', COMPANY: 'Al-Amin Superstores', TOTAL: 41200000 / 89500, DATE: '2026-09-02', BARANCHNAME: '00001 - Main Branch' },
-    { id: 7, REFERENCE: 'INV-4000041', CUSTOMER: 'Hassan Srour', COMPANY: 'Choueifat Depot Direct', TOTAL: 15600000 / 89500, DATE: '2026-09-01', BARANCHNAME: '00001 - Main Branch' },
-    { id: 8, REFERENCE: 'INV-4000042', CUSTOMER: 'Nabil Khoury', COMPANY: 'Khoury Food & Oils', TOTAL: 27800000 / 89500, DATE: '2026-08-31', BARANCHNAME: '00001 - Main Branch' },
-    { id: 9, REFERENCE: 'INV-4000043', CUSTOMER: 'Samir Bazzi', COMPANY: 'Bint Jbeil Retailers', TOTAL: 8900000 / 89500, DATE: '2026-08-30', BARANCHNAME: '00001 - Main Branch' },
-    { id: 10, REFERENCE: 'INV-4000044', CUSTOMER: 'Ahmad Chehab', COMPANY: 'Saida Wholesalers', TOTAL: 38200000 / 89500, DATE: '2026-08-29', BARANCHNAME: '00001 - Main Branch' },
+    { id: 1, REFERENCE: 'INV-4000035', CUSTOMER: 'Abou Hamza', COMPANY: 'Abou Hamza Nuts & Oils', TOTAL: 23940000 / 89500, DATE: '2026-09-04', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 2, REFERENCE: 'INV-4000036', CUSTOMER: 'George Haddad', COMPANY: 'Beirut Gourmet House', TOTAL: 18450000 / 89500, DATE: '2026-09-04', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 3, REFERENCE: 'INV-4000037', CUSTOMER: 'Fadi Mroueh', COMPANY: 'Nabatieh Southern Hub', TOTAL: 34100000 / 89500, DATE: '2026-09-03', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 4, REFERENCE: 'INV-4000038', CUSTOMER: 'Salim Kassir', COMPANY: 'Saida Wholesalers', TOTAL: 12500000 / 89500, DATE: '2026-09-03', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 5, REFERENCE: 'INV-4000039', CUSTOMER: 'Karim Daher', COMPANY: 'Tyre Hospitality Stores', TOTAL: 9800000 / 89500, DATE: '2026-09-02', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 6, REFERENCE: 'INV-4000040', CUSTOMER: 'Ziad Al-Amin', COMPANY: 'Al-Amin Superstores', TOTAL: 41200000 / 89500, DATE: '2026-09-02', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 7, REFERENCE: 'INV-4000041', CUSTOMER: 'Hassan Srour', COMPANY: 'Choueifat Depot Direct', TOTAL: 15600000 / 89500, DATE: '2026-09-01', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 8, REFERENCE: 'INV-4000042', CUSTOMER: 'Nabil Khoury', COMPANY: 'Khoury Food & Oils', TOTAL: 27800000 / 89500, DATE: '2026-08-31', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 9, REFERENCE: 'INV-4000043', CUSTOMER: 'Samir Bazzi', COMPANY: 'Bint Jbeil Retailers', TOTAL: 8900000 / 89500, DATE: '2026-08-30', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 10, REFERENCE: 'INV-4000044', CUSTOMER: 'Ahmad Chehab', COMPANY: 'Saida Wholesalers', TOTAL: 38200000 / 89500, DATE: '2026-08-29', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
   ];
 
   // 2. Purchase Dialog Records (Last 10 Transactions)
   const purchaseList: PurchaseRecord[] = [
-    { id: 1, INVOICENUMBER: 'PO-9821', SUPPLIERNAME: 'Koura Olive Growers Syndicate', SUBTOTAL: 45000.00, PURCHASEDATE: '2026-09-04', BARANCHNAME: '00001 - Main Branch' },
-    { id: 2, INVOICENUMBER: 'PO-9822', SUPPLIERNAME: 'Akkar Organic Farmers Guild', SUBTOTAL: 32500.00, PURCHASEDATE: '2026-09-03', BARANCHNAME: '00001 - Main Branch' },
-    { id: 3, INVOICENUMBER: 'PO-9823', SUPPLIERNAME: 'Lebanon Glassworks S.A.L', SUBTOTAL: 18400.00, PURCHASEDATE: '2026-09-02', BARANCHNAME: '00001 - Main Branch' },
-    { id: 4, INVOICENUMBER: 'PO-9824', SUPPLIERNAME: 'Italian Stainless Caps & Filters Co.', SUBTOTAL: 8900.00, PURCHASEDATE: '2026-08-30', BARANCHNAME: '00001 - Main Branch' },
-    { id: 5, INVOICENUMBER: 'PO-9825', SUPPLIERNAME: 'Hasbaya Olive Tree Farms', SUBTOTAL: 27600.00, PURCHASEDATE: '2026-08-28', BARANCHNAME: '00001 - Main Branch' },
-    { id: 6, INVOICENUMBER: 'PO-9826', SUPPLIERNAME: 'Marjeyoun Agricultural Supply', SUBTOTAL: 14200.00, PURCHASEDATE: '2026-08-26', BARANCHNAME: '00001 - Main Branch' },
-    { id: 7, INVOICENUMBER: 'PO-9827', SUPPLIERNAME: 'Mediterranean Label Printing Press', SUBTOTAL: 6500.00, PURCHASEDATE: '2026-08-24', BARANCHNAME: '00001 - Main Branch' },
-    { id: 8, INVOICENUMBER: 'PO-9828', SUPPLIERNAME: 'Tyre Bio-Agronomy Co.', SUBTOTAL: 11200.00, PURCHASEDATE: '2026-08-20', BARANCHNAME: '00001 - Main Branch' },
+    { id: 1, INVOICENUMBER: 'PO-9821', SUPPLIERNAME: 'Koura Olive Growers Syndicate', SUBTOTAL: 45000.00, PURCHASEDATE: '2026-09-04', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 2, INVOICENUMBER: 'PO-9822', SUPPLIERNAME: 'Akkar Organic Farmers Guild', SUBTOTAL: 32500.00, PURCHASEDATE: '2026-09-03', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 3, INVOICENUMBER: 'PO-9823', SUPPLIERNAME: 'Lebanon Glassworks S.A.L', SUBTOTAL: 18400.00, PURCHASEDATE: '2026-09-02', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 4, INVOICENUMBER: 'PO-9824', SUPPLIERNAME: 'Italian Stainless Caps & Filters Co.', SUBTOTAL: 8900.00, PURCHASEDATE: '2026-08-30', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 5, INVOICENUMBER: 'PO-9825', SUPPLIERNAME: 'Hasbaya Olive Tree Farms', SUBTOTAL: 27600.00, PURCHASEDATE: '2026-08-28', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 6, INVOICENUMBER: 'PO-9826', SUPPLIERNAME: 'Marjeyoun Agricultural Supply', SUBTOTAL: 14200.00, PURCHASEDATE: '2026-08-26', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 7, INVOICENUMBER: 'PO-9827', SUPPLIERNAME: 'Mediterranean Label Printing Press', SUBTOTAL: 6500.00, PURCHASEDATE: '2026-08-24', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { id: 8, INVOICENUMBER: 'PO-9828', SUPPLIERNAME: 'Tyre Bio-Agronomy Co.', SUBTOTAL: 11200.00, PURCHASEDATE: '2026-08-20', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
   ];
 
   // 3. Wastage Dialog Records (Last 10 Transactions)
   const wastageList: WastageRecord[] = [
-    { id: 1, SER: 'WST-2026-089', COST: 1250.00, DDATE: '2026-09-02', BARANCHNAME: '00001 - Main Branch', REASON: 'Glass Bottle Breakage during conveyor boxing' },
-    { id: 2, SER: 'WST-2026-088', COST: 890.00, DDATE: '2026-08-29', BARANCHNAME: '00001 - Main Branch', REASON: 'Sediment residue filter drain cleaning' },
-    { id: 3, SER: 'WST-2026-087', COST: 420.00, DDATE: '2026-08-27', BARANCHNAME: '00001 - Main Branch', REASON: 'Cap leak on 500ml sample tins' },
-    { id: 4, SER: 'WST-2026-086', COST: 310.00, DDATE: '2026-08-24', BARANCHNAME: '00001 - Main Branch', REASON: 'Pallet drop during forklift staging' },
-    { id: 5, SER: 'WST-2026-085', COST: 680.00, DDATE: '2026-08-21', BARANCHNAME: '00001 - Main Branch', REASON: 'Olive pressing calibration waste' },
+    { id: 1, SER: 'WST-2026-089', COST: 1250.00, DDATE: '2026-09-02', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Glass Bottle Breakage during conveyor boxing' },
+    { id: 2, SER: 'WST-2026-088', COST: 890.00, DDATE: '2026-08-29', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Sediment residue filter drain cleaning' },
+    { id: 3, SER: 'WST-2026-087', COST: 420.00, DDATE: '2026-08-27', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Cap leak on 500ml sample tins' },
+    { id: 4, SER: 'WST-2026-086', COST: 310.00, DDATE: '2026-08-24', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Pallet drop during forklift staging' },
+    { id: 5, SER: 'WST-2026-085', COST: 680.00, DDATE: '2026-08-21', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Olive pressing calibration waste' },
   ];
 
   // 4. Variance Dialog Records (Last 10 Transactions)
   const varianceList: VarianceRecord[] = [
-    { SER: 1, PRODUCT: 'Extra Virgin Olive Oil 500ml Glass', VARIANCE: -4, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-09-01', BARANCHNAME: '00001 - Main Branch' },
-    { SER: 2, PRODUCT: 'Virgin Olive Oil 1L Tin', VARIANCE: +2, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-31', BARANCHNAME: '00001 - Main Branch' },
-    { SER: 3, PRODUCT: 'Extra Virgin Olive Oil 16L Bulk Tin', VARIANCE: -1, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-28', BARANCHNAME: '00001 - Main Branch' },
-    { SER: 4, PRODUCT: 'Traditional Castile Soap Bar 150g', VARIANCE: +12, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-25', BARANCHNAME: '00001 - Main Branch' },
-    { SER: 5, PRODUCT: 'Organic Cured Green Olives 1kg Jar', VARIANCE: -3, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-22', BARANCHNAME: '00001 - Main Branch' },
+    { SER: 1, PRODUCT: 'Extra Virgin Olive Oil 500ml Glass', VARIANCE: -4, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-09-01', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { SER: 2, PRODUCT: 'Virgin Olive Oil 1L Tin', VARIANCE: +2, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-31', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { SER: 3, PRODUCT: 'Extra Virgin Olive Oil 16L Bulk Tin', VARIANCE: -1, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-28', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { SER: 4, PRODUCT: 'Traditional Castile Soap Bar 150g', VARIANCE: +12, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-25', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
+    { SER: 5, PRODUCT: 'Organic Cured Green Olives 1kg Jar', VARIANCE: -3, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-22', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
   ];
 
   // 5. Stock Categories Breakdown
@@ -352,7 +352,7 @@ function OperationsDashboardContent() {
 
   const comparativeRows = [
     {
-      branch: '00001 - Main Branch',
+      branch: '1300-01 - Choueifat Main Facility',
       vals: [112000, 58000, 24000, 26000, 18000, 15000],
       total: 253000
     }
@@ -371,7 +371,7 @@ function OperationsDashboardContent() {
   // Purchases Comparative Matrix by Category
   const purchaseComparativeRows = [
     {
-      branch: '00001 - Main Branch',
+      branch: '1300-01 - Choueifat Main Facility',
       vals: [45000, 24000, 18500, 10200, 8500, 18400],
       total: 124600
     }
@@ -401,7 +401,7 @@ function OperationsDashboardContent() {
   // Purchases by Month Matrix Data
   const purchaseMonthRows = [
     {
-      branch: '00001 - Main Branch',
+      branch: '1300-01 - Choueifat Main Facility',
       vals: [9200, 11400, 10800, 8900, 9600, 10500, 11200, 12400, 14200, 10800, 8600, 7000]
     }
   ];
@@ -409,7 +409,7 @@ function OperationsDashboardContent() {
   // Lost Goods by Month Matrix Data
   const wastageMonthRows = [
     {
-      branch: '00001 - Main Branch',
+      branch: '1300-01 - Choueifat Main Facility',
       vals: [180, 210, 195, 160, 175, 230, 240, 280, 310, 220, 190, 150]
     }
   ];
@@ -439,10 +439,10 @@ function OperationsDashboardContent() {
 
   // Expired Items in Stock Tab
   const expiredItems = [
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Traditional Cured Black Olives 500g', qty: 24.00, expiry: '2026-08-25' },
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Olive Blossom Infused Hand Balm 50ml', qty: 12.00, expiry: '2026-08-28' },
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Extra Virgin Early Harvest 250ml', qty: 18.00, expiry: '2026-09-15' },
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Castile Liquid Soap 1L Refill', qty: 8.00, expiry: '2026-09-20' },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Traditional Cured Black Olives 500g', qty: 24.00, expiry: '2026-08-25' },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Olive Blossom Infused Hand Balm 50ml', qty: 12.00, expiry: '2026-08-28' },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Extra Virgin Early Harvest 250ml', qty: 18.00, expiry: '2026-09-15' },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Castile Liquid Soap 1L Refill', qty: 8.00, expiry: '2026-09-20' },
   ];
 
   // Out of Stock Items Data
@@ -450,7 +450,7 @@ function OperationsDashboardContent() {
     {
       id: 'branch-1',
       branchId: '00001',
-      branchName: '00001 - Main Branch',
+      branchName: '1300-01 - Choueifat Main Facility',
       items: [
         { name: 'Organic Green Olive Paste with Thyme 200g', qty: 0.00 },
         { name: 'Cold Pressed Sesame & Olive Blended Oil 750ml', qty: 0.00 },
@@ -464,23 +464,23 @@ function OperationsDashboardContent() {
 
   // Below Minimum Stock Level Items Data
   const belowMinStockItems = [
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Extra Virgin Olive Oil 500ml Glass', minQty: 500, qtyOH: 120 },
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Dark Green Marasca Glass Bottles 500ml', minQty: 2500, qtyOH: 840 },
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Virgin Olive Oil 1L Tin', minQty: 200, qtyOH: 45 },
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Table Olives Stuffed with Almond 500g', minQty: 150, qtyOH: 28 },
-    { branch: '00001 - Main Branch', location: 'Southern Olive and Oil Products - Main', product: 'Castile Soap Unscented 150g Bar', minQty: 300, qtyOH: 75 },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Extra Virgin Olive Oil 500ml Glass', minQty: 500, qtyOH: 120 },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Dark Green Marasca Glass Bottles 500ml', minQty: 2500, qtyOH: 840 },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Virgin Olive Oil 1L Tin', minQty: 200, qtyOH: 45 },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Table Olives Stuffed with Almond 500g', minQty: 150, qtyOH: 28 },
+    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Castile Soap Unscented 150g Bar', minQty: 300, qtyOH: 75 },
   ];
 
   // Quantity Not Received Records (Matching Omega getInventoryQtyNotReceived)
   const pendingProductRequests = [
-    { reqNo: 'PR-2026-042', reqDate: '2026-09-02', branch: '00001 - Main Branch', item: 'Extra Virgin Olive Oil 500ml Glass', qty: 120 },
-    { reqNo: 'PR-2026-045', reqDate: '2026-09-03', branch: '00001 - Main Branch', item: 'Dark Green Marasca Glass Bottles 500ml', qty: 500 },
-    { reqNo: 'PR-2026-048', reqDate: '2026-09-04', branch: '00001 - Main Branch', item: 'Table Olives Stuffed with Almond 500g', qty: 200 },
+    { reqNo: 'PR-2026-042', reqDate: '2026-09-02', branch: '1300-01 - Choueifat Main Facility', item: 'Extra Virgin Olive Oil 500ml Glass', qty: 120 },
+    { reqNo: 'PR-2026-045', reqDate: '2026-09-03', branch: '1300-01 - Choueifat Main Facility', item: 'Dark Green Marasca Glass Bottles 500ml', qty: 500 },
+    { reqNo: 'PR-2026-048', reqDate: '2026-09-04', branch: '1300-01 - Choueifat Main Facility', item: 'Table Olives Stuffed with Almond 500g', qty: 200 },
   ];
 
   const pendingTransfers = [
-    { reqNo: 'TR-2026-018', reqDate: '2026-09-01', fromBranch: '00001 - Main Branch', toBranch: '00001 - Main Branch', item: 'Extra Virgin Olive Oil 16L Bulk Tin', qty: 45 },
-    { reqNo: 'TR-2026-021', reqDate: '2026-09-03', fromBranch: '00001 - Main Branch', toBranch: '00001 - Main Branch', item: 'Pure Castile Liquid Soap 1L Refill', qty: 30 },
+    { reqNo: 'TR-2026-018', reqDate: '2026-09-01', fromBranch: '1300-01 - Choueifat Main Facility', toBranch: '1300-01 - Choueifat Main Facility', item: 'Extra Virgin Olive Oil 16L Bulk Tin', qty: 45 },
+    { reqNo: 'TR-2026-021', reqDate: '2026-09-03', fromBranch: '1300-01 - Choueifat Main Facility', toBranch: '1300-01 - Choueifat Main Facility', item: 'Pure Castile Liquid Soap 1L Refill', qty: 30 },
   ];
 
   const totalQtyNotReceivedCount = pendingProductRequests.length + pendingTransfers.length;

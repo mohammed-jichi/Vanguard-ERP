@@ -204,8 +204,8 @@ export const REPORT_FILTER_SCHEMAS: ReportFilterSchema[] = [
         type: 'select',
         defaultValue: 'ALL',
         options: [
-          { label: 'All Branches (Consolidated)', value: 'ALL' },
-          { label: 'Southern Olive and Oil Products - Main', value: 'Southern Olive and Oil Products - Main' },
+          { label: 'All Facilities (Consolidated Enterprise - 1300)', value: 'ALL' },
+          { label: '1300-01 - Choueifat Main Facility', value: '1300-01' },
         ],
       },
       {

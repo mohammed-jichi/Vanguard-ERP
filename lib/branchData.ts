@@ -133,8 +133,9 @@ export interface BranchInfo {
 const RAW_ERP_BRANCHES: Record<string, any> = {
   '00001': {
     code: 'SO-HQ-MAIN-01',
-    id: '1300',
-    facilityId: 1300,
+    id: '1300-01',
+    facilityId: '1300-01',
+    branchIndex: 1,
     branchId: 1,
     name: 'Southern Olive and Oil Products - Main',
     arabicName: 'منتوجات زيت وزيتون الجنوب - الرئيسي',
@@ -274,8 +275,9 @@ const RAW_ERP_BRANCHES: Record<string, any> = {
 // COMPREHENSIVE MAIN BRANCH CONSOLIDATED PROFILE
 const RAW_ALL_BRANCHES_CONSOLIDATED: any = {
   code: 'SO-HQ-MAIN-01',
-  id: '1300',
-  facilityId: 1300,
+  id: '1300-01',
+  facilityId: '1300-01',
+  branchIndex: 1,
   branchId: 1,
   name: 'Southern Olive and Oil Products - Main',
   arabicName: 'منتوجات زيت وزيتون الجنوب - الرئيسي',

@@ -1,7 +1,7 @@
 /**
  * Omega ERP / Vanguard ERP - Zone Setup & Currency Setup Models & Live Seed Data
  * Section: Currency Setup (CurrSetupView) & Call Center Zone Setup (CallCenterZoneSetupView)
- * Branch: 00001 - Main Branch
+ * Branch: 1300-01 - Choueifat Main Facility
  */
 
 export interface OmegaBranchOption {
@@ -10,7 +10,7 @@ export interface OmegaBranchOption {
 }
 
 export const OMEGA_BRANCHES: OmegaBranchOption[] = [
-  { BRANCHID: 1, BARANCHNAME: 'Main Branch' }
+  { BRANCHID: 1, BARANCHNAME: '1300-01 - Choueifat Main Facility' }
 ];
 
 // ==========================================

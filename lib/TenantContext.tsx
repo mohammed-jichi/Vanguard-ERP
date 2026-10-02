@@ -266,17 +266,29 @@ export const SOUTHERN_OLIVE_OFFICIAL_LICENSE: TenantLicense = {
   ]
 };
 
+export type FacilityAccessScope = 'GLOBAL_TENANT' | 'RESTRICTED_FACILITY';
+
 export interface TenantUser {
   id: string;
   email: string;
   fullName: string;
-  role: 'SUPER_ADMIN' | 'COMPANY_ADMIN' | 'MANAGER' | 'STAFF' | 'DRIVER';
+  role: 'SUPER_ADMIN' | 'COMPANY_ADMIN' | 'MANAGER' | 'STAFF' | 'DRIVER' | 'CASHIER' | 'OPERATOR';
+  accessScope?: FacilityAccessScope;
+  facilityScope?: FacilityAccessScope;
+  assignedFacilityId?: string;
+  assignedFacilityName?: string;
+  branch?: string;
+  branch_name?: string;
 }
 
 interface TenantContextType {
   currentTenant: TenantCompany;
   currentUser: TenantUser | null;
   isSuperAdmin: boolean;
+  facilityAccessScope: FacilityAccessScope;
+  activeFacilityId: string;
+  canAccessFacility: (facilityId: string) => boolean;
+  setActiveFacilityId: (facilityId: string) => void;
   switchTenant: (company: TenantCompany) => void;
   updateTenantSettings: (settings: Partial<TenantCompany>) => Promise<{ success: boolean; error?: string }>;
   updateTenantModulesAndBranding: (
@@ -330,8 +342,16 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [registeredCompanies, setRegisteredCompanies] = useState<TenantCompany[]>(INITIAL_COMPANIES);
   const [currentTenant, setCurrentTenant] = useState<TenantCompany>(DEFAULT_SUPERADMIN_TENANT);
   const [currentUser, setCurrentUser] = useState<TenantUser | null>(null);
+  const [activeFacilityId, setActiveFacilityId] = useState<string>('1300-01');
 
+  const facilityAccessScope: FacilityAccessScope = currentUser?.accessScope || currentUser?.facilityScope || 'GLOBAL_TENANT';
   const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN';
+
+  const canAccessFacility = (facilityId: string): boolean => {
+    if (isSuperAdmin || facilityAccessScope === 'GLOBAL_TENANT') return true;
+    const assigned = currentUser?.assignedFacilityId || '1300-01';
+    return facilityId === assigned || facilityId === 'ALL';
+  };
 
   const refreshTenants = async () => {
     try {
@@ -1177,7 +1197,13 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   return (
-    <TenantContext.Provider value={{ currentTenant, currentUser, isSuperAdmin, switchTenant, updateTenantSettings, updateTenantModulesAndBranding, onboardNewTenant, refreshTenants, registeredCompanies, isModuleEnabled }}>
+    <TenantContext.Provider value={{ currentTenant, currentUser,
+        isSuperAdmin,
+        facilityAccessScope,
+        activeFacilityId,
+        canAccessFacility,
+        setActiveFacilityId,
+        switchTenant, updateTenantSettings, updateTenantModulesAndBranding, onboardNewTenant, refreshTenants, registeredCompanies, isModuleEnabled }}>
       {children}
     </TenantContext.Provider>
   );

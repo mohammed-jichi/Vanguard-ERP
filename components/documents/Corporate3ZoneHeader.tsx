@@ -8,7 +8,20 @@ import { useLanguage } from '@/lib/LanguageContext';
  * Purges duplicate "Branch: Branch:" and legacy distorted naming.
  */
 export function sanitizeFacilityName(branch?: string): string {
-  if (!branch) return 'Facility: Choueifat Main Plant';
+  if (!branch) return 'Facility: 1300-01 - Choueifat Main Facility';
+  const lower = branch.trim().toLowerCase();
+
+  // Consolidated enterprise check
+  if (
+    lower === 'all' ||
+    lower === 'all branches' ||
+    lower === 'all facilities' ||
+    lower.includes('consolidated') ||
+    lower.includes('enterprise - 1300')
+  ) {
+    return 'Facility: Consolidated All Facilities (Enterprise - 1300)';
+  }
+
   let cleaned = branch
     .replace(/^Branch:\s*/gi, '')
     .replace(/^Branch:\s*/gi, '')
@@ -17,12 +30,21 @@ export function sanitizeFacilityName(branch?: string): string {
 
   // Purge legacy distortions
   cleaned = cleaned.replace(/\s*\(\s*Zeit w zaytoun ljanoub\s*\)/gi, '');
-  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Southern Olive and Oil Products - Main');
-  cleaned = cleaned.replace(/Choueifat Main Facility/gi, 'Southern Olive and Oil Products - Main');
+  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, '1300-01 - Choueifat Main Facility');
   cleaned = cleaned.replace(/\s*\(\s*Choueifat Main Facility\s*\)/gi, '');
+  cleaned = cleaned.replace(/Choueifat Main Plant/gi, '1300-01 - Choueifat Main Facility');
 
-  if (!cleaned || cleaned.toLowerCase() === 'main branch') {
-    cleaned = 'Southern Olive and Oil Products - Main';
+  if (cleaned.startsWith('1300-')) {
+    return `Facility: ${cleaned}`;
+  }
+
+  if (
+    !cleaned ||
+    lower === 'main branch' ||
+    lower.includes('southern olive and oil products - main') ||
+    lower.includes('choueifat')
+  ) {
+    cleaned = '1300-01 - Choueifat Main Facility';
   }
 
   return `Facility: ${cleaned}`;
@@ -68,7 +90,7 @@ export interface Corporate3ZoneHeaderProps {
 export function Corporate3ZoneHeader({
   companyName = 'Southern Olive Oil S.A.R.L.',
   companyArabicName = 'منتوجات زيت وزيتون الجنوب ش.م.م',
-  hqAddress = 'Choueifat Central Highway, Lebanon',
+  hqAddress = 'Old Saida Road, Choueifat, Lebanon',
   companyWebsite = 'www.southernolive-lb.com',
   hqPhone = 'Tel / Support: +961 05 430 000',
   printDate,
@@ -77,7 +99,7 @@ export function Corporate3ZoneHeader({
   transactionDate,
   status,
   periodText,
-  facilityName = 'Facility: Choueifat Main Plant',
+  facilityName = 'Facility: 1300-01 - Choueifat Main Facility',
   facilityAddress = 'Industrial Zone, Old Saida Rd',
   facilityDirect = 'Dispatch / Cell: +961 70 000 000',
   pageInfo = 'Page 1 of 1',
@@ -99,6 +121,9 @@ export function Corporate3ZoneHeader({
 
   const cleanFacility = sanitizeFacilityName(facilityName);
   const cleanWebsite = companyWebsite.replace(/^https?:\/\//i, '');
+  const isConsolidated = cleanFacility.toLowerCase().includes('consolidated') || cleanFacility.toLowerCase().includes('enterprise');
+  const resolvedAddress = isConsolidated ? 'Enterprise Consolidated Audit' : facilityAddress;
+  const resolvedDirect = isConsolidated ? 'Tenant Master Central Dispatch' : facilityDirect;
 
   return (
     <div className={`w-full pb-3 mb-4 border-b-2 border-slate-900 font-sans text-slate-800 ${className}`}>
@@ -183,10 +208,10 @@ export function Corporate3ZoneHeader({
             {t(cleanFacility, cleanFacility)}
           </div>
           <div className="text-slate-600 font-medium">
-            {t(facilityAddress, facilityAddress)}
+            {t(resolvedAddress, resolvedAddress)}
           </div>
           <div className="text-slate-600 font-mono text-[10.5px]">
-            {facilityDirect}
+            {resolvedDirect}
           </div>
           <div className="text-slate-500 font-mono text-[10px] pt-1">
             {pageInfo}

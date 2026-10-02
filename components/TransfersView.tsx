@@ -64,6 +64,10 @@ export interface SavedTransferRecord {
   id: string;
   reqNo: string;
   reqDate: string;
+  fromFacilityId?: string;
+  toFacilityId?: string;
+  transferType?: 'INTERNAL_WAREHOUSE_MOVE' | 'INTER_FACILITY_SHIPMENT';
+  transitStatus?: 'READY_FOR_DISPATCH' | 'IN_TRANSIT' | 'ARRIVED' | 'RECEIVED' | 'INTERNAL_MOVED';
   branchSource: string;
   locSource: string;
   branchDest: string;
@@ -142,9 +146,13 @@ const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
     id: 'TRN-201',
     reqNo: 'REQ-2026-201',
     reqDate: '2026-09-05',
-    branchSource: 'Southern Olive and Oil Products - Main',
+    fromFacilityId: '1300-01',
+    toFacilityId: '1300-01',
+    transferType: 'INTERNAL_WAREHOUSE_MOVE',
+    transitStatus: 'INTERNAL_MOVED',
+    branchSource: '1300-01 - Choueifat Main Facility',
     locSource: 'Old Saida Road, Choueifat, Lebanon',
-    branchDest: 'Southern Olive and Oil Products - Main',
+    branchDest: '1300-01 - Choueifat Main Facility',
     locDest: 'Central Production & Press Store',
     status: 'POSTED',
     posted: true,
@@ -173,9 +181,13 @@ const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
     id: 'TRN-202',
     reqNo: 'REQ-2026-202',
     reqDate: '2026-09-06',
-    branchSource: 'Southern Olive and Oil Products - Main',
+    fromFacilityId: '1300-01',
+    toFacilityId: '1300-01',
+    transferType: 'INTERNAL_WAREHOUSE_MOVE',
+    transitStatus: 'INTERNAL_MOVED',
+    branchSource: '1300-01 - Choueifat Main Facility',
     locSource: 'Old Saida Road, Choueifat, Lebanon',
-    branchDest: 'Southern Olive and Oil Products - Main',
+    branchDest: '1300-01 - Choueifat Main Facility',
     locDest: 'Showroom & Distribution Warehouse',
     status: 'POSTED',
     posted: true,
@@ -204,10 +216,14 @@ const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
     id: 'TRN-203',
     reqNo: 'REQ-2026-203',
     reqDate: '2026-09-09',
-    branchSource: 'Southern Olive and Oil Products - Main',
-    locSource: 'Old Saida Road, Choueifat, Lebanon',
-    branchDest: 'Southern Olive and Oil Products - Main',
-    locDest: 'Tank Room Storage',
+    fromFacilityId: '1300-01',
+    toFacilityId: '1300-02',
+    transferType: 'INTER_FACILITY_SHIPMENT',
+    transitStatus: 'IN_TRANSIT',
+    branchSource: '1300-01 - Choueifat Main Facility',
+    locSource: 'Choueifat Logistics Loading Bay',
+    branchDest: '1300-02 - Beirut Distribution Hub',
+    locDest: 'Beirut Transit Receiving Dock',
     status: 'IN_TRANSIT',
     posted: false,
     prNumber: 'PR-904',
@@ -238,15 +254,15 @@ const INITIAL_RECURRING: RecurringTransfer[] = [
     id: 'REC-1',
     date: '2026-09-01',
     description: 'Bi-Weekly Central EVOO Replenishment',
-    src: 'Southern Olive and Oil Products - Main',
-    dest: 'Southern Olive and Oil Products - Main'
+    src: '1300-01 - Choueifat Main Facility',
+    dest: '1300-01 - Choueifat Main Facility'
   },
   {
     id: 'REC-2',
     date: '2026-09-03',
     description: 'Weekly Retail Soap & Pantry Restock',
-    src: 'Southern Olive and Oil Products - Main',
-    dest: 'Southern Olive and Oil Products - Main'
+    src: '1300-01 - Choueifat Main Facility',
+    dest: '1300-01 - Choueifat Main Facility'
   }
 ];
 
@@ -272,11 +288,13 @@ export default function TransfersView() {
   const [isReversed, setIsReversed] = useState(false);
   const [prNumber, setPrNumber] = useState('');
   
-  const [fromBranch, setFromBranch] = useState(activeFacility.branchName);
+  const [fromFacilityId, setFromFacilityId] = useState<string>('1300-01');
+  const [toFacilityId, setToFacilityId] = useState<string>('1300-01');
+  const [fromBranch, setFromBranch] = useState('1300-01 - Choueifat Main Facility');
   const [fromLocation, setFromLocation] = useState(activeFacility.address);
   const [toBrand, setToBrand] = useState('Southern Olive Oil');
-  const [toBranch, setToBranch] = useState(activeFacility.branchName);
-  const [toLocation, setToLocation] = useState(activeFacility.address);
+  const [toBranch, setToBranch] = useState('1300-01 - Choueifat Main Facility');
+  const [toLocation, setToLocation] = useState('Central Production & Press Store');
   const [isInterBrand, setIsInterBrand] = useState(false);
 
   // Table items & details
@@ -594,6 +612,10 @@ export default function TransfersView() {
       id: 'TRN-' + Date.now(),
       reqNo: transferNumber,
       reqDate: transferDate,
+      fromFacilityId,
+      toFacilityId,
+      transferType: fromFacilityId === toFacilityId ? 'INTERNAL_WAREHOUSE_MOVE' : 'INTER_FACILITY_SHIPMENT',
+      transitStatus: fromFacilityId === toFacilityId ? 'INTERNAL_MOVED' : 'IN_TRANSIT',
       branchSource: fromBranch,
       locSource: fromLocation,
       branchDest: toBranch,
@@ -1154,6 +1176,40 @@ export default function TransfersView() {
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* Transfer Classification Status Banner */}
+          <div className={`p-3 rounded-xl border flex flex-wrap items-center justify-between gap-3 text-xs ${
+            fromFacilityId === toFacilityId
+              ? 'bg-blue-50/80 border-blue-200 text-blue-950'
+              : 'bg-amber-50/80 border-amber-300 text-amber-950'
+          }`}>
+            <div className="flex items-center gap-2.5">
+              {fromFacilityId === toFacilityId ? (
+                <span className="p-1.5 bg-blue-600 text-white rounded-lg font-bold text-xs flex items-center gap-1.5 shadow-2xs">
+                  <Boxes className="w-4 h-4" /> Internal Move
+                </span>
+              ) : (
+                <span className="p-1.5 bg-amber-600 text-white rounded-lg font-bold text-xs flex items-center gap-1.5 shadow-2xs">
+                  <Truck className="w-4 h-4" /> Inter-Facility Shipment
+                </span>
+              )}
+              <div>
+                <p className="font-bold">
+                  {fromFacilityId === toFacilityId
+                    ? `Internal Warehouse Move within Facility ${fromFacilityId} (Local Inventory Relocation)`
+                    : `Inter-Facility Cargo Shipment (${fromFacilityId} ➔ ${toFacilityId}) with Transit Dispatch Pipeline`}
+                </p>
+                <p className="text-[11px] opacity-75">
+                  {fromFacilityId === toFacilityId
+                    ? 'Origin & destination are internal warehouses under the same physical facility account.'
+                    : 'Requires dispatch transit tracking: DRAFT ➔ DISPATCHED_IN_TRANSIT ➔ ARRIVED ➔ RECEIVED.'}
+                </p>
+              </div>
+            </div>
+            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded bg-white/90 border border-slate-300 shadow-2xs">
+              Path: {fromFacilityId} ➔ {toFacilityId}
+            </span>
           </div>
 
           {/* CARD 1: TRANSFER HEADER (Date, Number, From Branch/Location, To Branch/Location) */}
@@ -2021,8 +2077,8 @@ export default function TransfersView() {
                           <div className="flex items-center justify-center gap-1.5">
                             <button
                               onClick={() => {
-                                setFromBranch(rec.src.includes('Marjeyoun') ? 'Marjeyoun Press Mill & Silos' : 'Beirut Central Distribution Depot');
-                                setToBranch(rec.dest.includes('Beirut') ? 'Beirut Central Distribution Depot' : 'Choueifat POS Store Front & Showroom');
+                                setFromBranch('1300-01 - Choueifat Main Facility');
+                                setToBranch('1300-01 - Choueifat Main Facility');
                                 setRecallModalOpen(false);
                                 showToast(`Recalled template: ${rec.description}`);
                               }}

@@ -40,8 +40,10 @@ const SALESMEN_LIST = [
 const DEFAULT_BRANCH_ACCESS: BranchAccessSetting[] = [
   {
     company_name: 'منتوجات زيت وزيتون الجنوب ش.م.م. (Southern Olive and Oil Products S.A.R.L.)',
-    branch_id: '1300',
-    branch_name: 'Southern Olive and Oil Products - Main',
+    facility_id: '1300-01',
+    branch_id: '1300-01',
+    branch_name: '1300-01 - Choueifat Main Facility',
+    access_scope: 'GLOBAL_TENANT',
     enabled: true,
     salesman: 'Mahdi',
     workstation_id: '2000',
@@ -85,6 +87,8 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
   const [formEmail, setFormEmail] = useState<string>('');
   const [formPassword, setFormPassword] = useState<string>('');
   const [formRole, setFormRole] = useState<'Manager' | 'Limited Access'>('Manager');
+  const [formAccessScope, setFormAccessScope] = useState<'GLOBAL_TENANT' | 'RESTRICTED_FACILITY'>('GLOBAL_TENANT');
+  const [formAssignedFacilityId, setFormAssignedFacilityId] = useState<string>('1300-01');
   const [formIsTraining, setFormIsTraining] = useState<boolean>(false);
   const [formActive, setFormActive] = useState<boolean>(true);
   const [formCreatedBy, setFormCreatedBy] = useState<string>('Jamal Jichi');
@@ -141,6 +145,8 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     setFormEmail('');
     setFormPassword('');
     setFormRole('Manager');
+    setFormAccessScope('GLOBAL_TENANT');
+    setFormAssignedFacilityId('1300-01');
     setFormIsTraining(false);
     setFormActive(true);
     setFormCreatedBy('Jamal Jichi');
@@ -262,6 +268,9 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
       card_number: users.find((u) => u.id === editingUserId)?.card_number || `CRD-${nextUserCode}`,
       role: formRole,
       role_id: formRole === 'Manager' ? 'r_manager' : 'r_limited',
+      access_scope: formAccessScope,
+      assigned_facility_id: formAssignedFacilityId,
+      assigned_facility_name: '1300-01 - Choueifat Main Facility',
       role_badge:
         formRole === 'Manager'
           ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
@@ -550,9 +559,20 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
                       {user.email || '—'}
                     </td>
 
-                    {/* Role */}
+                    {/* Role & Facility Access Scope */}
                     <td className="py-3.5 px-4 text-xs font-semibold text-slate-800">
-                      {user.role}
+                      <div className="flex flex-col gap-1 items-start">
+                        <span>{user.role}</span>
+                        {user.access_scope === 'RESTRICTED_FACILITY' ? (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                            Restricted: {user.assigned_facility_id || '1300-01'}
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            Global 1300
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Training (Red ✖ if unchecked, Green ✔ if checked) */}

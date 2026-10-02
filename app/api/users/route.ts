@@ -15,8 +15,10 @@ const DB_FILE = path.join(DB_DIR, 'vanguard_accounting_db.json');
 
 export interface BranchAccessSetting {
   company_name: string;
+  facility_id?: string;
   branch_id: string;
   branch_name: string;
+  access_scope?: 'GLOBAL_TENANT' | 'RESTRICTED_FACILITY';
   enabled: boolean;
   salesman: string;
   workstation_id: string;
@@ -36,6 +38,9 @@ export interface EnterpriseUserRecord {
   role_id: string;
   role_badge?: string;
   branch: string;
+  access_scope?: 'GLOBAL_TENANT' | 'RESTRICTED_FACILITY';
+  assigned_facility_id?: string;
+  assigned_facility_name?: string;
   status: 'ACTIVE' | 'INACTIVE';
   is_training?: boolean;
   expiry_date?: string;
@@ -52,8 +57,10 @@ export interface EnterpriseUserRecord {
 const DEFAULT_BRANCH_ACCESS: BranchAccessSetting[] = [
   {
     company_name: 'منتوجات زيت وزيتون الجنوب ش.م.م.',
-    branch_id: '1300',
-    branch_name: 'Southern Olive and Oil Products - Main',
+    facility_id: '1300-01',
+    branch_id: '1300-01',
+    branch_name: '1300-01 - Choueifat Main Facility',
+    access_scope: 'GLOBAL_TENANT',
     enabled: true,
     salesman: 'Mahdi',
     workstation_id: '2000',

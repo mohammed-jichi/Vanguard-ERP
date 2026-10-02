@@ -711,7 +711,7 @@ export default function ScreensView() {
                   onChange={e => setBranchFilter(e.target.value)}
                   className="w-full py-2 px-3 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white text-slate-700 font-medium"
                 >
-                  <option value="1">00001 - Main Branch</option>
+                  <option value="1300-01">1300-01 - Choueifat Main Facility</option>
                 </select>
               </div>
 
