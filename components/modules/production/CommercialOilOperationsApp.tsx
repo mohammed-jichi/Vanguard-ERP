@@ -44,7 +44,7 @@ import {
   Sliders,
   DollarSign
 } from 'lucide-react';
-import { STANDARD_PACKAGING_SIZES } from '@/lib/commercialOilStorage';
+import { STANDARD_PACKAGING_SIZES } from '@/lib/commercialOilConstants';
 
 // --- TYPES ---
 export interface Supplier {

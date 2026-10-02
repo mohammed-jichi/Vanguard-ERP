@@ -97,7 +97,7 @@ const NON_TENANT_PREFIXES = new Set([
   'receiving-of-goods', 'request-reject-reasons', 'sales', 'sales-control',
   'sales-manager-dashboard', 'sales-rep', 'schedule', 'social-crm',
   'southernolive-lb', 'supersonic', 'v-driver', 'v-store', 'vanguard-hub',
-  'vtrack', '_next', 'favicon.ico'
+  'vtrack', 'oil-hub', 'operations', '_next', 'favicon.ico'
 ]);
 
 export function middleware(request: NextRequest) {
@@ -105,6 +105,18 @@ export function middleware(request: NextRequest) {
 
   // 1. Skip auth callback APIs immediately
   if (EXCLUDED_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+    return NextResponse.next();
+  }
+
+  // 1.1 Explicit bypass & pass-through for standalone Commercial Oil Operations & Oil Hub
+  if (
+    pathname === '/oil-hub' ||
+    pathname.startsWith('/oil-hub/') ||
+    pathname === '/operations/oil-production' ||
+    pathname.startsWith('/operations/oil-production/') ||
+    pathname === '/backoffice/oil-production' ||
+    pathname.startsWith('/backoffice/oil-production/')
+  ) {
     return NextResponse.next();
   }
 

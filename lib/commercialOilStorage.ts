@@ -8,6 +8,8 @@
 import fs from 'fs';
 import path from 'path';
 import { WarehouseService } from './warehouseStorage';
+import { STANDARD_PACKAGING_SIZES } from './commercialOilConstants';
+export { STANDARD_PACKAGING_SIZES };
 
 export interface StorageTank {
   id: string;
@@ -164,17 +166,7 @@ interface CommercialOilDbState {
   lastUpdated: string;
 }
 
-// 8 Mandatory Standard Packaging Sizes
-export const STANDARD_PACKAGING_SIZES = [
-  { skuId: 'sku-250ml', sizeMl: 250, nameAr: 'ألفية حجم 250 مل', defaultBoxCap: 24, containerType: 'BOTTLE' as const },
-  { skuId: 'sku-500ml', sizeMl: 500, nameAr: 'ألفية حجم 500 مل', defaultBoxCap: 12, containerType: 'BOTTLE' as const },
-  { skuId: 'sku-750ml', sizeMl: 750, nameAr: 'ألفية حجم 750 مل', defaultBoxCap: 12, containerType: 'BOTTLE' as const },
-  { skuId: 'sku-1000ml', sizeMl: 1000, nameAr: 'ألفية حجم 1000 مل (1 ليتر)', defaultBoxCap: 12, containerType: 'BOTTLE' as const },
-  { skuId: 'sku-1500ml', sizeMl: 1500, nameAr: 'ألفية حجم 1500 مل (1.5 ليتر)', defaultBoxCap: 6, containerType: 'BOTTLE' as const },
-  { skuId: 'sku-2850ml', sizeMl: 2850, nameAr: 'ألفية حجم 2850 مل', defaultBoxCap: 4, containerType: 'BOTTLE' as const },
-  { skuId: 'sku-8500ml', sizeMl: 8500, nameAr: 'غالون حجم 8500 مل (8.5 ليتر)', defaultBoxCap: 2, containerType: 'GALLON' as const },
-  { skuId: 'sku-17500ml', sizeMl: 17500, nameAr: 'غالون حجم 17500 مل (17.5 ليتر)', defaultBoxCap: 1, containerType: 'GALLON' as const }
-];
+
 
 const INITIAL_TANKS: StorageTank[] = [
   {
