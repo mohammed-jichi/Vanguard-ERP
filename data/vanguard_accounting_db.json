@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-02T14:30:48.079Z",
+  "last_updated": "2026-10-02T15:46:10.837Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,24 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-36c320a",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (36c320a) - Implement hierarchical facility id structure (1300-XX) with consolidated reporting, stock transfers, and RBAC facility scoping",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "36c320a1ef358eb29236812aa582a8fc715c5171",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Core Shell & UI",
+          "Settings & Governance",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-02T14:31:18.000Z"
+    },
     {
       "id": "act-rel-4ed0e4c",
       "company_id": 1300,
@@ -6055,6 +6073,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-36c320a",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Implement hierarchical facility id structure (1300-XX) with consolidated reporting, stock transfers, and RBAC facility scoping",
+      "message": "feat(arch): implement hierarchical facility id structure (1300-XX) with consolidated reporting, stock transfers, and RBAC facility scoping",
+      "timestamp": "2026-10-02T14:31:18.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "36c320a1ef358eb29236812aa582a8fc715c5171",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-4ed0e4c",
       "type": "SYSTEM_RELEASE",

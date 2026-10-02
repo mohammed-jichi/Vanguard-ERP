@@ -1,5 +1,29 @@
 [
   {
+    "id": "36c320a1-ef35-4eb2-a236-812aa582a8fc",
+    "commit_hash": "36c320a1ef358eb29236812aa582a8fc715c5171",
+    "short_hash": "36c320a",
+    "version": "v2.0.0",
+    "title": "Implement hierarchical facility id structure (1300-XX) with consolidated reporting, stock transfers, and RBAC facility scoping",
+    "category": "feature",
+    "description": "feat(arch): implement hierarchical facility id structure (1300-XX) with consolidated reporting, stock transfers, and RBAC facility scoping",
+    "bullet_points": [
+      "Implemented implement hierarchical facility id structure (1300-xx) with consolidated reporting, stock transfers, and rbac facility scoping",
+      "Enhanced system stability and operator workflow in Core Shell & UI & Settings & Governance",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Core Shell & UI",
+      "Settings & Governance",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-02T14:31:18.000Z",
+    "created_at": "2026-10-02T15:46:10.824Z"
+  },
+  {
     "id": "4ed0e4c7-f9a5-4402-a290-588ca1131057",
     "commit_hash": "4ed0e4c7f9a5d402c290588ca1131057a1e9ad98",
     "short_hash": "4ed0e4c",
