@@ -499,9 +499,9 @@ export function formatCellValue(
   switch (formatType) {
     case 'currency': {
       const num = Number(value);
-      if (isNaN(num)) return String(value);
+      if (isNaN(num)) return <span className="nowrap-cell">{String(value)}</span>;
       return (
-        <span className="font-mono tabular-nums font-bold text-slate-900">
+        <span className="font-mono tabular-nums font-bold text-slate-900 numeric-cell nowrap-cell">
           {formatCurrencyAmount(num, activeCurrency, true)}
         </span>
       );
@@ -509,12 +509,12 @@ export function formatCellValue(
 
     case 'delta': {
       const num = Number(value);
-      if (isNaN(num)) return String(value);
+      if (isNaN(num)) return <span className="nowrap-cell">{String(value)}</span>;
       const isPositive = num > 0;
       const isZero = num === 0;
       return (
         <span
-          className={`font-mono tabular-nums font-bold ${
+          className={`font-mono tabular-nums font-bold numeric-cell nowrap-cell ${
             isZero
               ? 'text-slate-500'
               : isPositive
@@ -529,9 +529,9 @@ export function formatCellValue(
 
     case 'percentage': {
       const num = Number(value);
-      if (isNaN(num)) return String(value);
+      if (isNaN(num)) return <span className="nowrap-cell">{String(value)}</span>;
       return (
-        <span className="font-mono tabular-nums font-semibold text-slate-800">
+        <span className="font-mono tabular-nums font-semibold text-slate-800 numeric-cell nowrap-cell">
           {num.toFixed(1)}%
         </span>
       );
@@ -539,9 +539,9 @@ export function formatCellValue(
 
     case 'number': {
       const num = Number(value);
-      if (isNaN(num)) return String(value);
+      if (isNaN(num)) return <span className="nowrap-cell">{String(value)}</span>;
       return (
-        <span className="font-mono tabular-nums font-medium text-slate-800">
+        <span className="font-mono tabular-nums font-medium text-slate-800 numeric-cell nowrap-cell">
           {num.toLocaleString()}
         </span>
       );
@@ -549,7 +549,7 @@ export function formatCellValue(
 
     case 'code':
       return (
-        <span className="font-mono font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded text-[11px] border border-slate-200">
+        <span className="font-mono font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded text-[11px] border border-slate-200 nowrap-cell">
           {String(value)}
         </span>
       );
@@ -557,7 +557,7 @@ export function formatCellValue(
     case 'badge': {
       const text = String(value);
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-medium bg-slate-100 text-slate-800 border border-slate-200 uppercase tracking-wide">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-medium bg-slate-100 text-slate-800 border border-slate-200 uppercase tracking-wide nowrap-cell">
           {text}
         </span>
       );
@@ -574,7 +574,7 @@ export function formatCellValue(
         colorClass = 'bg-rose-50 text-rose-800 border-rose-200';
       }
       return (
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold border uppercase tracking-wide ${colorClass}`}>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold border uppercase tracking-wide nowrap-cell ${colorClass}`}>
           {text}
         </span>
       );
@@ -583,7 +583,7 @@ export function formatCellValue(
     case 'datetime':
     case 'date':
     case 'time':
-      return <span className="font-mono text-slate-600 text-[11px]">{String(value)}</span>;
+      return <span className="font-mono text-slate-600 text-[11px] nowrap-cell">{String(value)}</span>;
 
     case 'text':
     default:

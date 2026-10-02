@@ -142,7 +142,7 @@ export default function GlobalReportTemplate<T = any>({
             width: 100% !important;
             height: auto !important;
           }
-          .report-sheet {
+          .report-sheet, .printable-sheet {
             width: 100% !important;
             max-width: 100% !important;
             min-height: auto !important;
@@ -151,12 +151,39 @@ export default function GlobalReportTemplate<T = any>({
             border: none !important;
             box-shadow: none !important;
           }
+
+          /* Prevent table from expanding wider than the sheet */
+          table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: auto !important; /* or fixed where appropriate */
+          }
+
+          /* Auto-scale padding & typography for dense multi-column reports */
+          th, td {
+            padding: 4px 3px !important;
+            font-size: 8.5pt !important;
+            line-height: 1.15 !important;
+            word-break: break-word;
+          }
+
+          /* Prevent numeric/date/code fields from wrapping awkwardly */
+          .numeric-cell, .nowrap-cell {
+            white-space: nowrap !important;
+          }
+
+          /* Container constraints */
+          .printable-sheet, .report-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
+          }
         }
       `}</style>
 
       {/* 2. AUTHENTIC DOCUMENT SHEET (PIXEL-PERFECT A4/FLEXIBLE CONTAINER) */}
       <div
-        className={`report-sheet print:block w-full mx-auto bg-white border border-slate-200 rounded-xl shadow-sm min-h-[640px] flex flex-col justify-between transition-all duration-200 print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-full ${paperClasses}`}
+        className={`report-sheet printable-sheet print:block w-full mx-auto bg-white border border-slate-200 rounded-xl shadow-sm min-h-[640px] flex flex-col justify-between transition-all duration-200 print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-full ${paperClasses}`}
         style={zoomLevel !== 1 ? { transform: `scale(${zoomLevel})`, transformOrigin: 'top center' } : undefined}
       >
         <div>
@@ -180,7 +207,7 @@ export default function GlobalReportTemplate<T = any>({
           {/* ================================================================= */}
           {/* E. REPORT CONTENT: DATA-DRIVEN TABLE OR FREE-FORM CHILDREN        */}
           {/* ================================================================= */}
-          <div className="w-full mt-1 overflow-x-auto print:overflow-visible">
+          <div className="report-table-container w-full mt-1 overflow-x-auto print:overflow-visible">
             {children ? (
               children
             ) : (
@@ -192,7 +219,7 @@ export default function GlobalReportTemplate<T = any>({
                       {columns.map((col, idx) => (
                         <th
                           key={`${String(col.key)}-${idx}`}
-                          className={`py-2 px-1.5 sm:px-2 normal-case font-sans whitespace-nowrap ${
+                          className={`py-2 px-1.5 sm:px-2 normal-case font-sans ${col.isMonospace || col.align === 'right' ? 'nowrap-cell' : 'print:whitespace-normal'} ${
                             col.align === 'right'
                               ? 'text-right'
                               : col.align === 'center'
@@ -250,8 +277,8 @@ export default function GlobalReportTemplate<T = any>({
                                   <td
                                     key={`col-${cIdx}`}
                                     className={`py-1.5 px-1.5 sm:px-2 ${
-                                      col.isMonospace ? 'font-mono tabular-nums' : 'font-sans'
-                                    } ${
+                                      col.isMonospace ? 'font-mono tabular-nums numeric-cell' : 'font-sans'
+                                    } ${col.align === 'right' ? 'numeric-cell' : ''} ${
                                       col.align === 'right'
                                         ? 'text-right'
                                         : col.align === 'center'

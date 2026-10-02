@@ -340,7 +340,7 @@ export default function UnifiedPrintableReportSheet({
             width: 100% !important;
             height: auto !important;
           }
-          .report-sheet {
+          .report-sheet, .printable-sheet {
             width: 100% !important;
             max-width: 100% !important;
             min-height: auto !important;
@@ -348,6 +348,33 @@ export default function UnifiedPrintableReportSheet({
             padding: 0 !important;
             border: none !important;
             box-shadow: none !important;
+          }
+
+          /* Prevent table from expanding wider than the sheet */
+          table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: auto !important; /* or fixed where appropriate */
+          }
+
+          /* Auto-scale padding & typography for dense multi-column reports */
+          th, td {
+            padding: 4px 3px !important;
+            font-size: 8.5pt !important;
+            line-height: 1.15 !important;
+            word-break: break-word;
+          }
+
+          /* Prevent numeric/date/code fields from wrapping awkwardly */
+          .numeric-cell, .nowrap-cell {
+            white-space: nowrap !important;
+          }
+
+          /* Container constraints */
+          .printable-sheet, .report-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
           }
         }
       `}</style>
@@ -434,7 +461,7 @@ export default function UnifiedPrintableReportSheet({
 
       {/* 2. AUTHENTIC DOCUMENT SHEET (PIXEL-PERFECT A4/FLEXIBLE CONTAINER) */}
       <div
-        className={`report-sheet print:block w-full mx-auto bg-white border border-slate-200 rounded-xl shadow-sm min-h-[640px] flex flex-col justify-between transition-all duration-200 print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-full ${getPaperSizeClasses(paperSize, orientation)}`}
+        className={`report-sheet printable-sheet print:block w-full mx-auto bg-white border border-slate-200 rounded-xl shadow-sm min-h-[640px] flex flex-col justify-between transition-all duration-200 print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-full ${getPaperSizeClasses(paperSize, orientation)}`}
         style={zoomLevel !== 1 ? { transform: `scale(${zoomLevel})`, transformOrigin: 'top center' } : undefined}
       >
         <div>
@@ -458,7 +485,7 @@ export default function UnifiedPrintableReportSheet({
           {/* ================================================================= */}
           {/* REPORT DATA CONTENT (TABLE / MATRIX)                             */}
           {/* ================================================================= */}
-          <div className="w-full mt-1 overflow-x-auto print:overflow-visible">
+          <div className="report-table-container w-full mt-1 overflow-x-auto print:overflow-visible">
             {children}
           </div>
         </div>

@@ -717,18 +717,31 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
             display: none !important;
           }
 
-          /* 3. Force tables and wrappers to perfectly fit the paper width */
-          .report-wrapper, table {
+          /* 3. Prevent table from expanding wider than the sheet */
+          table {
             width: 100% !important;
             max-width: 100% !important;
-            table-layout: auto !important;
+            table-layout: auto !important; /* or fixed where appropriate */
           }
 
-          /* 4. Micro-typography for print: Shrink text so wide tables fit without wrapping */
-          table th, table td {
-            font-size: 8px !important; 
-            padding: 2px 4px !important;
-            line-height: 1.2 !important;
+          /* 4. Auto-scale padding & typography for dense multi-column reports */
+          th, td {
+            padding: 4px 3px !important;
+            font-size: 8.5pt !important;
+            line-height: 1.15 !important;
+            word-break: break-word;
+          }
+
+          /* Prevent numeric/date/code fields from wrapping awkwardly */
+          .numeric-cell, .nowrap-cell {
+            white-space: nowrap !important;
+          }
+
+          /* Container constraints */
+          .printable-sheet, .report-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
           }
 
           /* 5. Hide ALL system UI, Modals, and Lingering Global App Footers */

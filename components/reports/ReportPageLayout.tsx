@@ -851,7 +851,7 @@ export function ReportTableWrapper({
             width: 100% !important;
             height: auto !important;
           }
-          .report-sheet {
+          .report-sheet, .printable-sheet {
             width: 100% !important;
             max-width: 100% !important;
             min-height: auto !important;
@@ -860,12 +860,39 @@ export function ReportTableWrapper({
             border: none !important;
             box-shadow: none !important;
           }
+
+          /* Prevent table from expanding wider than the sheet */
+          table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: auto !important; /* or fixed where appropriate */
+          }
+
+          /* Auto-scale padding & typography for dense multi-column reports */
+          th, td {
+            padding: 4px 3px !important;
+            font-size: 8.5pt !important;
+            line-height: 1.15 !important;
+            word-break: break-word;
+          }
+
+          /* Prevent numeric/date/code fields from wrapping awkwardly */
+          .numeric-cell, .nowrap-cell {
+            white-space: nowrap !important;
+          }
+
+          /* Container constraints */
+          .printable-sheet, .report-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
+          }
         }
       `}</style>
 
       {/* AUTHENTIC PRINTABLE DOCUMENT SHEET (MATCHING ACCOUNTING/SALES A4 BLUEPRINT) */}
       <div
-        className={`report-sheet print:block w-full mx-auto bg-white border border-slate-200 rounded-xl shadow-sm min-h-[580px] flex flex-col justify-between transition-all duration-200 print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-full ${paperClasses}`}
+        className={`report-sheet printable-sheet print:block w-full mx-auto bg-white border border-slate-200 rounded-xl shadow-sm min-h-[580px] flex flex-col justify-between transition-all duration-200 print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-full ${paperClasses}`}
       >
         <div>
           {/* ================================================================= */}
@@ -891,7 +918,7 @@ export function ReportTableWrapper({
           {/* ================================================================= */}
           {/* E. REPORT DATA CANVAS                                             */}
           {/* ================================================================= */}
-          <div className="relative overflow-x-auto print:overflow-visible">
+          <div className="report-table-container relative overflow-x-auto print:overflow-visible">
             {isLoading && (
               <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center">
                 <span className="text-xs font-semibold text-slate-700 animate-pulse">
@@ -903,7 +930,7 @@ export function ReportTableWrapper({
             {emptyState ? (
               emptyState
             ) : (
-              <div className="w-full text-left text-[11px] sm:text-xs text-slate-700 [&_table]:w-full [&_table]:border-collapse [&_thead_tr]:bg-slate-50/70 [&_thead_tr]:border-y-2 [&_thead_tr]:border-slate-900 [&_thead_th]:py-1.5 [&_thead_th]:px-2 [&_thead_th]:text-[11px] sm:[&_thead_th]:text-xs [&_thead_th]:font-bold [&_thead_th]:text-slate-900 [&_thead_th]:whitespace-nowrap [&_tbody_tr]:border-b [&_tbody_tr]:border-slate-100 [&_tbody_tr:hover]:bg-blue-50/30 [&_tbody_td]:py-1.5 [&_tbody_td]:px-2 [&_tbody_td]:text-[11px] sm:[&_tbody_td]:text-xs [&_tfoot_tr]:bg-slate-50 [&_tfoot_tr]:border-t-2 [&_tfoot_tr]:border-slate-900 [&_tfoot_td]:py-2 [&_tfoot_td]:px-2 [&_tfoot_td]:font-bold">
+              <div className="w-full text-left text-[11px] sm:text-xs text-slate-700 [&_table]:w-full [&_table]:border-collapse [&_thead_tr]:bg-slate-50/70 [&_thead_tr]:border-y-2 [&_thead_tr]:border-slate-900 [&_thead_th]:py-1.5 [&_thead_th]:px-2 [&_thead_th]:text-[11px] sm:[&_thead_th]:text-xs [&_thead_th]:font-bold [&_thead_th]:text-slate-900 print:[&_thead_th]:whitespace-normal [&_tbody_tr]:border-b [&_tbody_tr]:border-slate-100 [&_tbody_tr:hover]:bg-blue-50/30 [&_tbody_td]:py-1.5 [&_tbody_td]:px-2 [&_tbody_td]:text-[11px] sm:[&_tbody_td]:text-xs [&_tfoot_tr]:bg-slate-50 [&_tfoot_tr]:border-t-2 [&_tfoot_tr]:border-slate-900 [&_tfoot_td]:py-2 [&_tfoot_td]:px-2 [&_tfoot_td]:font-bold">
                 {children}
               </div>
             )}

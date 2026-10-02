@@ -134,15 +134,31 @@ export default function UnifiedModuleReportsHub({
           ::-webkit-scrollbar {
             display: none !important;
           }
-          .report-wrapper, table {
+          /* Prevent table from expanding wider than the sheet */
+          table {
             width: 100% !important;
             max-width: 100% !important;
-            table-layout: auto !important;
+            table-layout: auto !important; /* or fixed where appropriate */
           }
-          table th, table td {
-            font-size: 8.5px !important;
-            padding: 3px 4px !important;
-            line-height: 1.2 !important;
+
+          /* Auto-scale padding & typography for dense multi-column reports */
+          th, td {
+            padding: 4px 3px !important;
+            font-size: 8.5pt !important;
+            line-height: 1.15 !important;
+            word-break: break-word;
+          }
+
+          /* Prevent numeric/date/code fields from wrapping awkwardly */
+          .numeric-cell, .nowrap-cell {
+            white-space: nowrap !important;
+          }
+
+          /* Container constraints */
+          .printable-sheet, .report-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
           }
           header, nav, aside, .sidebar, footer, .print\\:hidden, [class*="print\\:hidden"] {
             display: none !important;

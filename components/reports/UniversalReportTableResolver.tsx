@@ -144,19 +144,26 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
 
   // 5. Construct Document Table Columns
   const columns: ReportColumn<any>[] = useMemo(() => {
-    return schema.columns.map((col) => ({
-      key: col.key,
-      label: t(col.headerLabel, col.headerLabel),
-      align: col.align || 'left',
-      width: col.width,
-      isMonospace: col.isMonospace,
-      render: (row: any) => {
-        if (col.render) {
-          return col.render(row[col.key], row, activeCurrency);
-        }
-        return formatCellValue(row[col.key], row, col.formatType, activeCurrency);
-      },
-    }));
+    return schema.columns.map((col) => {
+      const isNumeric = col.formatType === 'currency' || col.formatType === 'number' || col.formatType === 'delta' || col.formatType === 'percentage';
+      const isNowrap = isNumeric || col.formatType === 'code' || col.formatType === 'date' || col.formatType === 'datetime' || col.formatType === 'time';
+      return {
+        key: col.key,
+        label: t(col.headerLabel, col.headerLabel),
+        align: col.align || 'left',
+        width: col.width,
+        isMonospace: col.isMonospace,
+        render: (row: any) => {
+          if (col.render) {
+            const rendered = col.render(row[col.key], row, activeCurrency);
+            if (isNumeric) return <span className="numeric-cell nowrap-cell">{rendered}</span>;
+            if (isNowrap) return <span className="nowrap-cell">{rendered}</span>;
+            return rendered;
+          }
+          return formatCellValue(row[col.key], row, col.formatType, activeCurrency);
+        },
+      };
+    });
   }, [schema.columns, activeCurrency, t]);
 
   // 6. Construct Sections (Grouped Rows with Subtotals) or Flat Rows
@@ -231,19 +238,49 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
   }, [schema.columns, filteredRows, activeCurrency, domain, t]);
 
   const documentContent = (
-    <MasterReportDocument
-      meta={meta}
-      columns={columns}
-      sections={sections}
-      flatRows={sections ? undefined : filteredRows}
-      grandTotal={grandTotal}
-      orientation={columns.length >= 7 ? 'landscape' : 'auto'}
-      className={className}
-    />
+    <div className="report-table-container w-full overflow-x-auto print:overflow-visible">
+      <MasterReportDocument
+        meta={meta}
+        columns={columns}
+        sections={sections}
+        flatRows={sections ? undefined : filteredRows}
+        grandTotal={grandTotal}
+        orientation={columns.length >= 7 ? 'landscape' : 'auto'}
+        className={className}
+      />
+    </div>
   );
 
   if (hideToolbar) {
-    return <div className="w-full space-y-4">{documentContent}</div>;
+    return (
+      <div className="report-table-container w-full space-y-4">
+        {/* Strict Print Containment Rules */}
+        <style>{`
+          @media print {
+            table {
+              width: 100% !important;
+              max-width: 100% !important;
+              table-layout: auto !important;
+            }
+            th, td {
+              padding: 4px 3px !important;
+              font-size: 8.5pt !important;
+              line-height: 1.15 !important;
+              word-break: break-word;
+            }
+            .numeric-cell, .nowrap-cell {
+              white-space: nowrap !important;
+            }
+            .printable-sheet, .report-table-container {
+              width: 100% !important;
+              max-width: 100% !important;
+              overflow: visible !important;
+            }
+          }
+        `}</style>
+        {documentContent}
+      </div>
+    );
   }
 
   return (

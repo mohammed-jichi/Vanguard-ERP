@@ -62,7 +62,13 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
         .matrix-total-bg { background-color: var(--muted) !important; color: var(--foreground) !important; }
         .matrix-total-bold { font-weight: bold !important; }
         .matrix-grand-total { background-color: var(--primary) !important; color: #ffffff !important; font-weight: bold !important; }
-        @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
+        @media print {
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          table { width: 100% !important; max-width: 100% !important; table-layout: auto !important; }
+          th, td { padding: 4px 3px !important; font-size: 8.5pt !important; line-height: 1.15 !important; word-break: break-word; }
+          .numeric-cell, .nowrap-cell { white-space: nowrap !important; }
+          .printable-sheet, .report-table-container { width: 100% !important; max-width: 100% !important; overflow: visible !important; }
+        }
       `}} />
 
       <div className="w-full max-w-[1400px] flex flex-col xl:flex-row justify-between items-start xl:items-center bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6 gap-4 print:hidden shadow-sm mt-2">
@@ -114,7 +120,7 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
         ) : (
           /* The A4 Paper Simulator (794px width) */
           <div 
-            className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+            className="report-wrapper printable-sheet transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] print:w-full print:max-w-full min-h-[1123px]" 
             style={{ transform: `scale(${zoomLevel})` }}
           >
             {/* Standardized 3-Zone Corporate Header */}
@@ -134,7 +140,7 @@ export const TimerReportTemplate: React.FC<TimerReportTemplateProps> = ({
 
             {/* RENDER DYNAMIC BLOCKS */}
             {reportBlocks.map((block) => (
-              <div key={block.id} className="mb-14 page-break-inside-avoid">
+              <div key={block.id} className="report-table-container mb-14 page-break-inside-avoid overflow-x-auto print:overflow-visible">
                 
                 {/* Block Pagination Header */}
                 <div className="flex justify-between items-end text-[11px] font-bold w-full mb-1 border-b-2 border-black pb-1">

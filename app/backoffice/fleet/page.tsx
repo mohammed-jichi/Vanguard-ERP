@@ -396,6 +396,10 @@ function SuperSonicFleetPageContent() {
             min-height: 100vh !important; margin: 0 !important; padding: 12mm 15mm !important;
             background: #fff !important; display: block !important; z-index: 999999 !important;
           }
+          table { width: 100% !important; max-width: 100% !important; table-layout: auto !important; }
+          th, td { padding: 4px 3px !important; font-size: 8.5pt !important; line-height: 1.15 !important; word-break: break-word; }
+          .numeric-cell, .nowrap-cell { white-space: nowrap !important; }
+          .printable-sheet, .report-table-container { width: 100% !important; max-width: 100% !important; overflow: visible !important; }
         }
       `}} />
 

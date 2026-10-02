@@ -60,7 +60,13 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
         .force-black option { color: #000000 !important; background-color: #ffffff !important; }
         .matrix-total-cell { background-color: var(--muted) !important; font-weight: bold !important; color: var(--foreground) !important; }
         .matrix-grand-total { background-color: var(--primary) !important; color: #ffffff !important; font-weight: bold !important; }
-        @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
+        @media print {
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          table { width: 100% !important; max-width: 100% !important; table-layout: auto !important; }
+          th, td { padding: 4px 3px !important; font-size: 8.5pt !important; line-height: 1.15 !important; word-break: break-word; }
+          .numeric-cell, .nowrap-cell { white-space: nowrap !important; }
+          .printable-sheet, .report-table-container { width: 100% !important; max-width: 100% !important; overflow: visible !important; }
+        }
       `}} />
 
       {/* DYNAMIC FILTER TOOLBAR */}
@@ -149,7 +155,7 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
         ) : (
           /* The A4 Paper Simulator (794px width) */
           <div 
-            className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+            className="report-wrapper printable-sheet transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] print:w-full print:max-w-full min-h-[1123px]" 
             style={{ transform: `scale(${zoomLevel})` }}
           >
             {/* Standardized 3-Zone Corporate Header */}
@@ -177,7 +183,7 @@ export const TimeReportByDateTemplate: React.FC<TimeReportByDateTemplateProps> =
               const isLastChunk = chunkIdx === chunkedDates.length - 1;
               
               return (
-                <div key={chunkIdx} className="mb-10 page-break-inside-avoid">
+                <div key={chunkIdx} className="report-table-container mb-10 page-break-inside-avoid overflow-x-auto print:overflow-visible">
                   <table className="w-full border-collapse text-[11px] border border-black">
                     <thead>
                       {/* HEADER ROW 1 */}

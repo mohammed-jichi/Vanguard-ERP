@@ -223,7 +223,7 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
         ) : (
           /* The A4 Paper Simulator (794px width) */
           <div 
-            className="report-wrapper transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] min-h-[1123px]" 
+            className="report-wrapper printable-sheet transition-transform duration-200 origin-top bg-white p-8 shadow-lg border border-slate-300 print:shadow-none print:border-none print:p-0 print:m-0 w-[794px] print:w-full print:max-w-full min-h-[1123px]" 
             style={{ transform: `scale(${zoomLevel})` }}
           >
             {/* Standardized 3-Zone Corporate Header */}
@@ -241,19 +241,19 @@ export const CreditSalesTemplate: React.FC<CreditSalesTemplateProps> = ({
               pageInfo="Page 1 of 1"
             />
 
-            <div className="w-full overflow-x-auto print:overflow-visible pb-4">
-              <table className="w-full border-collapse text-[11px] whitespace-nowrap">
+            <div className="report-table-container w-full overflow-x-auto print:overflow-visible pb-4">
+              <table className="w-full border-collapse text-[11px]">
                 <thead>
                   <tr className="font-bold text-black border-b border-black">
                     <th className="py-1 px-1 text-left">Client Name</th>
-                    <th className="py-1 px-1 text-left">Code</th>
-                    <th className="py-1 px-1 text-left">Check</th>
-                    {groupByDate && <th className="py-1 px-1 text-center">Date</th>}
-                    <th className="py-1 px-1 text-right">Amount (LBP)</th>
+                    <th className="py-1 px-1 text-left nowrap-cell">Code</th>
+                    <th className="py-1 px-1 text-left nowrap-cell">Check</th>
+                    {groupByDate && <th className="py-1 px-1 text-center nowrap-cell">Date</th>}
+                    <th className="py-1 px-1 text-right numeric-cell">Amount (LBP)</th>
                     <th className="py-1 px-1 text-left pl-4">Payment Terms</th>
-                    {showRate && <th className="py-1 px-1 text-center">Cur</th>}
-                    {showRate && <th className="py-1 px-1 text-right">Rate</th>}
-                    {showRate && <th className="py-1 px-1 text-right">{`Total (${activeCurrency})`}</th>}
+                    {showRate && <th className="py-1 px-1 text-center nowrap-cell">Cur</th>}
+                    {showRate && <th className="py-1 px-1 text-right numeric-cell">Rate</th>}
+                    {showRate && <th className="py-1 px-1 text-right numeric-cell">{`Total (${activeCurrency})`}</th>}
                   </tr>
                 </thead>
                 <tbody>

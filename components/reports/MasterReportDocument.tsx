@@ -43,7 +43,7 @@ export function MasterReportDocument<T = any>({
 
   return (
     <div
-      className={`report-sheet print:block bg-white border border-slate-200 rounded-xl shadow-sm p-5 sm:p-7 mx-auto font-sans transition-all duration-150 print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-full ${
+      className={`report-sheet printable-sheet print:block bg-white border border-slate-200 rounded-xl shadow-sm p-5 sm:p-7 mx-auto font-sans transition-all duration-150 print:border-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-full ${
         isLandscape ? 'max-w-[1440px] w-full' : 'max-w-5xl'
       } ${className}`}
     >
@@ -58,7 +58,7 @@ export function MasterReportDocument<T = any>({
             width: 100% !important;
             height: auto !important;
           }
-          .report-sheet {
+          .report-sheet, .printable-sheet {
             width: 100% !important;
             max-width: 100% !important;
             min-height: auto !important;
@@ -66,6 +66,33 @@ export function MasterReportDocument<T = any>({
             padding: 0 !important;
             border: none !important;
             box-shadow: none !important;
+          }
+
+          /* Prevent table from expanding wider than the sheet */
+          table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: auto !important; /* or fixed where appropriate */
+          }
+
+          /* Auto-scale padding & typography for dense multi-column reports */
+          th, td {
+            padding: 4px 3px !important;
+            font-size: 8.5pt !important;
+            line-height: 1.15 !important;
+            word-break: break-word;
+          }
+
+          /* Prevent numeric/date/code fields from wrapping awkwardly */
+          .numeric-cell, .nowrap-cell {
+            white-space: nowrap !important;
+          }
+
+          /* Container constraints */
+          .printable-sheet, .report-table-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
           }
         }
       `}</style>
@@ -92,7 +119,7 @@ export function MasterReportDocument<T = any>({
       )}
 
       {/* 3. Document Table Canvas with Horizontal Overflow Protection */}
-      <div className="w-full overflow-x-auto print:overflow-visible">
+      <div className="report-table-container w-full overflow-x-auto print:overflow-visible">
         <table className="w-full text-[11px] sm:text-xs border-collapse">
           <thead>
             <tr className="border-y-2 border-slate-900 bg-slate-50/70">
@@ -100,7 +127,7 @@ export function MasterReportDocument<T = any>({
                 <th
                   key={String(col.key) || idx}
                   style={col.width ? { width: col.width } : undefined}
-                  className={`py-2 px-1.5 sm:px-2 font-bold text-slate-900 tracking-tight whitespace-nowrap ${getAlignClass(col.align)}`}
+                  className={`py-2 px-1.5 sm:px-2 font-bold text-slate-900 tracking-tight ${col.isMonospace || col.align === 'right' ? 'nowrap-cell' : 'print:whitespace-normal'} ${getAlignClass(col.align)}`}
                 >
                   {t(col.label, col.label)}
                 </th>
@@ -128,8 +155,8 @@ export function MasterReportDocument<T = any>({
                         <td
                           key={`sec-${sIdx}-col-${cIdx}`}
                           className={`py-1.5 px-1.5 sm:px-2 ${
-                            col.isMonospace ? 'font-mono tabular-nums text-slate-700' : 'text-slate-800'
-                          } ${getAlignClass(col.align)}`}
+                            col.isMonospace ? 'font-mono tabular-nums text-slate-700 numeric-cell' : 'text-slate-800'
+                          } ${col.align === 'right' ? 'numeric-cell' : ''} ${getAlignClass(col.align)}`}
                         >
                           {col.render ? col.render(row) : row[col.key]}
                         </td>
@@ -144,7 +171,7 @@ export function MasterReportDocument<T = any>({
                         {t(section.subtotal.label, section.subtotal.label)}
                       </td>
                       <td
-                        className={`py-1.5 px-1.5 sm:px-2 text-right font-mono tabular-nums ${
+                        className={`py-1.5 px-1.5 sm:px-2 text-right font-mono tabular-nums numeric-cell nowrap-cell ${
                           section.subtotal.isNegative
                             ? 'text-destructive font-bold'
                             : 'text-foreground font-bold'
@@ -163,8 +190,8 @@ export function MasterReportDocument<T = any>({
                     <td
                       key={`flat-${rIdx}-col-${cIdx}`}
                       className={`py-1.5 px-1.5 sm:px-2 ${
-                        col.isMonospace ? 'font-mono tabular-nums text-slate-700' : 'text-slate-800'
-                      } ${getAlignClass(col.align)}`}
+                        col.isMonospace ? 'font-mono tabular-nums text-slate-700 numeric-cell' : 'text-slate-800'
+                      } ${col.align === 'right' ? 'numeric-cell' : ''} ${getAlignClass(col.align)}`}
                     >
                       {col.render ? col.render(row) : row[col.key]}
                     </td>
@@ -216,7 +243,7 @@ export function MasterReportDocument<T = any>({
                   </div>
                 </td>
                 <td
-                  className={`py-2.5 px-1.5 sm:px-2 text-right font-mono tabular-nums text-xs sm:text-sm align-top ${
+                  className={`py-2.5 px-1.5 sm:px-2 text-right font-mono tabular-nums text-xs sm:text-sm align-top numeric-cell nowrap-cell ${
                     grandTotal.isNegative
                       ? 'text-destructive font-bold'
                       : 'text-foreground font-extrabold'

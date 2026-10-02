@@ -2731,9 +2731,32 @@ textarea:focus {
     background: #ffffff !important;
   }
 
+  /* Prevent table from expanding wider than the sheet */
   table {
     page-break-inside: auto !important;
     width: 100% !important;
+    max-width: 100% !important;
+    table-layout: auto !important; /* or fixed where appropriate */
+  }
+
+  /* Auto-scale padding & typography for dense multi-column reports */
+  th, td {
+    padding: 4px 3px !important;
+    font-size: 8.5pt !important;
+    line-height: 1.15 !important;
+    word-break: break-word;
+  }
+
+  /* Prevent numeric/date/code fields from wrapping awkwardly */
+  .numeric-cell, .nowrap-cell {
+    white-space: nowrap !important;
+  }
+
+  /* Container constraints */
+  .printable-sheet, .report-table-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
   }
 
   tr {
