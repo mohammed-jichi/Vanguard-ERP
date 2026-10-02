@@ -27,7 +27,9 @@ import {
   ShieldCheck,
   ChevronDown,
   Layers,
-  Sparkles
+  Sparkles,
+  Barcode,
+  ScanLine
 } from 'lucide-react';
 import {
   AdjustmentHeaderRecord,
@@ -115,6 +117,44 @@ export default function AdjustmentsView() {
   const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToastMessage({ text, type });
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // Barcode Quick Scan Mode state & handler
+  const [barcodeInput, setBarcodeInput] = useState('');
+  const [barcodeScanQty, setBarcodeScanQty] = useState(1);
+  const [lastScannedFeedback, setLastScannedFeedback] = useState<string | null>(null);
+  const barcodeInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleBarcodeScan = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const code = barcodeInput.trim();
+    if (!code) return;
+
+    const targetIdx = items.findIndex(
+      i => (i.BARCODE && i.BARCODE.trim() === code) || (i.PRODUCTCODE && i.PRODUCTCODE.trim() === code)
+    );
+
+    if (targetIdx >= 0) {
+      const targetItem = items[targetIdx];
+      const newQty = (Number(targetItem.NEWQTY) || 0) + Number(barcodeScanQty);
+      const variance = newQty - targetItem.QTYOH;
+
+      const updatedList = [...items];
+      updatedList[targetIdx] = {
+        ...targetItem,
+        NEWQTY: newQty,
+        VARIANCE: variance,
+        REMARK: `Scanned barcode (${barcodeScanQty > 1 ? '+' + barcodeScanQty : '+1'})`
+      };
+      setItems(updatedList);
+      setLastScannedFeedback(`✓ ${targetItem.PRODUCTDESCRIPTION}: New Count = ${newQty} (Variance: ${variance >= 0 ? '+' + variance : variance})`);
+      setBarcodeInput('');
+      showToast(`✓ Scanned: ${targetItem.PRODUCTDESCRIPTION} (+${barcodeScanQty})`, 'success');
+      setTimeout(() => setLastScannedFeedback(null), 4000);
+      if (barcodeInputRef.current) barcodeInputRef.current.focus();
+    } else {
+      showToast(`⚠️ Barcode not found: ${code}`, 'error');
+    }
   };
 
   // --------------------------------------------------------------------------
@@ -980,26 +1020,57 @@ export default function AdjustmentsView() {
         <div className="p-4">
           {/* Details Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-            {/* Search items bar */}
-            <div className="w-full sm:w-96">
-              <div className="flex items-center">
+            {/* Search items bar & Barcode Quick-Scanner */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="w-full sm:w-80">
+                <div className="flex items-center">
+                  <input
+                    type="search"
+                    value={tableSearchText}
+                    onChange={e => {
+                      setTableSearchText(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    placeholder={t('search_item_by_code_description_or', 'Search item by code, description or barcodes...')}
+                    className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-l focus:outline-none focus:ring-1 focus:ring-slate-400 placeholder:text-slate-400"
+                  />
+                  <button
+                    type="button"
+                    className="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-r text-sm transition-colors"
+                  >
+                    <Search className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Barcode Quick-Scanner Gun Terminal */}
+              <form onSubmit={handleBarcodeScan} className="flex items-center gap-1.5 bg-emerald-50/70 border border-emerald-300 rounded px-2.5 py-1 shadow-2xs">
+                <Barcode className="w-4 h-4 text-emerald-700 shrink-0" />
                 <input
-                  type="search"
-                  value={tableSearchText}
-                  onChange={e => {
-                    setTableSearchText(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  placeholder={t('search_item_by_code_description_or', 'Search item by code, description or barcodes...')}
-                  className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-l focus:outline-none focus:ring-1 focus:ring-slate-400 placeholder:text-slate-400"
+                  ref={barcodeInputRef}
+                  type="text"
+                  value={barcodeInput}
+                  onChange={(e) => setBarcodeInput(e.target.value)}
+                  placeholder={t('scan_barcode_quick', 'Scan Barcode / Gun...')}
+                  className="text-xs bg-transparent focus:outline-none w-36 sm:w-44 font-mono font-bold text-emerald-950 placeholder:text-emerald-700/60"
+                />
+                <span className="text-[10px] text-emerald-800 font-bold font-mono">x</span>
+                <input
+                  type="number"
+                  min={1}
+                  value={barcodeScanQty}
+                  onChange={(e) => setBarcodeScanQty(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-10 text-xs text-center border border-emerald-300 rounded bg-white py-0.5 font-bold font-mono text-emerald-900"
+                  title="Count increment per scan"
                 />
                 <button
-                  type="button"
-                  className="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-r text-sm transition-colors"
+                  type="submit"
+                  className="px-2 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 shrink-0"
                 >
-                  <Search className="w-4 h-4" />
+                  <ScanLine className="w-3.5 h-3.5" />
+                  <span>{t('scan_btn', 'Scan')}</span>
                 </button>
-              </div>
+              </form>
             </div>
 
             {/* Right Buttons: [+ Add Items] and [Actions v] */}
@@ -1054,6 +1125,23 @@ export default function AdjustmentsView() {
               </div>
             </div>
           </div>
+
+          {/* Last Scanned Feedback Banner */}
+          {lastScannedFeedback && (
+            <div className="mb-3 px-3 py-2 bg-emerald-100 border border-emerald-300 rounded text-emerald-900 text-xs font-bold flex items-center justify-between animate-fadeIn">
+              <span className="flex items-center gap-1.5 font-mono">
+                <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                {lastScannedFeedback}
+              </span>
+              <button
+                type="button"
+                onClick={() => setLastScannedFeedback(null)}
+                className="text-emerald-700 hover:text-emerald-950 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
           {/* Details Table */}
           <div className="border border-slate-200 rounded overflow-x-auto">

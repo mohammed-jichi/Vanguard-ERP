@@ -899,6 +899,39 @@ export default function SocialMediaManagementHub({
                   </div>
                 </div>
 
+                {/* Quick Chat Templates / Canned Replies */}
+                <div className="flex items-center gap-1.5 overflow-x-auto py-1.5 border-t border-slate-100 text-[11px] custom-scrollbar">
+                  <span className="text-slate-400 font-bold shrink-0 text-[10px]">💬 {t('canned_templates', 'Templates:')}</span>
+                  <button
+                    type="button"
+                    onClick={() => setReplyMessage('أهلاً وسهلاً بك في شركة منتوجات زيت وزيتون الجنوب. تنك زيت زيتون بكر ممتاز بلدي عصرة أولى على البارد 17.5 لتر بسعر 110$، مع توفر عبوات 500 مل و1 لتر.')}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-primary/10 hover:text-primary rounded-lg text-slate-700 font-medium whitespace-nowrap text-[10.5px] transition-colors cursor-pointer"
+                  >
+                    📋 {t('template_prices', 'قائمة الأسعار والعبوات')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReplyMessage('التوصيل متوفر لجميع المناطق اللبنانية عبر أسطول سوبرسونيك. رسوم التوصيل 4$ لبيروت وضواحيها، و5$-8$ للمحافظات مع التسليم خلال 24-48 ساعة.')}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-primary/10 hover:text-primary rounded-lg text-slate-700 font-medium whitespace-nowrap text-[10.5px] transition-colors cursor-pointer"
+                  >
+                    🚚 {t('template_delivery', 'شروط ومواعيد التوصيل')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReplyMessage('طرق الدفع المتوفرة: الدفع نقداً عند الاستلام (COD) بالدولار أو بالليرة وفق سعر الصرف الرسمي، أو عبر تحويل فوري بمحفظة Whish Money.')}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-primary/10 hover:text-primary rounded-lg text-slate-700 font-medium whitespace-nowrap text-[10.5px] transition-colors cursor-pointer"
+                  >
+                    💳 {t('template_payment', 'طرق الدفع (COD/Whish)')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReplyMessage('يرجى تزويدنا بالاسم الكامل، المنطقة، الشارع، المبنى، ورقم هاتف بديل لتثبيت الطلبية وإرسالها فوراً إلى قسم التوزيع.')}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-primary/10 hover:text-primary rounded-lg text-slate-700 font-medium whitespace-nowrap text-[10.5px] transition-colors cursor-pointer"
+                  >
+                    📍 {t('template_confirm_info', 'تأكيد العنوان والبيانات')}
+                  </button>
+                </div>
+
                 <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
                   <input type="text" disabled={!selectedChat.isEscalatedToManagement} value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} placeholder={selectedChat.isEscalatedToManagement ? t('ph_type_mgmt_reply', 'Type management reply...') : t('ph_mgmt_readonly', 'Management Read-Only (Rep is handling chat)...')} className="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:border-primary focus:outline-none disabled:bg-slate-100" />
                   <button type="button" disabled={!selectedChat.isEscalatedToManagement} onClick={() => { setReplyMessage(''); alert('Sent.'); }} className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl disabled:opacity-50 cursor-pointer">{t('send', 'Send')}</button>

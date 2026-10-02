@@ -414,6 +414,69 @@ export default function VDriverApp() {
         }
       }
 
+      // Load cached stops or fetch live from /api/orders
+      const loadLiveStops = async () => {
+        try {
+          const cached = localStorage.getItem('vanguard_driver_cached_stops');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setStops(parsed);
+            }
+          }
+        } catch (e) {}
+
+        if (navigator.onLine) {
+          try {
+            const res = await fetch('/api/orders');
+            if (res.ok) {
+              const data = await res.json();
+              if (data.success && Array.isArray(data.orders) && data.orders.length > 0) {
+                const liveStops: DriverStop[] = data.orders.map((o: any) => ({
+                  id: o.id || `ord-${o.order_number}`,
+                  orderNo: o.order_number || `ORD-${o.id}`,
+                  invoiceId: o.sales_invoice_id || `inv-${o.id}`,
+                  customerName: o.customer_name || 'Customer',
+                  phone: o.customer_phone || '03-000000',
+                  town: o.destination_town || 'Beirut',
+                  address: o.delivery_address || 'Central Address',
+                  corridorId: Number(o.corridor_id) || 1,
+                  corridorName: o.corridor_name || `Corridor ${o.corridor_id || 1}`,
+                  deliveryNotes: o.notes || `Payment: ${o.payment_method || 'COD'}`,
+                  itemsList: Array.isArray(o.items) && o.items.length > 0
+                    ? o.items.map((i: any) => `${i.quantity}x ${i.item_name}`).join(', ')
+                    : '1x Delivery Package',
+                  productAmountLbp: Number(o.product_amount_lbp) || 0,
+                  productAmountUsd: Number(o.product_amount_usd) || 0,
+                  deliveryFeeUsd: Number(o.delivery_fee_usd) || 4.0,
+                  repName: o.rep_name || 'Ahmad Ali Kassem',
+                  repCode: o.rep_code || 'REP-002',
+                  repPhone: '03445566',
+                  status: (o.order_status === 'delivered' ? 'DELIVERED' : (o.order_status === 'en_route' ? 'EN_ROUTE' : 'QUEUED')) as StopStatus,
+                  paymentLbp: 0,
+                  paymentUsd: 0,
+                  paymentWhish: 0,
+                  synced: true,
+                }));
+
+                setStops((prev) => {
+                  const deliveredMap = new Map(prev.filter((p) => p.status === 'DELIVERED').map((p) => [p.id, p]));
+                  const merged = liveStops.map((ls) => deliveredMap.get(ls.id) || ls);
+                  try {
+                    localStorage.setItem('vanguard_driver_cached_stops', JSON.stringify(merged));
+                  } catch (e) {}
+                  return merged;
+                });
+              }
+            }
+          } catch (apiErr) {
+            console.warn('[VDriverApp] Live orders fetch notice:', apiErr);
+          }
+        }
+      };
+
+      loadLiveStops();
+
       return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);

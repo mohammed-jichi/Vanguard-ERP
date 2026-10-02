@@ -27,6 +27,12 @@ export default function TanksMatrixView() {
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [selectedTankForSample, setSelectedTankForSample] = useState<StainlessTank | null>(null);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [sourceTankId, setSourceTankId] = useState('TK-01');
+  const [destTankId, setDestTankId] = useState('TK-02');
+  const [transferVolume, setTransferVolume] = useState<number>(500);
+  const [transferNotes, setTransferNotes] = useState('Routine settling & decanter transfer');
+  const [isTransferring, setIsTransferring] = useState(false);
 
   useEffect(() => {
     async function loadPersistedTanks() {
@@ -84,6 +90,102 @@ export default function TanksMatrixView() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
+  const handleExecuteTransfer = async () => {
+    if (sourceTankId === destTankId) {
+      alert('Source and destination tank cannot be the same!');
+      return;
+    }
+    const source = tanks.find(t => t.id === sourceTankId);
+    const dest = tanks.find(t => t.id === destTankId);
+    if (!source || !dest) return;
+
+    if (transferVolume <= 0) {
+      alert('Please enter a valid transfer volume greater than 0.');
+      return;
+    }
+    if (transferVolume > source.currentLevelLiters) {
+      alert(`Source tank ${sourceTankId} only has ${source.currentLevelLiters.toLocaleString()} L available.`);
+      return;
+    }
+    const destHeadspace = dest.capacityLiters - dest.currentLevelLiters;
+    if (transferVolume > destHeadspace) {
+      alert(`Destination tank ${destTankId} only has ${destHeadspace.toLocaleString()} L free headspace.`);
+      return;
+    }
+
+    setIsTransferring(true);
+    try {
+      // Calculate blended acidity in destination tank
+      const destCurrentVol = dest.currentLevelLiters;
+      const newDestVol = destCurrentVol + transferVolume;
+      const blendedAcidity = newDestVol > 0
+        ? Number(((destCurrentVol * (dest.acidityPct || 0.4) + transferVolume * (source.acidityPct || 0.4)) / newDestVol).toFixed(2))
+        : source.acidityPct;
+
+      const newSourceVol = source.currentLevelLiters - transferVolume;
+
+      const updatedTanks = tanks.map(t => {
+        if (t.id === sourceTankId) {
+          return {
+            ...t,
+            currentLevelLiters: newSourceVol,
+            status: newSourceVol === 0 ? ('Sanitized_Empty' as const) : t.status
+          };
+        }
+        if (t.id === destTankId) {
+          return {
+            ...t,
+            currentLevelLiters: newDestVol,
+            acidityPct: blendedAcidity,
+            status: 'Active_Filling' as const
+          };
+        }
+        return t;
+      });
+
+      setTanks(updatedTanks);
+
+      // Persist to Supabase
+      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+      try {
+        await supabase.from('mill_tanks').upsert([
+          { id: sourceTankId, tenant_id: targetId, current_level_liters: newSourceVol },
+          { id: destTankId, tenant_id: targetId, current_level_liters: newDestVol, acidity_pct: blendedAcidity }
+        ]);
+      } catch (e) {}
+
+      try {
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetId)
+          .maybeSingle();
+
+        const flags = tenantData?.feature_flags || {};
+        await supabase
+          .from('tenants')
+          .update({
+            feature_flags: {
+              ...flags,
+              mill_tanks: updatedTanks
+            },
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', targetId);
+      } catch (e) {}
+
+      setShowTransferModal(false);
+      showToast(`✓ Transferred ${transferVolume.toLocaleString()} L from ${sourceTankId} to ${destTankId}. Blended acidity: ${blendedAcidity}%`);
+    } catch (err: any) {
+      alert(`Transfer failed: ${err.message}`);
+    } finally {
+      setIsTransferring(false);
+    }
+  };
+
   const filteredTanks = tanks.filter(tank => {
     if (selectedGrade === 'Empty') {
       if (tank.status !== 'Sanitized_Empty') return false;
@@ -131,11 +233,20 @@ export default function TanksMatrixView() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-medium">
+        <div className="flex items-center gap-3 text-xs font-medium">
           <div className="text-right">
             <span className="text-slate-400 block text-[10px]">{t('total_tank_capacity', 'Total Tank Capacity')}</span>
             <span className="font-bold text-slate-900">{totalOccupiedLiters.toLocaleString()} / {totalCapacityLiters.toLocaleString()} L ({overallOccupancyPct}%)</span>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setShowTransferModal(true)}
+            className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+          >
+            <ArrowLeftRight className="w-3.5 h-3.5" />
+            <span>{t('tank_transfer_btn', 'Tank-to-Tank Transfer & Mixing')}</span>
+          </button>
         </div>
       </div>
 
@@ -342,6 +453,169 @@ export default function TanksMatrixView() {
                 className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold cursor-pointer"
               >
                 {t('dispatch_quality_sample', 'Dispatch Quality Sample')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TANK-TO-TANK TRANSFER & MIXING MODAL */}
+      {showTransferModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 relative text-slate-800">
+            <button
+              onClick={() => setShowTransferModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="border-b border-slate-200 pb-3 mb-4 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold">
+                <ArrowLeftRight className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">
+                  {t('tank_transfer_modal_title', 'Tank-to-Tank Oil Transfer & Mixing Engine')}
+                </h3>
+                <span className="text-[11px] text-slate-500 font-mono">
+                  {t('tank_transfer_modal_sub', 'Internal pipeline transfer, blending, and batch acidity recalculation')}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              {/* Source & Destination Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Source Tank */}
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700 block">
+                    {t('source_tank_label', 'Source Tank (من الخزان):')}
+                  </label>
+                  <select
+                    value={sourceTankId}
+                    onChange={(e) => setSourceTankId(e.target.value)}
+                    className="w-full px-2.5 py-2 border border-slate-300 rounded font-semibold text-slate-900 bg-slate-50 focus:bg-white focus:outline-none"
+                  >
+                    {tanks.filter(t => t.currentLevelLiters > 0).map(t => (
+                      <option key={t.id} value={t.id}>
+                        {t.id} — {t.title} ({t.currentLevelLiters.toLocaleString()} L | {t.acidityPct}%)
+                      </option>
+                    ))}
+                  </select>
+                  {(() => {
+                    const src = tanks.find(t => t.id === sourceTankId);
+                    return src ? (
+                      <div className="text-[10px] text-slate-500 mt-1 font-mono">
+                        Available: <strong className="text-slate-800">{src.currentLevelLiters.toLocaleString()} L</strong> • Acidity: {src.acidityPct}%
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+
+                {/* Destination Tank */}
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700 block">
+                    {t('dest_tank_label', 'Target Tank (إلى الخزان):')}
+                  </label>
+                  <select
+                    value={destTankId}
+                    onChange={(e) => setDestTankId(e.target.value)}
+                    className="w-full px-2.5 py-2 border border-slate-300 rounded font-semibold text-slate-900 bg-slate-50 focus:bg-white focus:outline-none"
+                  >
+                    {tanks.filter(t => t.id !== sourceTankId).map(t => (
+                      <option key={t.id} value={t.id}>
+                        {t.id} — {t.title} ({t.currentLevelLiters.toLocaleString()} / {t.capacityLiters.toLocaleString()} L)
+                      </option>
+                    ))}
+                  </select>
+                  {(() => {
+                    const dst = tanks.find(t => t.id === destTankId);
+                    return dst ? (
+                      <div className="text-[10px] text-slate-500 mt-1 font-mono">
+                        Headspace: <strong className="text-emerald-700">{(dst.capacityLiters - dst.currentLevelLiters).toLocaleString()} L</strong> • Cur Acidity: {dst.acidityPct}%
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+              </div>
+
+              {/* Transfer Volume */}
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700 block">
+                  {t('transfer_volume_liters', 'Transfer Volume (الكمية المنقولة باللتر):')}
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min={1}
+                    value={transferVolume}
+                    onChange={(e) => setTransferVolume(Math.max(1, parseInt(e.target.value) || 0))}
+                    className="w-full px-3 py-2 border border-slate-300 rounded font-bold font-mono text-sm text-slate-900 focus:outline-none focus:border-indigo-600"
+                  />
+                  <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-bold">Liters (L)</span>
+                </div>
+              </div>
+
+              {/* Blending & Quality Simulation Preview */}
+              {(() => {
+                const src = tanks.find(t => t.id === sourceTankId);
+                const dst = tanks.find(t => t.id === destTankId);
+                if (!src || !dst) return null;
+
+                const destCurrentVol = dst.currentLevelLiters;
+                const newDestVol = destCurrentVol + transferVolume;
+                const blendedAcidity = newDestVol > 0
+                  ? ((destCurrentVol * (dst.acidityPct || 0.4) + transferVolume * (src.acidityPct || 0.4)) / newDestVol).toFixed(2)
+                  : src.acidityPct;
+
+                return (
+                  <div className="bg-indigo-50/70 border border-indigo-200 rounded-lg p-3 space-y-1.5 font-mono text-[11px]">
+                    <div className="font-bold text-indigo-900 flex items-center justify-between border-b border-indigo-200 pb-1">
+                      <span>🧪 {t('blended_acidity_calc', 'Blended Quality Simulation:')}</span>
+                      <span className="text-indigo-800 text-xs font-black">{blendedAcidity}% {t('acidity', 'Acidity')}</span>
+                    </div>
+                    <div className="flex justify-between text-indigo-800">
+                      <span>{sourceTankId} Remaining:</span>
+                      <strong>{Math.max(0, src.currentLevelLiters - transferVolume).toLocaleString()} L</strong>
+                    </div>
+                    <div className="flex justify-between text-indigo-800">
+                      <span>{destTankId} Final Volume:</span>
+                      <strong>{newDestVol.toLocaleString()} / {dst.capacityLiters.toLocaleString()} L</strong>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Notes */}
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700 block">{t('transfer_reason_notes', 'Transfer Reason / Operation Notes:')}</label>
+                <input
+                  type="text"
+                  value={transferNotes}
+                  onChange={(e) => setTransferNotes(e.target.value)}
+                  className="w-full px-3 py-1.5 border border-slate-300 rounded text-xs text-slate-800 focus:outline-none"
+                  placeholder="e.g. Decanting settling sediment to clarify extra virgin batch"
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowTransferModal(false)}
+                className="px-4 py-2 border border-slate-300 hover:bg-slate-50 rounded text-xs font-semibold cursor-pointer"
+              >
+                {t('cancel', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                disabled={isTransferring}
+                onClick={handleExecuteTransfer}
+                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm disabled:opacity-50"
+              >
+                <ArrowLeftRight className="w-3.5 h-3.5" />
+                <span>{isTransferring ? t('transferring', 'Transferring...') : t('execute_transfer', 'Execute Pipeline Transfer')}</span>
               </button>
             </div>
           </div>
