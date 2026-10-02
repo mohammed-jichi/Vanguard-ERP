@@ -10,12 +10,12 @@ const CORS_HEADERS = {
 export const INITIAL_FACILITY_STAFF = [
   {
     id: '641',
-    name: 'Mohammed Jichi',
+    name: 'Jichi Mohammed',
     department: 'Management',
-    email: 'mohammed@southernolive-lb.com',
+    email: 'mohammed.jichi@gmail.com',
     emailVerified: true,
     emailApproved: true,
-    phone: '+961 71 384 506',
+    phone: '+961 70 767 3828',
     phoneVerified: true,
     phoneApproved: true,
     receiveEmailAlerts: true,
@@ -74,6 +74,18 @@ export const INITIAL_FACILITY_STAFF = [
   },
 ];
 
+const DUMMY_STAFF_NAMES = [
+  'Sarah Khoury',
+  'Ali Hassan',
+  'Youssef Abboud',
+  'Laila Harb',
+  'Rami Haddad',
+  'Karim Daher',
+  'Samir Mansour',
+  'Nadine Ahmar',
+  'Rana Jichi',
+];
+
 export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
 }
@@ -97,8 +109,14 @@ export async function GET(req: NextRequest) {
 
     let staffList = tenant?.feature_flags?.employee_notification_preferences;
 
-    // 2. Initialize in Supabase if not yet seeded
-    if (!Array.isArray(staffList) || staffList.length === 0) {
+    // 2. Initialize in Supabase if not yet seeded or if dummy employees detected
+    const hasLegacyMock =
+      !Array.isArray(staffList) ||
+      staffList.length === 0 ||
+      staffList.length > 4 ||
+      staffList.some((emp: any) => DUMMY_STAFF_NAMES.includes(emp.name));
+
+    if (hasLegacyMock) {
       staffList = INITIAL_FACILITY_STAFF;
       try {
         const existingFlags = tenant?.feature_flags || {};
