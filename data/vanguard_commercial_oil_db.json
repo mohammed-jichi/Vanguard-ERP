@@ -1,0 +1,65 @@
+{
+  "tanks": [
+    {
+      "id": "tank-01",
+      "code": "T-01",
+      "name": "Bulk Tank 01 - Extra Virgin (EVOO)",
+      "nameAr": "خزان تجميع T-01: زيت زيتون بكر ممتاز (EVOO)",
+      "grade": "EXTRA_VIRGIN",
+      "gradeNameAr": "بكر ممتاز (EVOO)",
+      "capacityKg": 30000,
+      "currentKg": 14250,
+      "acidity": 0.55,
+      "location": "Tank Farm Bay A",
+      "updatedAt": "2026-10-01T10:00:00.000Z"
+    },
+    {
+      "id": "tank-02",
+      "code": "T-02",
+      "name": "Bulk Tank 02 - Virgin Oil",
+      "nameAr": "خزان تجميع T-02: زيت زيتون بكر طبيعي",
+      "grade": "VIRGIN",
+      "gradeNameAr": "بكر طبيعي",
+      "capacityKg": 25000,
+      "currentKg": 9800,
+      "acidity": 1.15,
+      "location": "Tank Farm Bay A",
+      "updatedAt": "2026-10-01T10:00:00.000Z"
+    },
+    {
+      "id": "tank-03",
+      "code": "T-03",
+      "name": "Bulk Tank 03 - Ordinary Olive Oil",
+      "nameAr": "خزان تجميع T-03: زيت زيتون عادي",
+      "grade": "ORDINARY",
+      "gradeNameAr": "زيت عادي",
+      "capacityKg": 20000,
+      "currentKg": 6400,
+      "acidity": 2.2,
+      "location": "Tank Farm Bay B",
+      "updatedAt": "2026-10-01T10:00:00.000Z"
+    },
+    {
+      "id": "raw-containers-bay",
+      "code": "BAY-RAW",
+      "name": "Raw Containers Storage Bay",
+      "nameAr": "مستودع العبوات الخام (غالونات وتنكات دون تفريغ)",
+      "grade": "VIRGIN",
+      "gradeNameAr": "عبوات خام متنوعة",
+      "capacityKg": 50000,
+      "currentKg": 18200,
+      "acidity": 0.85,
+      "location": "Raw Inbound Warehouse Hall 1",
+      "updatedAt": "2026-10-01T10:00:00.000Z"
+    }
+  ],
+  "receipts": [],
+  "batches": [],
+  "packagingVouchers": [],
+  "warehouseStocks": [],
+  "movements": [],
+  "nextReceiptSeq": 1001,
+  "nextBatchSeq": 201,
+  "nextPkgSeq": 501,
+  "lastUpdated": "2026-10-01T10:00:00.000Z"
+}
