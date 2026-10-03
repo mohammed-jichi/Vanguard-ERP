@@ -21,66 +21,8 @@ import {
   ChevronDown,
 } from 'lucide-react';
 
-const DEPARTMENTS_LIST = [
-  'Accounting',
-  'Customer Care',
-  'Customer Service and Support',
-  'Distribution',
-  'HR Human Resources',
-  'IT Information Technology',
-  'Legal',
-  'Maintenance Management',
-  'Management',
-  'Marketing',
-  'Owners',
-  'Production',
-  'Research and Development',
-  'Sales',
-  'Stores',
-];
-
-const DESIGNATIONS_LIST = [
-  'Accountant',
-  'Administrative Assistant',
-  'Business Analyst',
-  'Business Development Executive',
-  'Cashier',
-  'Chief Executive Officer CEO',
-  'Chief Financial Officer CFO',
-  'Chief Technology Officer CTO',
-  'Clerk',
-  'CRM Specialist',
-  'Customer Care Representative',
-  'Customer Service Representative',
-  'Digital Marketing Specialist',
-  'General Manager',
-  'General Operations Manager',
-  'Human Resources Manager',
-  'IT Specialist',
-  'Marketing Manager',
-  'Operations Manager',
-  'Owner',
-  'Owner / Director',
-  'Procurement Officer',
-  'Quality Control Inspector',
-  'Receptionist',
-  'Sales Account Manager',
-  'Sales Manager',
-  'Social Media Manager',
-  'Supply Chain Manager',
-  'Support Team Leader',
-  'Training Manager',
-];
-
-const ALL_DEPARTMENTS_FILTER = [
-  ...DEPARTMENTS_MASTER_KEYS,
-  ...DEPARTMENTS_LIST.filter(d => !(DEPARTMENTS_MASTER_KEYS as readonly string[]).includes(d)),
-];
-
-const ALL_DESIGNATIONS_FILTER = [
-  ...DESIGNATIONS_MASTER_KEYS,
-  ...DESIGNATIONS_LIST.filter(d => !(DESIGNATIONS_MASTER_KEYS as readonly string[]).includes(d)),
-];
+const ALL_DEPARTMENTS_FILTER = DEPARTMENTS_MASTER_KEYS;
+const ALL_DESIGNATIONS_FILTER = DESIGNATIONS_MASTER_KEYS;
 
 const TEMPLATES_LIST = [
   'Show All Templates',
@@ -168,12 +110,16 @@ export default function PersonnelMasterConsole() {
 
       // 3. Department Filter
       if (departmentFilter !== 'Show All Departments') {
-        if (emp.department !== departmentFilter) return false;
+        const dKey = departmentFilter.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        const empDKey = (emp.department || '').toLowerCase().replace(/[^a-z0-9]/g, '_');
+        if (emp.department !== departmentFilter && empDKey !== dKey) return false;
       }
 
       // 4. Designation Filter
       if (designationFilter !== 'Show All Designations') {
-        if (emp.designation !== designationFilter) return false;
+        const desKey = designationFilter.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        const empDesKey = (emp.designation || '').toLowerCase().replace(/[^a-z0-9]/g, '_');
+        if (emp.designation !== designationFilter && empDesKey !== desKey) return false;
       }
 
       // 5. Template Filter

@@ -229,40 +229,21 @@ interface NewEmployeeModalProps {
 }
 
 
-export const DEPARTMENTS_MASTER_KEYS = [
-  'factory_operations',
-  'warehouse_storage',
-  'oil_processing',
-  'packaging_bottling',
-  'quality_lab',
-  'logistics_delivery',
-  'social_media_marketing',
-] as const;
-
-export const DESIGNATIONS_MASTER_KEYS = [
-  'oil_press_operator',
-  'packaging_worker',
-  'warehouse_worker',
-  'factory_worker',
-  'forklift_driver',
-  'maintenance_tech',
-  'storekeeper',
-  'delivery_manager',
-  'delivery_driver',
-  'social_media_manager',
-  'social_media_rep',
-] as const;
-
-export const LOCATIONS_MASTER_KEYS = [
-  'factory_floor',
-  'central_warehouse',
-  'mill_facility',
-  'showroom',
-  'on_road',
-  'office',
-  'remote',
-  'hybrid',
-] as const;
+export {
+  DEPARTMENTS_MASTER_KEYS,
+  DESIGNATIONS_MASTER_KEYS,
+  LOCATIONS_MASTER_KEYS,
+} from '@/lib/LanguageContext';
+export type {
+  DepartmentKey,
+  DesignationKey,
+  LocationKey,
+} from '@/lib/LanguageContext';
+import {
+  DEPARTMENTS_MASTER_KEYS,
+  DESIGNATIONS_MASTER_KEYS,
+  LOCATIONS_MASTER_KEYS,
+} from '@/lib/LanguageContext';
 
 export default function NewEmployeeModal({
   isOpen,
@@ -1139,8 +1120,38 @@ export default function NewEmployeeModal({
                       </div>
                     </div>
 
-                    {/* 1. Detailed Address */}
+                    {/* 1. Contact Numbers */}
                     <div className="space-y-2.5">
+                      <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>{t('hr_rep.contact_numbers_heading')}</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.personal_phone')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.personalPhone || ''}
+                            onChange={(e) => handleUpdateRepField('personalPhone', e.target.value)}
+                            placeholder={t('hr_rep.personal_phone_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.business_whatsapp')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.businessWhatsapp || ''}
+                            onChange={(e) => handleUpdateRepField('businessWhatsapp', e.target.value)}
+                            placeholder={t('hr_rep.business_whatsapp_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. Granular Address */}
+                    <div className="space-y-2.5 pt-2 border-t border-emerald-200/50">
                       <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
                         <MapPin className="w-3.5 h-3.5" />
                         <span>{t('hr_rep.address_heading')}</span>
@@ -1184,36 +1195,6 @@ export default function NewEmployeeModal({
                             onChange={(e) => handleUpdateRepField('floor', e.target.value)}
                             placeholder={t('hr_rep.floor_placeholder')}
                             className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 2. Contact Numbers */}
-                    <div className="space-y-2.5 pt-2 border-t border-emerald-200/50">
-                      <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
-                        <Phone className="w-3.5 h-3.5" />
-                        <span>{t('hr_rep.contact_numbers_heading')}</span>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.personal_phone')}</label>
-                          <input
-                            type="text"
-                            value={formData.socialMediaRep?.personalPhone || ''}
-                            onChange={(e) => handleUpdateRepField('personalPhone', e.target.value)}
-                            placeholder={t('hr_rep.personal_phone_placeholder')}
-                            className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.business_whatsapp')}</label>
-                          <input
-                            type="text"
-                            value={formData.socialMediaRep?.businessWhatsapp || ''}
-                            onChange={(e) => handleUpdateRepField('businessWhatsapp', e.target.value)}
-                            placeholder={t('hr_rep.business_whatsapp_placeholder')}
-                            className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
                           />
                         </div>
                       </div>
