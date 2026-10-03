@@ -1064,12 +1064,16 @@ export default function NewEmployeeModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">{t('hr.attendance_mac_id', 'Attendance Mac ID')}</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.attendance_mac_id', 'Attendance MAC ID')}</label>
                     <input
                       type="text"
-                      value={formData.attendanceMacId} onChange={(e) => setFormData(prev => ({ ...prev, attendanceMacId: e.target.value }))}
-                      placeholder="00:1A:2B:3C:4D:5E"
-                      className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                      readOnly={true}
+                      disabled={true}
+                      value={formData.attendanceMacId ? formData.attendanceMacId : t('hr.pending_device_sync', 'Pending Device Sync')}
+                      placeholder={t('hr.pending_device_sync', 'Pending Device Sync')}
+                      onKeyDown={(e) => e.preventDefault()}
+                      onPaste={(e) => e.preventDefault()}
+                      className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-400 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl outline-hidden cursor-not-allowed select-none"
                     />
                   </div>
                 </div>
