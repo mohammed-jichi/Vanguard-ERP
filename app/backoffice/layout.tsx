@@ -724,16 +724,20 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
       <div className="flex-1 flex overflow-hidden print:overflow-visible print:m-0 print:p-0">
 
         {/* Master Left Sidebar (Unified with Product Insights & Customer Insights) */}
-        <Sidebar
-          activeScreen={pathname}
-          isOpen={sidebarVisible}
-          onToggleOpen={(open) => setSidebarVisible(open)}
-          className="h-[calc(100vh-68px)]"
-        />
+        {!(activeUser?.role === 'OIL_OPERATOR' || activeUser?.role === 'r_oil_op') && (
+          <Sidebar
+            activeScreen={pathname}
+            isOpen={sidebarVisible}
+            onToggleOpen={(open) => setSidebarVisible(open)}
+            className="h-[calc(100vh-68px)]"
+          />
+        )}
 
         {/* Main Canvas Viewport */}
         <main className={`flex-1 min-w-0 overflow-y-auto h-[calc(100vh-68px)] bg-background ${
-          (pathname === '/backoffice/operations' && (currentOpsSection === 'dashboard' || currentOpsSection === 'reports')) || pathname === '/backoffice/operations/dashboard'
+          (pathname === '/backoffice/operations' && (currentOpsSection === 'dashboard' || currentOpsSection === 'reports')) ||
+          pathname === '/backoffice/operations/dashboard' ||
+          pathname.startsWith('/backoffice/oil-production')
             ? 'p-0'
             : 'p-4 md:p-6'
         } custom-scrollbar print:overflow-visible print:m-0 print:p-0 print:bg-white`}>

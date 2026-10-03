@@ -2,7 +2,7 @@
 /**
  * Vanguard ERP - Commercial Oil Operations & Packaging Storage Engine
  * Handles unit-by-unit oil receiving, weight-based blending, packaging with dynamic box capacity,
- * and posting inventory directly to real dynamic warehouses.
+ * tank management, oil grades administration, and posting inventory directly to real dynamic warehouses.
  */
 
 import fs from 'fs';
@@ -16,7 +16,7 @@ export interface StorageTank {
   code: string;
   name: string;
   nameAr: string;
-  grade: 'EXTRA_VIRGIN' | 'VIRGIN' | 'ORDINARY' | 'KURA_REFINED';
+  grade: string; // e.g. 'EXTRA_VIRGIN' | 'VIRGIN' | 'ORDINARY' | 'KURA_REFINED' or custom
   gradeNameAr: string;
   capacityKg: number;
   currentKg: number;
@@ -26,10 +26,19 @@ export interface StorageTank {
   updatedAt: string;
 }
 
+export interface OilGradeRecord {
+  id: string;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  maxAcidity: number;
+  description?: string;
+}
+
 export interface ContainerItem {
   id: string;
   unitNumber: number;
-  containerType: 'GALLON' | 'TIN';
+  containerType: 'GALLON' | 'TIN' | 'DRUM';
   containerTypeNameAr: string;
   grossKg?: number;
   tareKg?: number;
@@ -46,7 +55,7 @@ export interface OilReceivingReceipt {
   supplierPhone: string;
   supplierAddress: string;
   supplierAccountNo?: string;
-  oilGrade: 'EXTRA_VIRGIN' | 'VIRGIN' | 'ORDINARY' | 'KURA_REFINED';
+  oilGrade: string;
   oilGradeNameAr: string;
   acidity: number;
   targetStorageType: 'BULK_TANK' | 'RAW_CONTAINERS_STORAGE';
@@ -55,6 +64,7 @@ export interface OilReceivingReceipt {
   containers: ContainerItem[];
   gallonsCount: number;
   tinsCount: number;
+  drumsCount: number;
   totalContainers: number;
   totalNetKg: number;
   avgContainerKg: number;
@@ -155,6 +165,7 @@ export interface InventoryMovementLog {
 
 interface CommercialOilDbState {
   tanks: StorageTank[];
+  oilGrades: OilGradeRecord[];
   receipts: OilReceivingReceipt[];
   batches: BlendingBatch[];
   packagingVouchers: PackagingPostingVoucher[];
@@ -166,7 +177,12 @@ interface CommercialOilDbState {
   lastUpdated: string;
 }
 
-
+export const INITIAL_OIL_GRADES: OilGradeRecord[] = [
+  { id: 'grade-evoo', code: 'EXTRA_VIRGIN', nameAr: 'بكر ممتاز (EVOO)', nameEn: 'Extra Virgin (EVOO)', maxAcidity: 0.8, description: 'حموضة أقل من 0.8%' },
+  { id: 'grade-virgin', code: 'VIRGIN', nameAr: 'بكر طبيعي (Virgin)', nameEn: 'Virgin Olive Oil', maxAcidity: 2.0, description: 'حموضة بين 0.8% و 2.0%' },
+  { id: 'grade-ordinary', code: 'ORDINARY', nameAr: 'زيت عادي (Ordinary)', nameEn: 'Ordinary Olive Oil', maxAcidity: 3.3, description: 'حموضة تفوق 2.0%' },
+  { id: 'grade-kura', code: 'KURA_REFINED', nameAr: 'زيت بلدي كورة مكرر', nameEn: 'Refined Lebanese Olive Oil', maxAcidity: 1.0, description: 'زيت بلدي مكرر ذو حموضة متدنية' },
+];
 
 const INITIAL_TANKS: StorageTank[] = [
   {
@@ -238,6 +254,7 @@ function ensureOilDbFile(): CommercialOilDbState {
     if (!fs.existsSync(OIL_DB_FILE)) {
       const initialState: CommercialOilDbState = {
         tanks: INITIAL_TANKS,
+        oilGrades: INITIAL_OIL_GRADES,
         receipts: [],
         batches: [],
         packagingVouchers: [],
@@ -274,6 +291,9 @@ function ensureOilDbFile(): CommercialOilDbState {
     if (!parsed.tanks || parsed.tanks.length === 0) {
       parsed.tanks = INITIAL_TANKS;
     }
+    if (!parsed.oilGrades || parsed.oilGrades.length === 0) {
+      parsed.oilGrades = INITIAL_OIL_GRADES;
+    }
     if (!parsed.receipts) parsed.receipts = [];
     if (!parsed.batches) parsed.batches = [];
     if (!parsed.packagingVouchers) parsed.packagingVouchers = [];
@@ -294,6 +314,7 @@ function ensureOilDbFile(): CommercialOilDbState {
     console.error('Error reading vanguard_commercial_oil_db.json:', error);
     return {
       tanks: INITIAL_TANKS,
+      oilGrades: INITIAL_OIL_GRADES,
       receipts: [],
       batches: [],
       packagingVouchers: [],
@@ -335,9 +356,108 @@ export class CommercialOilService {
     return db.tanks;
   }
 
+  public static getOilGrades(): OilGradeRecord[] {
+    const db = ensureOilDbFile();
+    return db.oilGrades || INITIAL_OIL_GRADES;
+  }
+
+  public static createTank(payload: Partial<StorageTank>): StorageTank {
+    const db = ensureOilDbFile();
+    const id = payload.id || `tank-${Date.now()}`;
+    const code = (payload.code || `TK-${(db.tanks.length + 1).toString().padStart(2, '0')}`).toUpperCase();
+    const nameAr = payload.nameAr || payload.name || `خزان ${code}`;
+    const name = payload.name || `Storage Tank ${code}`;
+
+    const newTank: StorageTank = {
+      id,
+      code,
+      name,
+      nameAr,
+      grade: payload.grade || 'EXTRA_VIRGIN',
+      gradeNameAr: payload.gradeNameAr || 'بكر ممتاز (EVOO)',
+      capacityKg: Number(payload.capacityKg) || 25000,
+      currentKg: Math.max(0, Number(payload.currentKg) || 0),
+      acidity: Number(payload.acidity) || 0.65,
+      location: payload.location || 'Warehouse Tank Farm',
+      updatedAt: new Date().toISOString()
+    };
+
+    db.tanks.push(newTank);
+    saveOilDb(db);
+    return newTank;
+  }
+
+  public static updateTank(id: string, updates: Partial<StorageTank>): StorageTank | null {
+    const db = ensureOilDbFile();
+    const idx = db.tanks.findIndex(t => t.id === id);
+    if (idx === -1) return null;
+
+    db.tanks[idx] = {
+      ...db.tanks[idx],
+      ...updates,
+      id: db.tanks[idx].id, // preserve immutable ID
+      updatedAt: new Date().toISOString()
+    };
+
+    saveOilDb(db);
+    return db.tanks[idx];
+  }
+
+  public static deleteTank(id: string): boolean {
+    const db = ensureOilDbFile();
+    const initialLen = db.tanks.length;
+    db.tanks = db.tanks.filter(t => t.id !== id);
+    if (db.tanks.length < initialLen) {
+      saveOilDb(db);
+      return true;
+    }
+    return false;
+  }
+
+  public static createOilGrade(payload: Partial<OilGradeRecord>): OilGradeRecord {
+    const db = ensureOilDbFile();
+    const id = payload.id || `grade-${Date.now()}`;
+    const newGrade: OilGradeRecord = {
+      id,
+      code: (payload.code || `GRADE_${Date.now()}`).toUpperCase(),
+      nameAr: payload.nameAr || 'صنف زيت جديد',
+      nameEn: payload.nameEn || 'New Oil Grade',
+      maxAcidity: Number(payload.maxAcidity) || 1.5,
+      description: payload.description || ''
+    };
+    db.oilGrades.push(newGrade);
+    saveOilDb(db);
+    return newGrade;
+  }
+
+  public static updateOilGrade(id: string, updates: Partial<OilGradeRecord>): OilGradeRecord | null {
+    const db = ensureOilDbFile();
+    const idx = db.oilGrades.findIndex(g => g.id === id);
+    if (idx === -1) return null;
+
+    db.oilGrades[idx] = {
+      ...db.oilGrades[idx],
+      ...updates,
+      id: db.oilGrades[idx].id
+    };
+    saveOilDb(db);
+    return db.oilGrades[idx];
+  }
+
+  public static deleteOilGrade(id: string): boolean {
+    const db = ensureOilDbFile();
+    const initialLen = db.oilGrades.length;
+    db.oilGrades = db.oilGrades.filter(g => g.id !== id);
+    if (db.oilGrades.length < initialLen) {
+      saveOilDb(db);
+      return true;
+    }
+    return false;
+  }
+
   /**
    * STAGE 1: Unit-by-Unit Oil Receiving
-   * Receives containers, calculates totals, and increments storage tank or raw container bay balance.
+   * Receives containers (Gallons, Tins, Drums), calculates totals, and increments storage tank balance.
    */
   public static receiveOilIntake(payload: {
     supplierId: number | string;
@@ -345,10 +465,10 @@ export class CommercialOilService {
     supplierPhone: string;
     supplierAddress: string;
     supplierAccountNo?: string;
-    oilGrade: 'EXTRA_VIRGIN' | 'VIRGIN' | 'ORDINARY' | 'KURA_REFINED';
+    oilGrade: string;
     acidity: number;
     targetStorageId: string;
-    containers: { containerType: 'GALLON' | 'TIN'; netKg: number; grossKg?: number; tareKg?: number }[];
+    containers: { containerType: 'GALLON' | 'TIN' | 'DRUM'; netKg: number; grossKg?: number; tareKg?: number }[];
     notes?: string;
     receivedBy: string;
   }): OilReceivingReceipt {
@@ -365,19 +485,27 @@ export class CommercialOilService {
 
     let gallons = 0;
     let tins = 0;
+    let drums = 0;
     let totalNetKg = 0;
+
+    const typeNames: Record<string, string> = {
+      GALLON: 'غالون بلاستيك',
+      TIN: 'تنكة حديد',
+      DRUM: 'برميل (Drum)'
+    };
 
     const containersList: ContainerItem[] = payload.containers.map((c, idx) => {
       const net = Math.max(0, Number(c.netKg) || 0);
       if (c.containerType === 'GALLON') gallons++;
-      else tins++;
+      else if (c.containerType === 'TIN') tins++;
+      else if (c.containerType === 'DRUM') drums++;
       totalNetKg += net;
 
       return {
         id: `c-${Date.now()}-${idx + 1}`,
         unitNumber: idx + 1,
         containerType: c.containerType,
-        containerTypeNameAr: c.containerType === 'GALLON' ? 'غالون بلاستيك' : 'تنكة حديد',
+        containerTypeNameAr: typeNames[c.containerType] || 'عبوة',
         grossKg: c.grossKg,
         tareKg: c.tareKg,
         netKg: net
@@ -390,12 +518,8 @@ export class CommercialOilService {
     const receiptNum = `REC-OIL-${new Date().getFullYear()}-${db.nextReceiptSeq.toString().padStart(4, '0')}`;
     db.nextReceiptSeq++;
 
-    const gradeNamesAr: Record<string, string> = {
-      EXTRA_VIRGIN: 'بكر ممتاز (EVOO)',
-      VIRGIN: 'بكر طبيعي',
-      ORDINARY: 'زيت عادي',
-      KURA_REFINED: 'زيت بلدي كورة مكرر'
-    };
+    const matchedGrade = db.oilGrades?.find(g => g.code === payload.oilGrade || g.id === payload.oilGrade);
+    const gradeName = matchedGrade ? matchedGrade.nameAr : (payload.oilGrade || 'زيت زيتون');
 
     const newReceipt: OilReceivingReceipt = {
       id: `rec-${Date.now()}`,
@@ -408,7 +532,7 @@ export class CommercialOilService {
       supplierAddress: payload.supplierAddress,
       supplierAccountNo: payload.supplierAccountNo,
       oilGrade: payload.oilGrade,
-      oilGradeNameAr: gradeNamesAr[payload.oilGrade] || 'زيت زيتون',
+      oilGradeNameAr: gradeName,
       acidity: Number(payload.acidity) || 0.8,
       targetStorageType: targetTank.id === 'raw-containers-bay' ? 'RAW_CONTAINERS_STORAGE' : 'BULK_TANK',
       targetStorageId: targetTank.id,
@@ -416,6 +540,7 @@ export class CommercialOilService {
       containers: containersList,
       gallonsCount: gallons,
       tinsCount: tins,
+      drumsCount: drums,
       totalContainers: containersList.length,
       totalNetKg,
       avgContainerKg: avgKg,
@@ -443,7 +568,7 @@ export class CommercialOilService {
       sourceLocation: `المورد: ${payload.supplierName}`,
       destinationLocation: targetTank.nameAr,
       qtyKg: totalNetKg,
-      unitsSummary: `${gallons} غالون، ${tins} تنكة`,
+      unitsSummary: `${gallons} غالون، ${tins} تنكة، ${drums} برميل`,
       performedBy: payload.receivedBy || 'مستلم المستودع'
     });
 

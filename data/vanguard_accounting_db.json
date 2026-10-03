@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-02T15:46:10.837Z",
+  "last_updated": "2026-10-03T00:07:35.876Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,22 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-4f8099d",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (4f8099d) - Bypass oil routes in middleware and unify oil-hub dashboard pages to prevent redirect loops",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "4f8099d7eb8759028278d653b03b587362373efb",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Operations & Inventory"
+        ]
+      },
+      "created_at": "2026-10-02T23:15:48.000Z"
+    },
     {
       "id": "act-rel-36c320a",
       "company_id": 1300,
@@ -6073,6 +6089,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-4f8099d",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Bypass oil routes in middleware and unify oil-hub dashboard pages to prevent redirect loops",
+      "message": "fix(routing): bypass oil routes in middleware and unify oil-hub dashboard pages to prevent redirect loops",
+      "timestamp": "2026-10-02T23:15:48.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "4f8099d7eb8759028278d653b03b587362373efb",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-36c320a",
       "type": "SYSTEM_RELEASE",

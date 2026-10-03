@@ -12,6 +12,9 @@ export async function GET(req: NextRequest) {
     if (filter === 'tanks') {
       return NextResponse.json({ success: true, data: state.tanks });
     }
+    if (filter === 'grades') {
+      return NextResponse.json({ success: true, data: CommercialOilService.getOilGrades() });
+    }
     if (filter === 'receipts') {
       return NextResponse.json({ success: true, data: state.receipts });
     }
@@ -76,6 +79,72 @@ export async function POST(req: NextRequest) {
         message: 'Packaging batch successfully posted to target warehouse',
         data: voucher
       }, { status: 201 });
+    }
+
+    // Action 4: Tank Management (Admin)
+    if (action === 'CREATE_TANK') {
+      const tank = CommercialOilService.createTank(body.payload);
+      return NextResponse.json({
+        success: true,
+        message: 'Tank successfully created',
+        data: tank
+      }, { status: 201 });
+    }
+
+    if (action === 'UPDATE_TANK') {
+      const tank = CommercialOilService.updateTank(body.id, body.payload);
+      if (!tank) {
+        return NextResponse.json({ success: false, error: 'Tank not found' }, { status: 404 });
+      }
+      return NextResponse.json({
+        success: true,
+        message: 'Tank successfully updated',
+        data: tank
+      });
+    }
+
+    if (action === 'DELETE_TANK') {
+      const deleted = CommercialOilService.deleteTank(body.id);
+      if (!deleted) {
+        return NextResponse.json({ success: false, error: 'Tank not found' }, { status: 404 });
+      }
+      return NextResponse.json({
+        success: true,
+        message: 'Tank successfully deleted'
+      });
+    }
+
+    // Action 5: Oil Grade Management (Admin)
+    if (action === 'CREATE_GRADE') {
+      const grade = CommercialOilService.createOilGrade(body.payload);
+      return NextResponse.json({
+        success: true,
+        message: 'Oil grade successfully created',
+        data: grade
+      }, { status: 201 });
+    }
+
+    if (action === 'UPDATE_GRADE') {
+      const grade = CommercialOilService.updateOilGrade(body.id, body.payload);
+      if (!grade) {
+        return NextResponse.json({ success: false, error: 'Grade not found' }, { status: 404 });
+      }
+      return NextResponse.json({
+        success: true,
+        message: 'Oil grade successfully updated',
+        data: grade
+      });
+    }
+
+    if (action === 'DELETE_GRADE') {
+      const deleted = CommercialOilService.deleteOilGrade(body.id);
+      if (!deleted) {
+        return NextResponse.json({ success: false, error: 'Grade not found' }, { status: 404 });
+      }
+      return NextResponse.json({
+        success: true,
+        message: 'Oil grade successfully deleted'
+      });
     }
 
     return NextResponse.json({ success: false, error: `Unknown action: ${action}` }, { status: 400 });

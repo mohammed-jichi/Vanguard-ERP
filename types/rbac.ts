@@ -15,11 +15,13 @@ export type StandardEmployeeClassification =
   | 'QUALITY_CONTROLLER'
   | 'SUPER_ADMIN'
   | 'WAREHOUSE_SUPERVISOR'
-  | 'HR_OFFICER';
+  | 'HR_OFFICER'
+  | 'OIL_OPERATOR';
 
 export const STANDARD_EMPLOYEE_CLASSIFICATIONS: { value: StandardEmployeeClassification; label: string; labelAr: string }[] = [
   { value: 'SUPER_ADMIN', label: 'Super Administrator (المدير العام للنظام)', labelAr: 'المدير العام للنظام' },
   { value: 'MANAGER', label: 'General / Operations Manager (مدير العمليات)', labelAr: 'مدير العمليات' },
+  { value: 'OIL_OPERATOR', label: 'Field Oil Operations Specialist (مشغل عمليات الزيت والتعبئة)', labelAr: 'مشغل عمليات الزيت الميداني' },
   { value: 'Finance department manager', label: 'Finance Department Manager (مدير الإدارة المالية)', labelAr: 'مدير الإدارة المالية' },
   { value: 'CHIEF_ACCOUNTANT', label: 'Chief Accountant (رئيس الحسابات)', labelAr: 'رئيس الحسابات' },
   { value: 'ACCOUNTANT', label: 'Accountant (محاسب مالي)', labelAr: 'محاسب مالي' },

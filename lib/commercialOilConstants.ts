@@ -12,6 +12,15 @@ export interface StandardPackagingSize {
   containerType: 'BOTTLE' | 'GALLON' | 'TIN';
 }
 
+export interface OilGradeRecord {
+  id: string;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  maxAcidity: number;
+  description?: string;
+}
+
 // 8 Mandatory Standard Packaging Sizes
 export const STANDARD_PACKAGING_SIZES: StandardPackagingSize[] = [
   { skuId: 'sku-250ml', sizeMl: 250, nameAr: 'ألفية حجم 250 مل', defaultBoxCap: 24, containerType: 'BOTTLE' },
@@ -23,3 +32,4 @@ export const STANDARD_PACKAGING_SIZES: StandardPackagingSize[] = [
   { skuId: 'sku-8500ml', sizeMl: 8500, nameAr: 'غالون حجم 8500 مل (8.5 ليتر)', defaultBoxCap: 2, containerType: 'GALLON' },
   { skuId: 'sku-17500ml', sizeMl: 17500, nameAr: 'غالون حجم 17500 مل (17.5 ليتر)', defaultBoxCap: 1, containerType: 'GALLON' }
 ];
+

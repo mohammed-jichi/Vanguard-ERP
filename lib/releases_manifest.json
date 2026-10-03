@@ -1,5 +1,27 @@
 [
   {
+    "id": "4f8099d7-eb87-4902-a278-d653b03b5873",
+    "commit_hash": "4f8099d7eb8759028278d653b03b587362373efb",
+    "short_hash": "4f8099d",
+    "version": "v2.0.0",
+    "title": "Bypass oil routes in middleware and unify oil-hub dashboard pages to prevent redirect loops",
+    "category": "fix",
+    "description": "fix(routing): bypass oil routes in middleware and unify oil-hub dashboard pages to prevent redirect loops",
+    "bullet_points": [
+      "Resolved: bypass oil routes in middleware and unify oil-hub dashboard pages to prevent redirect loops",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Operations & Inventory"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-02T23:15:48.000Z",
+    "created_at": "2026-10-03T00:07:35.871Z"
+  },
+  {
     "id": "36c320a1-ef35-4eb2-a236-812aa582a8fc",
     "commit_hash": "36c320a1ef358eb29236812aa582a8fc715c5171",
     "short_hash": "36c320a",

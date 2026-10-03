@@ -911,6 +911,18 @@ export const RBAC_MASTER_MODULES: ModulePermissionDefinition[] = [
     description: 'Proprietary blending ratios, manufacturing scheduling, ingredient staging, and lab QA release.',
     nodes: [
       {
+        id: 'oil_operations_access',
+        name: 'Field Oil Operations Access (V-Oil Hub)',
+        nameAr: 'صلاحية المشغل الميداني لعمليات الزيت والتعبئة',
+        hasActions: true,
+      },
+      {
+        id: 'oil_management_admin',
+        name: 'Commercial Oil Management & Tank Administration',
+        nameAr: 'إدارة عمليات الزيت والخزانات والمستودعات',
+        hasActions: true,
+      },
+      {
         id: 'm11_bom_formulations',
         name: 'Commercial BOM & Formulations',
         nameAr: 'قوائم المواد والتركيبات الصناعية المحمية',
@@ -1156,6 +1168,46 @@ export const CANONICAL_SYSTEM_ROLES: RoleDefinition[] = [
     },
     restricted_reports: {
       mod7_fleet_reports: ['flt_sla_01', 'flt_driver_01'],
+    },
+    brand_access: ['brand_southern_olive'],
+  },
+  {
+    id: 'r_oil_op',
+    name: 'Field Oil Operations Specialist (مشغل عمليات الزيت)',
+    description: 'Unit-by-unit oil receiving, scale weighing, bulk blending, packaging and warehouse posting.',
+    employee_role: 'OIL_OPERATOR',
+    is_read_only: false,
+    assignedCount: 4,
+    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    permissions: buildSeedRolePermissions('r_oil_op', (modCode) => {
+      if (modCode === 'mod11_formulations') {
+        return { view: true, add: true, edit: false, delete: false };
+      }
+      return { view: false, add: false, edit: false, delete: false };
+    }),
+    action_overrides: {},
+    restricted_reports: {},
+    brand_access: ['brand_southern_olive'],
+  },
+  {
+    id: 'r_oil_admin',
+    name: 'Commercial Oil Operations & Quality Manager (مدير عمليات الزيت)',
+    description: 'Supervisory administration of tanks, oil grades, suppliers, warehouses, and full audit logs.',
+    employee_role: 'MANAGER',
+    is_read_only: false,
+    assignedCount: 2,
+    badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    permissions: buildSeedRolePermissions('r_oil_admin', (modCode) => {
+      if (modCode === 'mod11_formulations' || modCode === 'mod2_ops_actions') {
+        return { view: true, add: true, edit: true, delete: true };
+      }
+      return { view: true, add: false, edit: false, delete: false };
+    }),
+    action_overrides: {
+      mod11_formulations_actions: { allow_issue_final_qa_release: true, allow_approve_raw_material_wastage: true },
+    },
+    restricted_reports: {
+      mod11_formulations_reports: ['rep_batch_cost_deviations', 'rep_ingredient_wastage', 'rep_lab_compliance'],
     },
     brand_access: ['brand_southern_olive'],
   },
