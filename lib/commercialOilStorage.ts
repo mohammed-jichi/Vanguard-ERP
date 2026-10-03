@@ -16,6 +16,10 @@ export interface StorageTank {
   code: string;
   name: string;
   nameAr: string;
+  nameEn?: string;
+  nameFr?: string;
+  nameEs?: string;
+  nameFa?: string;
   grade: string; // e.g. 'EXTRA_VIRGIN' | 'VIRGIN' | 'ORDINARY' | 'KURA_REFINED' or custom
   gradeNameAr: string;
   capacityKg: number;
@@ -31,6 +35,9 @@ export interface OilGradeRecord {
   code: string;
   nameAr: string;
   nameEn: string;
+  nameFr?: string;
+  nameEs?: string;
+  nameFa?: string;
   maxAcidity: number;
   description?: string;
 }
@@ -178,20 +185,20 @@ interface CommercialOilDbState {
 }
 
 export const INITIAL_OIL_GRADES: OilGradeRecord[] = [
-  { id: 'grade-evoo', code: 'EXTRA_VIRGIN', nameAr: 'بكر ممتاز (EVOO)', nameEn: 'Extra Virgin (EVOO)', maxAcidity: 0.8, description: 'حموضة أقل من 0.8%' },
-  { id: 'grade-virgin', code: 'VIRGIN', nameAr: 'بكر طبيعي (Virgin)', nameEn: 'Virgin Olive Oil', maxAcidity: 2.0, description: 'حموضة بين 0.8% و 2.0%' },
-  { id: 'grade-ordinary', code: 'ORDINARY', nameAr: 'زيت عادي (Ordinary)', nameEn: 'Ordinary Olive Oil', maxAcidity: 3.3, description: 'حموضة تفوق 2.0%' },
-  { id: 'grade-kura', code: 'KURA_REFINED', nameAr: 'زيت بلدي كورة مكرر', nameEn: 'Refined Lebanese Olive Oil', maxAcidity: 1.0, description: 'زيت بلدي مكرر ذو حموضة متدنية' },
+  { id: 'grade-evoo', code: 'EXTRA_VIRGIN', nameAr: 'بكر ممتاز', nameEn: 'Extra Virgin', nameFr: 'Vierge extra', nameEs: 'Virgen extra', nameFa: 'فرابکر', maxAcidity: 0.8, description: 'حموضة أقل من 0.8%' },
+  { id: 'grade-virgin', code: 'VIRGIN', nameAr: 'بكر طبيعي', nameEn: 'Virgin Olive Oil', nameFr: 'Huile vierge', nameEs: 'Aceite virgen', nameFa: 'بکر طبیعی', maxAcidity: 2.0, description: 'حموضة بين 0.8% و 2.0%' },
+  { id: 'grade-ordinary', code: 'ORDINARY', nameAr: 'زيت عادي', nameEn: 'Ordinary Olive Oil', nameFr: 'Huile ordinaire', nameEs: 'Aceite ordinario', nameFa: 'روغن معمولی', maxAcidity: 3.3, description: 'حموضة تفوق 2.0%' },
+  { id: 'grade-kura', code: 'KURA_REFINED', nameAr: 'زيت بلدي مكرر', nameEn: 'Refined Olive Oil', nameFr: 'Huile raffinée', nameEs: 'Aceite refinado', nameFa: 'تصفیه شده محلی', maxAcidity: 1.0, description: 'زيت بلدي مكرر' },
 ];
 
 const INITIAL_TANKS: StorageTank[] = [
   {
     id: 'tank-01',
     code: 'T-01',
-    name: 'Bulk Tank 01 - Extra Virgin (EVOO)',
-    nameAr: 'خزان تجميع T-01: زيت زيتون بكر ممتاز (EVOO)',
+    name: 'Bulk Storage Tank 01 - Extra Virgin',
+    nameAr: 'خزان تجميع T-01: زيت زيتون بكر ممتاز',
     grade: 'EXTRA_VIRGIN',
-    gradeNameAr: 'بكر ممتاز (EVOO)',
+    gradeNameAr: 'بكر ممتاز',
     capacityKg: 30000,
     currentKg: 14250,
     acidity: 0.55,

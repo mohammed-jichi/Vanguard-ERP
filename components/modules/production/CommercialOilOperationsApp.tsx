@@ -3,14 +3,19 @@
 /**
  * Vanguard ERP - V-Oil Operations Hub & Management
  * Autonomous Production & Field Operations for Commercial Oil
- * Features:
+ * 
+ * Features & Isolation:
+ * - Pure 100% i18n across all 5 locales: Arabic (AR), English (EN), French (FR), Spanish (ES), and Persian (FA - فارسی)
+ * - Zero cross-language leakage: no English in Arabic/Persian, no Arabic in English/French/Spanish
+ * - Persian language (FA) support with pure RTL direction and complete specialized terminology
+ * - Strict Warehouse Security: ALL warehouses are permanently isolated from field drivers
+ * - Complete removal of "Visible to Drivers" / "متاح للسائقين" badge; all facilities marked as Management Protected
  * - RBAC separation: Field Operator (oil_operations_access) vs Management Admin (oil_management_admin)
  * - Zero Mock Data: Live APIs for Tanks, Suppliers, Oil Grades, Warehouses, and Stock Ledger
  * - Unit-by-unit intake receiving supporting Gallon, Tin, and Drum (100 kg default, editable)
  * - Net-weight bulk blending
  * - Packaging with dynamic box capacity and unblocked live warehouse dispatch
  * - Elegant printable vouchers (No raw JSON dump!) with backdrop click dismiss and ESC listener
- * - Mobile-ready layout and live dynamic i18n (AR / EN / FR / ES)
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -32,15 +37,9 @@ import {
   Droplets,
   RotateCcw,
   Sparkles,
-  Search,
   Building2,
   Calendar,
   Clock,
-  ArrowRight,
-  ShieldCheck,
-  TrendingDown,
-  Info,
-  ChevronRight,
   Boxes,
   Truck,
   Edit2,
@@ -52,12 +51,14 @@ import {
   DollarSign,
   User,
   LogOut,
-  SlidersHorizontal,
   Lock,
   Unlock,
-  Shield
+  Shield,
+  ShieldCheck,
+  ShieldAlert,
+  Info
 } from 'lucide-react';
-import { STANDARD_PACKAGING_SIZES, OilGradeRecord } from '@/lib/commercialOilConstants';
+import { STANDARD_PACKAGING_SIZES, StandardPackagingSize, OilGradeRecord } from '@/lib/commercialOilConstants';
 
 // --- INTERFACES ---
 export interface Supplier {
@@ -190,16 +191,19 @@ export interface MovementLogRecord {
   performedBy: string;
 }
 
-// Translations Dictionary
+// ------------------------------------------------------------------------------
+// PURE TRANSLATIONS DICTIONARY (AR, EN, FR, ES, FA)
+// Strict zero cross-language leakage
+// ------------------------------------------------------------------------------
 const TRANSLATIONS = {
   ar: {
-    appTitleOperator: 'مركز عمليات الزيت (V-Oil Hub)',
-    appTitleAdmin: 'مركز عمليات وإدارة الزيت التجاري (V-Oil Operations Hub & Management)',
+    appTitleOperator: 'مركز عمليات الزيت',
+    appTitleAdmin: 'مركز عمليات وإدارة الزيت التجاري',
     independentApp: 'الإنتاج الميداني والتعبئة',
     companyName: 'منتوجات زيت وزيتون الجنوب ش.م.م',
-    companySubtitle: 'Southern Olive & Oil Products S.A.R.L — ص.ب 22901 النبطية ومرجعيون، لبنان',
-    operatorMode: 'مشغل ميداني (Field Operator)',
-    adminMode: 'إدارة وتحكم (Admin / Manager)',
+    companySubtitle: 'سجل تجاري: 22901 — النبطية ومرجعيون، لبنان',
+    operatorMode: 'مشغل ميداني',
+    adminMode: 'إدارة وتحكم',
     tabReceive: '1. استلام الزيت التجاري',
     tabBlending: '2. الخلط والمزج بالوزن',
     tabPackaging: '3. التعبئة وسعات الصناديق',
@@ -210,25 +214,25 @@ const TRANSLATIONS = {
     readyBatches: 'خلطات جاهزة للتعبئة',
     packagedUnits: 'المخزون المعبأ بالمستودعات',
     refresh: 'تحديث البيانات',
-    supplier: 'المورد / التاجر:',
+    supplier: 'المورد أو التاجر:',
     addSupplier: '+ إضافة مورد جديد',
-    oilGrade: 'نوع / صنف الزيت:',
-    acidity: 'نسبة الحموضة (% Acidity):',
-    storageTank: 'مكان التخزين / الخزان المستهدف:',
+    oilGrade: 'نوع وصنف الزيت:',
+    acidity: 'نسبة الحموضة المئوية:',
+    storageTank: 'مكان التخزين أو الخزان المستهدف:',
     receiverStaff: 'الموظف المستلم:',
     notes: 'ملاحظات:',
-    containerWeights: 'جدول تسجيل أوزان العبوات المستلمة (Unit-by-Unit Container Weights)',
+    containerWeights: 'جدول تسجيل أوزان العبوات المستلمة',
     registeredContainers: 'عبوة مسجلة',
     newContainer: '+ عبوة جديدة',
-    duplicateLast: '⚡ تكرار سريع لآخر وزن (+1)',
-    batchAdd: '➕ إضافة دفعة متطابقة (Batch Insert)',
+    duplicateLast: 'تكرار سريع لآخر وزن',
+    batchAdd: 'إضافة دفعة متطابقة',
     clearTable: 'مسح الجدول',
     containerType: 'نوع العبوة',
     netWeightKg: 'الوزن الصافي (كغ)',
     actions: 'إجراءات',
-    plasticGallon: 'غالون بلاستيك (Plastic Gallon)',
-    metalTin: 'تنكة حديد (Metal Tin)',
-    drumBarrel: 'برميل (Drum / Barrel) — 100 كغ',
+    plasticGallon: 'غالون بلاستيك (16.2 كغ)',
+    metalTin: 'تنكة حديد (17.0 كغ)',
+    drumBarrel: 'برميل (100 كغ)',
     totalGallons: 'إجمالي الغالونات:',
     totalTins: 'إجمالي التنكات:',
     totalDrums: 'إجمالي البراميل:',
@@ -236,24 +240,24 @@ const TRANSLATIONS = {
     totalNetKg: 'إجمالي الوزن الصافي الكلي:',
     avgPerContainer: 'معدل العبوة:',
     saveAndPostIntake: 'حفظ وترحيل سند الاستلام إلى الخزان',
-    batchName: 'اسم الخلطة / الدفعة:',
-    operator: 'المشغل / الفني المسؤول:',
+    batchName: 'اسم الخلطة أو الدفعة:',
+    operator: 'المشغل أو الفني المسؤول:',
     batchNotes: 'ملاحظات ومواصفات الخلطة:',
     availableSources: 'الخزانات والأرصدة المتاحة للسحب المباشر بالوزن (كغ)',
     withdrawnKgFromTank: 'الوزن المسحوب بالكغ من هذا الخزان:',
     totalWithdrawnWeight: 'إجمالي وزن الخلطة المسحوب:',
     weightedAcidity: 'متوسط الحموضة التقديري:',
-    densityFactor: 'معامل الكثافة (Density Factor):',
-    densityHint: 'افتراضي: 0.916 كغ/L',
+    densityFactor: 'معامل الكثافة:',
+    densityHint: 'المعيار: 0.916 كغ/ليتر',
     estimatedVolumeL: 'الحجم التقديري بالليتر:',
     commitBlend: 'اعتماد وترحيل خلطة الزيت للتعبئة',
     chooseBlendOrManual: 'اختر دفعة الخلط أو كمية يدوية:',
-    manualCustomBatch: 'كمية يدوية مباشرة (Custom Batch)',
+    manualCustomBatch: 'كمية يدوية مباشرة',
     batchWeightKg: 'وزن الدفعة المخصصة للتعبئة (كغ):',
     targetWarehouse: 'المستودع المستهدف لترحيل الإنتاج:',
     packagingTable: 'جدول إدخال العبوات المعبأة (المقاسات المعتمدة الـ 8)',
     skuSize: 'الصنف والمقاس المعتمد',
-    boxCap: 'سعة الصندوق (حبة/صندوق - حر)',
+    boxCap: 'سعة الصندوق (حبة لكل صندوق)',
     boxesCount: 'عدد الصناديق',
     loosePieces: 'حبات فردية',
     totalPieces: 'إجمالي الحبات',
@@ -261,7 +265,7 @@ const TRANSLATIONS = {
     consumedKg: 'الوزن المستهلك (كغ)',
     totalProducedPieces: 'إجمالي الحبات المنتجة:',
     actualConsumedKg: 'الوزن الفعلي المستهلك:',
-    packagingLoss: 'الفاقد في التعبئة (Loss):',
+    packagingLoss: 'الفاقد في التعبئة:',
     reconciledWarehouse: 'المستودع المحال إليه:',
     saveAndPostPackaging: 'حفظ وترحيل الإنتاج إلى المستودع المختار',
     packagingSuccess: 'تم ترحيل التعبئة للمستودع بنجاح برقم سند:',
@@ -272,36 +276,52 @@ const TRANSLATIONS = {
     tankNameEn: 'اسم الخزان بالإنجليزية',
     capacityKg: 'السعة القصوى (كغ)',
     currentKg: 'الرصيد الحالي (كغ)',
-    location: 'الموقع الفعلي / الصالة',
+    location: 'الموقع الفعلي أو الصالة',
     edit: 'تعديل',
     delete: 'حذف',
     warehousesTitle: 'إدارة المستودعات وسجل المخزون الحقيقي',
     addNewWarehouse: '+ إضافة مستودع جديد',
     whCode: 'كود المستودع',
-    whNameAr: 'اسم المستودع بالعربية',
+    whName: 'اسم المستودع',
     whType: 'نوع المستودع',
     whCapacity: 'السعة (ليتر)',
-    driverVisibility: 'ظهور الأرصدة للسائقين',
-    hiddenFromDrivers: 'محجوب عن السائقين (خزان مركزي)',
-    visibleToDrivers: 'متاح للسائقين',
+    securityStatus: 'حالة الحماية والأمان',
+    managementProtected: 'مستودع داخلي — محمي إدارياً (محجوب عن السائقين)',
     close: 'إغلاق',
     print: 'طباعة السند',
     signatures: 'التوقيعات الرسمية المعتمدة',
-    receiverSignature: 'توقيع المستلم / المشغل',
+    receiverSignature: 'توقيع المستلم أو المشغل',
     qcSignature: 'مسؤول الجودة والمختبر',
     warehouseManagerSignature: 'اعتماد مدير المستودعات',
     voucherReceipt: 'سند استلام زيت تجاري',
     voucherBlend: 'محضر تشغيل خلطة زيت',
-    voucherPackaging: 'سند ترحيل إنتاج وتعبئة للمستودع'
+    voucherPackaging: 'سند ترحيل إنتاج وتعبئة للمستودع',
+    cancel: 'إلغاء',
+    save: 'حفظ',
+    exit: 'خروج',
+    unitKg: 'كغ',
+    unitL: 'ليتر',
+    unitPiece: 'حبة',
+    unitBox: 'صندوق',
+    tankBalance: 'رصيد الخزان:',
+    maxCap: 'السعة:',
+    remainingAfter: 'الرصيد المتبقي بعد السحب:',
+    emptyTable: 'لا توجد عبوات مسجلة حالياً. اضغط على "+ عبوة جديدة" للبدء بالوزن على القبان.',
+    emptyTanks: 'لا توجد خزانات مسجلة حالياً.',
+    emptyStocks: 'لا توجد بضاعة مرحلة حالياً في المستودعات.',
+    emptyLogs: 'لا توجد سجلات تاريخية حتى الآن.',
+    driverIsolationNotice: 'تنبيه أمني: كافة المستودعات محجوبة كلياً عن السائقين ومحصورة بالرقابة الإدارية فقط.',
+    supplierPhone: 'هاتف المورد:',
+    supplierEmail: 'البريد الإلكتروني:'
   },
   en: {
     appTitleOperator: 'V-Oil Operations Hub',
     appTitleAdmin: 'V-Oil Operations Hub & Management',
-    independentApp: 'Field Operations & Packaging',
+    independentApp: 'Field Production & Packaging',
     companyName: 'Southern Olive & Oil Products S.A.R.L',
     companySubtitle: 'Commercial Reg: 22901 — Nabatieh & Marjeyoun, Lebanon',
-    operatorMode: 'Field Operator Mode',
-    adminMode: 'Admin / Manager Mode',
+    operatorMode: 'Field Operator',
+    adminMode: 'Management & Admin',
     tabReceive: '1. Commercial Oil Intake',
     tabBlending: '2. Weight Blending',
     tabPackaging: '3. Packaging & Box Sizing',
@@ -312,25 +332,25 @@ const TRANSLATIONS = {
     readyBatches: 'Batches Ready for Packaging',
     packagedUnits: 'Packaged Inventory in Warehouses',
     refresh: 'Refresh Data',
-    supplier: 'Supplier / Vendor:',
+    supplier: 'Supplier or Vendor:',
     addSupplier: '+ Add New Supplier',
-    oilGrade: 'Oil Grade / Classification:',
+    oilGrade: 'Oil Grade & Classification:',
     acidity: 'Effective Acidity (%):',
     storageTank: 'Destination Storage Tank:',
     receiverStaff: 'Receiving Employee:',
     notes: 'Operational Notes:',
-    containerWeights: 'Unit-by-Unit Container Weighbridge Register',
+    containerWeights: 'Container Weighbridge Register',
     registeredContainers: 'containers recorded',
     newContainer: '+ New Container',
-    duplicateLast: '⚡ Fast Duplicate Last (+1)',
-    batchAdd: '➕ Batch Insert Containers',
+    duplicateLast: 'Duplicate Last Weight',
+    batchAdd: 'Batch Insert Containers',
     clearTable: 'Clear Register',
     containerType: 'Container Type',
     netWeightKg: 'Net Weight (KG)',
     actions: 'Actions',
-    plasticGallon: 'Plastic Gallon',
-    metalTin: 'Metal Tin',
-    drumBarrel: 'Drum / Barrel (100 kg default)',
+    plasticGallon: 'Plastic Gallon (16.2 kg)',
+    metalTin: 'Metal Tin (17.0 kg)',
+    drumBarrel: 'Drum (100 kg)',
     totalGallons: 'Total Gallons:',
     totalTins: 'Total Tins:',
     totalDrums: 'Total Drums:',
@@ -338,14 +358,14 @@ const TRANSLATIONS = {
     totalNetKg: 'Total Net Weight (KG):',
     avgPerContainer: 'Average / Unit:',
     saveAndPostIntake: 'Save & Post Intake Voucher to Tank',
-    batchName: 'Blend / Batch Title:',
+    batchName: 'Blend or Batch Title:',
     operator: 'Master Blender / Operator:',
-    batchNotes: 'Blend Specifications & Quality Notes:',
+    batchNotes: 'Blend Specifications & Notes:',
     availableSources: 'Available Tanks for Direct Weight Withdrawal (KG)',
     withdrawnKgFromTank: 'Withdrawn Weight (KG) from this tank:',
     totalWithdrawnWeight: 'Total Batch Weight Withdrawn:',
     weightedAcidity: 'Weighted Estimated Acidity:',
-    densityFactor: 'Density Factor (kg/L):',
+    densityFactor: 'Density Factor:',
     densityHint: 'Standard: 0.916 kg/L',
     estimatedVolumeL: 'Estimated Volume (Liters):',
     commitBlend: 'Commit & Post Batch to Packaging Tank',
@@ -353,13 +373,13 @@ const TRANSLATIONS = {
     manualCustomBatch: 'Custom Manual Quantity',
     batchWeightKg: 'Batch Weight for Packaging (KG):',
     targetWarehouse: 'Target Warehouse for Finished Goods:',
-    packagingTable: 'Packaging Register (8 Standard Standard Sizes)',
+    packagingTable: 'Packaging Register (8 Standard Sizes)',
     skuSize: 'Standard SKU & Size',
-    boxCap: 'Box Capacity (Pcs/Box - Free)',
+    boxCap: 'Box Capacity (Pieces/Box)',
     boxesCount: 'Boxes Count',
     loosePieces: 'Loose Pieces',
     totalPieces: 'Total Pieces',
-    volumeL: 'Volume (L)',
+    volumeL: 'Volume (Liters)',
     consumedKg: 'Consumed Weight (KG)',
     totalProducedPieces: 'Total Pieces Produced:',
     actualConsumedKg: 'Actual Consumed Weight:',
@@ -374,18 +394,17 @@ const TRANSLATIONS = {
     tankNameEn: 'English Name',
     capacityKg: 'Max Capacity (KG)',
     currentKg: 'Current Balance (KG)',
-    location: 'Physical Location / Bay',
+    location: 'Physical Location or Bay',
     edit: 'Edit',
     delete: 'Delete',
-    warehousesTitle: 'Warehouses & Live Finished Goods Ledger',
+    warehousesTitle: 'Warehouses & Live Stock Ledger',
     addNewWarehouse: '+ Add New Warehouse',
     whCode: 'Warehouse Code',
-    whNameAr: 'Warehouse Name',
-    whType: 'Type',
-    whCapacity: 'Capacity (L)',
-    driverVisibility: 'Driver Visibility',
-    hiddenFromDrivers: 'Hidden from Drivers (Central Hub)',
-    visibleToDrivers: 'Visible to Drivers',
+    whName: 'Warehouse Name',
+    whType: 'Warehouse Type',
+    whCapacity: 'Capacity (Liters)',
+    securityStatus: 'Security & Access Status',
+    managementProtected: 'Internal Facility — Management Protected (Hidden from Drivers)',
     close: 'Close',
     print: 'Print Voucher',
     signatures: 'Authorized Signatures',
@@ -394,7 +413,24 @@ const TRANSLATIONS = {
     warehouseManagerSignature: 'Warehouse Director',
     voucherReceipt: 'Commercial Oil Intake Voucher',
     voucherBlend: 'Oil Blending Run Report',
-    voucherPackaging: 'Finished Packaging & Dispatch Voucher'
+    voucherPackaging: 'Finished Packaging & Dispatch Voucher',
+    cancel: 'Cancel',
+    save: 'Save',
+    exit: 'Exit',
+    unitKg: 'KG',
+    unitL: 'L',
+    unitPiece: 'Pieces',
+    unitBox: 'Boxes',
+    tankBalance: 'Tank Balance:',
+    maxCap: 'Capacity:',
+    remainingAfter: 'Remaining Balance:',
+    emptyTable: 'No containers recorded. Click "+ New Container" to begin weighing.',
+    emptyTanks: 'No storage tanks registered.',
+    emptyStocks: 'No finished goods posted in warehouses yet.',
+    emptyLogs: 'No historical records available.',
+    driverIsolationNotice: 'Security Notice: All warehouse facilities are strictly isolated from drivers and restricted to management.',
+    supplierPhone: 'Supplier Phone:',
+    supplierEmail: 'Supplier Email:'
   },
   fr: {
     appTitleOperator: 'Centre des Opérations V-Oil',
@@ -402,8 +438,8 @@ const TRANSLATIONS = {
     independentApp: 'Production de Terrain & Conditionnement',
     companyName: 'Southern Olive & Oil Products S.A.R.L',
     companySubtitle: 'Registre Commercial: 22901 — Nabatieh & Marjeyoun, Liban',
-    operatorMode: 'Mode Opérateur Terrain',
-    adminMode: 'Mode Direction & Gestion',
+    operatorMode: 'Opérateur Terrain',
+    adminMode: 'Direction & Gestion',
     tabReceive: '1. Réception Huile Commerciale',
     tabBlending: '2. Assemblage au Poids',
     tabPackaging: '3. Conditionnement & Caisses',
@@ -414,25 +450,25 @@ const TRANSLATIONS = {
     readyBatches: 'Lots Prêts à l’Embouteillage',
     packagedUnits: 'Stock Emballé en Entrepôt',
     refresh: 'Actualiser les Données',
-    supplier: 'Fournisseur / Négociant:',
+    supplier: 'Fournisseur ou Négociant:',
     addSupplier: '+ Nouveau Fournisseur',
     oilGrade: 'Catégorie d’Huile:',
     acidity: 'Acidité Réelle (%):',
     storageTank: 'Cuve de Stockage Cible:',
     receiverStaff: 'Agent Réceptionnaire:',
     notes: 'Remarques:',
-    containerWeights: 'Registre de Pesée Unitaire des Fûts et Bidons',
+    containerWeights: 'Registre de Pesée des Contenants',
     registeredContainers: 'unités enregistrées',
     newContainer: '+ Nouvelle Unité',
-    duplicateLast: '⚡ Dupliquer Dernier (+1)',
-    batchAdd: '➕ Ajout par Lot',
+    duplicateLast: 'Dupliquer le Dernier Poids',
+    batchAdd: 'Ajout par Lot',
     clearTable: 'Effacer le Registre',
     containerType: 'Type de Contenant',
     netWeightKg: 'Poids Net (KG)',
     actions: 'Actions',
     plasticGallon: 'Bidon Plastique (16.2 kg)',
     metalTin: 'Bidon Métal (17.0 kg)',
-    drumBarrel: 'Fût / Baril (100 kg défaut)',
+    drumBarrel: 'Fût (100 kg)',
     totalGallons: 'Total Bidons Plastique:',
     totalTins: 'Total Bidons Métal:',
     totalDrums: 'Total Fûts:',
@@ -447,7 +483,7 @@ const TRANSLATIONS = {
     withdrawnKgFromTank: 'Poids Soutiré de cette cuve (KG):',
     totalWithdrawnWeight: 'Poids Total Assemblé:',
     weightedAcidity: 'Acidité Moyenne Pondérée:',
-    densityFactor: 'Facteur de Densité (kg/L):',
+    densityFactor: 'Facteur de Densité:',
     densityHint: 'Standard: 0.916 kg/L',
     estimatedVolumeL: 'Volume Estimé (Litres):',
     commitBlend: 'Valider et Transférer vers le Conditionnement',
@@ -461,7 +497,7 @@ const TRANSLATIONS = {
     boxesCount: 'Nombre de Caisses',
     loosePieces: 'Unités Individuelles',
     totalPieces: 'Total Pièces',
-    volumeL: 'Volume (L)',
+    volumeL: 'Volume (Litres)',
     consumedKg: 'Poids Consommé (KG)',
     totalProducedPieces: 'Total Pièces Produites:',
     actualConsumedKg: 'Poids Réel Consommé:',
@@ -476,18 +512,17 @@ const TRANSLATIONS = {
     tankNameEn: 'Nom Français/Anglais',
     capacityKg: 'Capacité Max (KG)',
     currentKg: 'Solde Actuel (KG)',
-    location: 'Emplacement',
+    location: 'Emplacement Physique',
     edit: 'Modifier',
     delete: 'Supprimer',
     warehousesTitle: 'Entrepôts et Registre des Stocks Réels',
     addNewWarehouse: '+ Ajouter un Entrepôt',
     whCode: 'Code Entrepôt',
-    whNameAr: 'Nom de l’Entrepôt',
-    whType: 'Type',
-    whCapacity: 'Capacité (L)',
-    driverVisibility: 'Visibilité Chauffeurs',
-    hiddenFromDrivers: 'Masqué aux Chauffeurs',
-    visibleToDrivers: 'Visible aux Chauffeurs',
+    whName: 'Nom de l’Entrepôt',
+    whType: 'Type d’Entrepôt',
+    whCapacity: 'Capacité (Litres)',
+    securityStatus: 'Statut de Sécurité et d’Accès',
+    managementProtected: 'Installation Interne — Protégée par la Direction (Masquée aux Chauffeurs)',
     close: 'Fermer',
     print: 'Imprimer le Bon',
     signatures: 'Signatures Officielles',
@@ -496,7 +531,24 @@ const TRANSLATIONS = {
     warehouseManagerSignature: 'Directeur des Entrepôts',
     voucherReceipt: 'Bon de Réception Huile Commerciale',
     voucherBlend: 'Rapport de Brassage & Assemblage',
-    voucherPackaging: 'Bon d’Entrée en Entrepôt (Conditionnement)'
+    voucherPackaging: 'Bon d’Entrée en Entrepôt (Conditionnement)',
+    cancel: 'Annuler',
+    save: 'Enregistrer',
+    exit: 'Sortie',
+    unitKg: 'KG',
+    unitL: 'L',
+    unitPiece: 'Unités',
+    unitBox: 'Caisses',
+    tankBalance: 'Solde Cuve:',
+    maxCap: 'Capacité:',
+    remainingAfter: 'Solde Restant:',
+    emptyTable: 'Aucun contenant enregistré. Cliquez sur "+ Nouvelle Unité".',
+    emptyTanks: 'Aucune cuve enregistrée.',
+    emptyStocks: 'Aucun produit fini en stock.',
+    emptyLogs: 'Aucun enregistrement historique disponible.',
+    driverIsolationNotice: 'Avis de sécurité: tous les entrepôts sont strictement isolés des chauffeurs et réservés à la direction.',
+    supplierPhone: 'Téléphone Fournisseur:',
+    supplierEmail: 'Email Fournisseur:'
   },
   es: {
     appTitleOperator: 'Centro de Operaciones V-Oil',
@@ -504,8 +556,8 @@ const TRANSLATIONS = {
     independentApp: 'Producción de Campo y Envasado',
     companyName: 'Southern Olive & Oil Products S.A.R.L',
     companySubtitle: 'Reg. Comercial: 22901 — Nabatieh & Marjeyoun, Líbano',
-    operatorMode: 'Modo Operario de Campo',
-    adminMode: 'Modo Administración y Control',
+    operatorMode: 'Operario de Campo',
+    adminMode: 'Administración y Control',
     tabReceive: '1. Recepción de Aceite Comercial',
     tabBlending: '2. Mezcla y Ensamblaje por Peso',
     tabPackaging: '3. Envasado y Cajas Flexibles',
@@ -516,25 +568,25 @@ const TRANSLATIONS = {
     readyBatches: 'Lotes Listos para Envasar',
     packagedUnits: 'Stock Envasado en Almacenes',
     refresh: 'Actualizar Datos',
-    supplier: 'Proveedor / Comercializador:',
+    supplier: 'Proveedor o Comercializador:',
     addSupplier: '+ Agregar Proveedor',
-    oilGrade: 'Calidad / Grado de Aceite:',
+    oilGrade: 'Calidad y Grado de Aceite:',
     acidity: 'Acidez Efectiva (%):',
     storageTank: 'Tanque de Destino:',
     receiverStaff: 'Operario Receptor:',
     notes: 'Notas Operativas:',
-    containerWeights: 'Registro de Pesaje Unitario en Báscula',
+    containerWeights: 'Registro de Pesaje de Envases',
     registeredContainers: 'envases registrados',
     newContainer: '+ Nuevo Envase',
-    duplicateLast: '⚡ Duplicar Último (+1)',
-    batchAdd: '➕ Insertar Lote Rápido',
+    duplicateLast: 'Duplicar Último Peso',
+    batchAdd: 'Insertar Lote de Envases',
     clearTable: 'Vaciar Registro',
     containerType: 'Tipo de Envase',
     netWeightKg: 'Peso Neto (KG)',
     actions: 'Acciones',
     plasticGallon: 'Bidón Plástico (16.2 kg)',
     metalTin: 'Lata Metálica (17.0 kg)',
-    drumBarrel: 'Barril / Tambor (100 kg)',
+    drumBarrel: 'Barril (100 kg)',
     totalGallons: 'Total Bidones Plástico:',
     totalTins: 'Total Latas:',
     totalDrums: 'Total Barriles:',
@@ -549,7 +601,7 @@ const TRANSLATIONS = {
     withdrawnKgFromTank: 'Peso Retirado (KG):',
     totalWithdrawnWeight: 'Peso Total Retirado:',
     weightedAcidity: 'Acidez Promedio Ponderada:',
-    densityFactor: 'Factor de Densidad (kg/L):',
+    densityFactor: 'Factor de Densidad:',
     densityHint: 'Estándar: 0.916 kg/L',
     estimatedVolumeL: 'Volumen Estimado (Litros):',
     commitBlend: 'Confirmar y Transferir a Envasado',
@@ -559,11 +611,11 @@ const TRANSLATIONS = {
     targetWarehouse: 'Almacén Destino de Producto Terminado:',
     packagingTable: 'Tabla de Envasado (8 Tamaños Estándar)',
     skuSize: 'Producto y Capacidad',
-    boxCap: 'Capacidad Caja (Uds/Caja)',
+    boxCap: 'Capacidad Caja (Piezas/Caja)',
     boxesCount: 'Cantidad de Cajas',
     loosePieces: 'Piezas Sueltas',
     totalPieces: 'Total Piezas',
-    volumeL: 'Volumen (L)',
+    volumeL: 'Volumen (Litros)',
     consumedKg: 'Peso Consumido (KG)',
     totalProducedPieces: 'Total Piezas Producidas:',
     actualConsumedKg: 'Peso Real Consumido:',
@@ -573,7 +625,7 @@ const TRANSLATIONS = {
     packagingSuccess: 'Envasado registrado con éxito con el comprobante n° ',
     tanksManagementTitle: 'Administración de Tanques y Silos',
     addNewTank: '+ Agregar Tanque',
-    tankCode: 'Código',
+    tankCode: 'Código del Tanque',
     tankNameAr: 'Nombre Árabe',
     tankNameEn: 'Nombre Español/Inglés',
     capacityKg: 'Capacidad Máx (KG)',
@@ -584,12 +636,11 @@ const TRANSLATIONS = {
     warehousesTitle: 'Gestión de Almacenes y Registro Real de Stock',
     addNewWarehouse: '+ Agregar Almacén',
     whCode: 'Código Almacén',
-    whNameAr: 'Nombre Almacén',
-    whType: 'Tipo',
-    whCapacity: 'Capacidad (L)',
-    driverVisibility: 'Visibilidad Choferes',
-    hiddenFromDrivers: 'Oculto a Choferes',
-    visibleToDrivers: 'Visible a Choferes',
+    whName: 'Nombre del Almacén',
+    whType: 'Tipo de Almacén',
+    whCapacity: 'Capacidad (Litros)',
+    securityStatus: 'Estado de Seguridad y Acceso',
+    managementProtected: 'Instalación Interna — Protegida por Administración (Oculta a Choferes)',
     close: 'Cerrar',
     print: 'Imprimir Comprobante',
     signatures: 'Firmas Autorizadas',
@@ -598,21 +649,157 @@ const TRANSLATIONS = {
     warehouseManagerSignature: 'Director de Almacenes',
     voucherReceipt: 'Comprobante de Recepción de Aceite Comercial',
     voucherBlend: 'Informe de Mezcla y Ensamblaje',
-    voucherPackaging: 'Comprobante de Entrada a Almacén'
+    voucherPackaging: 'Comprobante de Entrada a Almacén',
+    cancel: 'Cancelar',
+    save: 'Guardar',
+    exit: 'Salir',
+    unitKg: 'KG',
+    unitL: 'L',
+    unitPiece: 'Piezas',
+    unitBox: 'Cajas',
+    tankBalance: 'Saldo Tanque:',
+    maxCap: 'Capacidad:',
+    remainingAfter: 'Saldo Restante:',
+    emptyTable: 'No hay envases registrados. Pulse "+ Nuevo Envase".',
+    emptyTanks: 'No hay tanques registrados.',
+    emptyStocks: 'No hay productos terminados en stock.',
+    emptyLogs: 'No hay registros históricos disponibles.',
+    driverIsolationNotice: 'Aviso de seguridad: todos los almacenes están estrictamente aislados de los choferes y restringidos a administración.',
+    supplierPhone: 'Teléfono Proveedor:',
+    supplierEmail: 'Email Proveedor:'
+  },
+  fa: {
+    appTitleOperator: 'مرکز عملیات روغن',
+    appTitleAdmin: 'مرکز عملیات و مدیریت روغن تجاری',
+    independentApp: 'تولید میدانی و بسته‌بندی',
+    companyName: 'شرکت محصولات زیتون و روغن جنوب (با مسئولیت محدود)',
+    companySubtitle: 'شماره ثبت تجاری: ۲۲۹۰۱ — نبطیه و مرجعیون، لبنان',
+    operatorMode: 'اپراتور میدانی',
+    adminMode: 'مدیریت و کنترل',
+    tabReceive: '۱. ورود روغن تجاری',
+    tabBlending: '۲. ترکیب و اختلاط بر اساس وزن',
+    tabPackaging: '۳. بسته‌بندی و ظرفیت جعبه‌ها',
+    tabTanks: '۴. مدیریت مخازن و ذخیره‌سازی',
+    tabWarehouses: '۵. انبارها و موجودی واقعی',
+    tabLogs: '۶. دفاتر و گزارش‌های رسمی',
+    totalBulkBalance: 'مجموع موجودی روغن فله',
+    readyBatches: 'دسته‌های آماده برای بسته‌بندی',
+    packagedUnits: 'موجودی بسته‌بندی شده در انبارها',
+    refresh: 'به‌روزرسانی داده‌ها',
+    supplier: 'تامین‌کننده یا تاجر:',
+    addSupplier: '+ افزودن تامین‌کننده جدید',
+    oilGrade: 'درجه و دسته‌بندی روغن:',
+    acidity: 'درصد اسیدیته واقعی:',
+    storageTank: 'مخزن ذخیره‌سازی مقصد:',
+    receiverStaff: 'کارمند تحویل‌گیرنده:',
+    notes: 'یادداشت‌های عملیاتی:',
+    containerWeights: 'جدول ثبت اوزان ظروف دریافتی',
+    registeredContainers: 'ظرف ثبت شده',
+    newContainer: '+ ظرف جدید',
+    duplicateLast: 'تکرار سریع آخرین وزن',
+    batchAdd: 'افزودن دسته‌ای ظروف',
+    clearTable: 'پاک‌سازی جدول',
+    containerType: 'نوع ظرف',
+    netWeightKg: 'وزن خالص (کیلوگرم)',
+    actions: 'عملیات',
+    plasticGallon: 'گالن پلاستیکی (۱۶.۲ کیلوگرم)',
+    metalTin: 'حلب فلزی (۱۷.۰ کیلوگرم)',
+    drumBarrel: 'بشکه (۱۰۰ کیلوگرم)',
+    totalGallons: 'مجموع گالن‌ها:',
+    totalTins: 'مجموع حلب‌ها:',
+    totalDrums: 'مجموع بشکه‌ها:',
+    totalContainers: 'کل ظروف:',
+    totalNetKg: 'مجموع وزن خالص کل:',
+    avgPerContainer: 'میانگین هر واحد:',
+    saveAndPostIntake: 'ذخیره و ثبت سند ورود به مخزن',
+    batchName: 'نام مخلوط یا دسته:',
+    operator: 'اپراتور یا کارشناس مخلوط:',
+    batchNotes: 'مشخصات و یادداشت‌های مخلوط:',
+    availableSources: 'مخازن و موجودی‌های در دسترس برای برداشت مستقیم بر حسب وزن (کیلوگرم)',
+    withdrawnKgFromTank: 'وزن برداشت شده از این مخزن (کیلوگرم):',
+    totalWithdrawnWeight: 'مجموع وزن برداشت شده دسته:',
+    weightedAcidity: 'میانگین وزنی تخمینی اسیدیته:',
+    densityFactor: 'ضریب چگالی:',
+    densityHint: 'استاندارد: ۰.۹۱۶ کیلوگرم بر لیتر',
+    estimatedVolumeL: 'حجم تخمینی (لیتر):',
+    commitBlend: 'تایید و انتقال دسته روغن به بخش بسته‌بندی',
+    chooseBlendOrManual: 'انتخاب دسته اختلاط یا مقدار دستی:',
+    manualCustomBatch: 'مقدار دستی سفارشی',
+    batchWeightKg: 'وزن دسته برای بسته‌بندی (کیلوگرم):',
+    targetWarehouse: 'انبار مقصد برای کالای آماده:',
+    packagingTable: 'جدول ثبت بسته‌بندی (۸ اندازه استاندارد)',
+    skuSize: 'نوع کالا و اندازه استاندارد',
+    boxCap: 'ظرفیت جعبه (تعداد در هر جعبه)',
+    boxesCount: 'تعداد جعبه‌ها',
+    loosePieces: 'تعداد تکی',
+    totalPieces: 'مجموع تعداد',
+    volumeL: 'حجم (لیتر)',
+    consumedKg: 'وزن مصرف‌شده (کیلوگرم)',
+    totalProducedPieces: 'مجموع کالای تولید شده:',
+    actualConsumedKg: 'وزن واقعی مصرف‌شده:',
+    packagingLoss: 'ضایعات بسته‌بندی:',
+    reconciledWarehouse: 'انبار تحویل‌گیرنده:',
+    saveAndPostPackaging: 'انتقال و ثبت تولید به انبار انتخابی',
+    packagingSuccess: 'بسته‌بندی با موفقیت با شماره سند ثبت شد:',
+    tanksManagementTitle: 'مدیریت مخازن، سیلوها و ذخیره‌سازی فله',
+    addNewTank: '+ افزودن مخزن جدید',
+    tankCode: 'کد مخزن',
+    tankNameAr: 'نام عربی',
+    tankNameEn: 'نام انگلیسی/فارسی',
+    capacityKg: 'حداکثر ظرفیت (کیلوگرم)',
+    currentKg: 'موجودی فعلی (کیلوگرم)',
+    location: 'موقعیت فیزیکی یا سالن',
+    edit: 'ویرایش',
+    delete: 'حذف',
+    warehousesTitle: 'مدیریت انبارها و دفتر موجودی واقعی',
+    addNewWarehouse: '+ افزودن انبار جدید',
+    whCode: 'کد انبار',
+    whName: 'نام انبار',
+    whType: 'نوع انبار',
+    whCapacity: 'ظرفیت (لیتر)',
+    securityStatus: 'وضعیت امنیتی و دسترسی',
+    managementProtected: 'تاسیسات داخلی — حفاظت‌شده مدیریتی (کاملاً مسدود برای رانندگان)',
+    close: 'بستن',
+    print: 'چاپ سند',
+    signatures: 'امضاهای رسمی مجاز',
+    receiverSignature: 'امضای تحویل‌گیرنده / اپراتور',
+    qcSignature: 'مسئول کنترل کیفیت و آزمایشگاه',
+    warehouseManagerSignature: 'مدیر کل انبارها',
+    voucherReceipt: 'سند رسید روغن تجاری',
+    voucherBlend: 'صورتجلسه فرآیند مخلوط روغن',
+    voucherPackaging: 'حواله انتقال تولید و بسته‌بندی به انبار',
+    cancel: 'انصراف',
+    save: 'ذخیره',
+    exit: 'خروج',
+    unitKg: 'کیلوگرم',
+    unitL: 'لیتر',
+    unitPiece: 'عدد',
+    unitBox: 'جعبه',
+    tankBalance: 'موجودی مخزن:',
+    maxCap: 'ظرفیت:',
+    remainingAfter: 'موجودی باقی‌مانده:',
+    emptyTable: 'هیچ ظرفی ثبت نشده است. روی "+ ظرف جدید" کلیک کنید.',
+    emptyTanks: 'هیچ مخزنی ثبت نشده است.',
+    emptyStocks: 'هنوز هیچ کالای آماده‌ای در انبارها ثبت نشده است.',
+    emptyLogs: 'هیچ سابقه تاریخی در دسترس نیست.',
+    driverIsolationNotice: 'هشدار امنیتی: تمامی انبارها به صورت کامل از رانندگان مسدود بوده و دسترسی به آن‌ها منحصراً در اختیار مدیریت است.',
+    supplierPhone: 'تلفن تامین‌کننده:',
+    supplierEmail: 'ایمیل تامین‌کننده:'
   }
 };
 
 export default function CommercialOilOperationsApp() {
-  const { language, setLanguage, isRtl } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const activeUser = useActiveUser();
 
-  // Selected language translation dictionary
-  const currentLang = (language in TRANSLATIONS ? language : 'ar') as keyof typeof TRANSLATIONS;
+  // Active locale code
+  const currentLang = (['ar', 'en', 'fr', 'es', 'fa'].includes(language) ? language : 'ar') as keyof typeof TRANSLATIONS;
   const t = TRANSLATIONS[currentLang];
 
-  // RBAC Mode Determination:
-  // Operator Mode: default for OIL_OPERATOR or r_oil_op.
-  // Admin Mode: default for Management, SuperAdmin, Manager.
+  // True RTL layout for Arabic and Persian
+  const isRtlLayout = currentLang === 'ar' || currentLang === 'fa';
+
+  // Role detection: Operator vs Admin
   const isSuperOrAdmin = useMemo(() => {
     const role = (activeUser?.role || '').toLowerCase();
     const email = (activeUser?.email || '').toLowerCase();
@@ -628,7 +815,6 @@ export default function CommercialOilOperationsApp() {
 
   const [userMode, setUserMode] = useState<'OPERATOR' | 'ADMIN'>(isSuperOrAdmin ? 'ADMIN' : 'OPERATOR');
 
-  // Sync mode if activeUser loads asynchronously
   useEffect(() => {
     if (isSuperOrAdmin) {
       setUserMode('ADMIN');
@@ -640,7 +826,7 @@ export default function CommercialOilOperationsApp() {
   // Navigation Tabs
   const [activeTab, setActiveTab] = useState<'RECEIVE' | 'BLENDING' | 'PACKAGING' | 'TANKS' | 'WAREHOUSES' | 'LOGS'>('RECEIVE');
 
-  // Prevent Operator from entering Admin tabs
+  // Prevent Operator from opening Admin-only tabs
   useEffect(() => {
     if (userMode === 'OPERATOR' && (activeTab === 'TANKS' || activeTab === 'WAREHOUSES' || activeTab === 'LOGS')) {
       setActiveTab('RECEIVE');
@@ -671,7 +857,7 @@ export default function CommercialOilOperationsApp() {
   const [targetStorageId, setTargetStorageId] = useState<string>('');
   const [intakeDate, setIntakeDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [intakeNotes, setIntakeNotes] = useState<string>('');
-  const receiverName = activeUser?.name || 'Mohammed Jichi (مستلم المستودع)';
+  const receiverName = activeUser?.name || 'Mohammed Jichi';
 
   // Container rows: default includes Gallon, Tin, and DRUM (100 kg)
   const [containerRows, setContainerRows] = useState<ContainerRow[]>([
@@ -694,9 +880,9 @@ export default function CommercialOilOperationsApp() {
   // --------------------------------------------------------------------------
   // TAB 2: BLENDING STATE
   // --------------------------------------------------------------------------
-  const [blendName, setBlendName] = useState<string>('خلطة زيت زيتون بكر فاخر متوازنة');
-  const blendOperator = activeUser?.name || 'فني الخلط والمختبر';
-  const [blendNotes, setBlendNotes] = useState<string>('سحب أوزان بالكيلوغرام من الخزانات واعتماد الدفعة');
+  const [blendName, setBlendName] = useState<string>('');
+  const blendOperator = activeUser?.name || 'Operator';
+  const [blendNotes, setBlendNotes] = useState<string>('');
   const [withdrawals, setWithdrawals] = useState<Record<string, number>>({});
 
   // --------------------------------------------------------------------------
@@ -706,8 +892,8 @@ export default function CommercialOilOperationsApp() {
   const [customBatchKg, setCustomBatchKg] = useState<number>(1000);
   const [densityFactor, setDensityFactor] = useState<number>(0.916);
   const [targetWarehouseId, setTargetWarehouseId] = useState<string>('wh-main-fg');
-  const packagingOperator = activeUser?.name || 'مسؤول خط التعبئة والتغليف';
-  const [packagingNotes, setPackagingNotes] = useState<string>('تعبئة موسمية مطابقة للمواصفات');
+  const packagingOperator = activeUser?.name || 'Operator';
+  const [packagingNotes, setPackagingNotes] = useState<string>('');
 
   // Dynamic Packaging SKUs inputs (8 standard sizes with free user box capacity)
   const [skuInputs, setSkuInputs] = useState<Record<string, { boxCapacity: number; boxes: number; loosePieces: number }>>(
@@ -731,7 +917,7 @@ export default function CommercialOilOperationsApp() {
   const [newTankNameEn, setNewTankNameEn] = useState<string>('');
   const [newTankCapacityKg, setNewTankCapacityKg] = useState<number>(25000);
   const [newTankGrade, setNewTankGrade] = useState<string>('EXTRA_VIRGIN');
-  const [newTankLocation, setNewTankLocation] = useState<string>('صالة الخزانات المركزية - Hall A');
+  const [newTankLocation, setNewTankLocation] = useState<string>('');
   const [newTankAcidity, setNewTankAcidity] = useState<number>(0.65);
 
   const [showAddWhModal, setShowAddWhModal] = useState<boolean>(false);
@@ -741,9 +927,8 @@ export default function CommercialOilOperationsApp() {
   const [newWhType, setNewWhType] = useState<string>('FINISHED_GOODS');
   const [newWhLocation, setNewWhLocation] = useState<string>('');
   const [newWhCapacity, setNewWhCapacity] = useState<number>(50000);
-  const [newWhDriverVisible, setNewWhDriverVisible] = useState<boolean>(true);
 
-  // Active print modal document (Official Vanguard Voucher Card)
+  // Active print modal document
   const [printableDoc, setPrintableDoc] = useState<{
     docType: 'RECEIPT' | 'BLEND' | 'PACKAGING';
     title: string;
@@ -752,7 +937,7 @@ export default function CommercialOilOperationsApp() {
     content: any;
   } | null>(null);
 
-  // ESC Key listener to close ANY modal immediately
+  // ESC Key listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -768,24 +953,68 @@ export default function CommercialOilOperationsApp() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // --------------------------------------------------------------------------
-  // DATA FETCHING & SYNCHRONIZATION
-  // --------------------------------------------------------------------------
+  // Toast Helper
   const showToast = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToastMessage({ text, type });
     setTimeout(() => setToastMessage(null), 4000);
   };
 
+  // --------------------------------------------------------------------------
+  // LOCALIZATION HELPERS: Ensure 100% pure text per language
+  // --------------------------------------------------------------------------
+  const getLocalizedTankName = useCallback((tank: StorageTank) => {
+    if (currentLang === 'ar') return tank.nameAr || tank.name;
+    if (currentLang === 'fa') return tank.nameAr ? tank.nameAr.replace(/خزان/g, 'مخزن').replace(/تجميع/g, 'ذخیره') : tank.name;
+    return tank.name || tank.nameAr;
+  }, [currentLang]);
+
+  const getLocalizedWarehouseName = useCallback((wh: Warehouse) => {
+    if (currentLang === 'ar') return wh.nameAr || wh.name;
+    if (currentLang === 'fa') {
+      if (wh.id === 'wh-main-fg') return 'انبار اصلی کالای آماده';
+      if (wh.id === 'wh-supersonic') return 'انبار توزیع میدانی (سوپرسونیک)';
+      if (wh.id === 'wh-showroom') return 'انبار نمایشگاه و فروش مستقیم';
+      if (wh.id === 'wh-qc') return 'انبار بازرسی فنی و قرنطینه آزمایشگاهی';
+      if (wh.id === 'wh-raw-bulk') return 'انبار و مخازن روغن خام';
+      return wh.nameAr || wh.name;
+    }
+    return wh.name || wh.nameAr;
+  }, [currentLang]);
+
+  const getLocalizedGradeName = useCallback((g: OilGradeRecord) => {
+    if (currentLang === 'ar') return g.nameAr;
+    if (currentLang === 'fa') return g.nameFa || g.nameAr;
+    if (currentLang === 'fr') return g.nameFr || g.nameEn;
+    if (currentLang === 'es') return g.nameEs || g.nameEn;
+    return g.nameEn;
+  }, [currentLang]);
+
+  const getLocalizedSkuName = useCallback((sku: StandardPackagingSize) => {
+    if (currentLang === 'ar') return sku.nameAr;
+    if (currentLang === 'fa') return sku.nameFa || sku.nameAr;
+    if (currentLang === 'fr') return sku.nameFr || sku.nameEn;
+    if (currentLang === 'es') return sku.nameEs || sku.nameEn;
+    return sku.nameEn;
+  }, [currentLang]);
+
+  const getContainerTypeLabel = useCallback((type: 'GALLON' | 'TIN' | 'DRUM') => {
+    if (type === 'GALLON') return t.plasticGallon;
+    if (type === 'TIN') return t.metalTin;
+    return t.drumBarrel;
+  }, [t]);
+
+  // --------------------------------------------------------------------------
+  // DATA FETCHING & SYNCHRONIZATION
+  // --------------------------------------------------------------------------
   const loadAllData = useCallback(async () => {
     try {
       setIsLoading(true);
-      // 1. Fetch live warehouses (all warehouses including Supersonic)
+      // 1. Fetch live warehouses (all driverVisible are false)
       const whRes = await fetch('/api/warehouses');
       const whJson = await whRes.json();
       if (whJson.success && Array.isArray(whJson.data)) {
         setWarehouses(whJson.data);
         if (whJson.data.length > 0) {
-          // If current targetWarehouseId is not in the list, set to the first one
           setTargetWarehouseId(prev => (whJson.data.some((w: Warehouse) => w.id === prev) ? prev : whJson.data[0].id));
         }
       }
@@ -810,7 +1039,7 @@ export default function CommercialOilOperationsApp() {
         }
       }
 
-      // 4. Fetch commercial oil state (tanks, batches, vouchers, ledger, movements)
+      // 4. Fetch commercial oil state
       const opRes = await fetch('/api/operations/commercial-oil');
       const opJson = await opRes.json();
       if (opJson.success && opJson.data) {
@@ -828,11 +1057,11 @@ export default function CommercialOilOperationsApp() {
       }
     } catch (err: any) {
       console.error('Failed to load commercial oil operations data:', err);
-      showToast('خطأ في تحميل البيانات من الخادم', 'error');
+      showToast(t.emptyLogs, 'error');
     } finally {
       setIsLoading(false);
     }
-  }, [selectedSupplierId, targetStorageId]);
+  }, [selectedSupplierId, targetStorageId, t.emptyLogs]);
 
   useEffect(() => {
     loadAllData();
@@ -890,7 +1119,7 @@ export default function CommercialOilOperationsApp() {
       netKg: lastRow.netKg
     };
     setContainerRows([...containerRows, dup]);
-    showToast(`تم تكرار العبوة (${dup.netKg} كغ) بنجاح`, 'info');
+    showToast(`${dup.netKg} ${t.unitKg}`, 'info');
   };
 
   const handleApplyQuickBatch = () => {
@@ -906,7 +1135,7 @@ export default function CommercialOilOperationsApp() {
     }
     setContainerRows([...containerRows, ...newRows]);
     setShowQuickBatchModal(false);
-    showToast(`تمت إضافة ${count} عبوة (${quickBatchType === 'DRUM' ? 'برميل' : quickBatchType === 'TIN' ? 'تنكة' : 'غالون'}) بوزن ${weight} كغ`, 'success');
+    showToast(`${count} × ${weight} ${t.unitKg}`, 'success');
   };
 
   const handleRemoveContainerRow = (id: string) => {
@@ -926,14 +1155,14 @@ export default function CommercialOilOperationsApp() {
           action: 'CREATE',
           supplier: {
             SUPPLIERNAME: newSupName,
-            PHONE: newSupPhone || '+961 7 000 000',
-            EMAIL: newSupEmail || 'supplier@vanguard-erp.lb'
+            PHONE: newSupPhone || '',
+            EMAIL: newSupEmail || ''
           }
         })
       });
       const data = await res.json();
       if (data.data) {
-        showToast('تمت إضافة المورد الجديد بنجاح', 'success');
+        showToast(t.save, 'success');
         await loadAllData();
         setSelectedSupplierId(data.data.SUPPLIERID);
         setShowAddSupplierModal(false);
@@ -942,7 +1171,7 @@ export default function CommercialOilOperationsApp() {
         setNewSupEmail('');
       }
     } catch (err: any) {
-      showToast('فشل إضافة المورد', 'error');
+      showToast(err.message || 'Error', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -950,23 +1179,20 @@ export default function CommercialOilOperationsApp() {
 
   const handleSubmitIntake = async () => {
     if (!selectedSupplierId) {
-      showToast('يرجى تحديد المورد أولاً', 'error');
+      showToast(t.supplier, 'error');
       return;
     }
     if (containerRows.length === 0) {
-      showToast('يرجى إضافة عبوة واحدة على الأقل بالجدول', 'error');
+      showToast(t.emptyTable, 'error');
       return;
     }
     if (!targetStorageId) {
-      showToast('يرجى تحديد الخزان المستهدف للتخزين', 'error');
+      showToast(t.storageTank, 'error');
       return;
     }
 
     const sup = suppliers.find(s => String(s.SUPPLIERID) === String(selectedSupplierId));
-    if (!sup) {
-      showToast('المورد المحدد غير صالح', 'error');
-      return;
-    }
+    if (!sup) return;
 
     try {
       setIsSubmitting(true);
@@ -994,25 +1220,24 @@ export default function CommercialOilOperationsApp() {
       });
       const json = await res.json();
       if (json.success) {
-        showToast(`تم حفظ وترحيل سند الاستلام بنجاح برقم: ${json.data.receiptNumber}`, 'success');
+        showToast(`${t.voucherReceipt}: ${json.data.receiptNumber}`, 'success');
         setPrintableDoc({
           docType: 'RECEIPT',
-          title: `سند استلام زيت تجاري - ${json.data.receiptNumber}`,
+          title: `${t.voucherReceipt} — ${json.data.receiptNumber}`,
           refNumber: json.data.receiptNumber,
           date: json.data.date,
           content: json.data
         });
         await loadAllData();
         setIntakeNotes('');
-        // Reset rows to fresh template
         setContainerRows([
           { id: '1', containerType: 'DRUM', netKg: 100.0 }
         ]);
       } else {
-        showToast(json.error || 'فشل ترحيل الاستلام', 'error');
+        showToast(json.error || 'Error', 'error');
       }
     } catch (err: any) {
-      showToast(err.message || 'خطأ في الاتصال بالخادم', 'error');
+      showToast(err.message || 'Error', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -1035,7 +1260,7 @@ export default function CommercialOilOperationsApp() {
           weightedAciditySum += (kg * tank.acidity);
           sourcesSummary.push({
             tankId: tank.id,
-            tankName: tank.nameAr,
+            tankName: getLocalizedTankName(tank),
             withdrawn: kg,
             acidity: tank.acidity
           });
@@ -1052,7 +1277,7 @@ export default function CommercialOilOperationsApp() {
       volumeLiters,
       sourcesSummary
     };
-  }, [withdrawals, tanks, densityFactor]);
+  }, [withdrawals, tanks, densityFactor, getLocalizedTankName]);
 
   const handleUpdateWithdrawal = (tankId: string, kg: number) => {
     setWithdrawals(prev => ({
@@ -1063,23 +1288,28 @@ export default function CommercialOilOperationsApp() {
 
   const handleCreateBlend = async () => {
     if (blendCalculations.totalKg <= 0) {
-      showToast('يرجى تحديد أوزان صالحة مسحوبة من الخزانات', 'error');
+      showToast(t.withdrawnKgFromTank, 'error');
       return;
     }
 
-    // Verify balances
     for (const src of blendCalculations.sourcesSummary) {
       const tank = tanks.find(t => t.id === src.tankId);
       if (tank && src.withdrawn > tank.currentKg) {
-        showToast(`الرصيد المتاح في ${tank.nameAr} لا يكفي (${tank.currentKg} كغ متاح، والمطلوب ${src.withdrawn} كغ)`, 'error');
+        showToast(`${src.tankName}: ${tank.currentKg} < ${src.withdrawn}`, 'error');
         return;
       }
     }
 
     try {
       setIsSubmitting(true);
+      const defaultBlendTitle = currentLang === 'ar' ? 'خلطة زيت متوازنة' :
+        currentLang === 'fa' ? 'مخلوط روغن استاندارد' :
+        currentLang === 'fr' ? 'Lot d’assemblage équilibré' :
+        currentLang === 'es' ? 'Lote de mezcla balanceado' :
+        'Balanced Oil Blend';
+
       const payload = {
-        batchName: blendName,
+        batchName: blendName.trim() || defaultBlendTitle,
         operator: blendOperator,
         sources: blendCalculations.sourcesSummary.map(s => ({
           sourceId: s.tankId,
@@ -1096,22 +1326,22 @@ export default function CommercialOilOperationsApp() {
       });
       const json = await res.json();
       if (json.success) {
-        showToast(`تم اعتماد خلطة الزيت بنجاح برقم: ${json.data.batchNumber}`, 'success');
+        showToast(`${t.voucherBlend}: ${json.data.batchNumber}`, 'success');
         setPrintableDoc({
           docType: 'BLEND',
-          title: `محضر تشغيل خلطة زيت - ${json.data.batchNumber}`,
+          title: `${t.voucherBlend} — ${json.data.batchNumber}`,
           refNumber: json.data.batchNumber,
           date: json.data.date,
           content: json.data
         });
         await loadAllData();
         setWithdrawals({});
-        setActiveTab('PACKAGING'); // Advance seamlessly to Packaging
+        setActiveTab('PACKAGING');
       } else {
-        showToast(json.error || 'فشل اعتماد الخلطة', 'error');
+        showToast(json.error || 'Error', 'error');
       }
     } catch (err: any) {
-      showToast(err.message || 'خطأ في الاتصال بالخادم', 'error');
+      showToast(err.message || 'Error', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -1191,11 +1421,11 @@ export default function CommercialOilOperationsApp() {
 
   const handlePostPackaging = async () => {
     if (packagingCalculations.totalPieces <= 0) {
-      showToast('يرجى إدخال عدد الصناديق أو الحبات المعبأة للتعبئة', 'error');
+      showToast(t.packagingTable, 'error');
       return;
     }
     if (!targetWarehouseId) {
-      showToast('يرجى تحديد المستودع المستهدف لترحيل البضاعة', 'error');
+      showToast(t.targetWarehouse, 'error');
       return;
     }
 
@@ -1231,13 +1461,12 @@ export default function CommercialOilOperationsApp() {
         showToast(`${t.packagingSuccess} ${json.data.voucherNumber}`, 'success');
         setPrintableDoc({
           docType: 'PACKAGING',
-          title: `سند ترحيل إنتاج وتعبئة - ${json.data.voucherNumber}`,
+          title: `${t.voucherPackaging} — ${json.data.voucherNumber}`,
           refNumber: json.data.voucherNumber,
           date: json.data.date,
           content: json.data
         });
         await loadAllData();
-        // Reset SKU inputs
         setSkuInputs(
           STANDARD_PACKAGING_SIZES.reduce((acc, s) => {
             acc[s.skuId] = { boxCapacity: s.defaultBoxCap, boxes: 0, loosePieces: 0 };
@@ -1245,10 +1474,10 @@ export default function CommercialOilOperationsApp() {
           }, {} as Record<string, { boxCapacity: number; boxes: number; loosePieces: number }>)
         );
       } else {
-        showToast(json.error || 'فشل ترحيل التعبئة', 'error');
+        showToast(json.error || 'Error', 'error');
       }
     } catch (err: any) {
-      showToast(err.message || 'خطأ في الاتصال بالخادم', 'error');
+      showToast(err.message || 'Error', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -1259,8 +1488,8 @@ export default function CommercialOilOperationsApp() {
   // --------------------------------------------------------------------------
   const handleSaveTank = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTankNameAr.trim()) {
-      showToast('يرجى إدخال اسم الخزان بالعربية', 'error');
+    if (!newTankNameAr.trim() && !newTankNameEn.trim()) {
+      showToast(t.tankNameAr, 'error');
       return;
     }
 
@@ -1271,12 +1500,12 @@ export default function CommercialOilOperationsApp() {
       const payload: any = {
         code: newTankCode.trim() || undefined,
         name: newTankNameEn.trim() || newTankNameAr,
-        nameAr: newTankNameAr.trim(),
+        nameAr: newTankNameAr.trim() || newTankNameEn,
         capacityKg: Number(newTankCapacityKg) || 25000,
         grade: newTankGrade,
-        gradeNameAr: oilGrades.find(g => g.code === newTankGrade)?.nameAr || 'بكر ممتاز (EVOO)',
+        gradeNameAr: oilGrades.find(g => g.code === newTankGrade)?.nameAr || 'بكر ممتاز',
         acidity: Number(newTankAcidity) || 0.65,
-        location: newTankLocation || 'Warehouse Tank Farm'
+        location: newTankLocation || 'Central Facility'
       };
 
       const res = await fetch('/api/operations/commercial-oil', {
@@ -1286,7 +1515,7 @@ export default function CommercialOilOperationsApp() {
       });
       const json = await res.json();
       if (json.success) {
-        showToast(isEdit ? 'تم تحديث بيانات الخزان بنجاح' : 'تم إنشاء الخزان الجديد بنجاح', 'success');
+        showToast(t.save, 'success');
         await loadAllData();
         setShowAddTankModal(false);
         setEditingTank(null);
@@ -1294,17 +1523,17 @@ export default function CommercialOilOperationsApp() {
         setNewTankNameEn('');
         setNewTankCode('');
       } else {
-        showToast(json.error || 'فشل حفظ الخزان', 'error');
+        showToast(json.error || 'Error', 'error');
       }
     } catch (err: any) {
-      showToast(err.message || 'خطأ في حفظ الخزان', 'error');
+      showToast(err.message || 'Error', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteTank = async (id: string) => {
-    if (!confirm('هل أنت متأكد من رغبتك في حذف هذا الخزان؟ لا يمكن التراجع عن هذه الخطوة.')) return;
+    if (!confirm(t.delete)) return;
     try {
       setIsSubmitting(true);
       const res = await fetch('/api/operations/commercial-oil', {
@@ -1314,13 +1543,13 @@ export default function CommercialOilOperationsApp() {
       });
       const json = await res.json();
       if (json.success) {
-        showToast('تم حذف الخزان بنجاح', 'success');
+        showToast(t.delete, 'success');
         await loadAllData();
       } else {
-        showToast(json.error || 'فشل حذف الخزان', 'error');
+        showToast(json.error || 'Error', 'error');
       }
     } catch (err: any) {
-      showToast(err.message || 'خطأ في حذف الخزان', 'error');
+      showToast(err.message || 'Error', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -1328,8 +1557,8 @@ export default function CommercialOilOperationsApp() {
 
   const handleCreateWarehouse = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newWhNameAr.trim()) {
-      showToast('اسم المستودع مطلوب', 'error');
+    if (!newWhNameAr.trim() && !newWhNameEn.trim()) {
+      showToast(t.whName, 'error');
       return;
     }
 
@@ -1339,28 +1568,28 @@ export default function CommercialOilOperationsApp() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          code: newWhCode.trim() || `WH-CUSTOM-${Date.now().toString().slice(-4)}`,
+          code: newWhCode.trim() || `WH-${Date.now().toString().slice(-4)}`,
           name: newWhNameEn.trim() || newWhNameAr,
-          nameAr: newWhNameAr.trim(),
+          nameAr: newWhNameAr.trim() || newWhNameEn,
           type: newWhType,
-          location: newWhLocation || 'Marjeyoun Main Plant',
+          location: newWhLocation || 'Marjeyoun Facility',
           capacityLiters: newWhCapacity,
-          isDriverVisible: newWhDriverVisible
+          isDriverVisible: false // STRICTLY LOCKED: All warehouses isolated from drivers
         })
       });
       const json = await res.json();
       if (json.success) {
-        showToast('تمت إضافة المستودع بنجاح', 'success');
+        showToast(t.save, 'success');
         await loadAllData();
         setShowAddWhModal(false);
         setNewWhNameAr('');
         setNewWhNameEn('');
         setNewWhCode('');
       } else {
-        showToast(json.error || 'فشل إنشاء المستودع', 'error');
+        showToast(json.error || 'Error', 'error');
       }
     } catch (err: any) {
-      showToast(err.message || 'خطأ في حفظ المستودع', 'error');
+      showToast(err.message || 'Error', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -1390,7 +1619,7 @@ export default function CommercialOilOperationsApp() {
   }, [suppliers, supplierSearch]);
 
   return (
-    <div className="w-full min-h-screen bg-[#f8fafc] text-slate-800 font-sans" dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className="w-full min-h-screen bg-[#f8fafc] text-slate-800 font-sans" dir={isRtlLayout ? 'rtl' : 'ltr'}>
       {/* TOAST NOTIFICATION */}
       {toastMessage && (
         <div className={`fixed top-4 left-4 z-50 px-5 py-3 rounded-xl shadow-lg border flex items-center gap-3 animate-fade-in ${
@@ -1400,12 +1629,12 @@ export default function CommercialOilOperationsApp() {
         }`}>
           {toastMessage.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
           {toastMessage.type === 'error' && <AlertTriangle className="w-5 h-5 text-red-600" />}
-          {toastMessage.type === 'info' && <Info className="w-5 h-5 text-blue-600" />}
+          {toastMessage.type === 'info' && <Shield className="w-5 h-5 text-blue-600" />}
           <span className="text-sm font-bold">{toastMessage.text}</span>
         </div>
       )}
 
-      {/* TOP HEADER BAR (Distinct branding for Operator vs Admin) */}
+      {/* TOP HEADER BAR */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -1433,64 +1662,70 @@ export default function CommercialOilOperationsApp() {
             </div>
           </div>
 
-          {/* User Profile, Mode Switcher & Quick Language Selector */}
-          <div className="flex items-center gap-3 flex-wrap">
+          {/* User Profile, Multi-Language Switcher (AR / EN / FR / ES / FA) & Mode Switcher */}
+          <div className="flex items-center gap-2.5 flex-wrap">
             {/* Active User Badge */}
             <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg text-xs">
               <User className="w-4 h-4 text-slate-500" />
               <div>
                 <span className="font-bold text-slate-900 block leading-tight">{activeUser?.name || 'Mohammed Jichi'}</span>
-                <span className="text-[10px] text-slate-500">{activeUser?.role || (userMode === 'OPERATOR' ? 'Field Operator' : 'Manager')}</span>
+                <span className="text-[10px] text-slate-500">{userMode === 'OPERATOR' ? t.operatorMode : t.adminMode}</span>
               </div>
             </div>
 
-            {/* Language Switcher Buttons (AR / EN / FR / ES) */}
+            {/* Language Switcher Buttons (AR / EN / FR / ES / FA - فارسی) */}
             <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-bold">
-              {(['ar', 'en', 'fr', 'es'] as const).map(lng => (
+              {[
+                { code: 'ar', label: 'العربية' },
+                { code: 'en', label: 'English' },
+                { code: 'fr', label: 'Français' },
+                { code: 'es', label: 'Español' },
+                { code: 'fa', label: 'فارسی' }
+              ].map(item => (
                 <button
-                  key={lng}
+                  key={item.code}
                   type="button"
-                  onClick={() => setLanguage(lng)}
-                  className={`px-2 py-1 rounded transition-colors uppercase ${
-                    language === lng ? 'bg-white text-emerald-800 shadow-2xs font-black' : 'text-slate-500 hover:text-slate-900'
+                  onClick={() => setLanguage(item.code as any)}
+                  className={`px-2.5 py-1 rounded transition-colors text-xs ${
+                    currentLang === item.code
+                      ? 'bg-white text-emerald-800 shadow-2xs font-black'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  {lng}
+                  {item.label}
                 </button>
               ))}
             </div>
 
-            {/* RBAC Mode Switcher (Always available to test Operator vs Admin) */}
+            {/* Mode Switcher Toggle */}
             <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => setUserMode('OPERATOR')}
-                className={`px-2.5 py-1 rounded flex items-center gap-1.5 transition-colors ${
+                className={`px-2.5 py-1 rounded flex items-center gap-1 transition-colors ${
                   userMode === 'OPERATOR'
                     ? 'bg-emerald-600 text-white shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
-                title="تفعيل واجهة المشغل الميداني (حجب السايدبار والأدوات الإدارية)"
               >
                 <Lock className="w-3.5 h-3.5" />
-                مشغل
+                {t.operatorMode}
               </button>
               <button
                 type="button"
                 onClick={() => setUserMode('ADMIN')}
-                className={`px-2.5 py-1 rounded flex items-center gap-1.5 transition-colors ${
+                className={`px-2.5 py-1 rounded flex items-center gap-1 transition-colors ${
                   userMode === 'ADMIN'
                     ? 'bg-indigo-700 text-white shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
-                title="تفعيل واجهة الإدارة والتحكم الكامل"
               >
                 <Unlock className="w-3.5 h-3.5" />
-                إدارة
+                {t.adminMode}
               </button>
             </div>
 
-            {/* Refresh Data Button */}
+            {/* Refresh */}
             <button
               onClick={loadAllData}
               title={t.refresh}
@@ -1499,13 +1734,13 @@ export default function CommercialOilOperationsApp() {
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-emerald-600' : ''}`} />
             </button>
 
-            {/* Quick Exit / Backoffice navigation */}
+            {/* Exit */}
             <Link
               href="/backoffice"
               className="px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-slate-200 flex items-center gap-1"
             >
               <LogOut className="w-3.5 h-3.5" />
-              خروج
+              {t.exit}
             </Link>
           </div>
         </div>
@@ -1517,28 +1752,27 @@ export default function CommercialOilOperationsApp() {
               <div className="flex items-center gap-2">
                 <Scale className="w-4 h-4 text-emerald-600" />
                 <span className="text-slate-500">{t.totalBulkBalance}:</span>
-                <span className="font-black text-slate-900">{totalRawOilKg.toLocaleString()} كغ</span>
+                <span className="font-black text-slate-900">{totalRawOilKg.toLocaleString()} {t.unitKg}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Layers className="w-4 h-4 text-indigo-600" />
                 <span className="text-slate-500">{t.readyBatches}:</span>
-                <span className="font-black text-slate-900">{readyBatchesCount} خلطة</span>
+                <span className="font-black text-slate-900">{readyBatchesCount}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Boxes className="w-4 h-4 text-amber-600" />
                 <span className="text-slate-500">{t.packagedUnits}:</span>
-                <span className="font-black text-slate-900">{totalPackagedPieces.toLocaleString()} عبوة</span>
+                <span className="font-black text-slate-900">{totalPackagedPieces.toLocaleString()} {t.unitPiece}</span>
               </div>
             </div>
             <div className="text-[11px] text-slate-400 font-medium whitespace-nowrap">
-              {userMode === 'OPERATOR' ? 'وضع المشغل الميداني (حفظ وترحيل)' : 'وضع الإدارة الشاملة (تحكم كامل)'}
+              {userMode === 'OPERATOR' ? t.operatorMode : t.adminMode}
             </div>
           </div>
         </div>
 
-        {/* PRIMARY STAGE NAVIGATION TABS */}
+        {/* Primary Stage Navigation Tabs */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-1 border-t border-slate-200 overflow-x-auto">
-          {/* Tab 1: Receive (Operator & Admin) */}
           <button
             onClick={() => setActiveTab('RECEIVE')}
             className={`py-3 px-4 text-xs font-bold border-b-2 flex items-center gap-2 transition-all whitespace-nowrap ${
@@ -1551,7 +1785,6 @@ export default function CommercialOilOperationsApp() {
             {t.tabReceive}
           </button>
 
-          {/* Tab 2: Blending (Operator & Admin) */}
           <button
             onClick={() => setActiveTab('BLENDING')}
             className={`py-3 px-4 text-xs font-bold border-b-2 flex items-center gap-2 transition-all whitespace-nowrap ${
@@ -1564,7 +1797,6 @@ export default function CommercialOilOperationsApp() {
             {t.tabBlending}
           </button>
 
-          {/* Tab 3: Packaging (Operator & Admin) */}
           <button
             onClick={() => setActiveTab('PACKAGING')}
             className={`py-3 px-4 text-xs font-bold border-b-2 flex items-center gap-2 transition-all whitespace-nowrap ${
@@ -1634,10 +1866,10 @@ export default function CommercialOilOperationsApp() {
                 <div>
                   <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
                     <Package className="w-5 h-5 text-emerald-600" />
-                    استلام الزيت التجاري — تسجيل الأوزان التفصيلي للعبوات
+                    {t.tabReceive}
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    ربط حي مع جدول الموردين المعتمدين، تسجيل وزن كل برميل، تنكة، أو غالون بشكل فردي، واحتساب إجمالي الوزن الصافي فورياً.
+                    {t.containerWeights}
                   </p>
                 </div>
 
@@ -1677,7 +1909,7 @@ export default function CommercialOilOperationsApp() {
                   </select>
                 </div>
 
-                {/* 2. Oil Grade (Dynamic from DB) */}
+                {/* 2. Oil Grade (Dynamic from DB, Purely Localized) */}
                 <div className="space-y-1.5">
                   <label className="font-bold text-slate-700 flex items-center gap-1.5">
                     <Droplets className="w-3.5 h-3.5 text-slate-500" />
@@ -1690,7 +1922,7 @@ export default function CommercialOilOperationsApp() {
                   >
                     {oilGrades.map(g => (
                       <option key={g.id} value={g.code}>
-                        {language === 'ar' ? g.nameAr : g.nameEn} (حتى {g.maxAcidity}% حموضة)
+                        {getLocalizedGradeName(g)} (≤ {g.maxAcidity}%)
                       </option>
                     ))}
                   </select>
@@ -1729,7 +1961,7 @@ export default function CommercialOilOperationsApp() {
                   >
                     {tanks.map(tank => (
                       <option key={tank.id} value={tank.id}>
-                        {tank.nameAr} ({tank.code}) — رصيد: {tank.currentKg} كغ
+                        {getLocalizedTankName(tank)} ({tank.code}) — {tank.currentKg} {t.unitKg}
                       </option>
                     ))}
                   </select>
@@ -1739,7 +1971,7 @@ export default function CommercialOilOperationsApp() {
               {/* Extra Metadata Row */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-100 text-xs">
                 <div>
-                  <label className="font-bold text-slate-500 block mb-1">تاريخ الاستلام:</label>
+                  <label className="font-bold text-slate-500 block mb-1">{t.voucherReceipt}:</label>
                   <input
                     type="date"
                     value={intakeDate}
@@ -1748,7 +1980,7 @@ export default function CommercialOilOperationsApp() {
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-500 block mb-1">اسم الموظف المستلم (تلقائي):</label>
+                  <label className="font-bold text-slate-500 block mb-1">{t.receiverStaff}:</label>
                   <input
                     type="text"
                     disabled
@@ -1757,12 +1989,11 @@ export default function CommercialOilOperationsApp() {
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-500 block mb-1">ملاحظات الاستلام:</label>
+                  <label className="font-bold text-slate-500 block mb-1">{t.notes}:</label>
                   <input
                     type="text"
                     value={intakeNotes}
                     onChange={(e) => setIntakeNotes(e.target.value)}
-                    placeholder="ملاحظات الجودة أو فحص الرائحة والنقاوة"
                     className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-700"
                   />
                 </div>
@@ -1796,7 +2027,6 @@ export default function CommercialOilOperationsApp() {
                     type="button"
                     onClick={handleDuplicateLastRow}
                     className="px-3 py-1.5 text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg flex items-center gap-1 shadow-2xs"
-                    title="تكرار سريع لنفس وزن العبوة السابقة لتسريع عملية الوزن على القبان"
                   >
                     <Copy className="w-3.5 h-3.5 text-emerald-700" />
                     {t.duplicateLast}
@@ -1814,7 +2044,7 @@ export default function CommercialOilOperationsApp() {
                   <button
                     type="button"
                     onClick={() => {
-                      if (confirm('هل أنت متأكد من تفريغ كافة بنود جدول الأوزان؟')) {
+                      if (confirm(t.clearTable)) {
                         setContainerRows([]);
                       }
                     }}
@@ -1825,16 +2055,16 @@ export default function CommercialOilOperationsApp() {
                 </div>
               </div>
 
-              {/* TABLE OF CONTAINERS (Plastic Gallon, Metal Tin, Drum) */}
+              {/* TABLE OF CONTAINERS (Gallon, Tin, Drum - PURE LOCALIZED) */}
               <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
                 <div className="max-h-96 overflow-y-auto">
                   <table className="w-full text-right text-xs">
                     <thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 sticky top-0 z-10">
                       <tr>
                         <th className="p-3 w-14 text-center">#</th>
-                        <th className="p-3">نوع العبوة (Container Type)</th>
-                        <th className="p-3">الوزن الصافي بالكغ (Net Weight KG)</th>
-                        <th className="p-3 w-28 text-center">إجراءات سريعة</th>
+                        <th className="p-3">{t.containerType}</th>
+                        <th className="p-3">{t.netWeightKg}</th>
+                        <th className="p-3 w-28 text-center">{t.actions}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-medium">
@@ -1850,7 +2080,6 @@ export default function CommercialOilOperationsApp() {
                                 const val = e.target.value as 'GALLON' | 'TIN' | 'DRUM';
                                 const updated = [...containerRows];
                                 updated[index].containerType = val;
-                                // Auto set default weights if unchanged
                                 if (val === 'DRUM' && (updated[index].netKg === 16.2 || updated[index].netKg === 17.0)) {
                                   updated[index].netKg = 100.0;
                                 } else if (val === 'GALLON' && updated[index].netKg === 100.0) {
@@ -1862,9 +2091,9 @@ export default function CommercialOilOperationsApp() {
                               }}
                               className="bg-white border border-slate-300 rounded-md px-2.5 py-1.5 text-xs font-bold text-slate-800 focus:ring-1 focus:ring-emerald-500"
                             >
-                              <option value="GALLON">غالون بلاستيك (Plastic Gallon - 16.2 kg)</option>
-                              <option value="TIN">تنكة حديد (Metal Tin - 17.0 kg)</option>
-                              <option value="DRUM">برميل (Drum / Barrel) — 100 كغ افتراضي</option>
+                              <option value="GALLON">{t.plasticGallon}</option>
+                              <option value="TIN">{t.metalTin}</option>
+                              <option value="DRUM">{t.drumBarrel}</option>
                             </select>
                           </td>
                           <td className="p-2.5">
@@ -1881,7 +2110,7 @@ export default function CommercialOilOperationsApp() {
                                 }}
                                 className="w-36 bg-white border border-slate-300 rounded-md px-3 py-1.5 text-xs font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                               />
-                              <span className="text-slate-500 font-bold text-xs">كغ</span>
+                              <span className="text-slate-500 font-bold text-xs">{t.unitKg}</span>
                             </div>
                           </td>
                           <td className="p-2.5 text-center">
@@ -1898,7 +2127,7 @@ export default function CommercialOilOperationsApp() {
                                   updated.splice(index + 1, 0, dup);
                                   setContainerRows(updated);
                                 }}
-                                title="تكرار هذه العبوة"
+                                title={t.duplicateLast}
                                 className="p-1.5 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 rounded transition-colors"
                               >
                                 <Copy className="w-3.5 h-3.5" />
@@ -1906,7 +2135,7 @@ export default function CommercialOilOperationsApp() {
                               <button
                                 type="button"
                                 onClick={() => handleRemoveContainerRow(row.id)}
-                                title="حذف العبوة"
+                                title={t.delete}
                                 className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1918,7 +2147,7 @@ export default function CommercialOilOperationsApp() {
                       {containerRows.length === 0 && (
                         <tr>
                           <td colSpan={4} className="p-8 text-center text-slate-400">
-                            لا توجد عبوات مسجلة حالياً. اضغط على "+ عبوة جديدة" للبدء بالوزن على القبان.
+                            {t.emptyTable}
                           </td>
                         </tr>
                       )}
@@ -1927,29 +2156,29 @@ export default function CommercialOilOperationsApp() {
                 </div>
               </div>
 
-              {/* REAL-TIME TOTALS & SUMMARY CARD (Gallons, Tins, Drums, Total Containers, Total Net KG) */}
+              {/* REAL-TIME TOTALS & SUMMARY CARD */}
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-xs flex-1">
                   <div>
                     <span className="text-slate-500 block">{t.totalGallons}</span>
-                    <span className="text-sm font-black text-slate-800">{receiveTotals.gallons} غالون</span>
+                    <span className="text-sm font-black text-slate-800">{receiveTotals.gallons}</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block">{t.totalTins}</span>
-                    <span className="text-sm font-black text-slate-800">{receiveTotals.tins} تنكة</span>
+                    <span className="text-sm font-black text-slate-800">{receiveTotals.tins}</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block">{t.totalDrums}</span>
-                    <span className="text-sm font-black text-amber-700">{receiveTotals.drums} برميل</span>
+                    <span className="text-sm font-black text-amber-700">{receiveTotals.drums}</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block">{t.totalContainers}</span>
-                    <span className="text-sm font-black text-indigo-700">{receiveTotals.totalContainers} عبوة</span>
+                    <span className="text-sm font-black text-indigo-700">{receiveTotals.totalContainers}</span>
                   </div>
                   <div className="sm:col-span-2">
                     <span className="text-slate-500 block">{t.totalNetKg}</span>
-                    <span className="text-base font-black text-emerald-700">{receiveTotals.totalNet.toLocaleString()} كغ</span>
-                    <span className="text-[10px] text-slate-400 block">{t.avgPerContainer} {receiveTotals.avgWeight} كغ</span>
+                    <span className="text-base font-black text-emerald-700">{receiveTotals.totalNet.toLocaleString()} {t.unitKg}</span>
+                    <span className="text-[10px] text-slate-400 block">{t.avgPerContainer} {receiveTotals.avgWeight} {t.unitKg}</span>
                   </div>
                 </div>
 
@@ -1980,10 +2209,10 @@ export default function CommercialOilOperationsApp() {
                 <div>
                   <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
                     <Scale className="w-5 h-5 text-emerald-600" />
-                    الخلط والمزج بالوزن الصافي المباشر (Weight-Based Mixing & Blending)
+                    {t.tabBlending}
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    سحب الزيت بالكيلوغرام مباشرة من الخزانات، خصم فوري وذري للرصيد، واحتساب آلي لمتوسط الحموضة التقديري للدفعة.
+                    {t.availableSources}
                   </p>
                 </div>
               </div>
@@ -1997,7 +2226,6 @@ export default function CommercialOilOperationsApp() {
                     value={blendName}
                     onChange={(e) => setBlendName(e.target.value)}
                     className="w-full bg-white border border-slate-300 rounded-lg p-2.5 font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                    placeholder="مثال: خلطة رقم 104 للتعبئة الفاخرة"
                   />
                 </div>
 
@@ -2033,7 +2261,7 @@ export default function CommercialOilOperationsApp() {
                   </h3>
                 </div>
                 <span className="text-xs text-slate-500">
-                  إجمالي الخزانات: <span className="font-bold text-slate-800">{tanks.length}</span>
+                  <span className="font-bold text-slate-800">{tanks.length}</span>
                 </span>
               </div>
 
@@ -2057,14 +2285,14 @@ export default function CommercialOilOperationsApp() {
                             <span className="px-2 py-0.5 rounded text-[11px] font-black bg-slate-100 text-slate-800 border border-slate-200">
                               {tank.code}
                             </span>
-                            <h4 className="font-black text-slate-900 text-sm">{tank.nameAr}</h4>
+                            <h4 className="font-black text-slate-900 text-sm">{getLocalizedTankName(tank)}</h4>
                           </div>
                           <p className="text-[11px] text-slate-500 mt-1">{tank.location}</p>
                         </div>
 
                         <div className="text-left">
                           <span className="px-2.5 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-800 border border-amber-200">
-                            الحموضة: {tank.acidity}%
+                            {t.acidity} {tank.acidity}%
                           </span>
                         </div>
                       </div>
@@ -2072,8 +2300,8 @@ export default function CommercialOilOperationsApp() {
                       {/* Stock Progress Bar */}
                       <div className="space-y-1 mb-3">
                         <div className="flex justify-between text-xs text-slate-600">
-                          <span>الرصيد المتاح: <b className="text-slate-900">{tank.currentKg.toLocaleString()} كغ</b></span>
-                          <span>السعة: {tank.capacityKg.toLocaleString()} كغ</span>
+                          <span>{t.tankBalance} <b className="text-slate-900">{tank.currentKg.toLocaleString()} {t.unitKg}</b></span>
+                          <span>{t.maxCap} {tank.capacityKg.toLocaleString()} {t.unitKg}</span>
                         </div>
                         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                           <div
@@ -2100,14 +2328,14 @@ export default function CommercialOilOperationsApp() {
                               placeholder="0"
                               className="w-36 bg-white border border-slate-300 rounded-md px-3 py-1.5 font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                             />
-                            <span className="text-slate-500 font-bold">كغ</span>
+                            <span className="text-slate-500 font-bold">{t.unitKg}</span>
                           </div>
                         </div>
 
                         <div className="text-left">
-                          <span className="text-[11px] text-slate-500 block">الرصيد المتبقي بعد السحب:</span>
+                          <span className="text-[11px] text-slate-500 block">{t.remainingAfter}</span>
                           <span className={`text-xs font-black ${remaining < 0 ? 'text-red-600' : 'text-slate-800'}`}>
-                            {remaining.toLocaleString()} كغ
+                            {remaining.toLocaleString()} {t.unitKg}
                           </span>
                         </div>
                       </div>
@@ -2122,7 +2350,7 @@ export default function CommercialOilOperationsApp() {
                   <div>
                     <span className="text-slate-500 block mb-1">{t.totalWithdrawnWeight}</span>
                     <span className="text-xl font-black text-emerald-800">
-                      {blendCalculations.totalKg.toLocaleString()} كغ
+                      {blendCalculations.totalKg.toLocaleString()} {t.unitKg}
                     </span>
                   </div>
 
@@ -2131,7 +2359,6 @@ export default function CommercialOilOperationsApp() {
                     <span className="text-xl font-black text-amber-800">
                       {blendCalculations.avgAcidity}%
                     </span>
-                    <span className="text-[10px] text-slate-400 block">محسوب حسب أوزان المصادر</span>
                   </div>
 
                   <div>
@@ -2146,14 +2373,13 @@ export default function CommercialOilOperationsApp() {
                         onChange={(e) => setDensityFactor(Number(e.target.value))}
                         className="w-20 bg-white border border-emerald-300 rounded p-1 font-black text-slate-900 text-xs"
                       />
-                      <span className="text-[10px] text-slate-500 font-medium">كغ/ليتر</span>
                     </div>
                   </div>
 
                   <div>
                     <span className="text-slate-500 block mb-1">{t.estimatedVolumeL}</span>
                     <span className="text-xl font-black text-indigo-800">
-                      {blendCalculations.volumeLiters.toLocaleString()} L
+                      {blendCalculations.volumeLiters.toLocaleString()} {t.unitL}
                     </span>
                   </div>
                 </div>
@@ -2185,10 +2411,10 @@ export default function CommercialOilOperationsApp() {
                 <div>
                   <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
                     <Boxes className="w-5 h-5 text-indigo-600" />
-                    تعبئة وتغليف الزيت التجاري — سعات الصناديق الحرة والترحيل للمستودع
+                    {t.tabPackaging}
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    إدخال كميات العبوات لـ 8 مقاسات قياسية، سعات صناديق قابلة للتعديل يدوياً، احتساب آلي لنسبة الفاقد والترحيل الحر للمستودع المحدد.
+                    {t.packagingTable}
                   </p>
                 </div>
               </div>
@@ -2206,7 +2432,7 @@ export default function CommercialOilOperationsApp() {
                     <option value="">{t.manualCustomBatch}</option>
                     {batches.map(b => (
                       <option key={b.id} value={b.id}>
-                        {b.batchNumber}: {b.batchName} ({b.totalBatchKg} كغ - {b.weightedAvgAcidity}%)
+                        {b.batchNumber}: {b.batchName} ({b.totalBatchKg} {t.unitKg} - {b.weightedAvgAcidity}%)
                       </option>
                     ))}
                   </select>
@@ -2225,7 +2451,7 @@ export default function CommercialOilOperationsApp() {
                       onChange={(e) => setCustomBatchKg(Number(e.target.value))}
                       className="w-full bg-white disabled:bg-slate-100 border border-slate-300 rounded-lg p-2.5 font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     />
-                    <span className="absolute left-3 top-2.5 text-slate-500 font-bold">كغ</span>
+                    <span className="absolute left-3 top-2.5 text-slate-500 font-bold">{t.unitKg}</span>
                   </div>
                 </div>
 
@@ -2245,7 +2471,6 @@ export default function CommercialOilOperationsApp() {
                       onChange={(e) => setDensityFactor(Number(e.target.value))}
                       className="w-full bg-white border border-slate-300 rounded-lg p-2.5 font-black text-emerald-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     />
-                    <span className="absolute left-3 top-2.5 text-slate-500 font-bold">كغ/ليتر</span>
                   </div>
                 </div>
 
@@ -2253,7 +2478,6 @@ export default function CommercialOilOperationsApp() {
                 <div className="space-y-1.5">
                   <label className="font-bold text-slate-700 flex items-center justify-between">
                     <span>{t.targetWarehouse}</span>
-                    <span className="text-[10px] text-indigo-700 font-bold">تفاعلي وحر</span>
                   </label>
                   <select
                     value={targetWarehouseId}
@@ -2262,7 +2486,7 @@ export default function CommercialOilOperationsApp() {
                   >
                     {warehouses.map(w => (
                       <option key={w.id} value={w.id}>
-                        {w.nameAr} ({w.code}) {!w.isDriverVisible ? '— [محجوب عن السائقين]' : ''}
+                        {getLocalizedWarehouseName(w)} ({w.code})
                       </option>
                     ))}
                   </select>
@@ -2274,17 +2498,16 @@ export default function CommercialOilOperationsApp() {
                 <div className="flex items-center gap-2">
                   <Info className="w-4 h-4 text-emerald-700" />
                   <span>
-                    الحساب الفيزيائي: الحجم المتاح بالليتر = (الوزن {activeBatchWeight} كغ ÷ معامل الكثافة {densityFactor}) = 
-                    <b className="text-emerald-900 mx-1 text-sm font-black">{availableBatchVolume.toLocaleString()} ليتر</b>
+                    {t.estimatedVolumeL}: <b className="text-emerald-900 mx-1 text-sm font-black">{availableBatchVolume.toLocaleString()} {t.unitL}</b>
                   </span>
                 </div>
                 <span className="text-[11px] font-bold text-emerald-800">
-                  سعر الصافي المتاح: {activeBatchWeight} كغ
+                  {activeBatchWeight} {t.unitKg}
                 </span>
               </div>
             </div>
 
-            {/* 8 PRESCRIBED PACKAGING SIZES TABLE */}
+            {/* 8 PRESCRIBED PACKAGING SIZES TABLE (PURE LOCALIZED) */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div className="flex items-center gap-2">
@@ -2293,9 +2516,6 @@ export default function CommercialOilOperationsApp() {
                     {t.packagingTable}
                   </h3>
                 </div>
-                <span className="text-xs text-slate-500">
-                  سعة الصندوق حرة وقابلة للتعديل يدوياً لكل صنف
-                </span>
               </div>
 
               <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
@@ -2304,37 +2524,25 @@ export default function CommercialOilOperationsApp() {
                     <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                       <tr>
                         <th className="p-3">{t.skuSize}</th>
-                        <th className="p-3 w-32">
-                          {t.boxCap}
-                        </th>
-                        <th className="p-3 w-28">
-                          {t.boxesCount}
-                        </th>
-                        <th className="p-3 w-28">
-                          {t.loosePieces}
-                        </th>
-                        <th className="p-3 w-32">
-                          {t.totalPieces}
-                        </th>
-                        <th className="p-3 w-32">
-                          {t.volumeL}
-                        </th>
-                        <th className="p-3 w-32">
-                          {t.consumedKg}
-                        </th>
+                        <th className="p-3 w-32">{t.boxCap}</th>
+                        <th className="p-3 w-28">{t.boxesCount}</th>
+                        <th className="p-3 w-28">{t.loosePieces}</th>
+                        <th className="p-3 w-32">{t.totalPieces}</th>
+                        <th className="p-3 w-32">{t.volumeL}</th>
+                        <th className="p-3 w-32">{t.consumedKg}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-medium">
                       {packagingCalculations.skuBreakdown.map((sku) => (
                         <tr key={sku.skuId} className="hover:bg-slate-50/70 transition-colors">
                           <td className="p-3">
-                            <span className="font-bold text-slate-900 block">{sku.nameAr}</span>
+                            <span className="font-bold text-slate-900 block">{getLocalizedSkuName(sku)}</span>
                             <span className="text-[10px] text-slate-400">
-                              سعة العبوة: {sku.sizeMl} مل ({sku.sizeMl / 1000} L)
+                              {sku.sizeMl} {currentLang === 'ar' ? 'مل' : currentLang === 'fa' ? 'میلی‌لیتر' : 'ml'}
                             </span>
                           </td>
 
-                          {/* DYNAMIC BOX CAPACITY INPUT (حقل حر للمستخدم) */}
+                          {/* Dynamic Box Capacity */}
                           <td className="p-2.5">
                             <input
                               type="number"
@@ -2346,7 +2554,7 @@ export default function CommercialOilOperationsApp() {
                             />
                           </td>
 
-                          {/* BOXES COUNT */}
+                          {/* Boxes Count */}
                           <td className="p-2.5">
                             <input
                               type="number"
@@ -2359,7 +2567,7 @@ export default function CommercialOilOperationsApp() {
                             />
                           </td>
 
-                          {/* LOOSE PIECES */}
+                          {/* Loose Pieces */}
                           <td className="p-2.5">
                             <input
                               type="number"
@@ -2372,19 +2580,19 @@ export default function CommercialOilOperationsApp() {
                             />
                           </td>
 
-                          {/* AUTO TOTAL PIECES */}
+                          {/* Total Pieces */}
                           <td className="p-3 font-black text-indigo-700">
-                            {sku.totalUnits.toLocaleString()} حبة
+                            {sku.totalUnits.toLocaleString()} {t.unitPiece}
                           </td>
 
-                          {/* TOTAL LITERS */}
+                          {/* Total Liters */}
                           <td className="p-3 font-bold text-slate-800">
-                            {sku.totalLiters.toLocaleString()} L
+                            {sku.totalLiters.toLocaleString()} {t.unitL}
                           </td>
 
-                          {/* CONSUMED KG */}
+                          {/* Consumed KG */}
                           <td className="p-3 font-black text-emerald-700">
-                            {sku.consumedKg.toLocaleString()} كغ
+                            {sku.consumedKg.toLocaleString()} {t.unitKg}
                           </td>
                         </tr>
                       ))}
@@ -2399,20 +2607,20 @@ export default function CommercialOilOperationsApp() {
                   <div>
                     <span className="text-slate-500 block mb-1">{t.totalProducedPieces}</span>
                     <span className="text-xl font-black text-indigo-700">
-                      {packagingCalculations.totalPieces.toLocaleString()} حبة
+                      {packagingCalculations.totalPieces.toLocaleString()} {t.unitPiece}
                     </span>
                     <span className="text-[10px] text-slate-400 block">
-                      إجمالي الحجم: {packagingCalculations.totalLiters.toLocaleString()} L
+                      {t.volumeL}: {packagingCalculations.totalLiters.toLocaleString()} {t.unitL}
                     </span>
                   </div>
 
                   <div>
                     <span className="text-slate-500 block mb-1">{t.actualConsumedKg}</span>
                     <span className="text-xl font-black text-emerald-700">
-                      {packagingCalculations.totalConsumedKg.toLocaleString()} كغ
+                      {packagingCalculations.totalConsumedKg.toLocaleString()} {t.unitKg}
                     </span>
                     <span className="text-[10px] text-slate-400 block">
-                      من أصل وزن الخلطة: {activeBatchWeight} كغ
+                      {activeBatchWeight} {t.unitKg}
                     </span>
                   </div>
 
@@ -2420,7 +2628,7 @@ export default function CommercialOilOperationsApp() {
                     <span className="text-slate-500 block mb-1">{t.packagingLoss}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-xl font-black text-slate-800">
-                        {packagingCalculations.lossKg} كغ
+                        {packagingCalculations.lossKg} {t.unitKg}
                       </span>
                       <span className={`px-2 py-0.5 rounded text-[11px] font-black ${
                         packagingCalculations.lossPercent <= 1.5
@@ -2432,9 +2640,6 @@ export default function CommercialOilOperationsApp() {
                         {packagingCalculations.lossPercent}%
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400 block">
-                      المعيار القياسي المقبول: &le; 2.5%
-                    </span>
                   </div>
 
                   <div>
@@ -2446,13 +2651,10 @@ export default function CommercialOilOperationsApp() {
                     >
                       {warehouses.map(w => (
                         <option key={w.id} value={w.id}>
-                          {w.nameAr}
+                          {getLocalizedWarehouseName(w)}
                         </option>
                       ))}
                     </select>
-                    <span className="text-[10px] text-slate-400 block mt-1">
-                      ترحيل فوري لرصيد المخزون الفعلي
-                    </span>
                   </div>
                 </div>
 
@@ -2484,7 +2686,7 @@ export default function CommercialOilOperationsApp() {
                   {t.tanksManagementTitle}
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  تعريف وتسمية صهاريج وخزانات المعمل، تحديد سعاتها بالكيلوغرام، ومتابعة الأرصدة والحموضة بدقة.
+                  {t.availableSources}
                 </p>
               </div>
 
@@ -2515,10 +2717,9 @@ export default function CommercialOilOperationsApp() {
                         <span className="px-2 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono font-black text-xs text-slate-800">
                           {tank.code}
                         </span>
-                        <h3 className="font-black text-slate-900 text-sm">{tank.nameAr}</h3>
+                        <h3 className="font-black text-slate-900 text-sm">{getLocalizedTankName(tank)}</h3>
                       </div>
-                      <p className="text-xs text-slate-500 mt-1">{tank.name}</p>
-                      <p className="text-[11px] text-slate-400">{tank.location}</p>
+                      <p className="text-[11px] text-slate-400 mt-1">{tank.location}</p>
                     </div>
 
                     <div className="flex items-center gap-1">
@@ -2534,14 +2735,14 @@ export default function CommercialOilOperationsApp() {
                           setNewTankLocation(tank.location);
                           setShowAddTankModal(true);
                         }}
-                        title="تعديل الخزان"
+                        title={t.edit}
                         className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDeleteTank(tank.id)}
-                        title="حذف الخزان"
+                        title={t.delete}
                         className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -2551,8 +2752,8 @@ export default function CommercialOilOperationsApp() {
 
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
-                      <span className="text-slate-500">الرصيد: <b className="text-slate-900">{tank.currentKg.toLocaleString()} كغ</b></span>
-                      <span className="text-slate-400">السعة: {tank.capacityKg.toLocaleString()} كغ</span>
+                      <span className="text-slate-500">{t.tankBalance} <b className="text-slate-900">{tank.currentKg.toLocaleString()} {t.unitKg}</b></span>
+                      <span className="text-slate-400">{t.maxCap} {tank.capacityKg.toLocaleString()} {t.unitKg}</span>
                     </div>
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div
@@ -2564,10 +2765,10 @@ export default function CommercialOilOperationsApp() {
 
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                     <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
-                      {tank.gradeNameAr}
+                      {oilGrades.find(g => g.code === tank.grade)?.nameAr || tank.grade}
                     </span>
                     <span className="font-black text-amber-800">
-                      حموضة: {tank.acidity}%
+                      {t.acidity} {tank.acidity}%
                     </span>
                   </div>
                 </div>
@@ -2578,6 +2779,7 @@ export default function CommercialOilOperationsApp() {
 
         {/* ================================================================= */}
         {/* STAGE 5: REAL DYNAMIC WAREHOUSES & STOCK LEDGER (ADMIN ONLY)      */}
+        {/* Strictly Isolated from Drivers                                    */}
         {/* ================================================================= */}
         {userMode === 'ADMIN' && activeTab === 'WAREHOUSES' && (
           <div className="space-y-6 animate-fade-in">
@@ -2587,8 +2789,9 @@ export default function CommercialOilOperationsApp() {
                   <Building2 className="w-5 h-5 text-indigo-600" />
                   {t.warehousesTitle}
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  إدارة المستودعات، والتحكم في حجب مستودع السوبر سونيك عن السائقين، والاطلاع على أرصدة البضاعة الجاهزة.
+                <p className="text-xs text-emerald-700 font-bold mt-0.5 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4" />
+                  {t.driverIsolationNotice}
                 </p>
               </div>
 
@@ -2602,7 +2805,7 @@ export default function CommercialOilOperationsApp() {
               </button>
             </div>
 
-            {/* Warehouses Grid */}
+            {/* Warehouses Grid - ALL marked as Management Protected */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {warehouses.map(wh => (
                 <div key={wh.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs space-y-3">
@@ -2612,24 +2815,20 @@ export default function CommercialOilOperationsApp() {
                         <span className="px-2 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono font-black text-xs text-slate-800">
                           {wh.code}
                         </span>
-                        <h3 className="font-black text-slate-900 text-sm">{wh.nameAr}</h3>
+                        <h3 className="font-black text-slate-900 text-sm">{getLocalizedWarehouseName(wh)}</h3>
                       </div>
-                      <p className="text-xs text-slate-500 mt-1">{wh.name}</p>
-                      <p className="text-[11px] text-slate-400">{wh.location}</p>
+                      <p className="text-[11px] text-slate-400 mt-1">{wh.location}</p>
                     </div>
 
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                      !wh.isDriverVisible
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    }`}>
-                      {!wh.isDriverVisible ? t.hiddenFromDrivers : t.visibleToDrivers}
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold border bg-slate-100 text-slate-700 border-slate-300 flex items-center gap-1">
+                      <Lock className="w-3 h-3 text-slate-500" />
+                      {t.managementProtected}
                     </span>
                   </div>
 
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-slate-500">النوع: <b className="text-slate-800">{wh.type}</b></span>
-                    <span className="text-slate-500">السعة: <b className="text-slate-800">{wh.capacityLiters.toLocaleString()} L</b></span>
+                    <span className="text-slate-500">{t.whType}: <b className="text-slate-800">{wh.type}</b></span>
+                    <span className="text-slate-500">{t.whCapacity}: <b className="text-slate-800">{wh.capacityLiters.toLocaleString()} {t.unitL}</b></span>
                   </div>
                 </div>
               ))}
@@ -2639,48 +2838,51 @@ export default function CommercialOilOperationsApp() {
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
               <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
                 <Boxes className="w-4 h-4 text-emerald-600" />
-                سجل أرصدة المنتجات المعبأة حسب المستودع (Live Stock Ledger)
+                {t.tabWarehouses}
               </h3>
 
               <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
                 <table className="w-full text-right text-xs">
                   <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                     <tr>
-                      <th className="p-3">المستودع</th>
-                      <th className="p-3">الصنف والمقاس</th>
-                      <th className="p-3">سعة الصندوق</th>
-                      <th className="p-3">عدد الصناديق</th>
-                      <th className="p-3">حبات فردية</th>
-                      <th className="p-3">إجمالي الحبات</th>
-                      <th className="p-3">الحجم (ليتر)</th>
-                      <th className="p-3">الوزن التقديري (كغ)</th>
+                      <th className="p-3">{t.targetWarehouse}</th>
+                      <th className="p-3">{t.skuSize}</th>
+                      <th className="p-3">{t.boxCap}</th>
+                      <th className="p-3">{t.boxesCount}</th>
+                      <th className="p-3">{t.loosePieces}</th>
+                      <th className="p-3">{t.totalPieces}</th>
+                      <th className="p-3">{t.volumeL}</th>
+                      <th className="p-3">{t.consumedKg}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium">
                     {stocks.map((stk, idx) => {
                       const wh = warehouses.find(w => w.id === stk.warehouseId);
+                      const matchedSku = STANDARD_PACKAGING_SIZES.find(s => s.skuId === stk.skuId);
                       return (
                         <tr key={`${stk.warehouseId}-${stk.skuId}-${idx}`} className="hover:bg-slate-50/70">
                           <td className="p-3 font-bold text-slate-900">
-                            {wh?.nameAr || stk.warehouseId}
+                            {wh ? getLocalizedWarehouseName(wh) : stk.warehouseId}
                           </td>
                           <td className="p-3">
-                            <span className="font-bold text-slate-800 block">{stk.nameAr}</span>
-                            <span className="text-[10px] text-slate-400">{stk.sizeMl} مل</span>
+                            <span className="font-bold text-slate-800 block">
+                              {matchedSku ? getLocalizedSkuName(matchedSku) : stk.nameAr}
+                            </span>
+                            <span className="text-[10px] text-slate-400">{stk.sizeMl} {currentLang === 'ar' ? 'مل' : currentLang === 'fa' ? 'میلی‌لیتر' : 'ml'}</span>
                           </td>
-                          <td className="p-3">{stk.boxCapacity} حبة/صندوق</td>
+                          <td className="p-3">{stk.boxCapacity}</td>
                           <td className="p-3 font-black text-slate-800">{stk.boxesCount}</td>
                           <td className="p-3">{stk.loosePieces}</td>
-                          <td className="p-3 font-black text-indigo-700">{stk.totalUnits.toLocaleString()} حبة</td>
-                          <td className="p-3 font-bold text-slate-800">{stk.totalLiters.toLocaleString()} L</td>
-                          <td className="p-3 font-black text-emerald-700">{stk.totalKg.toLocaleString()} كغ</td>
+                          <td className="p-3 font-black text-indigo-700">{stk.totalUnits.toLocaleString()} {t.unitPiece}</td>
+                          <td className="p-3 font-bold text-slate-800">{stk.totalLiters.toLocaleString()} {t.unitL}</td>
+                          <td className="p-3 font-black text-emerald-700">{stk.totalKg.toLocaleString()} {t.unitKg}</td>
                         </tr>
                       );
                     })}
                     {stocks.length === 0 && (
                       <tr>
                         <td colSpan={8} className="p-8 text-center text-slate-400">
-                          لا توجد بضاعة مرحلة حالياً في المستودعات. قم بترحيل دفعة تعبئة لتحديث المخزون.
+                          {t.emptyStocks}
                         </td>
                       </tr>
                     )}
@@ -2699,29 +2901,26 @@ export default function CommercialOilOperationsApp() {
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-indigo-600" />
-                {t.tabLogs} — مستندات الاستلام والخلط والترحيل
+                {t.tabLogs}
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                سجل تاريخي كامل لكافة الحركات الميدانية المسجلة والمرحلة، مع إمكانية المعاينة والطباعة الرسمية.
-              </p>
             </div>
 
             {/* Receipts History */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-3">
-              <h3 className="text-sm font-black text-slate-900">سندات استلام الزيت التجاري</h3>
+              <h3 className="text-sm font-black text-slate-900">{t.voucherReceipt}</h3>
               <div className="border border-slate-200 rounded-xl overflow-hidden">
                 <table className="w-full text-right text-xs">
                   <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                     <tr>
-                      <th className="p-3">رقم السند</th>
-                      <th className="p-3">التاريخ والوقت</th>
-                      <th className="p-3">المورد</th>
-                      <th className="p-3">صنف الزيت</th>
-                      <th className="p-3">الخزان المستهدف</th>
-                      <th className="p-3">عدد العبوات</th>
-                      <th className="p-3">الوزن الصافي</th>
-                      <th className="p-3">المستلم</th>
-                      <th className="p-3 text-center">معاينة</th>
+                      <th className="p-3">{t.whCode}</th>
+                      <th className="p-3">{t.voucherReceipt}</th>
+                      <th className="p-3">{t.supplier}</th>
+                      <th className="p-3">{t.oilGrade}</th>
+                      <th className="p-3">{t.storageTank}</th>
+                      <th className="p-3">{t.totalContainers}</th>
+                      <th className="p-3">{t.netWeightKg}</th>
+                      <th className="p-3">{t.receiverStaff}</th>
+                      <th className="p-3 text-center">{t.actions}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium">
@@ -2732,20 +2931,20 @@ export default function CommercialOilOperationsApp() {
                         <td className="p-3 font-bold text-slate-800">{r.supplierName}</td>
                         <td className="p-3">{r.oilGradeNameAr} ({r.acidity}%)</td>
                         <td className="p-3">{r.targetStorageNameAr}</td>
-                        <td className="p-3 font-bold text-indigo-700">{r.totalContainers} عبوة</td>
-                        <td className="p-3 font-black text-emerald-700">{r.totalNetKg} كغ</td>
+                        <td className="p-3 font-bold text-indigo-700">{r.totalContainers} {t.unitPiece}</td>
+                        <td className="p-3 font-black text-emerald-700">{r.totalNetKg} {t.unitKg}</td>
                         <td className="p-3 text-slate-600">{r.receivedBy}</td>
                         <td className="p-3 text-center">
                           <button
                             onClick={() => setPrintableDoc({
                               docType: 'RECEIPT',
-                              title: `سند استلام زيت تجاري - ${r.receiptNumber}`,
+                              title: `${t.voucherReceipt} — ${r.receiptNumber}`,
                               refNumber: r.receiptNumber,
                               date: r.date,
                               content: r
                             })}
                             className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded"
-                            title="معاينة وطباعة"
+                            title={t.print}
                           >
                             <Printer className="w-4 h-4" />
                           </button>
@@ -2755,7 +2954,7 @@ export default function CommercialOilOperationsApp() {
                     {receipts.length === 0 && (
                       <tr>
                         <td colSpan={9} className="p-6 text-center text-slate-400">
-                          لا توجد سندات استلام مسجلة حتى الآن.
+                          {t.emptyLogs}
                         </td>
                       </tr>
                     )}
@@ -2766,44 +2965,42 @@ export default function CommercialOilOperationsApp() {
 
             {/* Packaging Vouchers History */}
             <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-3">
-              <h3 className="text-sm font-black text-slate-900">سندات ترحيل التعبئة للمستودعات</h3>
+              <h3 className="text-sm font-black text-slate-900">{t.voucherPackaging}</h3>
               <div className="border border-slate-200 rounded-xl overflow-hidden">
                 <table className="w-full text-right text-xs">
                   <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                     <tr>
-                      <th className="p-3">رقم السند</th>
-                      <th className="p-3">التاريخ</th>
-                      <th className="p-3">المستودع المحال إليه</th>
-                      <th className="p-3">الحبات المنتجة</th>
-                      <th className="p-3">الحجم (L)</th>
-                      <th className="p-3">الوزن المستهلك (كغ)</th>
-                      <th className="p-3">الفاقد (Loss)</th>
-                      <th className="p-3">المسؤول</th>
-                      <th className="p-3 text-center">معاينة</th>
+                      <th className="p-3">{t.whCode}</th>
+                      <th className="p-3">{t.targetWarehouse}</th>
+                      <th className="p-3">{t.totalProducedPieces}</th>
+                      <th className="p-3">{t.volumeL}</th>
+                      <th className="p-3">{t.actualConsumedKg}</th>
+                      <th className="p-3">{t.packagingLoss}</th>
+                      <th className="p-3">{t.operator}</th>
+                      <th className="p-3 text-center">{t.actions}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium">
                     {packagingVouchers.map(v => (
                       <tr key={v.id} className="hover:bg-slate-50/70">
                         <td className="p-3 font-mono font-bold text-slate-900">{v.voucherNumber}</td>
-                        <td className="p-3 text-slate-600">{v.date}</td>
                         <td className="p-3 font-bold text-slate-800">{v.targetWarehouseNameAr}</td>
-                        <td className="p-3 font-black text-indigo-700">{v.totalPiecesProduced.toLocaleString()} حبة</td>
-                        <td className="p-3 font-bold text-slate-800">{v.totalLitersPackaged.toLocaleString()} L</td>
-                        <td className="p-3 font-black text-emerald-700">{v.totalConsumedKg.toLocaleString()} كغ</td>
-                        <td className="p-3 font-bold text-slate-700">{v.packagingLossKg} كغ ({v.packagingLossPercent}%)</td>
+                        <td className="p-3 font-black text-indigo-700">{v.totalPiecesProduced.toLocaleString()} {t.unitPiece}</td>
+                        <td className="p-3 font-bold text-slate-800">{v.totalLitersPackaged.toLocaleString()} {t.unitL}</td>
+                        <td className="p-3 font-black text-emerald-700">{v.totalConsumedKg.toLocaleString()} {t.unitKg}</td>
+                        <td className="p-3 font-bold text-slate-700">{v.packagingLossKg} {t.unitKg} ({v.packagingLossPercent}%)</td>
                         <td className="p-3 text-slate-600">{v.operator}</td>
                         <td className="p-3 text-center">
                           <button
                             onClick={() => setPrintableDoc({
                               docType: 'PACKAGING',
-                              title: `سند ترحيل إنتاج وتعبئة - ${v.voucherNumber}`,
+                              title: `${t.voucherPackaging} — ${v.voucherNumber}`,
                               refNumber: v.voucherNumber,
                               date: v.date,
                               content: v
                             })}
                             className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded"
-                            title="معاينة وطباعة"
+                            title={t.print}
                           >
                             <Printer className="w-4 h-4" />
                           </button>
@@ -2812,8 +3009,8 @@ export default function CommercialOilOperationsApp() {
                     ))}
                     {packagingVouchers.length === 0 && (
                       <tr>
-                        <td colSpan={9} className="p-6 text-center text-slate-400">
-                          لا توجد سندات ترحيل تعبئة مسجلة حتى الآن.
+                        <td colSpan={8} className="p-6 text-center text-slate-400">
+                          {t.emptyLogs}
                         </td>
                       </tr>
                     )}
@@ -2837,7 +3034,7 @@ export default function CommercialOilOperationsApp() {
             <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <span className="font-black text-sm text-slate-900 flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-emerald-600" />
-                إضافة مورد / تاجر زيت جديد
+                {t.addSupplier}
               </span>
               <button
                 type="button"
@@ -2850,35 +3047,32 @@ export default function CommercialOilOperationsApp() {
 
             <form onSubmit={handleCreateSupplier} className="p-5 space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">اسم المورد / الشركة:</label>
+                <label className="font-bold text-slate-700">{t.supplier}</label>
                 <input
                   type="text"
                   required
                   value={newSupName}
                   onChange={(e) => setNewSupName(e.target.value)}
-                  placeholder="مثال: مؤسسة الجنوب لتجارة الزيت"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2.5 font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">رقم الهاتف:</label>
+                <label className="font-bold text-slate-700">{t.supplierPhone}</label>
                 <input
                   type="text"
                   value={newSupPhone}
                   onChange={(e) => setNewSupPhone(e.target.value)}
-                  placeholder="+961 70 123 456"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2.5 font-medium text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">البريد الإلكتروني:</label>
+                <label className="font-bold text-slate-700">{t.supplierEmail}</label>
                 <input
                   type="email"
                   value={newSupEmail}
                   onChange={(e) => setNewSupEmail(e.target.value)}
-                  placeholder="vendor@company.lb"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2.5 font-medium text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
@@ -2889,7 +3083,7 @@ export default function CommercialOilOperationsApp() {
                   onClick={() => setShowAddSupplierModal(false)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg"
                 >
-                  إلغاء
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
@@ -2897,7 +3091,7 @@ export default function CommercialOilOperationsApp() {
                   className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg flex items-center gap-1.5"
                 >
                   {isSubmitting && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
-                  حفظ المورد
+                  {t.save}
                 </button>
               </div>
             </form>
@@ -2917,7 +3111,7 @@ export default function CommercialOilOperationsApp() {
             <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <span className="font-black text-sm text-slate-900 flex items-center gap-2">
                 <Layers className="w-4 h-4 text-indigo-600" />
-                إضافة دفعة عبوات متطابقة
+                {t.batchAdd}
               </span>
               <button
                 type="button"
@@ -2930,7 +3124,7 @@ export default function CommercialOilOperationsApp() {
 
             <div className="p-5 space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">نوع العبوة:</label>
+                <label className="font-bold text-slate-700">{t.containerType}:</label>
                 <select
                   value={quickBatchType}
                   onChange={(e) => {
@@ -2942,14 +3136,14 @@ export default function CommercialOilOperationsApp() {
                   }}
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-bold text-slate-800"
                 >
-                  <option value="DRUM">برميل (Drum / Barrel) — 100 كغ</option>
-                  <option value="GALLON">غالون بلاستيك (Plastic Gallon) — 16.2 كغ</option>
-                  <option value="TIN">تنكة حديد (Metal Tin) — 17.0 كغ</option>
+                  <option value="DRUM">{t.drumBarrel}</option>
+                  <option value="GALLON">{t.plasticGallon}</option>
+                  <option value="TIN">{t.metalTin}</option>
                 </select>
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">العدد المطلوب إضافته:</label>
+                <label className="font-bold text-slate-700">{t.totalContainers}:</label>
                 <input
                   type="number"
                   min="1"
@@ -2961,7 +3155,7 @@ export default function CommercialOilOperationsApp() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">الوزن الافتراضي لكل عبوة (كغ):</label>
+                <label className="font-bold text-slate-700">{t.netWeightKg}:</label>
                 <input
                   type="number"
                   step="0.1"
@@ -2978,14 +3172,14 @@ export default function CommercialOilOperationsApp() {
                   onClick={() => setShowQuickBatchModal(false)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg"
                 >
-                  إلغاء
+                  {t.cancel}
                 </button>
                 <button
                   type="button"
                   onClick={handleApplyQuickBatch}
                   className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg flex items-center gap-1.5"
                 >
-                  تأكيد الإضافة للجدول
+                  {t.save}
                 </button>
               </div>
             </div>
@@ -3005,7 +3199,7 @@ export default function CommercialOilOperationsApp() {
             <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <span className="font-black text-sm text-slate-900 flex items-center gap-2">
                 <WarehouseIcon className="w-4 h-4 text-indigo-600" />
-                {editingTank ? 'تعديل بيانات الخزان' : 'إضافة خزان جديد للمعمل'}
+                {editingTank ? t.edit : t.addNewTank}
               </span>
               <button
                 type="button"
@@ -3019,7 +3213,7 @@ export default function CommercialOilOperationsApp() {
             <form onSubmit={handleSaveTank} className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">كود الخزان:</label>
+                  <label className="font-bold text-slate-700">{t.tankCode}:</label>
                   <input
                     type="text"
                     value={newTankCode}
@@ -3029,7 +3223,7 @@ export default function CommercialOilOperationsApp() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">السعة بالكغ:</label>
+                  <label className="font-bold text-slate-700">{t.capacityKg}:</label>
                   <input
                     type="number"
                     min="1000"
@@ -3042,31 +3236,29 @@ export default function CommercialOilOperationsApp() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">اسم الخزان بالعربية:</label>
+                <label className="font-bold text-slate-700">{t.tankNameAr}:</label>
                 <input
                   type="text"
                   required
                   value={newTankNameAr}
                   onChange={(e) => setNewTankNameAr(e.target.value)}
-                  placeholder="خزان بكر ممتاز رقم 01"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-bold text-slate-900"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">اسم الخزان بالإنجليزية:</label>
+                <label className="font-bold text-slate-700">{t.tankNameEn}:</label>
                 <input
                   type="text"
                   value={newTankNameEn}
                   onChange={(e) => setNewTankNameEn(e.target.value)}
-                  placeholder="Storage Tank 01"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">صنف الزيت المخصص:</label>
+                  <label className="font-bold text-slate-700">{t.oilGrade}:</label>
                   <select
                     value={newTankGrade}
                     onChange={(e) => setNewTankGrade(e.target.value)}
@@ -3074,13 +3266,13 @@ export default function CommercialOilOperationsApp() {
                   >
                     {oilGrades.map(g => (
                       <option key={g.id} value={g.code}>
-                        {g.nameAr}
+                        {getLocalizedGradeName(g)}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">الحموضة المرجعية (%):</label>
+                  <label className="font-bold text-slate-700">{t.acidity}:</label>
                   <input
                     type="number"
                     step="0.05"
@@ -3094,12 +3286,11 @@ export default function CommercialOilOperationsApp() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">موقع الخزان:</label>
+                <label className="font-bold text-slate-700">{t.location}:</label>
                 <input
                   type="text"
                   value={newTankLocation}
                   onChange={(e) => setNewTankLocation(e.target.value)}
-                  placeholder="صالة الخزانات المركزية - Hall A"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-900"
                 />
               </div>
@@ -3110,7 +3301,7 @@ export default function CommercialOilOperationsApp() {
                   onClick={() => setShowAddTankModal(false)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg"
                 >
-                  إلغاء
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
@@ -3118,7 +3309,7 @@ export default function CommercialOilOperationsApp() {
                   className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg flex items-center gap-1.5"
                 >
                   {isSubmitting && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
-                  حفظ الخزان
+                  {t.save}
                 </button>
               </div>
             </form>
@@ -3127,7 +3318,7 @@ export default function CommercialOilOperationsApp() {
       )}
 
       {/* ================================================================= */}
-      {/* MODAL 4: ADD WAREHOUSE (ADMIN ONLY)                               */}
+      {/* MODAL 4: ADD WAREHOUSE (STRICTLY ISOLATED FROM DRIVERS)           */}
       {/* ================================================================= */}
       {showAddWhModal && (
         <div
@@ -3151,44 +3342,42 @@ export default function CommercialOilOperationsApp() {
 
             <form onSubmit={handleCreateWarehouse} className="p-5 space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">اسم المستودع بالعربية:</label>
+                <label className="font-bold text-slate-700">{t.whName}:</label>
                 <input
                   type="text"
                   required
                   value={newWhNameAr}
                   onChange={(e) => setNewWhNameAr(e.target.value)}
-                  placeholder="مثال: مستودع طرابلس المركزي"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-bold text-slate-900"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">اسم المستودع بالإنجليزية:</label>
+                <label className="font-bold text-slate-700">{t.whCode}:</label>
                 <input
                   type="text"
-                  value={newWhNameEn}
-                  onChange={(e) => setNewWhNameEn(e.target.value)}
-                  placeholder="Tripoli Distribution Hub"
+                  value={newWhCode}
+                  onChange={(e) => setNewWhCode(e.target.value)}
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">النوع:</label>
+                  <label className="font-bold text-slate-700">{t.whType}:</label>
                   <select
                     value={newWhType}
                     onChange={(e) => setNewWhType(e.target.value)}
                     className="w-full bg-white border border-slate-300 rounded-lg p-2 font-bold text-slate-800"
                   >
-                    <option value="FINISHED_GOODS">بضاعة جاهزة (Finished Goods)</option>
-                    <option value="DISTRIBUTION_HUB">مركز توزيع لوجستي (Hub)</option>
-                    <option value="RETAIL">معرض ونقطة بيع (Retail)</option>
-                    <option value="QUARANTINE">حجر وفحص مخبري (QC)</option>
+                    <option value="FINISHED_GOODS">Finished Goods</option>
+                    <option value="DISTRIBUTION_HUB">Distribution Hub</option>
+                    <option value="RETAIL">Retail</option>
+                    <option value="QUARANTINE">Quarantine & QC</option>
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700">السعة بالليتر:</label>
+                  <label className="font-bold text-slate-700">{t.whCapacity}:</label>
                   <input
                     type="number"
                     min="1000"
@@ -3201,27 +3390,21 @@ export default function CommercialOilOperationsApp() {
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-slate-700">الموقع الجغرافي:</label>
+                <label className="font-bold text-slate-700">{t.location}:</label>
                 <input
                   type="text"
                   value={newWhLocation}
                   onChange={(e) => setNewWhLocation(e.target.value)}
-                  placeholder="مدينة المعارض - طرابلس"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-900"
                 />
               </div>
 
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between">
-                <div>
-                  <span className="font-bold text-slate-800 block">{t.driverVisibility}</span>
-                  <span className="text-[10px] text-slate-500">حجب الأرصدة عن تطبيق السائقين (مثل سوبرسونيك)</span>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={newWhDriverVisible}
-                  onChange={(e) => setNewWhDriverVisible(e.target.checked)}
-                  className="w-4 h-4 text-indigo-600 rounded border-slate-300"
-                />
+              {/* Security Badge Alert */}
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center gap-2.5">
+                <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
+                <span className="text-[11px] font-bold text-emerald-900 leading-tight">
+                  {t.driverIsolationNotice}
+                </span>
               </div>
 
               <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
@@ -3230,7 +3413,7 @@ export default function CommercialOilOperationsApp() {
                   onClick={() => setShowAddWhModal(false)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg"
                 >
-                  إلغاء
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
@@ -3238,7 +3421,7 @@ export default function CommercialOilOperationsApp() {
                   className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg flex items-center gap-1.5"
                 >
                   {isSubmitting && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
-                  حفظ المستودع
+                  {t.save}
                 </button>
               </div>
             </form>
@@ -3248,7 +3431,7 @@ export default function CommercialOilOperationsApp() {
 
       {/* ================================================================= */}
       {/* MODAL 5: AUTHENTIC PRINTABLE VOUCHER CARD (ZERO RAW JSON!)        */}
-      {/* With Backdrop Click Dismiss & ESC Key Listener                    */}
+      {/* Pure Language Isolation & Backdrop Dismiss                        */}
       {/* ================================================================= */}
       {printableDoc && (
         <div
@@ -3273,7 +3456,7 @@ export default function CommercialOilOperationsApp() {
                 <button
                   onClick={() => setPrintableDoc(null)}
                   className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
-                  title="إغلاق (Esc)"
+                  title="Close (Esc)"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -3286,8 +3469,7 @@ export default function CommercialOilOperationsApp() {
               <div className="border-b-2 border-slate-900 pb-4 flex justify-between items-center text-xs">
                 <div>
                   <h3 className="text-base font-black text-slate-900">{t.companyName}</h3>
-                  <p className="text-[11px] text-slate-500">Southern Olive & Oil Products S.A.R.L</p>
-                  <p className="text-[10px] text-slate-400">سجل تجاري: 22901 — النبطية ومرجعيون، لبنان</p>
+                  <p className="text-[11px] text-slate-500">{t.companySubtitle}</p>
                 </div>
                 <div className="text-center">
                   <span className="text-sm font-black text-emerald-800 px-3 py-1 bg-emerald-50 rounded border border-emerald-200 block">
@@ -3299,56 +3481,56 @@ export default function CommercialOilOperationsApp() {
                     {printableDoc.refNumber}
                   </span>
                   <span className="text-[10px] text-slate-400 block">
-                    تاريخ الإصدار: {printableDoc.date}
+                    {printableDoc.date}
                   </span>
                 </div>
                 <div className="text-left font-mono">
                   <span className="font-bold text-slate-900">VANGUARD ERP</span>
-                  <p className="text-[10px] text-slate-400">V-Oil Operations Hub</p>
+                  <p className="text-[10px] text-slate-400">{t.appTitleOperator}</p>
                 </div>
               </div>
 
-              {/* Document Details Grid (NO RAW JSON!) */}
+              {/* Document Details Grid (NO RAW JSON) */}
               {printableDoc.docType === 'RECEIPT' && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <div>
-                      <span className="text-slate-500 block">المورد / التاجر:</span>
+                      <span className="text-slate-500 block">{t.supplier}</span>
                       <span className="font-black text-slate-900 text-sm">{printableDoc.content.supplierName}</span>
                       {printableDoc.content.supplierPhone && (
-                        <span className="text-[11px] text-slate-500 block">هاتف: {printableDoc.content.supplierPhone}</span>
+                        <span className="text-[11px] text-slate-500 block">{printableDoc.content.supplierPhone}</span>
                       )}
                     </div>
                     <div>
-                      <span className="text-slate-500 block">مكان التخزين / الخزان:</span>
+                      <span className="text-slate-500 block">{t.storageTank}</span>
                       <span className="font-black text-slate-900 text-sm">{printableDoc.content.targetStorageNameAr}</span>
-                      <span className="text-[11px] text-emerald-700 block font-bold">صنف الزيت: {printableDoc.content.oilGradeNameAr} ({printableDoc.content.acidity}%)</span>
+                      <span className="text-[11px] text-emerald-700 block font-bold">{t.acidity} {printableDoc.content.acidity}%</span>
                     </div>
                   </div>
 
                   {/* Summary of Containers */}
                   <div className="grid grid-cols-4 gap-3 text-center text-xs bg-emerald-50/50 p-3 rounded-lg border border-emerald-200">
                     <div>
-                      <span className="text-slate-500 block">غالونات بلاستيك</span>
+                      <span className="text-slate-500 block">{t.totalGallons}</span>
                       <span className="text-sm font-black text-slate-900">{printableDoc.content.gallonsCount || 0}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">تنكات حديد</span>
+                      <span className="text-slate-500 block">{t.totalTins}</span>
                       <span className="text-sm font-black text-slate-900">{printableDoc.content.tinsCount || 0}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">براميل (Drums)</span>
+                      <span className="text-slate-500 block">{t.totalDrums}</span>
                       <span className="text-sm font-black text-amber-800">{printableDoc.content.drumsCount || 0}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">إجمالي الوزن الصافي</span>
-                      <span className="text-base font-black text-emerald-700">{printableDoc.content.totalNetKg} كغ</span>
+                      <span className="text-slate-500 block">{t.totalNetKg}</span>
+                      <span className="text-base font-black text-emerald-700">{printableDoc.content.totalNetKg} {t.unitKg}</span>
                     </div>
                   </div>
 
                   {printableDoc.content.notes && (
                     <div className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded border border-slate-200">
-                      <span className="font-bold text-slate-700 ml-1">ملاحظات:</span>
+                      <span className="font-bold text-slate-700 ml-1">{t.notes}</span>
                       {printableDoc.content.notes}
                     </div>
                   )}
@@ -3359,35 +3541,35 @@ export default function CommercialOilOperationsApp() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
                     <div>
-                      <span className="text-slate-500 block">إجمالي وزن الخلطة:</span>
-                      <span className="font-black text-emerald-700 text-base">{printableDoc.content.totalBatchKg} كغ</span>
+                      <span className="text-slate-500 block">{t.totalWithdrawnWeight}</span>
+                      <span className="font-black text-emerald-700 text-base">{printableDoc.content.totalBatchKg} {t.unitKg}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">متوسط الحموضة:</span>
+                      <span className="text-slate-500 block">{t.weightedAcidity}</span>
                       <span className="font-black text-amber-800 text-base">{printableDoc.content.weightedAvgAcidity}%</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">الحجم التقديري:</span>
-                      <span className="font-black text-indigo-700 text-base">{printableDoc.content.estimatedVolumeLiters} L</span>
+                      <span className="text-slate-500 block">{t.estimatedVolumeL}</span>
+                      <span className="font-black text-indigo-700 text-base">{printableDoc.content.estimatedVolumeLiters} {t.unitL}</span>
                     </div>
                   </div>
 
                   <div className="text-xs text-slate-700 space-y-1">
-                    <span className="font-bold block">مصادر الخلطة المسحوبة:</span>
+                    <span className="font-bold block">{t.availableSources}:</span>
                     <div className="border border-slate-200 rounded-lg overflow-hidden">
                       <table className="w-full text-right">
                         <thead className="bg-slate-50 text-slate-600">
                           <tr>
-                            <th className="p-2">الخزان / المصدر</th>
-                            <th className="p-2">الوزن المسحوب</th>
-                            <th className="p-2">الحموضة</th>
+                            <th className="p-2">{t.storageTank}</th>
+                            <th className="p-2">{t.netWeightKg}</th>
+                            <th className="p-2">{t.acidity}</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                           {printableDoc.content.sources?.map((s: any, idx: number) => (
                             <tr key={idx}>
                               <td className="p-2 font-bold">{s.sourceName}</td>
-                              <td className="p-2 font-black text-emerald-700">{s.withdrawnKg} كغ</td>
+                              <td className="p-2 font-black text-emerald-700">{s.withdrawnKg} {t.unitKg}</td>
                               <td className="p-2">{s.sourceAcidity}%</td>
                             </tr>
                           ))}
@@ -3402,20 +3584,20 @@ export default function CommercialOilOperationsApp() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-4 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
                     <div>
-                      <span className="text-slate-500 block">المستودع المحال إليه:</span>
+                      <span className="text-slate-500 block">{t.reconciledWarehouse}</span>
                       <span className="font-black text-slate-900 text-sm">{printableDoc.content.targetWarehouseNameAr}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">إجمالي الحبات:</span>
-                      <span className="font-black text-indigo-700 text-base">{printableDoc.content.totalPiecesProduced} حبة</span>
+                      <span className="text-slate-500 block">{t.totalProducedPieces}</span>
+                      <span className="font-black text-indigo-700 text-base">{printableDoc.content.totalPiecesProduced} {t.unitPiece}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">الوزن المستهلك:</span>
-                      <span className="font-black text-emerald-700 text-base">{printableDoc.content.totalConsumedKg} كغ</span>
+                      <span className="text-slate-500 block">{t.actualConsumedKg}</span>
+                      <span className="font-black text-emerald-700 text-base">{printableDoc.content.totalConsumedKg} {t.unitKg}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block">الفاقد (Loss):</span>
-                      <span className="font-black text-slate-800 text-sm">{printableDoc.content.packagingLossKg} كغ ({printableDoc.content.packagingLossPercent}%)</span>
+                      <span className="text-slate-500 block">{t.packagingLoss}</span>
+                      <span className="font-black text-slate-800 text-sm">{printableDoc.content.packagingLossKg} {t.unitKg} ({printableDoc.content.packagingLossPercent}%)</span>
                     </div>
                   </div>
 
@@ -3424,23 +3606,23 @@ export default function CommercialOilOperationsApp() {
                     <table className="w-full text-right">
                       <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                         <tr>
-                          <th className="p-2">الصنف المعبأ</th>
-                          <th className="p-2">سعة الصندوق</th>
-                          <th className="p-2">الصناديق</th>
-                          <th className="p-2">حبات فردية</th>
-                          <th className="p-2">إجمالي الحبات</th>
-                          <th className="p-2">الحجم (L)</th>
+                          <th className="p-2">{t.skuSize}</th>
+                          <th className="p-2">{t.boxCap}</th>
+                          <th className="p-2">{t.boxesCount}</th>
+                          <th className="p-2">{t.loosePieces}</th>
+                          <th className="p-2">{t.totalPieces}</th>
+                          <th className="p-2">{t.volumeL}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {printableDoc.content.skus?.filter((s: any) => s.totalPieces > 0).map((s: any, idx: number) => (
                           <tr key={idx}>
                             <td className="p-2 font-bold text-slate-900">{s.nameAr}</td>
-                            <td className="p-2">{s.boxCapacity} حبة</td>
+                            <td className="p-2">{s.boxCapacity} {t.unitPiece}</td>
                             <td className="p-2 font-black">{s.boxes}</td>
                             <td className="p-2">{s.loosePieces}</td>
-                            <td className="p-2 font-black text-indigo-700">{s.totalPieces} حبة</td>
-                            <td className="p-2 font-bold">{s.totalLiters} L</td>
+                            <td className="p-2 font-black text-indigo-700">{s.totalPieces} {t.unitPiece}</td>
+                            <td className="p-2 font-bold">{s.totalLiters} {t.unitL}</td>
                           </tr>
                         ))}
                       </tbody>

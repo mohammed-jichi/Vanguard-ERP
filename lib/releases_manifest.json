@@ -1,5 +1,29 @@
 [
   {
+    "id": "897d4eb8-8603-40b6-afab-fc1a585d7217",
+    "commit_hash": "897d4eb8860330b60fabfc1a585d72178deab56e",
+    "short_hash": "897d4eb",
+    "version": "v2.0.0",
+    "title": "Complete production-ready V-Oil Hub with RBAC checkboxes, zero mock data, drum container, and bug fixes",
+    "category": "feature",
+    "description": "feat(commercial-oil): complete production-ready V-Oil Hub with RBAC checkboxes, zero mock data, drum container, and bug fixes",
+    "bullet_points": [
+      "Implemented complete production-ready v-oil hub with rbac checkboxes, zero mock data, drum container, and bug fixes",
+      "Enhanced system stability and operator workflow in Operations & Inventory & Core Shell & UI",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Operations & Inventory",
+      "Core Shell & UI",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-03T00:08:05.000Z",
+    "created_at": "2026-10-03T00:23:27.973Z"
+  },
+  {
     "id": "4f8099d7-eb87-4902-a278-d653b03b5873",
     "commit_hash": "4f8099d7eb8759028278d653b03b587362373efb",
     "short_hash": "4f8099d",

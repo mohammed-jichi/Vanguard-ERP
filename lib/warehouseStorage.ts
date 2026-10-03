@@ -72,7 +72,7 @@ const INITIAL_SYSTEM_WAREHOUSES: WarehouseRecord[] = [
     capacityLiters: 350000,
     currentStockUnits: 8950,
     isActive: true,
-    isDriverVisible: true,
+    isDriverVisible: false,
     notes: 'Primary finished goods warehouse storing packaged tins, bottles, and commercial gallons.',
     createdAt: '2026-01-10T08:00:00.000Z',
     updatedAt: '2026-10-01T12:00:00.000Z'
@@ -91,7 +91,7 @@ const INITIAL_SYSTEM_WAREHOUSES: WarehouseRecord[] = [
     capacityLiters: 45000,
     currentStockUnits: 1240,
     isActive: true,
-    isDriverVisible: true,
+    isDriverVisible: false,
     notes: 'Retail front outlet and visitor tasting boutique storage.',
     createdAt: '2026-01-15T09:00:00.000Z',
     updatedAt: '2026-10-01T12:00:00.000Z'
@@ -252,7 +252,7 @@ export class WarehouseService {
       capacityLiters: Number(data.capacityLiters) || 50000,
       currentStockUnits: Number(data.currentStockUnits) || 0,
       isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
-      isDriverVisible: data.isDriverVisible !== undefined ? Boolean(data.isDriverVisible) : true,
+      isDriverVisible: false, // Strictly isolated from drivers - internal management facility only
       notes: data.notes || '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-03T00:07:35.876Z",
+  "last_updated": "2026-10-03T00:23:27.980Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,24 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-897d4eb",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (897d4eb) - Complete production-ready V-Oil Hub with RBAC checkboxes, zero mock data, drum container, and bug fixes",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "897d4eb8860330b60fabfc1a585d72178deab56e",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Operations & Inventory",
+          "Core Shell & UI",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-03T00:08:05.000Z"
+    },
     {
       "id": "act-rel-4f8099d",
       "company_id": 1300,
@@ -6089,6 +6107,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-897d4eb",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Complete production-ready V-Oil Hub with RBAC checkboxes, zero mock data, drum container, and bug fixes",
+      "message": "feat(commercial-oil): complete production-ready V-Oil Hub with RBAC checkboxes, zero mock data, drum container, and bug fixes",
+      "timestamp": "2026-10-03T00:08:05.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "897d4eb8860330b60fabfc1a585d72178deab56e",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-4f8099d",
       "type": "SYSTEM_RELEASE",
