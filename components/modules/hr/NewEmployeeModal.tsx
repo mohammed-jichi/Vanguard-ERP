@@ -5,7 +5,10 @@ import {
   HREmployeeRecord,
   HRPersonnelService,
   POSCredentialsConfig,
+  SocialMediaRepConfig,
+  ExtraPlatformChannel,
 } from '@/lib/hrPersonnelService';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   searchLebaneseCities,
   LebaneseCity,
@@ -36,6 +39,14 @@ import {
   ExternalLink,
   Laptop,
   Check,
+  Plus,
+  Share2,
+  Globe,
+  Phone,
+  Percent,
+  Copy,
+  RefreshCw,
+  ShieldCheck,
 } from 'lucide-react';
 
 export interface EmployeeFormData {
@@ -52,7 +63,7 @@ export interface EmployeeFormData {
   contactPhone: string;
   department: string;
   designation: string;
-  location: 'Office' | 'Remote' | 'Hybrid' | 'Field Based';
+  location: string;
   attendanceMacId: string;
   dateHired: string;
   dateLeft: string;
@@ -67,6 +78,7 @@ export interface EmployeeFormData {
   useBranch: boolean;
   branchName: string;
   createBackoffice: boolean;
+  socialMediaRep?: SocialMediaRepConfig;
 }
 
 export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
@@ -81,9 +93,9 @@ export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
   numberOfChildren: 0,
   contactPerson: '',
   contactPhone: '',
-  department: 'Management',
-  designation: 'General Operations Manager',
-  location: 'Office',
+  department: 'factory_operations',
+  designation: 'oil_press_operator',
+  location: 'factory_floor',
   attendanceMacId: '',
   dateHired: '2024-05-15',
   dateLeft: '',
@@ -98,6 +110,22 @@ export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
   useBranch: true,
   branchName: 'Southern Olive and Oil Products - Main',
   createBackoffice: true,
+  socialMediaRep: {
+    area: '',
+    street: '',
+    building: '',
+    floor: '',
+    personalPhone: '',
+    businessWhatsapp: '',
+    repAdminCode: '',
+    systemUuid: '',
+    facebookUrl: '',
+    tiktokUrl: '',
+    instagramUrl: '',
+    extraChannels: [],
+    promotionalOffersPercentage: 5,
+    generalItemsPercentage: 10,
+  },
 };
 
 export function extractEmployeeFormData(data: any): EmployeeFormData {
@@ -125,6 +153,38 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     }
   }
 
+  const repConfig: SocialMediaRepConfig = data.socialMediaRep ? {
+    area: data.socialMediaRep.area || '',
+    street: data.socialMediaRep.street || '',
+    building: data.socialMediaRep.building || '',
+    floor: data.socialMediaRep.floor || '',
+    personalPhone: data.socialMediaRep.personalPhone || '',
+    businessWhatsapp: data.socialMediaRep.businessWhatsapp || '',
+    repAdminCode: data.socialMediaRep.repAdminCode || '',
+    systemUuid: data.socialMediaRep.systemUuid || '',
+    facebookUrl: data.socialMediaRep.facebookUrl || '',
+    tiktokUrl: data.socialMediaRep.tiktokUrl || '',
+    instagramUrl: data.socialMediaRep.instagramUrl || '',
+    extraChannels: Array.isArray(data.socialMediaRep.extraChannels) ? data.socialMediaRep.extraChannels : [],
+    promotionalOffersPercentage: data.socialMediaRep.promotionalOffersPercentage ?? 5,
+    generalItemsPercentage: data.socialMediaRep.generalItemsPercentage ?? 10,
+  } : {
+    area: '',
+    street: '',
+    building: '',
+    floor: '',
+    personalPhone: '',
+    businessWhatsapp: '',
+    repAdminCode: '',
+    systemUuid: '',
+    facebookUrl: '',
+    tiktokUrl: '',
+    instagramUrl: '',
+    extraChannels: [],
+    promotionalOffersPercentage: 5,
+    generalItemsPercentage: 10,
+  };
+
   return {
     firstName: fName,
     lastName: lName,
@@ -137,9 +197,9 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     numberOfChildren: data.numberOfChildren ?? data.number_of_children ?? data.childrenCount ?? 0,
     contactPerson: data.contactPerson || data.created_by || '',
     contactPhone: data.contactPhone || '',
-    department: data.department || 'Management',
-    designation: data.designation || 'General Operations Manager',
-    location: data.location || 'Office',
+    department: data.department || 'factory_operations',
+    designation: data.designation || 'oil_press_operator',
+    location: data.location || 'factory_floor',
     attendanceMacId: data.attendanceMacId || '',
     dateHired: data.dateHired || data.created_at || '2024-05-15',
     dateLeft: data.dateLeft || '',
@@ -154,6 +214,7 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     useBranch: data.useBranch ?? true,
     branchName: data.branch || data.branchName || 'Southern Olive and Oil Products - Main',
     createBackoffice: data.isBackoffice ?? data.createBackoffice ?? true,
+    socialMediaRep: repConfig,
   };
 }
 
@@ -168,56 +229,40 @@ interface NewEmployeeModalProps {
 }
 
 
-const DEPARTMENTS_LIST = [
-  'Accounting',
-  'Customer Care',
-  'Customer Service and Support',
-  'Distribution',
-  'HR Human Resources',
-  'IT Information Technology',
-  'Legal',
-  'Maintenance Management',
-  'Management',
-  'Marketing',
-  'Owners',
-  'Production',
-  'Research and Development',
-  'Sales',
-  'Stores',
-];
+export const DEPARTMENTS_MASTER_KEYS = [
+  'factory_operations',
+  'warehouse_storage',
+  'oil_processing',
+  'packaging_bottling',
+  'quality_lab',
+  'logistics_delivery',
+  'social_media_marketing',
+] as const;
 
-const DESIGNATIONS_LIST = [
-  'Accountant',
-  'Administrative Assistant',
-  'Business Analyst',
-  'Business Development Executive',
-  'Cashier',
-  'Chief Executive Officer CEO',
-  'Chief Financial Officer CFO',
-  'Chief Technology Officer CTO',
-  'Clerk',
-  'CRM Specialist',
-  'Customer Care Representative',
-  'Customer Service Representative',
-  'Digital Marketing Specialist',
-  'General Manager',
-  'General Operations Manager',
-  'Human Resources Manager',
-  'IT Specialist',
-  'Marketing Manager',
-  'Operations Manager',
-  'Owner',
-  'Owner / Director',
-  'Procurement Officer',
-  'Quality Control Inspector',
-  'Receptionist',
-  'Sales Account Manager',
-  'Sales Manager',
-  'Social Media Manager',
-  'Supply Chain Manager',
-  'Support Team Leader',
-  'Training Manager',
-];
+export const DESIGNATIONS_MASTER_KEYS = [
+  'oil_press_operator',
+  'packaging_worker',
+  'warehouse_worker',
+  'factory_worker',
+  'forklift_driver',
+  'maintenance_tech',
+  'storekeeper',
+  'delivery_manager',
+  'delivery_driver',
+  'social_media_manager',
+  'social_media_rep',
+] as const;
+
+export const LOCATIONS_MASTER_KEYS = [
+  'factory_floor',
+  'central_warehouse',
+  'mill_facility',
+  'showroom',
+  'on_road',
+  'office',
+  'remote',
+  'hybrid',
+] as const;
 
 export default function NewEmployeeModal({
   isOpen,
@@ -228,6 +273,7 @@ export default function NewEmployeeModal({
   employee,
   hideScheduleTab = false,
 }: NewEmployeeModalProps) {
+  const { t, isRtl, language } = useLanguage();
   const activeRecord = initialData || employee || initialEmployee;
 
   // Tabs: 'personal' (Tab 1: Personal *) | 'work_location' (Tab 2: Work Location *) | 'schedule' (Tab 3: Schedule)
@@ -286,6 +332,80 @@ export default function NewEmployeeModal({
       setJobOfferDoc(null);
     }
   }, [initialData, employee, initialEmployee, isOpen]);
+
+  // Auto-generate UUID for Social Media Representative if empty
+  useEffect(() => {
+    if (formData.designation === 'social_media_rep') {
+      if (!formData.socialMediaRep?.systemUuid) {
+        const newUuid = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `rep-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        setFormData(prev => ({
+          ...prev,
+          socialMediaRep: {
+            ...(prev.socialMediaRep || DEFAULT_EMPLOYEE_FORM_DATA.socialMediaRep!),
+            systemUuid: newUuid,
+          }
+        }));
+      }
+    }
+  }, [formData.designation]);
+
+  const handleUpdateRepField = (field: keyof SocialMediaRepConfig, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      socialMediaRep: {
+        ...(prev.socialMediaRep || DEFAULT_EMPLOYEE_FORM_DATA.socialMediaRep!),
+        [field]: value,
+      }
+    }));
+  };
+
+  const handleAddExtraChannel = () => {
+    setFormData(prev => {
+      const current = prev.socialMediaRep || DEFAULT_EMPLOYEE_FORM_DATA.socialMediaRep!;
+      const channels = current.extraChannels || [];
+      const newChannel: ExtraPlatformChannel = {
+        id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `chan-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        platform: '',
+        url: '',
+      };
+      return {
+        ...prev,
+        socialMediaRep: {
+          ...current,
+          extraChannels: [...channels, newChannel],
+        }
+      };
+    });
+  };
+
+  const handleRemoveExtraChannel = (id: string) => {
+    setFormData(prev => {
+      const current = prev.socialMediaRep || DEFAULT_EMPLOYEE_FORM_DATA.socialMediaRep!;
+      const channels = (current.extraChannels || []).filter(c => c.id !== id);
+      return {
+        ...prev,
+        socialMediaRep: {
+          ...current,
+          extraChannels: channels,
+        }
+      };
+    });
+  };
+
+  const handleUpdateExtraChannel = (id: string, key: 'platform' | 'url', val: string) => {
+    setFormData(prev => {
+      const current = prev.socialMediaRep || DEFAULT_EMPLOYEE_FORM_DATA.socialMediaRep!;
+      const channels = (current.extraChannels || []).map(c => c.id === id ? { ...c, [key]: val } : c);
+      return {
+        ...prev,
+        socialMediaRep: {
+          ...current,
+          extraChannels: channels,
+        }
+      };
+    });
+  };
+
   // Uploads
   const [profilePicture, setProfilePicture] = useState<string | null>(initialEmployee?.profilePicture || null);
   const [jobOfferDoc, setJobOfferDoc] = useState<string | null>(initialEmployee?.jobOfferDoc || null);
@@ -489,6 +609,7 @@ export default function NewEmployeeModal({
       schedule: target?.schedule || {
         templateName: 'Backoffice Administration (08:00 - 16:30)',
       },
+      socialMediaRep: formData.designation === 'social_media_rep' ? formData.socialMediaRep : undefined,
       createdAt: target?.createdAt || new Date().toISOString().split('T')[0],
     };
 
@@ -905,43 +1026,59 @@ export default function NewEmployeeModal({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Department*</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('department', 'Department')}*</label>
                     <select
                       value={formData.department} onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                     >
-                      {DEPARTMENTS_LIST.map((d) => (
+                      {!DEPARTMENTS_MASTER_KEYS.includes(formData.department as any) && (
+                        <option value={formData.department}>
+                          {t(`departments.${formData.department}`, formData.department)}
+                        </option>
+                      )}
+                      {DEPARTMENTS_MASTER_KEYS.map((d) => (
                         <option key={d} value={d}>
-                          {d}
+                          {t(`departments.${d}`)}
                         </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Designation*</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('designation', 'Designation')}*</label>
                     <select
                       value={formData.designation} onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                     >
-                      {DESIGNATIONS_LIST.map((des) => (
+                      {!DESIGNATIONS_MASTER_KEYS.includes(formData.designation as any) && (
+                        <option value={formData.designation}>
+                          {t(`designations.${formData.designation}`, formData.designation)}
+                        </option>
+                      )}
+                      {DESIGNATIONS_MASTER_KEYS.map((des) => (
                         <option key={des} value={des}>
-                          {des}
+                          {t(`designations.${des}`)}
                         </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Location</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('location', 'Location')}</label>
                     <select
-                      value={formData.location} onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value as any }))}
+                      value={formData.location} onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                     >
-                      <option value="Office">Office</option>
-                      <option value="Remote">Remote</option>
-                      <option value="Hybrid">Hybrid</option>
-                      <option value="Field Based">Field Based</option>
+                      {!LOCATIONS_MASTER_KEYS.includes(formData.location as any) && (
+                        <option value={formData.location}>
+                          {t(`locations.${formData.location}`, formData.location)}
+                        </option>
+                      )}
+                      {LOCATIONS_MASTER_KEYS.map((loc) => (
+                        <option key={loc} value={loc}>
+                          {t(`locations.${loc}`)}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -975,6 +1112,310 @@ export default function NewEmployeeModal({
                   </div>
                 </div>
               </div>
+
+              {/* Dynamic Conditional Social Media Representative Specification */}
+              {formData.designation === 'social_media_rep' && (
+                <div className="border-t border-slate-200 pt-4">
+                  <div className="border border-emerald-200/80 bg-gradient-to-br from-emerald-50/50 via-teal-50/30 to-sky-50/40 rounded-3xl p-5 space-y-5 shadow-xs">
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-200/60">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-emerald-600/10 text-emerald-700 flex items-center justify-center font-bold shadow-2xs">
+                          <Share2 className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                              {t('hr_rep.section_title')}
+                            </h3>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">
+                              {t('designations.social_media_rep')}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 font-medium">
+                            {t('hr_rep.section_subtitle')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 1. Detailed Address */}
+                    <div className="space-y-2.5">
+                      <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>{t('hr_rep.address_heading')}</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.area')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.area || ''}
+                            onChange={(e) => handleUpdateRepField('area', e.target.value)}
+                            placeholder={t('hr_rep.area_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.street')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.street || ''}
+                            onChange={(e) => handleUpdateRepField('street', e.target.value)}
+                            placeholder={t('hr_rep.street_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.building')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.building || ''}
+                            onChange={(e) => handleUpdateRepField('building', e.target.value)}
+                            placeholder={t('hr_rep.building_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.floor')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.floor || ''}
+                            onChange={(e) => handleUpdateRepField('floor', e.target.value)}
+                            placeholder={t('hr_rep.floor_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. Contact Numbers */}
+                    <div className="space-y-2.5 pt-2 border-t border-emerald-200/50">
+                      <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>{t('hr_rep.contact_numbers_heading')}</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.personal_phone')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.personalPhone || ''}
+                            onChange={(e) => handleUpdateRepField('personalPhone', e.target.value)}
+                            placeholder={t('hr_rep.personal_phone_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.business_whatsapp')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.businessWhatsapp || ''}
+                            onChange={(e) => handleUpdateRepField('businessWhatsapp', e.target.value)}
+                            placeholder={t('hr_rep.business_whatsapp_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. Identification & System Mapping */}
+                    <div className="space-y-2.5 pt-2 border-t border-emerald-200/50">
+                      <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
+                        <Key className="w-3.5 h-3.5" />
+                        <span>{t('hr_rep.identification_heading')}</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.rep_admin_code')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.repAdminCode || ''}
+                            onChange={(e) => handleUpdateRepField('repAdminCode', e.target.value)}
+                            placeholder={t('hr_rep.rep_admin_code_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                          <p className="text-[11px] text-slate-500 font-medium">
+                            {t('hr_rep.rep_admin_code_help')}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.system_uuid')}</label>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newUuid = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `rep-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+                                handleUpdateRepField('systemUuid', newUuid);
+                              }}
+                              className="text-[11px] text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              <span>{t('hr_rep.regenerate_uuid')}</span>
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            readOnly
+                            value={formData.socialMediaRep?.systemUuid || ''}
+                            placeholder={t('hr_rep.system_uuid_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-700 bg-slate-100/90 border border-slate-200 rounded-xl outline-hidden cursor-default select-all"
+                          />
+                          <p className="text-[11px] text-slate-500 font-medium">
+                            {t('hr_rep.system_uuid_help')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 4. Authorized Social Media Channels & Platforms */}
+                    <div className="space-y-2.5 pt-2 border-t border-emerald-200/50">
+                      <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
+                        <Globe className="w-3.5 h-3.5" />
+                        <span>{t('hr_rep.channels_heading')}</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.facebook_url')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.facebookUrl || ''}
+                            onChange={(e) => handleUpdateRepField('facebookUrl', e.target.value)}
+                            placeholder={t('hr_rep.facebook_url_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.tiktok_url')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.tiktokUrl || ''}
+                            onChange={(e) => handleUpdateRepField('tiktokUrl', e.target.value)}
+                            placeholder={t('hr_rep.tiktok_url_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.instagram_url')}</label>
+                          <input
+                            type="text"
+                            value={formData.socialMediaRep?.instagramUrl || ''}
+                            onChange={(e) => handleUpdateRepField('instagramUrl', e.target.value)}
+                            placeholder={t('hr_rep.instagram_url_placeholder')}
+                            className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Dynamic Repeater for Extra Platforms with (+) button */}
+                      <div className="bg-white/80 border border-emerald-200/60 rounded-2xl p-3.5 space-y-3 mt-2">
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                            <span>{t('hr_rep.extra_channels_heading')}</span>
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+                              {formData.socialMediaRep?.extraChannels?.length || 0}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleAddExtraChannel}
+                            className="px-2.5 py-1 text-xs font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl flex items-center gap-1 transition-colors cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>{t('hr_rep.add_channel')}</span>
+                          </button>
+                        </div>
+
+                        {(!formData.socialMediaRep?.extraChannels || formData.socialMediaRep.extraChannels.length === 0) ? (
+                          <div className="text-center py-3 text-xs text-slate-500 font-medium bg-slate-50/60 rounded-xl border border-dashed border-slate-200">
+                            {t('hr_rep.no_extra_channels')}
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {formData.socialMediaRep.extraChannels.map((channel) => (
+                              <div key={channel.id} className="flex flex-col sm:flex-row items-center gap-2 bg-slate-50/80 p-2 rounded-xl border border-slate-200/80">
+                                <div className="w-full sm:w-1/3">
+                                  <input
+                                    type="text"
+                                    value={channel.platform}
+                                    onChange={(e) => handleUpdateExtraChannel(channel.id, 'platform', e.target.value)}
+                                    placeholder={t('hr_rep.platform_placeholder')}
+                                    className="w-full px-2.5 py-1.5 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-lg outline-hidden focus:border-emerald-600"
+                                  />
+                                </div>
+                                <div className="w-full sm:flex-1">
+                                  <input
+                                    type="text"
+                                    value={channel.url}
+                                    onChange={(e) => handleUpdateExtraChannel(channel.id, 'url', e.target.value)}
+                                    placeholder="https://..."
+                                    className="w-full px-2.5 py-1.5 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-lg outline-hidden focus:border-emerald-600"
+                                  />
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveExtraChannel(channel.id)}
+                                  className="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                                  title={t('hr_rep.remove_channel')}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 5. Commercial Markup Boundaries */}
+                    <div className="space-y-2.5 pt-2 border-t border-emerald-200/50">
+                      <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
+                        <Percent className="w-3.5 h-3.5" />
+                        <span>{t('hr_rep.markups_heading')}</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.promotional_offers_percentage')}</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              value={formData.socialMediaRep?.promotionalOffersPercentage ?? 5}
+                              onChange={(e) => handleUpdateRepField('promotionalOffersPercentage', parseFloat(e.target.value) || 0)}
+                              placeholder={t('hr_rep.promotional_offers_placeholder')}
+                              className="w-full px-3 py-2 pr-8 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">%</span>
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.general_items_percentage')}</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              value={formData.socialMediaRep?.generalItemsPercentage ?? 10}
+                              onChange={(e) => handleUpdateRepField('generalItemsPercentage', parseFloat(e.target.value) || 0)}
+                              placeholder={t('hr_rep.general_items_placeholder')}
+                              className="w-full px-3 py-2 pr-8 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">%</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 bg-emerald-100/60 border border-emerald-200/80 rounded-xl p-2.5 text-emerald-900 text-xs font-medium">
+                        <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                        <span>{t('hr_rep.markup_note')}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Row 3: Address & Identification with Lebanese Cities Directory */}
               <div className="border-t border-slate-200 pt-4 space-y-3">
@@ -1136,6 +1577,91 @@ export default function NewEmployeeModal({
                     className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                   />
                 </div>
+              </div>
+
+              {/* ================================================================= */}
+              {/* OPERATIONAL RBAC MATRIX & INDUSTRIAL GUARDRAILS                   */}
+              {/* ================================================================= */}
+              <div className="border border-slate-200 bg-gradient-to-br from-slate-50 via-slate-50/70 to-blue-50/30 rounded-3xl p-5 space-y-3.5 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+                      <Shield className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                        {t('hr_rep.rbac_matrix_heading')}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        {t('hr_rep.rbac_role_active')}: <span className="font-bold text-primary">{t(`designations.${formData.designation}`, formData.designation)}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 w-fit">
+                    {t('hr_rep.guardrails_badge')}
+                  </span>
+                </div>
+
+                {/* Dynamic RBAC Rule Box Based on Selected Designation */}
+                {['oil_press_operator', 'packaging_worker', 'factory_worker', 'maintenance_tech'].includes(formData.designation) && (
+                  <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
+                      <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>{t('hr_rep.rbac_factory_title')}</span>
+                    </div>
+                    <p className="text-xs text-amber-950/80 font-medium leading-relaxed pl-6">
+                      {t('hr_rep.rbac_factory_desc')}
+                    </p>
+                  </div>
+                )}
+
+                {['warehouse_worker', 'forklift_driver', 'storekeeper'].includes(formData.designation) && (
+                  <div className="bg-sky-500/5 border border-sky-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center gap-2 text-sky-900 font-bold text-xs">
+                      <CheckCircle2 className="w-4 h-4 text-sky-600 shrink-0" />
+                      <span>{t('hr_rep.rbac_warehouse_title')}</span>
+                    </div>
+                    <p className="text-xs text-sky-950/80 font-medium leading-relaxed pl-6">
+                      {t('hr_rep.rbac_warehouse_desc')}
+                    </p>
+                  </div>
+                )}
+
+                {['delivery_driver', 'delivery_manager'].includes(formData.designation) && (
+                  <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center gap-2 text-indigo-900 font-bold text-xs">
+                      <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
+                      <span>{t('hr_rep.rbac_delivery_title')}</span>
+                    </div>
+                    <p className="text-xs text-indigo-950/80 font-medium leading-relaxed pl-6">
+                      {t('hr_rep.rbac_delivery_desc')}
+                    </p>
+                  </div>
+                )}
+
+                {formData.designation === 'social_media_rep' && (
+                  <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center gap-2 text-emerald-900 font-bold text-xs">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>{t('hr_rep.rbac_rep_title')}</span>
+                    </div>
+                    <p className="text-xs text-emerald-950/80 font-medium leading-relaxed pl-6">
+                      {t('hr_rep.rbac_rep_desc')}
+                    </p>
+                  </div>
+                )}
+
+                {!['oil_press_operator', 'packaging_worker', 'factory_worker', 'maintenance_tech', 'warehouse_worker', 'forklift_driver', 'storekeeper', 'delivery_driver', 'delivery_manager', 'social_media_rep'].includes(formData.designation) && (
+                  <div className="bg-slate-500/5 border border-slate-500/20 rounded-2xl p-3.5 space-y-2">
+                    <div className="flex items-center gap-2 text-slate-800 font-bold text-xs">
+                      <CheckCircle2 className="w-4 h-4 text-slate-600 shrink-0" />
+                      <span>{t('hr_rep.rbac_standard_title')}</span>
+                    </div>
+                    <p className="text-xs text-slate-600 font-medium leading-relaxed pl-6">
+                      {t('hr_rep.rbac_standard_desc')}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}

@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-03T02:02:45.456Z",
+  "last_updated": "2026-10-03T03:54:45.695Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -6738,6 +6738,20 @@
         "templateName": "Standard Factory Shift (07:00 - 15:30)"
       },
       "createdAt": "2024-07-01"
+    }
+  ],
+  "roles": [
+    {
+      "description": "Delivery department manager responsible for tracking drivers, managing delivery logs, orders, and shipping operations only.",
+      "employee_role": "MANAGER",
+      "is_read_only": false,
+      "assignedCount": 0,
+      "badgeColor": "bg-slate-100 text-slate-800 border-slate-200",
+      "permissions": {},
+      "action_overrides": {},
+      "restricted_reports": {},
+      "brand_access": [],
+      "created_at": "2026-08-04T13:48:48+00:00"
     }
   ]
 }

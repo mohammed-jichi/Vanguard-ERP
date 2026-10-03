@@ -62,6 +62,34 @@ export interface EmployeeScheduleConfig {
   daysOff?: DayOffRecord[];
 }
 
+export interface ExtraPlatformChannel {
+  id: string;
+  platform: string;
+  url: string;
+}
+
+export interface SocialMediaRepConfig {
+  // Detailed Address
+  area: string;
+  street: string;
+  building: string;
+  floor: string;
+  // Contact Numbers
+  personalPhone: string;
+  businessWhatsapp: string;
+  // Identification & System Mapping
+  repAdminCode: string;
+  systemUuid: string;
+  // Channels
+  facebookUrl?: string;
+  tiktokUrl?: string;
+  instagramUrl?: string;
+  extraChannels?: ExtraPlatformChannel[];
+  // Markups
+  promotionalOffersPercentage?: number;
+  generalItemsPercentage?: number;
+}
+
 export interface HREmployeeRecord {
   id: string;
   active: boolean;
@@ -88,7 +116,7 @@ export interface HREmployeeRecord {
   jobOfferDoc?: string;
   department: string;
   designation: string;
-  location: 'Office' | 'Remote' | 'Hybrid' | 'Field Based';
+  location: string;
   dateHired?: string;
   dateLeft?: string;
   attendanceMacId?: string;
@@ -105,6 +133,7 @@ export interface HREmployeeRecord {
   posEmployeeId?: string;
   posCredentials?: POSCredentialsConfig;
   schedule?: EmployeeScheduleConfig;
+  socialMediaRep?: SocialMediaRepConfig;
   createdAt: string;
 }
 
