@@ -19,6 +19,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/LanguageContext';
 import { useActiveUser } from '@/lib/useActiveUser';
@@ -937,6 +938,84 @@ export default function CommercialOilOperationsApp() {
     content: any;
   } | null>(null);
 
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handlePrintVoucher = () => {
+    try {
+      let printFrame = document.getElementById('voucher-print-iframe') as HTMLIFrameElement;
+      if (!printFrame) {
+        printFrame = document.createElement('iframe');
+        printFrame.id = 'voucher-print-iframe';
+        printFrame.style.position = 'fixed';
+        printFrame.style.right = '0';
+        printFrame.style.bottom = '0';
+        printFrame.style.width = '0';
+        printFrame.style.height = '0';
+        printFrame.style.border = '0';
+        document.body.appendChild(printFrame);
+      }
+
+      const frameDoc = printFrame.contentWindow?.document;
+      const voucherElem = document.getElementById('official-voucher-content');
+      if (frameDoc && voucherElem) {
+        frameDoc.open();
+        const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+          .map(el => el.outerHTML)
+          .join('\n');
+
+        frameDoc.write(`
+          <!DOCTYPE html>
+          <html dir="${isRtlLayout ? 'rtl' : 'ltr'}" lang="${currentLang}">
+            <head>
+              <meta charset="utf-8" />
+              <title>${printableDoc?.title || 'Official Voucher'}</title>
+              ${styles}
+              <style>
+                @page { size: auto; margin: 10mm; }
+                html, body {
+                  margin: 0 !important;
+                  padding: 5mm !important;
+                  background: #ffffff !important;
+                  color: #0f172a !important;
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
+                .printable-voucher-card {
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  box-sizing: border-box !important;
+                  page-break-inside: avoid !important;
+                }
+                .no-print { display: none !important; }
+              </style>
+            </head>
+            <body>
+              <div class="printable-voucher-card">
+                ${voucherElem.innerHTML}
+              </div>
+            </body>
+          </html>
+        `);
+        frameDoc.close();
+
+        setTimeout(() => {
+          printFrame.contentWindow?.focus();
+          printFrame.contentWindow?.print();
+        }, 300);
+        return;
+      }
+    } catch (err) {
+      console.warn('Iframe print error, falling back to window.print():', err);
+    }
+
+    // Direct browser print fallback (triggers @media print with #print-mount-portal)
+    window.print();
+  };
+
   // ESC Key listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -1557,7 +1636,8 @@ export default function CommercialOilOperationsApp() {
 
   const handleCreateWarehouse = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newWhNameAr.trim() && !newWhNameEn.trim()) {
+    const primaryName = newWhNameAr.trim() || newWhNameEn.trim();
+    if (!primaryName) {
       showToast(t.whName, 'error');
       return;
     }
@@ -1568,12 +1648,12 @@ export default function CommercialOilOperationsApp() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          code: newWhCode.trim() || `WH-${Date.now().toString().slice(-4)}`,
-          name: newWhNameEn.trim() || newWhNameAr,
-          nameAr: newWhNameAr.trim() || newWhNameEn,
+          code: (newWhCode.trim() || `WH-${Date.now().toString().slice(-4)}`).toUpperCase(),
+          name: newWhNameEn.trim() || primaryName,
+          nameAr: newWhNameAr.trim() || primaryName,
           type: newWhType,
-          location: newWhLocation || 'Marjeyoun Facility',
-          capacityLiters: newWhCapacity,
+          location: (newWhLocation || 'Marjeyoun Facility').trim(),
+          capacityLiters: Number(newWhCapacity) > 0 ? Number(newWhCapacity) : 50000,
           isDriverVisible: false // STRICTLY LOCKED: All warehouses isolated from drivers
         })
       });
@@ -1585,6 +1665,7 @@ export default function CommercialOilOperationsApp() {
         setNewWhNameAr('');
         setNewWhNameEn('');
         setNewWhCode('');
+        setNewWhCapacity(50000);
       } else {
         showToast(json.error || 'Error', 'error');
       }
@@ -1617,6 +1698,208 @@ export default function CommercialOilOperationsApp() {
       (s.PHONE && s.PHONE.includes(q))
     );
   }, [suppliers, supplierSearch]);
+
+  const renderVoucherContent = (doc: { docType: string; refNumber: string; date: string; content: any }) => {
+    return (
+      <div className="space-y-6">
+        {/* Corporate 3-Zone Official Header */}
+        <div className="border-b-2 border-slate-900 pb-4 flex justify-between items-center text-xs">
+          <div>
+            <h3 className="text-base font-black text-slate-900">{t.companyName}</h3>
+            <p className="text-[11px] text-slate-500">{t.companySubtitle}</p>
+          </div>
+          <div className="text-center">
+            <span className="text-sm font-black text-emerald-800 px-3 py-1 bg-emerald-50 rounded border border-emerald-200 block">
+              {doc.docType === 'RECEIPT' ? t.voucherReceipt :
+               doc.docType === 'BLEND' ? t.voucherBlend :
+               t.voucherPackaging}
+            </span>
+            <span className="text-[11px] font-mono font-bold text-slate-900 mt-1 block">
+              {doc.refNumber}
+            </span>
+            <span className="text-[10px] text-slate-400 block">
+              {doc.date}
+            </span>
+          </div>
+          <div className="text-left font-mono">
+            <span className="font-bold text-slate-900">VANGUARD ERP</span>
+            <p className="text-[10px] text-slate-400">{t.appTitleOperator}</p>
+          </div>
+        </div>
+
+        {/* Document Details Grid (NO RAW JSON) */}
+        {doc.docType === 'RECEIPT' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <div>
+                <span className="text-slate-500 block">{t.supplier}</span>
+                <span className="font-black text-slate-900 text-sm">{doc.content.supplierName}</span>
+                {doc.content.supplierPhone && (
+                  <span className="text-[11px] text-slate-500 block">{doc.content.supplierPhone}</span>
+                )}
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.storageTank}</span>
+                <span className="font-black text-slate-900 text-sm">
+                  {(() => {
+                    const tankObj = tanks.find(tk => tk.id === doc.content.targetStorageId || tk.nameAr === doc.content.targetStorageNameAr);
+                    return tankObj ? getLocalizedTankName(tankObj) : doc.content.targetStorageNameAr;
+                  })()}
+                </span>
+                <span className="text-[11px] text-emerald-700 block font-bold">{t.acidity} {doc.content.acidity}%</span>
+              </div>
+            </div>
+
+            {/* Summary of Containers */}
+            <div className="grid grid-cols-4 gap-3 text-center text-xs bg-emerald-50/50 p-3 rounded-lg border border-emerald-200">
+              <div>
+                <span className="text-slate-500 block">{t.totalGallons}</span>
+                <span className="text-sm font-black text-slate-900">{doc.content.gallonsCount || 0}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.totalTins}</span>
+                <span className="text-sm font-black text-slate-900">{doc.content.tinsCount || 0}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.totalDrums}</span>
+                <span className="text-sm font-black text-amber-800">{doc.content.drumsCount || 0}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.totalNetKg}</span>
+                <span className="text-base font-black text-emerald-700">{doc.content.totalNetKg} {t.unitKg}</span>
+              </div>
+            </div>
+
+            {doc.content.notes && (
+              <div className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded border border-slate-200">
+                <span className="font-bold text-slate-700 ml-1">{t.notes}</span>
+                {doc.content.notes}
+              </div>
+            )}
+          </div>
+        )}
+
+        {doc.docType === 'BLEND' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+              <div>
+                <span className="text-slate-500 block">{t.totalWithdrawnWeight}</span>
+                <span className="font-black text-emerald-700 text-base">{doc.content.totalBatchKg} {t.unitKg}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.weightedAcidity}</span>
+                <span className="font-black text-amber-800 text-base">{doc.content.weightedAvgAcidity}%</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.estimatedVolumeL}</span>
+                <span className="font-black text-indigo-700 text-base">{doc.content.estimatedVolumeLiters} {t.unitL}</span>
+              </div>
+            </div>
+
+            <div className="text-xs text-slate-700 space-y-1">
+              <span className="font-bold block">{t.availableSources}:</span>
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <table className="w-full text-right">
+                  <thead className="bg-slate-50 text-slate-600">
+                    <tr>
+                      <th className="p-2">{t.storageTank}</th>
+                      <th className="p-2">{t.netWeightKg}</th>
+                      <th className="p-2">{t.acidity}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {doc.content.sources?.map((s: any, idx: number) => (
+                      <tr key={idx}>
+                        <td className="p-2 font-bold">{s.sourceName}</td>
+                        <td className="p-2 font-black text-emerald-700">{s.withdrawnKg} {t.unitKg}</td>
+                        <td className="p-2">{s.sourceAcidity}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {doc.docType === 'PACKAGING' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-4 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+              <div>
+                <span className="text-slate-500 block">{t.reconciledWarehouse}</span>
+                <span className="font-black text-slate-900 text-sm">
+                  {(() => {
+                    const whObj = warehouses.find(w => w.id === doc.content.targetWarehouseId || w.nameAr === doc.content.targetWarehouseNameAr);
+                    return whObj ? getLocalizedWarehouseName(whObj) : doc.content.targetWarehouseNameAr;
+                  })()}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.totalProducedPieces}</span>
+                <span className="font-black text-indigo-700 text-base">{doc.content.totalPiecesProduced} {t.unitPiece}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.actualConsumedKg}</span>
+                <span className="font-black text-emerald-700 text-base">{doc.content.totalConsumedKg} {t.unitKg}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block">{t.packagingLoss}</span>
+                <span className="font-black text-slate-800 text-sm">{doc.content.packagingLossKg} {t.unitKg} ({doc.content.packagingLossPercent}%)</span>
+              </div>
+            </div>
+
+            {/* SKUs Produced Table */}
+            <div className="border border-slate-200 rounded-lg overflow-hidden text-xs">
+              <table className="w-full text-right">
+                <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                  <tr>
+                    <th className="p-2">{t.skuSize}</th>
+                    <th className="p-2">{t.boxCap}</th>
+                    <th className="p-2">{t.boxesCount}</th>
+                    <th className="p-2">{t.loosePieces}</th>
+                    <th className="p-2">{t.totalPieces}</th>
+                    <th className="p-2">{t.volumeL}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {doc.content.skus?.filter((s: any) => s.totalPieces > 0).map((s: any, idx: number) => {
+                    const stdSku = STANDARD_PACKAGING_SIZES.find((p: StandardPackagingSize) => p.skuId === s.skuId);
+                    const skuLabel = stdSku ? getLocalizedSkuName(stdSku) : (s.name || s.nameAr);
+                    return (
+                      <tr key={idx}>
+                        <td className="p-2 font-bold text-slate-900">{skuLabel}</td>
+                        <td className="p-2">{s.boxCapacity} {t.unitPiece}</td>
+                        <td className="p-2 font-black">{s.boxes}</td>
+                        <td className="p-2">{s.loosePieces}</td>
+                        <td className="p-2 font-black text-indigo-700">{s.totalPieces} {t.unitPiece}</td>
+                        <td className="p-2 font-bold">{s.totalLiters} {t.unitL}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Official Signatures Footer */}
+        <div className="pt-6 border-t border-slate-200 grid grid-cols-3 gap-4 text-center text-xs">
+          <div>
+            <span className="font-bold text-slate-700 block mb-8">{t.receiverSignature}</span>
+            <div className="border-b border-dashed border-slate-300 w-32 mx-auto" />
+          </div>
+          <div>
+            <span className="font-bold text-slate-700 block mb-8">{t.qcSignature}</span>
+            <div className="border-b border-dashed border-slate-300 w-32 mx-auto" />
+          </div>
+          <div>
+            <span className="font-bold text-slate-700 block mb-8">{t.warehouseManagerSignature}</span>
+            <div className="border-b border-dashed border-slate-300 w-32 mx-auto" />
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full min-h-screen bg-[#f8fafc] text-slate-800 font-sans" dir={isRtlLayout ? 'rtl' : 'ltr'}>
@@ -2765,7 +3048,10 @@ export default function CommercialOilOperationsApp() {
 
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                     <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
-                      {oilGrades.find(g => g.code === tank.grade)?.nameAr || tank.grade}
+                      {(() => {
+                        const gradeObj = oilGrades.find(g => g.code === tank.grade);
+                        return gradeObj ? getLocalizedGradeName(gradeObj) : tank.grade;
+                      })()}
                     </span>
                     <span className="font-black text-amber-800">
                       {t.acidity} {tank.acidity}%
@@ -3340,16 +3626,29 @@ export default function CommercialOilOperationsApp() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateWarehouse} className="p-5 space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="font-bold text-slate-700">{t.whName}:</label>
-                <input
-                  type="text"
-                  required
-                  value={newWhNameAr}
-                  onChange={(e) => setNewWhNameAr(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded-lg p-2 font-bold text-slate-900"
-                />
+            <form onSubmit={handleCreateWarehouse} noValidate className="p-5 space-y-4 text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">{t.whName}:</label>
+                  <input
+                    type="text"
+                    required
+                    value={newWhNameAr}
+                    onChange={(e) => setNewWhNameAr(e.target.value)}
+                    placeholder={currentLang === 'ar' ? 'اسم المستودع (بالعربية)' : 'Warehouse Name'}
+                    className="w-full bg-white border border-slate-300 rounded-lg p-2 font-bold text-slate-900"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700">{t.tankNameEn || 'English Name'}:</label>
+                  <input
+                    type="text"
+                    value={newWhNameEn}
+                    onChange={(e) => setNewWhNameEn(e.target.value)}
+                    placeholder="e.g. Packaging Warehouse PE 05"
+                    className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-900"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -3358,6 +3657,7 @@ export default function CommercialOilOperationsApp() {
                   type="text"
                   value={newWhCode}
                   onChange={(e) => setNewWhCode(e.target.value)}
+                  placeholder="e.g. WS PE 05 or WS-PE-05"
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-900"
                 />
               </div>
@@ -3380,8 +3680,8 @@ export default function CommercialOilOperationsApp() {
                   <label className="font-bold text-slate-700">{t.whCapacity}:</label>
                   <input
                     type="number"
-                    min="1000"
-                    step="5000"
+                    min="1"
+                    step="any"
                     value={newWhCapacity}
                     onChange={(e) => setNewWhCapacity(Number(e.target.value))}
                     className="w-full bg-white border border-slate-300 rounded-lg p-2 font-black text-slate-900"
@@ -3397,14 +3697,6 @@ export default function CommercialOilOperationsApp() {
                   onChange={(e) => setNewWhLocation(e.target.value)}
                   className="w-full bg-white border border-slate-300 rounded-lg p-2 font-medium text-slate-900"
                 />
-              </div>
-
-              {/* Security Badge Alert */}
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center gap-2.5">
-                <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
-                <span className="text-[11px] font-bold text-emerald-900 leading-tight">
-                  {t.driverIsolationNotice}
-                </span>
               </div>
 
               <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
@@ -3433,72 +3725,75 @@ export default function CommercialOilOperationsApp() {
       {/* MODAL 5: AUTHENTIC PRINTABLE VOUCHER CARD (ZERO RAW JSON!)        */}
       {/* Pure Language Isolation & Backdrop Dismiss                        */}
       {/* ================================================================= */}
+      {/* ================================================================= */}
+      {/* MODAL 5: AUTHENTIC PRINTABLE VOUCHER CARD (ZERO RAW JSON!)        */}
+      {/* Pure Language Isolation & Backdrop Dismiss                        */}
+      {/* ================================================================= */}
       {printableDoc && (
         <div
           onClick={(e) => { if (e.target === e.currentTarget) setPrintableDoc(null); }}
-          className="voucher-modal-overlay fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto animate-fade-in print:p-0 print:m-0 print:bg-transparent print:static print:block"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto animate-fade-in print:hidden"
         >
           {/* Scoped Strict Print Engine for Official Voucher */}
           <style dangerouslySetInnerHTML={{ __html: `
             @page {
-              size: A4 portrait;
+              size: auto;
               margin: 10mm;
             }
             @media print {
-              body {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+              body > *:not(#print-mount-portal) {
+                display: none !important;
               }
-              body * {
-                visibility: hidden !important;
-              }
-              .official-printable-voucher,
-              .official-printable-voucher * {
-                visibility: visible !important;
-              }
-              .official-printable-voucher {
-                position: fixed !important;
-                left: 0 !important;
+              #print-mount-portal {
+                display: block !important;
+                position: absolute !important;
                 top: 0 !important;
+                left: 0 !important;
                 width: 100% !important;
-                margin: 0 !important;
-                padding: 20mm !important;
-                box-shadow: none !important;
-                border: none !important;
+                height: auto !important;
                 background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+                z-index: 999999 !important;
+              }
+              .printable-voucher-card {
+                width: 100% !important;
+                max-width: 100% !important;
                 box-sizing: border-box !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                background: #ffffff !important;
+                color: #0f172a !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
               }
-              /* إخفاء أزرار التحكم داخل المودال أثناء الطباعة */
-              .official-printable-voucher button,
-              .official-printable-voucher .no-print,
-              .official-printable-voucher [class*="print:hidden"],
               .no-print {
                 display: none !important;
-                visibility: hidden !important;
               }
             }
           `}} />
 
-          <div className="official-printable-voucher bg-white rounded-2xl max-w-2xl w-full border border-slate-300 shadow-2xl overflow-hidden animate-scale-up text-slate-800 my-8">
+          <div className="printable-voucher-card bg-white rounded-2xl max-w-2xl w-full border border-slate-300 shadow-2xl overflow-hidden animate-scale-up text-slate-800 my-8">
             {/* Modal Top Actions Bar */}
-            <div className="no-print p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between print:hidden">
+            <div className="no-print p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <span className="font-black text-sm text-slate-900 flex items-center gap-2">
                 <FileText className="w-4 h-4 text-emerald-600" />
                 {printableDoc.title}
               </span>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => window.print()}
-                  className="no-print px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-2xs"
+                  type="button"
+                  onClick={handlePrintVoucher}
+                  className="no-print px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-2xs cursor-pointer"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   {t.print}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setPrintableDoc(null)}
-                  className="no-print p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+                  className="no-print p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
                   title="Close (Esc)"
                 >
                   <X className="w-4 h-4" />
@@ -3506,206 +3801,22 @@ export default function CommercialOilOperationsApp() {
               </div>
             </div>
 
-            {/* Official Printable Voucher Document */}
-            <div className="p-8 space-y-6 print:p-0">
-              {/* Corporate 3-Zone Official Header */}
-              <div className="border-b-2 border-slate-900 pb-4 flex justify-between items-center text-xs">
-                <div>
-                  <h3 className="text-base font-black text-slate-900">{t.companyName}</h3>
-                  <p className="text-[11px] text-slate-500">{t.companySubtitle}</p>
-                </div>
-                <div className="text-center">
-                  <span className="text-sm font-black text-emerald-800 px-3 py-1 bg-emerald-50 rounded border border-emerald-200 block">
-                    {printableDoc.docType === 'RECEIPT' ? t.voucherReceipt :
-                     printableDoc.docType === 'BLEND' ? t.voucherBlend :
-                     t.voucherPackaging}
-                  </span>
-                  <span className="text-[11px] font-mono font-bold text-slate-900 mt-1 block">
-                    {printableDoc.refNumber}
-                  </span>
-                  <span className="text-[10px] text-slate-400 block">
-                    {printableDoc.date}
-                  </span>
-                </div>
-                <div className="text-left font-mono">
-                  <span className="font-bold text-slate-900">VANGUARD ERP</span>
-                  <p className="text-[10px] text-slate-400">{t.appTitleOperator}</p>
-                </div>
-              </div>
-
-              {/* Document Details Grid (NO RAW JSON) */}
-              {printableDoc.docType === 'RECEIPT' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
-                    <div>
-                      <span className="text-slate-500 block">{t.supplier}</span>
-                      <span className="font-black text-slate-900 text-sm">{printableDoc.content.supplierName}</span>
-                      {printableDoc.content.supplierPhone && (
-                        <span className="text-[11px] text-slate-500 block">{printableDoc.content.supplierPhone}</span>
-                      )}
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.storageTank}</span>
-                      <span className="font-black text-slate-900 text-sm">
-                        {(() => {
-                          const tankObj = tanks.find(tk => tk.id === printableDoc.content.targetStorageId || tk.nameAr === printableDoc.content.targetStorageNameAr);
-                          return tankObj ? getLocalizedTankName(tankObj) : printableDoc.content.targetStorageNameAr;
-                        })()}
-                      </span>
-                      <span className="text-[11px] text-emerald-700 block font-bold">{t.acidity} {printableDoc.content.acidity}%</span>
-                    </div>
-                  </div>
-
-                  {/* Summary of Containers */}
-                  <div className="grid grid-cols-4 gap-3 text-center text-xs bg-emerald-50/50 p-3 rounded-lg border border-emerald-200">
-                    <div>
-                      <span className="text-slate-500 block">{t.totalGallons}</span>
-                      <span className="text-sm font-black text-slate-900">{printableDoc.content.gallonsCount || 0}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.totalTins}</span>
-                      <span className="text-sm font-black text-slate-900">{printableDoc.content.tinsCount || 0}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.totalDrums}</span>
-                      <span className="text-sm font-black text-amber-800">{printableDoc.content.drumsCount || 0}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.totalNetKg}</span>
-                      <span className="text-base font-black text-emerald-700">{printableDoc.content.totalNetKg} {t.unitKg}</span>
-                    </div>
-                  </div>
-
-                  {printableDoc.content.notes && (
-                    <div className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded border border-slate-200">
-                      <span className="font-bold text-slate-700 ml-1">{t.notes}</span>
-                      {printableDoc.content.notes}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {printableDoc.docType === 'BLEND' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
-                    <div>
-                      <span className="text-slate-500 block">{t.totalWithdrawnWeight}</span>
-                      <span className="font-black text-emerald-700 text-base">{printableDoc.content.totalBatchKg} {t.unitKg}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.weightedAcidity}</span>
-                      <span className="font-black text-amber-800 text-base">{printableDoc.content.weightedAvgAcidity}%</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.estimatedVolumeL}</span>
-                      <span className="font-black text-indigo-700 text-base">{printableDoc.content.estimatedVolumeLiters} {t.unitL}</span>
-                    </div>
-                  </div>
-
-                  <div className="text-xs text-slate-700 space-y-1">
-                    <span className="font-bold block">{t.availableSources}:</span>
-                    <div className="border border-slate-200 rounded-lg overflow-hidden">
-                      <table className="w-full text-right">
-                        <thead className="bg-slate-50 text-slate-600">
-                          <tr>
-                            <th className="p-2">{t.storageTank}</th>
-                            <th className="p-2">{t.netWeightKg}</th>
-                            <th className="p-2">{t.acidity}</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {printableDoc.content.sources?.map((s: any, idx: number) => (
-                            <tr key={idx}>
-                              <td className="p-2 font-bold">{s.sourceName}</td>
-                              <td className="p-2 font-black text-emerald-700">{s.withdrawnKg} {t.unitKg}</td>
-                              <td className="p-2">{s.sourceAcidity}%</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {printableDoc.docType === 'PACKAGING' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-4 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
-                    <div>
-                      <span className="text-slate-500 block">{t.reconciledWarehouse}</span>
-                      <span className="font-black text-slate-900 text-sm">
-                        {(() => {
-                          const whObj = warehouses.find(w => w.id === printableDoc.content.targetWarehouseId || w.nameAr === printableDoc.content.targetWarehouseNameAr);
-                          return whObj ? getLocalizedWarehouseName(whObj) : printableDoc.content.targetWarehouseNameAr;
-                        })()}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.totalProducedPieces}</span>
-                      <span className="font-black text-indigo-700 text-base">{printableDoc.content.totalPiecesProduced} {t.unitPiece}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.actualConsumedKg}</span>
-                      <span className="font-black text-emerald-700 text-base">{printableDoc.content.totalConsumedKg} {t.unitKg}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">{t.packagingLoss}</span>
-                      <span className="font-black text-slate-800 text-sm">{printableDoc.content.packagingLossKg} {t.unitKg} ({printableDoc.content.packagingLossPercent}%)</span>
-                    </div>
-                  </div>
-
-                  {/* SKUs Produced Table */}
-                  <div className="border border-slate-200 rounded-lg overflow-hidden text-xs">
-                    <table className="w-full text-right">
-                      <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-                        <tr>
-                          <th className="p-2">{t.skuSize}</th>
-                          <th className="p-2">{t.boxCap}</th>
-                          <th className="p-2">{t.boxesCount}</th>
-                          <th className="p-2">{t.loosePieces}</th>
-                          <th className="p-2">{t.totalPieces}</th>
-                          <th className="p-2">{t.volumeL}</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {printableDoc.content.skus?.filter((s: any) => s.totalPieces > 0).map((s: any, idx: number) => {
-                          const stdSku = STANDARD_PACKAGING_SIZES.find((p: StandardPackagingSize) => p.skuId === s.skuId);
-                          const skuLabel = stdSku ? getLocalizedSkuName(stdSku) : (s.name || s.nameAr);
-                          return (
-                          <tr key={idx}>
-                            <td className="p-2 font-bold text-slate-900">{skuLabel}</td>
-                            <td className="p-2">{s.boxCapacity} {t.unitPiece}</td>
-                            <td className="p-2 font-black">{s.boxes}</td>
-                            <td className="p-2">{s.loosePieces}</td>
-                            <td className="p-2 font-black text-indigo-700">{s.totalPieces} {t.unitPiece}</td>
-                            <td className="p-2 font-bold">{s.totalLiters} {t.unitL}</td>
-                          </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* Official Signatures Footer */}
-              <div className="pt-6 border-t border-slate-200 grid grid-cols-3 gap-4 text-center text-xs">
-                <div>
-                  <span className="font-bold text-slate-700 block mb-8">{t.receiverSignature}</span>
-                  <div className="border-b border-dashed border-slate-300 w-32 mx-auto" />
-                </div>
-                <div>
-                  <span className="font-bold text-slate-700 block mb-8">{t.qcSignature}</span>
-                  <div className="border-b border-dashed border-slate-300 w-32 mx-auto" />
-                </div>
-                <div>
-                  <span className="font-bold text-slate-700 block mb-8">{t.warehouseManagerSignature}</span>
-                  <div className="border-b border-dashed border-slate-300 w-32 mx-auto" />
-                </div>
-              </div>
+            {/* Official Printable Voucher Document Content */}
+            <div id="official-voucher-content" className="p-8">
+              {renderVoucherContent(printableDoc)}
             </div>
           </div>
         </div>
+      )}
+
+      {/* Mount Portal for Direct @media print Fallback */}
+      {isMounted && printableDoc && createPortal(
+        <div id="print-mount-portal" dir={isRtlLayout ? 'rtl' : 'ltr'}>
+          <div className="printable-voucher-card p-6 bg-white text-slate-900">
+            {renderVoucherContent(printableDoc)}
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -236,20 +236,20 @@ export class WarehouseService {
   public static createWarehouse(data: Partial<WarehouseRecord>): WarehouseRecord {
     const list = ensureDataFile();
     const id = data.id || `wh-${Date.now().toString(36)}`;
-    const code = (data.code || `WH-${(list.length + 1).toString().padStart(2, '0')}`).toUpperCase();
+    const code = (data.code || `WH-${(list.length + 1).toString().padStart(2, '0')}`).trim().toUpperCase();
 
     const newRecord: WarehouseRecord = {
       id,
       code,
-      name: data.name || 'New Warehouse',
+      name: data.name || data.nameAr || 'New Warehouse',
       nameAr: data.nameAr || data.name || 'مستودع جديد',
       type: data.type || 'FINISHED_GOODS',
       branchId: data.branchId || 1,
       branchName: data.branchName || 'Southern Olive and Oil Products - Main',
-      location: data.location || 'Warehouse Facility',
+      location: (data.location || 'Warehouse Facility').trim(),
       manager: data.manager || 'Operations Staff',
       contactPhone: data.contactPhone || '+961 7 000 000',
-      capacityLiters: Number(data.capacityLiters) || 50000,
+      capacityLiters: Number(data.capacityLiters) > 0 ? Number(data.capacityLiters) : 50000,
       currentStockUnits: Number(data.currentStockUnits) || 0,
       isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
       isDriverVisible: false, // Strictly isolated from drivers - internal management facility only

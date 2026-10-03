@@ -66,7 +66,7 @@
 }
 
 @page {
-  size: A4 portrait;
+  size: auto; /* Allows dynamic user choice between Portrait and Landscape */
   margin: 10mm;
 }
 
@@ -112,58 +112,48 @@
   .report-card-filters,
   .global-footer,
   footer,
-  .fixed.inset-0:not(.voucher-modal-overlay):not(:has(.official-printable-voucher)),
-  [role="dialog"]:not(.voucher-modal-overlay):not(:has(.official-printable-voucher)) {
+  .fixed.inset-0,
+  [role="dialog"] {
     display: none !important;
   }
 
   /* ========================================================================== */
-  /* OFFICIAL PRINTABLE VOUCHER ISOLATION (A4 PORTRAIT)                        */
+  /* DEDICATED PRINT MOUNT PORTAL & ISOLATED VOUCHER PRINTING                   */
   /* ========================================================================== */
-  .voucher-modal-overlay,
-  .voucher-modal-overlay:has(.official-printable-voucher) {
+  body:has(#print-mount-portal) > *:not(#print-mount-portal) {
+    display: none !important;
+  }
+
+  #print-mount-portal {
     display: block !important;
-    position: static !important;
-    background: transparent !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: auto !important;
-  }
-
-  body:has(.official-printable-voucher) {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  body:has(.official-printable-voucher) * {
-    visibility: hidden !important;
-  }
-
-  .official-printable-voucher,
-  .official-printable-voucher * {
-    visibility: visible !important;
-  }
-
-  .official-printable-voucher {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 20mm !important;
-    box-shadow: none !important;
-    border: none !important;
     background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    z-index: 999999 !important;
+  }
+
+  .printable-voucher-card {
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* إخفاء أزرار التحكم داخل المودال أثناء الطباعة */
-  .official-printable-voucher button,
-  .official-printable-voucher .no-print,
-  .official-printable-voucher [class*="print:hidden"],
+  /* Hide any internal action buttons or control bars */
+  .printable-voucher-card button,
+  .printable-voucher-card .no-print,
+  .printable-voucher-card [class*="print:hidden"],
   .no-print {
     display: none !important;
     visibility: hidden !important;

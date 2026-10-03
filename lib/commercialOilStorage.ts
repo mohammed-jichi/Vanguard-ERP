@@ -185,9 +185,9 @@ interface CommercialOilDbState {
 }
 
 export const INITIAL_OIL_GRADES: OilGradeRecord[] = [
-  { id: 'grade-evoo', code: 'EXTRA_VIRGIN', nameAr: 'بكر ممتاز', nameEn: 'Extra Virgin', nameFr: 'Vierge extra', nameEs: 'Virgen extra', nameFa: 'فرابکر', maxAcidity: 0.8, description: 'حموضة أقل من 0.8%' },
+  { id: 'grade-evoo', code: 'EXTRA_VIRGIN', nameAr: 'بكر ممتاز', nameEn: 'Extra Virgin (EVOO)', nameFr: 'Vierge extra', nameEs: 'Virgen extra', nameFa: 'فرابکر', maxAcidity: 0.8, description: 'حموضة أقل من 0.8%' },
   { id: 'grade-virgin', code: 'VIRGIN', nameAr: 'بكر طبيعي', nameEn: 'Virgin Olive Oil', nameFr: 'Huile vierge', nameEs: 'Aceite virgen', nameFa: 'بکر طبیعی', maxAcidity: 2.0, description: 'حموضة بين 0.8% و 2.0%' },
-  { id: 'grade-ordinary', code: 'ORDINARY', nameAr: 'زيت عادي', nameEn: 'Ordinary Olive Oil', nameFr: 'Huile ordinaire', nameEs: 'Aceite ordinario', nameFa: 'روغن معمولی', maxAcidity: 3.3, description: 'حموضة تفوق 2.0%' },
+  { id: 'grade-ordinary', code: 'ORDINARY', nameAr: 'زيت عادي', nameEn: 'Ordinary / Regular Olive Oil', nameFr: 'Huile ordinaire', nameEs: 'Aceite ordinario', nameFa: 'روغن معمولی', maxAcidity: 3.3, description: 'حموضة تفوق 2.0%' },
   { id: 'grade-kura', code: 'KURA_REFINED', nameAr: 'زيت بلدي مكرر', nameEn: 'Refined Olive Oil', nameFr: 'Huile raffinée', nameEs: 'Aceite refinado', nameFa: 'تصفیه شده محلی', maxAcidity: 1.0, description: 'زيت بلدي مكرر' },
 ];
 
