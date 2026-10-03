@@ -33,6 +33,7 @@ import {
   Printer,
   FileText,
   AlertTriangle,
+  AlertCircle,
   CheckCircle2,
   Warehouse as WarehouseIcon,
   Droplets,
@@ -253,8 +254,11 @@ const TRANSLATIONS = {
     estimatedVolumeL: 'الحجم التقديري بالليتر:',
     commitBlend: 'اعتماد وترحيل خلطة الزيت للتعبئة',
     chooseBlendOrManual: 'اختر دفعة الخلط أو كمية يدوية:',
-    manualCustomBatch: 'كمية يدوية مباشرة',
+    manualCustomBatch: 'تعبئة حرة مباشرة من الخزان',
+    sourceTankForPackaging: 'خزان المصدر للتعبئة المباشرة:',
     batchWeightKg: 'وزن الدفعة المخصصة للتعبئة (كغ):',
+    weightExceedsTankBalance: 'الوزن المدخل يتجاوز رصيد الخزان المتاح!',
+    maxAllowedWeight: 'الحد الأقصى المتاح:',
     targetWarehouse: 'المستودع المستهدف لترحيل الإنتاج:',
     packagingTable: 'جدول إدخال العبوات المعبأة (المقاسات المعتمدة الـ 8)',
     skuSize: 'الصنف والمقاس المعتمد',
@@ -371,8 +375,11 @@ const TRANSLATIONS = {
     estimatedVolumeL: 'Estimated Volume (Liters):',
     commitBlend: 'Commit & Post Batch to Packaging Tank',
     chooseBlendOrManual: 'Select Blending Batch or Custom Weight:',
-    manualCustomBatch: 'Custom Manual Quantity',
+    manualCustomBatch: 'Direct Packaging from Tank (Custom Weight)',
+    sourceTankForPackaging: 'Source Tank (Direct Packaging):',
     batchWeightKg: 'Batch Weight for Packaging (KG):',
+    weightExceedsTankBalance: 'Entered weight exceeds available tank balance!',
+    maxAllowedWeight: 'Max Available:',
     targetWarehouse: 'Target Warehouse for Finished Goods:',
     packagingTable: 'Packaging Register (8 Standard Sizes)',
     skuSize: 'Standard SKU & Size',
@@ -489,8 +496,11 @@ const TRANSLATIONS = {
     estimatedVolumeL: 'Volume Estimé (Litres):',
     commitBlend: 'Valider et Transférer vers le Conditionnement',
     chooseBlendOrManual: 'Sélectionner Lot ou Quantité Libre:',
-    manualCustomBatch: 'Quantité Libre Manuelle',
+    manualCustomBatch: 'Conditionnement Direct depuis la Cuve',
+    sourceTankForPackaging: 'Cuve Source (Emballage Direct):',
     batchWeightKg: 'Poids du Lot à Conditionner (KG):',
+    weightExceedsTankBalance: 'Le poids saisi dépasse le solde disponible de la cuve !',
+    maxAllowedWeight: 'Solde Max Disponible:',
     targetWarehouse: 'Entrepôt Cible pour Produits Finis:',
     packagingTable: 'Tableau des 8 Formats Standards',
     skuSize: 'Format & Contenance',
@@ -607,8 +617,11 @@ const TRANSLATIONS = {
     estimatedVolumeL: 'Volumen Estimado (Litros):',
     commitBlend: 'Confirmar y Transferir a Envasado',
     chooseBlendOrManual: 'Seleccionar Lote o Peso Manual:',
-    manualCustomBatch: 'Cantidad Manual Libre',
+    manualCustomBatch: 'Envasado Directo desde el Tanque',
+    sourceTankForPackaging: 'Tanque de Origen (Envasado Directo):',
     batchWeightKg: 'Peso del Lote a Envasar (KG):',
+    weightExceedsTankBalance: '¡El peso ingresado supera el saldo disponible del tanque!',
+    maxAllowedWeight: 'Saldo Máximo Disponible:',
     targetWarehouse: 'Almacén Destino de Producto Terminado:',
     packagingTable: 'Tabla de Envasado (8 Tamaños Estándar)',
     skuSize: 'Producto y Capacidad',
@@ -725,8 +738,11 @@ const TRANSLATIONS = {
     estimatedVolumeL: 'حجم تخمینی (لیتر):',
     commitBlend: 'تایید و انتقال دسته روغن به بخش بسته‌بندی',
     chooseBlendOrManual: 'انتخاب دسته اختلاط یا مقدار دستی:',
-    manualCustomBatch: 'مقدار دستی سفارشی',
+    manualCustomBatch: 'بسته‌بندی مستقیم از مخزن',
+    sourceTankForPackaging: 'مخزن مبدا (بسته‌بندی مستقیم):',
     batchWeightKg: 'وزن دسته برای بسته‌بندی (کیلوگرم):',
+    weightExceedsTankBalance: 'وزن وارد شده از موجودی در دسترس مخزن بیشتر است!',
+    maxAllowedWeight: 'حداکثر موجودی در دسترس:',
     targetWarehouse: 'انبار مقصد برای کالای آماده:',
     packagingTable: 'جدول ثبت بسته‌بندی (۸ اندازه استاندارد)',
     skuSize: 'نوع کالا و اندازه استاندارد',
@@ -890,6 +906,7 @@ export default function CommercialOilOperationsApp() {
   // TAB 3: PACKAGING STATE
   // --------------------------------------------------------------------------
   const [selectedBatchId, setSelectedBatchId] = useState<string>('');
+  const [selectedPackagingTankId, setSelectedPackagingTankId] = useState<string>('');
   const [customBatchKg, setCustomBatchKg] = useState<number>(1000);
   const [densityFactor, setDensityFactor] = useState<number>(0.916);
   const [targetWarehouseId, setTargetWarehouseId] = useState<string>('wh-main-fg');
@@ -945,75 +962,98 @@ export default function CommercialOilOperationsApp() {
 
   const handlePrintVoucher = () => {
     try {
-      let printFrame = document.getElementById('voucher-print-iframe') as HTMLIFrameElement;
-      if (!printFrame) {
-        printFrame = document.createElement('iframe');
-        printFrame.id = 'voucher-print-iframe';
-        printFrame.style.position = 'fixed';
-        printFrame.style.right = '0';
-        printFrame.style.bottom = '0';
-        printFrame.style.width = '0';
-        printFrame.style.height = '0';
-        printFrame.style.border = '0';
-        document.body.appendChild(printFrame);
-      }
-
-      const frameDoc = printFrame.contentWindow?.document;
       const voucherElem = document.getElementById('official-voucher-content');
-      if (frameDoc && voucherElem) {
-        frameDoc.open();
-        const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-          .map(el => el.outerHTML)
-          .join('\n');
-
-        frameDoc.write(`
-          <!DOCTYPE html>
-          <html dir="${isRtlLayout ? 'rtl' : 'ltr'}" lang="${currentLang}">
-            <head>
-              <meta charset="utf-8" />
-              <title>${printableDoc?.title || 'Official Voucher'}</title>
-              ${styles}
-              <style>
-                @page { size: auto; margin: 10mm; }
-                html, body {
-                  margin: 0 !important;
-                  padding: 5mm !important;
-                  background: #ffffff !important;
-                  color: #0f172a !important;
-                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-                  -webkit-print-color-adjust: exact !important;
-                  print-color-adjust: exact !important;
-                }
-                .printable-voucher-card {
-                  width: 100% !important;
-                  max-width: 100% !important;
-                  box-sizing: border-box !important;
-                  page-break-inside: avoid !important;
-                }
-                .no-print { display: none !important; }
-              </style>
-            </head>
-            <body>
-              <div class="printable-voucher-card">
-                ${voucherElem.innerHTML}
-              </div>
-            </body>
-          </html>
-        `);
-        frameDoc.close();
-
-        setTimeout(() => {
-          printFrame.contentWindow?.focus();
-          printFrame.contentWindow?.print();
-        }, 300);
+      if (!voucherElem) {
+        window.print();
         return;
       }
-    } catch (err) {
-      console.warn('Iframe print error, falling back to window.print():', err);
-    }
 
-    // Direct browser print fallback (triggers @media print with #print-mount-portal)
-    window.print();
+      const printWindow = window.open('', '_blank', 'width=950,height=850,menubar=no,toolbar=no,location=no,status=no');
+      if (!printWindow) {
+        // Fallback if browser blocked popup
+        window.print();
+        return;
+      }
+
+      const docTitle = printableDoc?.title || 'Official Voucher';
+      const isRtl = isRtlLayout;
+
+      const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+        .map(el => el.outerHTML)
+        .join('\n');
+
+      printWindow.document.open();
+      printWindow.document.write(`<!DOCTYPE html>
+<html dir="${isRtl ? 'rtl' : 'ltr'}" lang="${currentLang}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${docTitle}</title>
+  ${styles}
+  <style>
+    @page {
+      size: auto;
+      margin: 10mm;
+    }
+    * {
+      box-sizing: border-box !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    html, body {
+      margin: 0 !important;
+      padding: 6mm !important;
+      background: #ffffff !important;
+      color: #0f172a !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+    .printable-voucher-card {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 auto !important;
+      background: #ffffff !important;
+      box-sizing: border-box !important;
+      page-break-inside: avoid !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="printable-voucher-card">
+    ${voucherElem.innerHTML}
+  </div>
+</body>
+</html>`);
+      printWindow.document.close();
+
+      const doPrint = () => {
+        try {
+          printWindow.focus();
+          printWindow.print();
+          setTimeout(() => {
+            try {
+              printWindow.close();
+            } catch (e) {}
+          }, 500);
+        } catch (e) {
+          console.error('Popup print execution error:', e);
+        }
+      };
+
+      if (printWindow.document.readyState === 'complete') {
+        setTimeout(doPrint, 250);
+      } else {
+        printWindow.onload = () => {
+          setTimeout(doPrint, 250);
+        };
+      }
+      return;
+    } catch (err) {
+      console.warn('Dedicated popup print error, falling back to window.print():', err);
+      window.print();
+    }
   };
 
   // ESC Key listener
@@ -1088,18 +1128,43 @@ export default function CommercialOilOperationsApp() {
   const loadAllData = useCallback(async () => {
     try {
       setIsLoading(true);
+      const timestamp = Date.now();
+
       // 1. Fetch live warehouses (all driverVisible are false)
-      const whRes = await fetch('/api/warehouses');
+      const whRes = await fetch(`/api/warehouses?_t=${timestamp}`, { cache: 'no-store' });
       const whJson = await whRes.json();
+      let liveWhs: Warehouse[] = [];
       if (whJson.success && Array.isArray(whJson.data)) {
-        setWarehouses(whJson.data);
-        if (whJson.data.length > 0) {
-          setTargetWarehouseId(prev => (whJson.data.some((w: Warehouse) => w.id === prev) ? prev : whJson.data[0].id));
+        liveWhs = whJson.data;
+      }
+      try {
+        const rawLocal = localStorage.getItem('vanguard_custom_warehouses');
+        if (rawLocal) {
+          const localWhs: Warehouse[] = JSON.parse(rawLocal);
+          if (Array.isArray(localWhs) && localWhs.length > 0) {
+            const serverIds = new Set(liveWhs.map(w => w.id));
+            const missingLocals = localWhs.filter(lw => !serverIds.has(lw.id));
+            if (missingLocals.length > 0) {
+              liveWhs = [...liveWhs, ...missingLocals];
+              // Background self-heal missing warehouses to server
+              missingLocals.forEach(mw => {
+                fetch('/api/warehouses', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(mw)
+                }).catch(() => {});
+              });
+            }
+          }
         }
+      } catch (e) {}
+      setWarehouses(liveWhs);
+      if (liveWhs.length > 0) {
+        setTargetWarehouseId(prev => (liveWhs.some((w: Warehouse) => w.id === prev) ? prev : liveWhs[0].id));
       }
 
       // 2. Fetch live approved suppliers
-      const supRes = await fetch('/api/getAllInvSuppliers');
+      const supRes = await fetch(`/api/getAllInvSuppliers?_t=${timestamp}`, { cache: 'no-store' });
       const supJson = await supRes.json();
       if (supJson.data && Array.isArray(supJson.data)) {
         setSuppliers(supJson.data);
@@ -1109,7 +1174,7 @@ export default function CommercialOilOperationsApp() {
       }
 
       // 3. Fetch oil grades dynamically
-      const gradesRes = await fetch('/api/operations/commercial-oil?filter=grades');
+      const gradesRes = await fetch(`/api/operations/commercial-oil?filter=grades&_t=${timestamp}`, { cache: 'no-store' });
       const gradesJson = await gradesRes.json();
       if (gradesJson.success && Array.isArray(gradesJson.data)) {
         setOilGrades(gradesJson.data);
@@ -1119,19 +1184,40 @@ export default function CommercialOilOperationsApp() {
       }
 
       // 4. Fetch commercial oil state
-      const opRes = await fetch('/api/operations/commercial-oil');
+      const opRes = await fetch(`/api/operations/commercial-oil?_t=${timestamp}`, { cache: 'no-store' });
       const opJson = await opRes.json();
       if (opJson.success && opJson.data) {
-        const tList: StorageTank[] = opJson.data.tanks || [];
-        setTanks(tList);
+        let liveTanks: StorageTank[] = opJson.data.tanks || [];
+        try {
+          const rawLocal = localStorage.getItem('vanguard_custom_tanks');
+          if (rawLocal) {
+            const localTanks: StorageTank[] = JSON.parse(rawLocal);
+            if (Array.isArray(localTanks) && localTanks.length > 0) {
+              const serverIds = new Set(liveTanks.map(t => t.id));
+              const missingLocals = localTanks.filter(lt => !serverIds.has(lt.id));
+              if (missingLocals.length > 0) {
+                liveTanks = [...liveTanks, ...missingLocals];
+                // Background self-heal missing tanks to server
+                missingLocals.forEach(mt => {
+                  fetch('/api/operations/commercial-oil', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'CREATE_TANK', payload: mt })
+                  }).catch(() => {});
+                });
+              }
+            }
+          }
+        } catch (e) {}
+        setTanks(liveTanks);
         setReceipts(opJson.data.receipts || []);
         setBatches(opJson.data.batches || []);
         setPackagingVouchers(opJson.data.packagingVouchers || []);
         setStocks(opJson.data.warehouseStocks || []);
         setMovements(opJson.data.movements || []);
 
-        if (tList.length > 0 && !targetStorageId) {
-          setTargetStorageId(tList[0].id);
+        if (liveTanks.length > 0 && !targetStorageId) {
+          setTargetStorageId(liveTanks[0].id);
         }
       }
     } catch (err: any) {
@@ -1358,16 +1444,44 @@ export default function CommercialOilOperationsApp() {
     };
   }, [withdrawals, tanks, densityFactor, getLocalizedTankName]);
 
+  const isAnyBlendExceeded = useMemo(() => {
+    return Object.entries(withdrawals).some(([tankId, amount]) => {
+      const tank = tanks.find(t => t.id === tankId);
+      return tank ? (Number(amount) || 0) > tank.currentKg : false;
+    });
+  }, [withdrawals, tanks]);
+
   const handleUpdateWithdrawal = (tankId: string, kg: number) => {
-    setWithdrawals(prev => ({
-      ...prev,
-      [tankId]: Math.max(0, kg)
-    }));
+    const tank = tanks.find(t => t.id === tankId);
+    const maxKg = tank ? tank.currentKg : 0;
+    const requested = Math.max(0, kg);
+    if (tank && requested > maxKg) {
+      setWithdrawals(prev => ({
+        ...prev,
+        [tankId]: maxKg
+      }));
+      showToast(
+        currentLang === 'ar' ? `${getLocalizedTankName(tank)}: الحد الأقصى المتاح ${maxKg.toLocaleString()} كغ` :
+        currentLang === 'fa' ? `${getLocalizedTankName(tank)}: حداکثر موجودی در دسترس ${maxKg.toLocaleString()} کیلوگرم است` :
+        `${getLocalizedTankName(tank)}: Max available balance is ${maxKg.toLocaleString()} KG`,
+        'error'
+      );
+    } else {
+      setWithdrawals(prev => ({
+        ...prev,
+        [tankId]: requested
+      }));
+    }
   };
 
   const handleCreateBlend = async () => {
     if (blendCalculations.totalKg <= 0) {
       showToast(t.withdrawnKgFromTank, 'error');
+      return;
+    }
+
+    if (isAnyBlendExceeded) {
+      showToast(t.weightExceedsTankBalance, 'error');
       return;
     }
 
@@ -1432,6 +1546,38 @@ export default function CommercialOilOperationsApp() {
   const activeBatch = useMemo(() => {
     return batches.find(b => b.id === selectedBatchId);
   }, [batches, selectedBatchId]);
+
+  const selectedPackagingTank = useMemo(() => {
+    if (selectedPackagingTankId) {
+      return tanks.find(t => t.id === selectedPackagingTankId) || null;
+    }
+    return tanks.find(t => t.currentKg > 0) || tanks[0] || null;
+  }, [tanks, selectedPackagingTankId]);
+
+  const maxPackagingWeight = useMemo(() => {
+    if (activeBatch) return activeBatch.totalBatchKg;
+    return selectedPackagingTank ? selectedPackagingTank.currentKg : 0;
+  }, [activeBatch, selectedPackagingTank]);
+
+  const isPackagingWeightExceeded = useMemo(() => {
+    if (activeBatch) return false;
+    return customBatchKg > maxPackagingWeight;
+  }, [activeBatch, customBatchKg, maxPackagingWeight]);
+
+  const handleUpdateCustomBatchKg = (val: number) => {
+    const entered = Math.max(0, val);
+    if (!activeBatch && selectedPackagingTank && entered > selectedPackagingTank.currentKg) {
+      setCustomBatchKg(selectedPackagingTank.currentKg);
+      showToast(
+        currentLang === 'ar' ? `تم حصر الوزن بالحد الأقصى المتاح (${selectedPackagingTank.currentKg.toLocaleString()} كغ)` :
+        currentLang === 'fa' ? `وزن به حداکثر موجودی مخزن (${selectedPackagingTank.currentKg.toLocaleString()} کیلوگرم) محدود شد` :
+        `Capped at maximum available tank balance (${selectedPackagingTank.currentKg.toLocaleString()} KG)`,
+        'error'
+      );
+    } else {
+      setCustomBatchKg(entered);
+    }
+  };
 
   const activeBatchWeight = useMemo(() => {
     if (activeBatch) return activeBatch.totalBatchKg;
@@ -1505,6 +1651,10 @@ export default function CommercialOilOperationsApp() {
     }
     if (!targetWarehouseId) {
       showToast(t.targetWarehouse, 'error');
+      return;
+    }
+    if (isPackagingWeightExceeded || activeBatchWeight <= 0) {
+      showToast(t.weightExceedsTankBalance, 'error');
       return;
     }
 
@@ -1593,8 +1743,27 @@ export default function CommercialOilOperationsApp() {
         body: JSON.stringify({ action, id: editingTank?.id, payload })
       });
       const json = await res.json();
-      if (json.success) {
+      if (json.success && json.data) {
+        const savedTank: StorageTank = json.data;
+        // 1. Immediately store to localStorage backup
+        try {
+          const raw = localStorage.getItem('vanguard_custom_tanks');
+          const localList: StorageTank[] = raw ? JSON.parse(raw) : [];
+          const updated = [savedTank, ...localList.filter(t => t.id !== savedTank.id)];
+          localStorage.setItem('vanguard_custom_tanks', JSON.stringify(updated));
+        } catch (errLocal) {}
+
+        // 2. Optimistically update state so it never blinks
+        setTanks(prev => {
+          const exists = prev.some(t => t.id === savedTank.id);
+          if (exists) {
+            return prev.map(t => t.id === savedTank.id ? savedTank : t);
+          }
+          return [savedTank, ...prev];
+        });
+
         showToast(t.save, 'success');
+        // 3. Re-fetch full server state
         await loadAllData();
         setShowAddTankModal(false);
         setEditingTank(null);
@@ -1615,6 +1784,16 @@ export default function CommercialOilOperationsApp() {
     if (!confirm(t.delete)) return;
     try {
       setIsSubmitting(true);
+      // Remove from localStorage immediately
+      try {
+        const raw = localStorage.getItem('vanguard_custom_tanks');
+        if (raw) {
+          const localList: StorageTank[] = JSON.parse(raw);
+          localStorage.setItem('vanguard_custom_tanks', JSON.stringify(localList.filter(t => t.id !== id)));
+        }
+      } catch (errLocal) {}
+      setTanks(prev => prev.filter(t => t.id !== id));
+
       const res = await fetch('/api/operations/commercial-oil', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1658,8 +1837,21 @@ export default function CommercialOilOperationsApp() {
         })
       });
       const json = await res.json();
-      if (json.success) {
+      if (json.success && json.data) {
+        const savedWh = json.data;
+        // 1. Immediately store to localStorage backup
+        try {
+          const raw = localStorage.getItem('vanguard_custom_warehouses');
+          const localList: Warehouse[] = raw ? JSON.parse(raw) : [];
+          const updated = [savedWh, ...localList.filter(w => w.id !== savedWh.id)];
+          localStorage.setItem('vanguard_custom_warehouses', JSON.stringify(updated));
+        } catch (errLocal) {}
+
+        // 2. Optimistically update state
+        setWarehouses(prev => [savedWh, ...prev.filter(w => w.id !== savedWh.id)]);
+
         showToast(t.save, 'success');
+        // 3. Re-fetch full server state
         await loadAllData();
         setShowAddWhModal(false);
         setNewWhNameAr('');
@@ -2601,18 +2793,29 @@ export default function CommercialOilOperationsApp() {
                             {t.withdrawnKgFromTank}
                           </label>
                           <div className="flex items-center gap-2">
-                            <input
-                              type="number"
-                              min="0"
-                              max={tank.currentKg}
-                              step="1"
-                              value={currentWithdrawn || ''}
-                              onChange={(e) => handleUpdateWithdrawal(tank.id, Number(e.target.value))}
-                              placeholder="0"
-                              className="w-36 bg-white border border-slate-300 rounded-md px-3 py-1.5 font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                            />
-                            <span className="text-slate-500 font-bold">{t.unitKg}</span>
+                            <div className={`flex rounded-md border ${
+                              currentWithdrawn > tank.currentKg ? 'border-red-500 ring-2 ring-red-400' : 'border-slate-300 focus-within:ring-2 focus-within:ring-emerald-500'
+                            } overflow-hidden bg-white w-40 shadow-2xs`}>
+                              <input
+                                type="number"
+                                min="0"
+                                max={tank.currentKg}
+                                step="any"
+                                value={currentWithdrawn || ''}
+                                onChange={(e) => handleUpdateWithdrawal(tank.id, Number(e.target.value))}
+                                placeholder="0"
+                                className="w-full bg-transparent px-3 py-1.5 font-black text-slate-900 focus:outline-none"
+                              />
+                              <span className="inline-flex items-center px-2.5 bg-slate-100 border-s border-slate-200 text-slate-600 font-bold text-xs select-none shrink-0">
+                                {t.unitKg}
+                              </span>
+                            </div>
                           </div>
+                          {currentWithdrawn > tank.currentKg && (
+                            <span className="text-[10px] text-red-600 font-bold block mt-1 animate-pulse">
+                              ⚠️ {t.weightExceedsTankBalance} ({tank.currentKg.toLocaleString()} {t.unitKg})
+                            </span>
+                          )}
                         </div>
 
                         <div className="text-left">
@@ -2670,7 +2873,7 @@ export default function CommercialOilOperationsApp() {
                 <div>
                   <button
                     type="button"
-                    disabled={isSubmitting || blendCalculations.totalKg <= 0}
+                    disabled={isSubmitting || blendCalculations.totalKg <= 0 || isAnyBlendExceeded}
                     onClick={handleCreateBlend}
                     className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold text-sm rounded-xl shadow-sm flex items-center gap-2 transition-all"
                   >
@@ -2703,7 +2906,7 @@ export default function CommercialOilOperationsApp() {
               </div>
 
               {/* Batch & Warehouse Configuration Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+              <div className={`grid grid-cols-1 sm:grid-cols-2 ${!activeBatch ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-4 text-xs`}>
                 {/* 1. Batch Selection */}
                 <div className="space-y-1.5">
                   <label className="font-bold text-slate-700">{t.chooseBlendOrManual}</label>
@@ -2721,24 +2924,72 @@ export default function CommercialOilOperationsApp() {
                   </select>
                 </div>
 
-                {/* 2. Batch Weight in KG */}
+                {/* 2. Source Tank Selection (When Direct / Manual Packaging) */}
+                {!activeBatch && (
+                  <div className="space-y-1.5">
+                    <label className="font-bold text-slate-700 flex items-center justify-between">
+                      <span>{t.sourceTankForPackaging}</span>
+                      <span className="text-[10px] font-black text-emerald-700">
+                        {selectedPackagingTank?.currentKg?.toLocaleString() || 0} {t.unitKg}
+                      </span>
+                    </label>
+                    <select
+                      value={selectedPackagingTankId || selectedPackagingTank?.id || ''}
+                      onChange={(e) => {
+                        setSelectedPackagingTankId(e.target.value);
+                        const newTank = tanks.find(t => t.id === e.target.value);
+                        if (newTank && customBatchKg > newTank.currentKg) {
+                          setCustomBatchKg(newTank.currentKg);
+                        }
+                      }}
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2.5 font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    >
+                      {tanks.map(tankItem => (
+                        <option key={tankItem.id} value={tankItem.id}>
+                          {getLocalizedTankName(tankItem)} — ({tankItem.currentKg.toLocaleString()} {t.unitKg})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* 3. Batch Weight in KG (Clean Flex Layout without overlap) */}
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700">{t.batchWeightKg}</label>
-                  <div className="relative">
+                  <label className="font-bold text-slate-700 flex items-center justify-between">
+                    <span>{t.batchWeightKg}</span>
+                    <span className="text-[10px] text-slate-500 font-bold">
+                      {t.maxAllowedWeight} {maxPackagingWeight.toLocaleString()} {t.unitKg}
+                    </span>
+                  </label>
+                  <div className={`flex rounded-lg border ${
+                    isPackagingWeightExceeded
+                      ? 'border-red-500 ring-2 ring-red-400'
+                      : 'border-slate-300 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500'
+                  } overflow-hidden bg-white shadow-2xs`}>
                     <input
                       type="number"
-                      step="1"
-                      min="1"
+                      step="any"
+                      min="0"
+                      max={maxPackagingWeight}
                       disabled={Boolean(activeBatch)}
-                      value={activeBatchWeight}
-                      onChange={(e) => setCustomBatchKg(Number(e.target.value))}
-                      className="w-full bg-white disabled:bg-slate-100 border border-slate-300 rounded-lg p-2.5 font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                      value={activeBatchWeight || ''}
+                      onChange={(e) => handleUpdateCustomBatchKg(Number(e.target.value))}
+                      placeholder="0"
+                      className="w-full bg-transparent px-3 py-2 font-black text-slate-900 focus:outline-none disabled:bg-slate-100 disabled:text-slate-500 text-xs"
                     />
-                    <span className="absolute left-3 top-2.5 text-slate-500 font-bold">{t.unitKg}</span>
+                    <span className="inline-flex items-center px-3 bg-slate-100 border-s border-slate-200 text-slate-600 font-bold text-xs select-none shrink-0">
+                      {t.unitKg}
+                    </span>
                   </div>
+                  {isPackagingWeightExceeded && (
+                    <div className="flex items-center gap-1 text-red-600 font-bold text-[10px] animate-pulse">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t.weightExceedsTankBalance}</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* 3. DENSITY FACTOR */}
+                {/* 4. DENSITY FACTOR */}
                 <div className="space-y-1.5">
                   <label className="font-bold text-slate-700 flex items-center justify-between">
                     <span>{t.densityFactor}</span>
@@ -2757,7 +3008,7 @@ export default function CommercialOilOperationsApp() {
                   </div>
                 </div>
 
-                {/* 4. Target Warehouse Selection (UNBLOCKED & INTERACTIVE) */}
+                {/* 5. Target Warehouse Selection (UNBLOCKED & INTERACTIVE) */}
                 <div className="space-y-1.5">
                   <label className="font-bold text-slate-700 flex items-center justify-between">
                     <span>{t.targetWarehouse}</span>
@@ -2944,7 +3195,7 @@ export default function CommercialOilOperationsApp() {
                 <div>
                   <button
                     type="button"
-                    disabled={isSubmitting || packagingCalculations.totalPieces <= 0}
+                    disabled={isSubmitting || packagingCalculations.totalPieces <= 0 || isPackagingWeightExceeded || activeBatchWeight <= 0}
                     onClick={handlePostPackaging}
                     className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold text-sm rounded-xl shadow-sm flex items-center gap-2 transition-all"
                   >

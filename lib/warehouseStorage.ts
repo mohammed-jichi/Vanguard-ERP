@@ -138,21 +138,46 @@ const INITIAL_SYSTEM_WAREHOUSES: WarehouseRecord[] = [
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const WAREHOUSES_FILE = path.join(DATA_DIR, 'vanguard_warehouses.json');
+const TMP_WAREHOUSES_FILE = path.join('/tmp', 'vanguard_warehouses.json');
 
 let inMemoryWarehouses: WarehouseRecord[] | null = null;
 let lastMtime = 0;
 
+function resolveWhFilePath(): string {
+  try {
+    if (fs.existsSync(TMP_WAREHOUSES_FILE)) {
+      if (!fs.existsSync(WAREHOUSES_FILE)) return TMP_WAREHOUSES_FILE;
+      const tmpStat = fs.statSync(TMP_WAREHOUSES_FILE);
+      const mainStat = fs.statSync(WAREHOUSES_FILE);
+      if (tmpStat.mtimeMs > mainStat.mtimeMs) {
+        return TMP_WAREHOUSES_FILE;
+      }
+    }
+  } catch {}
+  return WAREHOUSES_FILE;
+}
+
 function ensureDataFile(): WarehouseRecord[] {
   try {
+    const activeFile = resolveWhFilePath();
+
     if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+      try {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      } catch {}
     }
 
-    if (!fs.existsSync(WAREHOUSES_FILE)) {
-      fs.writeFileSync(WAREHOUSES_FILE, JSON.stringify(INITIAL_SYSTEM_WAREHOUSES, null, 2), 'utf-8');
+    if (!fs.existsSync(activeFile)) {
+      try {
+        fs.writeFileSync(WAREHOUSES_FILE, JSON.stringify(INITIAL_SYSTEM_WAREHOUSES, null, 2), 'utf-8');
+      } catch {
+        try {
+          fs.writeFileSync(TMP_WAREHOUSES_FILE, JSON.stringify(INITIAL_SYSTEM_WAREHOUSES, null, 2), 'utf-8');
+        } catch {}
+      }
       inMemoryWarehouses = [...INITIAL_SYSTEM_WAREHOUSES];
       try {
-        lastMtime = fs.statSync(WAREHOUSES_FILE).mtimeMs;
+        lastMtime = fs.statSync(resolveWhFilePath()).mtimeMs;
       } catch {
         lastMtime = Date.now();
       }
@@ -161,7 +186,7 @@ function ensureDataFile(): WarehouseRecord[] {
 
     if (inMemoryWarehouses) {
       try {
-        const curMtime = fs.statSync(WAREHOUSES_FILE).mtimeMs;
+        const curMtime = fs.statSync(activeFile).mtimeMs;
         if (curMtime <= lastMtime) {
           return inMemoryWarehouses;
         }
@@ -170,16 +195,18 @@ function ensureDataFile(): WarehouseRecord[] {
       }
     }
 
-    const raw = fs.readFileSync(WAREHOUSES_FILE, 'utf-8');
+    const raw = fs.readFileSync(activeFile, 'utf-8');
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
       inMemoryWarehouses = parsed;
     } else {
       inMemoryWarehouses = [...INITIAL_SYSTEM_WAREHOUSES];
-      fs.writeFileSync(WAREHOUSES_FILE, JSON.stringify(inMemoryWarehouses, null, 2), 'utf-8');
+      try {
+        fs.writeFileSync(WAREHOUSES_FILE, JSON.stringify(inMemoryWarehouses, null, 2), 'utf-8');
+      } catch {}
     }
     try {
-      lastMtime = fs.statSync(WAREHOUSES_FILE).mtimeMs;
+      lastMtime = fs.statSync(activeFile).mtimeMs;
     } catch {
       lastMtime = Date.now();
     }
@@ -191,19 +218,30 @@ function ensureDataFile(): WarehouseRecord[] {
 }
 
 function saveWarehouses(list: WarehouseRecord[]) {
+  inMemoryWarehouses = list;
+  let written = false;
+
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     fs.writeFileSync(WAREHOUSES_FILE, JSON.stringify(list, null, 2), 'utf-8');
-    inMemoryWarehouses = list;
-    try {
-      lastMtime = fs.statSync(WAREHOUSES_FILE).mtimeMs;
-    } catch {
-      lastMtime = Date.now();
-    }
+    lastMtime = fs.statSync(WAREHOUSES_FILE).mtimeMs;
+    written = true;
   } catch (error) {
-    console.error('Error persisting vanguard_warehouses.json:', error);
+    console.warn('Could not write to primary WAREHOUSES_FILE, falling back to /tmp:', error);
+  }
+
+  // Also write to /tmp in serverless environments or if primary write failed
+  try {
+    fs.writeFileSync(TMP_WAREHOUSES_FILE, JSON.stringify(list, null, 2), 'utf-8');
+    if (!written) {
+      lastMtime = fs.statSync(TMP_WAREHOUSES_FILE).mtimeMs;
+    }
+  } catch (tmpErr) {
+    if (!written) {
+      console.error('Error persisting vanguard_warehouses.json to /tmp:', tmpErr);
+    }
   }
 }
 

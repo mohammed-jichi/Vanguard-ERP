@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { WarehouseService } from '@/lib/warehouseStorage';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -14,6 +17,12 @@ export async function GET(req: NextRequest) {
       data: warehouses,
       count: warehouses.length,
       timestamp: new Date().toISOString()
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     });
   } catch (error: any) {
     console.error('Error fetching warehouses:', error);

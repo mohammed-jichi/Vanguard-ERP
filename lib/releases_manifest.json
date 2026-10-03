@@ -1,5 +1,28 @@
 [
   {
+    "id": "f9f5a07f-92a9-4a12-ad36-1b493b2e14c8",
+    "commit_hash": "f9f5a07f92a9aa12ad361b493b2e14c8b645e9cc",
+    "short_hash": "f9f5a07",
+    "version": "v2.0.0",
+    "title": "Fix blank print voucher, allow responsive page orientation, translate tank badges, and resolve warehouse creation bug",
+    "category": "fix",
+    "description": "fix(print-tanks-wh): fix blank print voucher, allow responsive page orientation, translate tank badges, and resolve warehouse creation bug",
+    "bullet_points": [
+      "Resolved: fix blank print voucher, allow responsive page orientation, translate tank badges, and resolve warehouse creation bug",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Operations & Inventory",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-03T01:10:50.000Z",
+    "created_at": "2026-10-03T02:02:45.452Z"
+  },
+  {
     "id": "1fef18af-16e3-4786-aa13-a8b36d8dd5bf",
     "commit_hash": "1fef18af16e3a786ba13a8b36d8dd5bf41d689a4",
     "short_hash": "1fef18a",

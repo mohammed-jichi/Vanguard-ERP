@@ -2,40 +2,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CommercialOilService } from '@/lib/commercialOilStorage';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const filter = searchParams.get('filter') || 'all';
 
     const state = CommercialOilService.getState();
+    const headers = {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    };
 
     if (filter === 'tanks') {
-      return NextResponse.json({ success: true, data: state.tanks });
+      return NextResponse.json({ success: true, data: state.tanks }, { headers });
     }
     if (filter === 'grades') {
-      return NextResponse.json({ success: true, data: CommercialOilService.getOilGrades() });
+      return NextResponse.json({ success: true, data: CommercialOilService.getOilGrades() }, { headers });
     }
     if (filter === 'receipts') {
-      return NextResponse.json({ success: true, data: state.receipts });
+      return NextResponse.json({ success: true, data: state.receipts }, { headers });
     }
     if (filter === 'batches') {
-      return NextResponse.json({ success: true, data: state.batches });
+      return NextResponse.json({ success: true, data: state.batches }, { headers });
     }
     if (filter === 'packaging') {
-      return NextResponse.json({ success: true, data: state.packagingVouchers });
+      return NextResponse.json({ success: true, data: state.packagingVouchers }, { headers });
     }
     if (filter === 'stocks') {
-      return NextResponse.json({ success: true, data: state.warehouseStocks });
+      return NextResponse.json({ success: true, data: state.warehouseStocks }, { headers });
     }
     if (filter === 'movements') {
-      return NextResponse.json({ success: true, data: state.movements });
+      return NextResponse.json({ success: true, data: state.movements }, { headers });
     }
 
     return NextResponse.json({
       success: true,
       data: state,
       timestamp: new Date().toISOString()
-    });
+    }, { headers });
   } catch (error: any) {
     console.error('Error fetching commercial oil state:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

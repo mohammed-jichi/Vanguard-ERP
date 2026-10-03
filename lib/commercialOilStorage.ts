@@ -248,17 +248,36 @@ const INITIAL_TANKS: StorageTank[] = [
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const OIL_DB_FILE = path.join(DATA_DIR, 'vanguard_commercial_oil_db.json');
+const TMP_OIL_DB_FILE = path.join('/tmp', 'vanguard_commercial_oil_db.json');
 
 let inMemoryOilDb: CommercialOilDbState | null = null;
 let lastMtime = 0;
 
+function resolveDbFilePath(): string {
+  try {
+    if (fs.existsSync(TMP_OIL_DB_FILE)) {
+      if (!fs.existsSync(OIL_DB_FILE)) return TMP_OIL_DB_FILE;
+      const tmpStat = fs.statSync(TMP_OIL_DB_FILE);
+      const mainStat = fs.statSync(OIL_DB_FILE);
+      if (tmpStat.mtimeMs > mainStat.mtimeMs) {
+        return TMP_OIL_DB_FILE;
+      }
+    }
+  } catch {}
+  return OIL_DB_FILE;
+}
+
 function ensureOilDbFile(): CommercialOilDbState {
   try {
+    const activeFile = resolveDbFilePath();
+
     if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+      try {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      } catch {}
     }
 
-    if (!fs.existsSync(OIL_DB_FILE)) {
+    if (!fs.existsSync(activeFile)) {
       const initialState: CommercialOilDbState = {
         tanks: INITIAL_TANKS,
         oilGrades: INITIAL_OIL_GRADES,
@@ -272,10 +291,16 @@ function ensureOilDbFile(): CommercialOilDbState {
         nextPkgSeq: 501,
         lastUpdated: new Date().toISOString()
       };
-      fs.writeFileSync(OIL_DB_FILE, JSON.stringify(initialState, null, 2), 'utf-8');
+      try {
+        fs.writeFileSync(OIL_DB_FILE, JSON.stringify(initialState, null, 2), 'utf-8');
+      } catch {
+        try {
+          fs.writeFileSync(TMP_OIL_DB_FILE, JSON.stringify(initialState, null, 2), 'utf-8');
+        } catch {}
+      }
       inMemoryOilDb = initialState;
       try {
-        lastMtime = fs.statSync(OIL_DB_FILE).mtimeMs;
+        lastMtime = fs.statSync(resolveDbFilePath()).mtimeMs;
       } catch {
         lastMtime = Date.now();
       }
@@ -284,7 +309,7 @@ function ensureOilDbFile(): CommercialOilDbState {
 
     if (inMemoryOilDb) {
       try {
-        const curMtime = fs.statSync(OIL_DB_FILE).mtimeMs;
+        const curMtime = fs.statSync(activeFile).mtimeMs;
         if (curMtime <= lastMtime) {
           return inMemoryOilDb;
         }
@@ -293,7 +318,7 @@ function ensureOilDbFile(): CommercialOilDbState {
       }
     }
 
-    const raw = fs.readFileSync(OIL_DB_FILE, 'utf-8');
+    const raw = fs.readFileSync(activeFile, 'utf-8');
     const parsed: CommercialOilDbState = JSON.parse(raw);
     if (!parsed.tanks || parsed.tanks.length === 0) {
       parsed.tanks = INITIAL_TANKS;
@@ -312,7 +337,7 @@ function ensureOilDbFile(): CommercialOilDbState {
 
     inMemoryOilDb = parsed;
     try {
-      lastMtime = fs.statSync(OIL_DB_FILE).mtimeMs;
+      lastMtime = fs.statSync(activeFile).mtimeMs;
     } catch {
       lastMtime = Date.now();
     }
@@ -336,20 +361,31 @@ function ensureOilDbFile(): CommercialOilDbState {
 }
 
 function saveOilDb(state: CommercialOilDbState) {
+  state.lastUpdated = new Date().toISOString();
+  inMemoryOilDb = state;
+  let written = false;
+
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
-    state.lastUpdated = new Date().toISOString();
     fs.writeFileSync(OIL_DB_FILE, JSON.stringify(state, null, 2), 'utf-8');
-    inMemoryOilDb = state;
-    try {
-      lastMtime = fs.statSync(OIL_DB_FILE).mtimeMs;
-    } catch {
-      lastMtime = Date.now();
-    }
+    lastMtime = fs.statSync(OIL_DB_FILE).mtimeMs;
+    written = true;
   } catch (error) {
-    console.error('Error persisting vanguard_commercial_oil_db.json:', error);
+    console.warn('Could not write to primary OIL_DB_FILE, falling back to /tmp:', error);
+  }
+
+  // Also write to /tmp in serverless environments or if primary write failed
+  try {
+    fs.writeFileSync(TMP_OIL_DB_FILE, JSON.stringify(state, null, 2), 'utf-8');
+    if (!written) {
+      lastMtime = fs.statSync(TMP_OIL_DB_FILE).mtimeMs;
+    }
+  } catch (tmpErr) {
+    if (!written) {
+      console.error('Error persisting vanguard_commercial_oil_db.json to /tmp:', tmpErr);
+    }
   }
 }
 
