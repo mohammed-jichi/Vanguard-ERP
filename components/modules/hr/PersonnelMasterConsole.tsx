@@ -7,7 +7,8 @@ import {
   HRPersonnelService,
   INITIAL_HR_PERSONNEL,
 } from '@/lib/hrPersonnelService';
-import NewEmployeeModal from './NewEmployeeModal';
+import NewEmployeeModal, { DEPARTMENTS_MASTER_KEYS, DESIGNATIONS_MASTER_KEYS } from './NewEmployeeModal';
+import { useLanguage } from '@/lib/LanguageContext';
 import {
   Search,
   Filter,
@@ -71,6 +72,16 @@ const DESIGNATIONS_LIST = [
   'Training Manager',
 ];
 
+const ALL_DEPARTMENTS_FILTER = [
+  ...DEPARTMENTS_MASTER_KEYS,
+  ...DEPARTMENTS_LIST.filter(d => !(DEPARTMENTS_MASTER_KEYS as readonly string[]).includes(d)),
+];
+
+const ALL_DESIGNATIONS_FILTER = [
+  ...DESIGNATIONS_MASTER_KEYS,
+  ...DESIGNATIONS_LIST.filter(d => !(DESIGNATIONS_MASTER_KEYS as readonly string[]).includes(d)),
+];
+
 const TEMPLATES_LIST = [
   'Show All Templates',
   'Custom schedule',
@@ -82,6 +93,7 @@ const TEMPLATES_LIST = [
 ];
 
 export default function PersonnelMasterConsole() {
+  const { t, isRtl } = useLanguage();
   const [employees, setEmployees] = useState<HREmployeeRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -357,10 +369,10 @@ export default function PersonnelMasterConsole() {
                 }}
                 className="w-full px-3 py-1.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs truncate"
               >
-                <option value="Show All Departments">Show All Departments</option>
-                {DEPARTMENTS_LIST.map((dept) => (
+                <option value="Show All Departments">{t('hr.show_all_departments', 'Show All Departments')}</option>
+                {ALL_DEPARTMENTS_FILTER.map((dept) => (
                   <option key={dept} value={dept}>
-                    {dept}
+                    {t(`departments.${dept}`, dept)}
                   </option>
                 ))}
               </select>
@@ -379,10 +391,10 @@ export default function PersonnelMasterConsole() {
                 }}
                 className="w-full px-3 py-1.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs truncate"
               >
-                <option value="Show All Designations">Show All Designations</option>
-                {DESIGNATIONS_LIST.map((des) => (
+                <option value="Show All Designations">{t('hr.show_all_designations', 'Show All Designations')}</option>
+                {ALL_DESIGNATIONS_FILTER.map((des) => (
                   <option key={des} value={des}>
-                    {des}
+                    {t(`designations.${des}`, des)}
                   </option>
                 ))}
               </select>
@@ -462,9 +474,24 @@ export default function PersonnelMasterConsole() {
                       {emp.phone || '-'}
                     </td>
 
-                    {/* Department */}
+                    {/* Department & Designation */}
                     <td className="py-3 px-4 text-xs font-semibold text-slate-800">
-                      {emp.department}
+                      <div>{t(`departments.${emp.department}`, emp.department)}</div>
+                      <div className="text-[11px] text-slate-500 font-medium">
+                        {t(`designations.${emp.designation}`, emp.designation)}
+                      </div>
+                      {emp.designation === 'social_media_rep' && (
+                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                          <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            {emp.socialMediaRep?.repAdminCode ? `REP #${emp.socialMediaRep.repAdminCode}` : t('designations.social_media_rep')}
+                          </span>
+                          {(emp.socialMediaRep?.promotionalOffersPercentage !== undefined || emp.socialMediaRep?.generalItemsPercentage !== undefined) && (
+                            <span className="text-[10px] text-emerald-700 font-mono font-bold">
+                              {emp.socialMediaRep?.promotionalOffersPercentage ?? 5}% / {emp.socialMediaRep?.generalItemsPercentage ?? 10}%
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </td>
 
                     {/* Schedule Template */}

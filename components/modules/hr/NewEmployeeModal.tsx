@@ -689,7 +689,7 @@ export default function NewEmployeeModal({
               }`}
             >
               <User className="w-4 h-4" />
-              <span>Personal *</span>
+              <span>{t('hr.tab_personal', 'Personal *')}</span>
             </button>
             <button
               type="button"
@@ -701,7 +701,7 @@ export default function NewEmployeeModal({
               }`}
             >
               <MapPin className="w-4 h-4" />
-              <span>Work Location *</span>
+              <span>{t('hr.tab_work_location', 'Work Location *')}</span>
             </button>
             {!hideScheduleTab && (
               <button
@@ -714,14 +714,14 @@ export default function NewEmployeeModal({
                 }`}
               >
                 <Clock className="w-4 h-4" />
-                <span>Schedule</span>
+                <span>{t('hr.tab_schedule', 'Schedule')}</span>
               </button>
             )}
           </div>
 
           {/* Active Switch Toggle at Top */}
           <div className="flex items-center gap-2 pb-2">
-            <span className="text-xs font-bold text-slate-700">Status:</span>
+            <span className="text-xs font-bold text-slate-700">{t('status', 'Status')}:</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -730,7 +730,7 @@ export default function NewEmployeeModal({
               />
               <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
               <span className={`ml-2 text-xs font-bold ${formData.status === 'Active' ? 'text-emerald-700' : 'text-slate-500'}`}>
-                {formData.status}
+                {formData.status === 'Active' ? t('hr.status_active', 'Active') : t('hr.status_inactive', 'Inactive')}
               </span>
             </label>
           </div>
@@ -749,13 +749,13 @@ export default function NewEmployeeModal({
                 <div className="lg:col-span-2 space-y-4">
                   <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
                     <User className="w-3.5 h-3.5" />
-                    <span>Employee Information</span>
+                    <span>{t('hr.employee_information', 'Employee Information')}</span>
                   </div>
 
                   {/* First Name & Last Name */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">First Name*</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('first_name', 'First Name')}*</label>
                       <input
                         type="text"
                         required
@@ -765,7 +765,7 @@ export default function NewEmployeeModal({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Last Name*</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('last_name', 'Last Name')}*</label>
                       <input
                         type="text"
                         required
@@ -778,7 +778,7 @@ export default function NewEmployeeModal({
 
                   {/* Phone with Exhaustive Searchable Country Dial Code */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Phone*</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.personal_phone_label', 'Phone*')}</label>
                     <div className="flex items-center gap-2">
                       <div className="relative">
                         <button
@@ -858,7 +858,7 @@ export default function NewEmployeeModal({
                   {/* Email & Date of Birth */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Email</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('email', 'Email')}</label>
                       <input
                         type="email"
                         value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
@@ -867,7 +867,7 @@ export default function NewEmployeeModal({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Date of birth</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('date_of_birth', 'Date of birth')}</label>
                       <input
                         type="date"
                         value={formData.dateOfBirth} onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
@@ -879,34 +879,34 @@ export default function NewEmployeeModal({
                   {/* Gender & Marital Status & Children */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Gender*</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('gender', 'Gender')}*</label>
                       <select
                         value={formData.gender} onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'Male' | 'Female' }))}
                         className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                       >
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
+                        <option value="Male">{t('hr.gender_male', 'Male')}</option>
+                        <option value="Female">{t('hr.gender_female', 'Female')}</option>
                       </select>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Marital Status</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('hr.marital_status', 'Marital Status')}</label>
                       <select
                         value={formData.maritalStatus} onChange={(e) => setFormData(prev => ({ ...prev, maritalStatus: e.target.value as any }))}
                         className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                       >
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Divorced">Divorced</option>
-                        <option value="Widowed">Widowed</option>
-                        <option value="Separated">Separated</option>
-                        <option value="Domestic Partner">Domestic Partner</option>
-                        <option value="Not Specified">Not Specified</option>
+                        <option value="Single">{t('hr.marital_single', 'Single')}</option>
+                        <option value="Married">{t('hr.marital_married', 'Married')}</option>
+                        <option value="Divorced">{t('hr.marital_divorced', 'Divorced')}</option>
+                        <option value="Widowed">{t('hr.marital_widowed', 'Widowed')}</option>
+                        <option value="Separated">{t('hr.marital_separated', 'Separated')}</option>
+                        <option value="Domestic Partner">{t('hr.marital_domestic_partner', 'Domestic Partner')}</option>
+                        <option value="Not Specified">{t('hr.marital_not_specified', 'Not Specified')}</option>
                       </select>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Number of children</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('hr.number_of_children', 'Number of children')}</label>
                       <input
                         type="number"
                         min="0"
@@ -919,7 +919,7 @@ export default function NewEmployeeModal({
                   {/* Contact Person & Contact Phone */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Contact Person</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('hr.contact_person', 'Contact Person')}</label>
                       <input
                         type="text"
                         value={formData.contactPerson} onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
@@ -928,7 +928,7 @@ export default function NewEmployeeModal({
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Contact Phone</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('hr.contact_phone', 'Contact Phone')}</label>
                       <input
                         type="text"
                         value={formData.contactPhone} onChange={(e) => setFormData(prev => ({ ...prev, contactPhone: e.target.value }))}
@@ -943,12 +943,12 @@ export default function NewEmployeeModal({
                 <div className="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
                   <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
                     <Upload className="w-3.5 h-3.5" />
-                    <span>Uploads & Documents</span>
+                    <span>{t('hr.uploads_and_documents', 'Uploads & Documents')}</span>
                   </div>
 
                   {/* Profile Picture Box */}
                   <div className="space-y-2">
-                    <span className="text-xs font-bold text-slate-700 block">Profile Picture</span>
+                    <span className="text-xs font-bold text-slate-700 block">{t('hr.profile_picture', 'Profile Picture')}</span>
                     <div className="w-full h-32 rounded-2xl border-2 border-dashed border-slate-300 bg-white flex flex-col items-center justify-center p-2 overflow-hidden relative">
                       {profilePicture ? (
                         <img
@@ -959,7 +959,7 @@ export default function NewEmployeeModal({
                       ) : (
                         <div className="flex flex-col items-center justify-center text-slate-400">
                           <User className="w-8 h-8 stroke-1 text-slate-300" />
-                          <span className="text-[11px] font-semibold mt-1">no-image</span>
+                          <span className="text-[11px] font-semibold mt-1">{t('hr.no_image', 'no-image')}</span>
                         </div>
                       )}
                     </div>
@@ -976,7 +976,7 @@ export default function NewEmployeeModal({
                         onClick={() => fileInputRef.current?.click()}
                         className="flex-1 py-1.5 px-3 bg-white border border-slate-200 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-700 transition-colors cursor-pointer shadow-2xs"
                       >
-                        Select image
+                        {t('hr.select_image', 'Select image')}
                       </button>
                       {profilePicture && (
                         <button
@@ -992,11 +992,11 @@ export default function NewEmployeeModal({
 
                   {/* Document Box */}
                   <div className="space-y-2 pt-2 border-t border-slate-200">
-                    <span className="text-xs font-bold text-slate-700 block">Job Offer / CV</span>
+                    <span className="text-xs font-bold text-slate-700 block">{t('hr.job_offer_cv', 'Job Offer / CV')}</span>
                     <div className="w-full h-24 rounded-2xl border-2 border-dashed border-slate-300 bg-white flex flex-col items-center justify-center p-2 text-center">
                       <FileText className="w-6 h-6 stroke-1 text-slate-400" />
                       <span className="text-[11px] font-semibold text-slate-500 mt-1 truncate max-w-[200px]">
-                        {jobOfferDoc || 'no-document'}
+                        {jobOfferDoc || t('hr.no_document', 'no-document')}
                       </span>
                     </div>
                     <input
@@ -1011,7 +1011,7 @@ export default function NewEmployeeModal({
                       onClick={() => docInputRef.current?.click()}
                       className="w-full py-1.5 px-3 bg-white border border-slate-200 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-700 transition-colors cursor-pointer shadow-2xs"
                     >
-                      Select document
+                      {t('hr.select_document', 'Select document')}
                     </button>
                   </div>
                 </div>
@@ -1021,7 +1021,7 @@ export default function NewEmployeeModal({
               <div className="border-t border-slate-200 pt-4 space-y-3">
                 <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
                   <Briefcase className="w-3.5 h-3.5" />
-                  <span>Work Information</span>
+                  <span>{t('hr.work_information', 'Work Information')}</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1083,7 +1083,7 @@ export default function NewEmployeeModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Attendance Mac ID</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.attendance_mac_id', 'Attendance Mac ID')}</label>
                     <input
                       type="text"
                       value={formData.attendanceMacId} onChange={(e) => setFormData(prev => ({ ...prev, attendanceMacId: e.target.value }))}
@@ -1095,7 +1095,7 @@ export default function NewEmployeeModal({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Date Hired</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.date_hired', 'Date Hired')}</label>
                     <input
                       type="date"
                       value={formData.dateHired} onChange={(e) => setFormData(prev => ({ ...prev, dateHired: e.target.value }))}
@@ -1103,7 +1103,7 @@ export default function NewEmployeeModal({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Date Left (if resigned/terminated)</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.date_left', 'Date Left (if resigned/terminated)')}</label>
                     <input
                       type="date"
                       value={formData.dateLeft} onChange={(e) => setFormData(prev => ({ ...prev, dateLeft: e.target.value }))}
@@ -1349,7 +1349,7 @@ export default function NewEmployeeModal({
                                     type="text"
                                     value={channel.url}
                                     onChange={(e) => handleUpdateExtraChannel(channel.id, 'url', e.target.value)}
-                                    placeholder="https://..."
+                                    placeholder={t('hr_rep.channel_url_placeholder', 'https://...')}
                                     className="w-full px-2.5 py-1.5 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-lg outline-hidden focus:border-emerald-600"
                                   />
                                 </div>
@@ -1421,13 +1421,13 @@ export default function NewEmployeeModal({
               <div className="border-t border-slate-200 pt-4 space-y-3">
                 <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
                   <MapPin className="w-3.5 h-3.5" />
-                  <span>Address & Identification</span>
+                  <span>{t('hr.address_and_identification', 'Address & Identification')}</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   {/* Exhaustive Searchable Worldwide Country Dropdown */}
                   <div className="space-y-1 relative">
-                    <label className="text-xs font-bold text-slate-700 block">Country* (ISO Worldwide)</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.country_worldwide', 'Country* (ISO Worldwide)')}</label>
                     <div
                       onClick={() => {
                         setIsCountryDropdownOpen(!isCountryDropdownOpen);
@@ -1487,7 +1487,7 @@ export default function NewEmployeeModal({
 
                   {/* Custom Searchable Lebanese City Dropdown */}
                   <div className="space-y-1 relative">
-                    <label className="text-xs font-bold text-slate-700 block">City* (Lebanese Directory)</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.city_lebanon', 'City* (Lebanese Directory)')}</label>
                     <div
                       onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus-within:border-primary shadow-2xs"
@@ -1548,7 +1548,7 @@ export default function NewEmployeeModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">National ID</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.national_id', 'National ID')}</label>
                     <input
                       type="text"
                       value={formData.nationalId} onChange={(e) => setFormData(prev => ({ ...prev, nationalId: e.target.value }))}
@@ -1558,7 +1558,7 @@ export default function NewEmployeeModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Social Security Number</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.social_security_number', 'Social Security Number')}</label>
                     <input
                       type="text"
                       value={formData.socialSecurityNumber} onChange={(e) => setFormData(prev => ({ ...prev, socialSecurityNumber: e.target.value }))}
@@ -1569,11 +1569,11 @@ export default function NewEmployeeModal({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">Address</label>
+                  <label className="text-xs font-bold text-slate-700 block">{t('hr.address', 'Address')}</label>
                   <input
                     type="text"
                     value={formData.address} onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                    placeholder="Street, building, floor, landmark"
+                    placeholder={t('hr.address_placeholder', 'Street, building, floor, landmark')}
                     className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                   />
                 </div>
@@ -1673,13 +1673,13 @@ export default function NewEmployeeModal({
             <div className="space-y-6">
               <div className="border border-slate-200 bg-slate-50/70 rounded-2xl p-4 space-y-4">
                 <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center justify-between">
-                  <span>Available in Brands / Branches</span>
+                  <span>{t('hr.available_in_brands_branches', 'Available in Brands / Branches')}</span>
                   <span className="text-[11px] font-bold text-primary font-mono">1300 Choueifat Complex</span>
                 </div>
 
                 {/* Brand Dropdown */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 block">Brand</label>
+                  <label className="text-xs font-bold text-slate-700 block">{t('hr.brand', 'Brand')}</label>
                   <select
                     value={formData.brand} onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
                     className="w-full px-3 py-2.5 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
@@ -1695,10 +1695,10 @@ export default function NewEmployeeModal({
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50/90 text-slate-600 font-bold text-xs uppercase tracking-wider">
-                        <th className="py-3 px-4 w-16 text-center">Use</th>
-                        <th className="py-3 px-4">Branch</th>
-                        <th className="py-3 px-4">Backoffice</th>
-                        <th className="py-3 px-4 w-44 text-center">Employee ID</th>
+                        <th className="py-3 px-4 w-16 text-center">{t('hr.use_branch', 'Use')}</th>
+                        <th className="py-3 px-4">{t('hr.branch', 'Branch')}</th>
+                        <th className="py-3 px-4">{t('hr.backoffice', 'Backoffice')}</th>
+                        <th className="py-3 px-4 w-44 text-center">{t('hr.pos_employee_id', 'Employee ID')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1737,7 +1737,7 @@ export default function NewEmployeeModal({
   }}
                                 className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                               />
-                              <span>Create as backoffice employee</span>
+                              <span>{t('hr.backoffice', 'Backoffice')}</span>
                             </label>
                           )}
                         </td>
@@ -1775,14 +1775,14 @@ export default function NewEmployeeModal({
             <div className="space-y-6">
               <div className="border border-slate-200 bg-slate-50/70 rounded-2xl p-5 space-y-4">
                 <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center justify-between">
-                  <span>Assigned Work Shift Schedule</span>
+                  <span>{t('hr.tab_schedule', 'Assigned Work Shift Schedule')}</span>
                   <span className="text-[11px] font-bold text-primary font-mono">Payroll Year 2026</span>
                 </div>
 
                 {/* Filter Ribbon Inside Modal */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Brand</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.brand', 'Brand')}</label>
                     <select
                       value={schedBrand}
                       onChange={(e) => setSchedBrand(e.target.value)}
@@ -1795,7 +1795,7 @@ export default function NewEmployeeModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Branch</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.branch', 'Branch')}</label>
                     <select
                       value={schedBranch}
                       onChange={(e) => setSchedBranch(e.target.value)}
@@ -1808,7 +1808,7 @@ export default function NewEmployeeModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Year</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('year', 'Year')}</label>
                     <select
                       value={schedYear}
                       onChange={(e) => setSchedYear(e.target.value)}
@@ -1820,7 +1820,7 @@ export default function NewEmployeeModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Month</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('month', 'Month')}</label>
                     <select
                       value={schedMonth}
                       onChange={(e) => setSchedMonth(e.target.value)}
@@ -1876,14 +1876,14 @@ export default function NewEmployeeModal({
                 onClick={onClose}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
-                Cancel
+                {t('hr.cancel', 'Cancel')}
               </button>
               <button
                 type="submit"
                 className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
               >
                 <Save className="w-4 h-4" />
-                <span>Save</span>
+                <span>{t('hr.save_employee', 'Save')}</span>
               </button>
             </div>
           </div>
@@ -1930,7 +1930,7 @@ export default function NewEmployeeModal({
                 {/* Nick Name & Language */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Nick Name*</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.pos_nickname', 'Nick Name')}*</label>
                     <input
                       type="text"
                       value={posNickName}
@@ -1940,7 +1940,7 @@ export default function NewEmployeeModal({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Language* (POS Localization)</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.pos_language', 'Language* (POS Localization)')}</label>
                     <select
                       value={posLanguage}
                       onChange={(e) => setPosLanguage(e.target.value as any)}
@@ -2007,7 +2007,7 @@ export default function NewEmployeeModal({
                 {/* Branch & Back Office Role */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Branch*</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.branch', 'Branch')}*</label>
                     <input
                       type="text"
                       disabled
@@ -2016,7 +2016,7 @@ export default function NewEmployeeModal({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Back Office Role*</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.backoffice_role', 'Back Office Role')}*</label>
                     <select
                       value={posBackOfficeRole}
                       onChange={(e) => setPosBackOfficeRole(e.target.value as any)}
@@ -2035,7 +2035,7 @@ export default function NewEmployeeModal({
                 {/* Employee ID, Password, Sec Password */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Employee ID</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.pos_employee_id', 'Employee ID')}</label>
                     <input
                       type="text"
                       value={formData.posEmployeeId}
@@ -2044,7 +2044,7 @@ export default function NewEmployeeModal({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Password</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('current_password', 'Password')}</label>
                     <input
                       type="password"
                       value={posPassword}
@@ -2053,7 +2053,7 @@ export default function NewEmployeeModal({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Sec Password</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.sec_password', 'Sec Password')}</label>
                     <input
                       type="password"
                       value={posSecPassword}
@@ -2067,7 +2067,7 @@ export default function NewEmployeeModal({
                 {/* POS Cloud Login & Configuration */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">POS Cloud Login ID</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.pos_cloud_id', 'POS Cloud Login ID')}</label>
                     <input
                       type="text"
                       value={posCloudLoginId}
@@ -2076,7 +2076,7 @@ export default function NewEmployeeModal({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Cloud Password</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.cloud_password', 'Cloud Password')}</label>
                     <input
                       type="password"
                       value={posCloudPassword}
@@ -2085,7 +2085,7 @@ export default function NewEmployeeModal({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">Configuration</label>
+                    <label className="text-xs font-bold text-slate-700 block">{t('hr.pos_configuration', 'Configuration')}</label>
                     <select
                       value={posConfiguration}
                       onChange={(e) => setPosConfiguration(e.target.value)}
@@ -2114,12 +2114,12 @@ export default function NewEmployeeModal({
                 <div className="border-t border-slate-200 pt-3 space-y-3">
                   <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
                     <Printer className="w-3.5 h-3.5" />
-                    <span>Hardware & Peripherals</span>
+                    <span>{t('hr.hardware_peripherals', 'Hardware & Peripherals')}</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Cash drawer port</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('hr.cash_drawer_port', 'Cash drawer port')}</label>
                       <select
                         value={posCashDrawerPort}
                         onChange={(e) => setPosCashDrawerPort(e.target.value as any)}
@@ -2138,7 +2138,7 @@ export default function NewEmployeeModal({
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 block">Printer Type</label>
+                      <label className="text-xs font-bold text-slate-700 block">{t('hr.printer_type', 'Printer Type')}</label>
                       <select
                         value={posPrinterType}
                         onChange={(e) => setPosPrinterType(e.target.value as any)}
@@ -2187,7 +2187,7 @@ export default function NewEmployeeModal({
 
                 {/* Email Signature */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">Email Signature</label>
+                  <label className="text-xs font-bold text-slate-700 block">{t('hr.email_signature', 'Email Signature')}</label>
                   <textarea
                     rows={2}
                     value={posEmailSignature}
