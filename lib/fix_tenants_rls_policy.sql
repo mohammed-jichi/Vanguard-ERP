@@ -31,9 +31,9 @@ WITH CHECK (true);
 INSERT INTO public.tenants (id, name, slug, brand_name_ar, brand_name_en, subscription_tier, subscription_status, ai_usage_count, ai_usage_limit)
 VALUES (
   '00000000-0000-0000-0000-000000000001',
-  'منتوجات زيت وزيتون الجنوب',
+  'منتوجات زيت وزيتون الجنوب ش.م.م',
   'southern-olive',
-  'منتوجات زيت وزيتون الجنوب',
+  'منتوجات زيت وزيتون الجنوب ش.م.م',
   'Southern Olive Oil Products S.A.R.L',
   'ENTERPRISE',
   'ACTIVE',

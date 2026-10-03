@@ -61,7 +61,7 @@ VALUES
         '00000000-0000-0000-0000-000000000001',
         1300,
         'TENANT_INITIALIZED',
-        'تأسيس واعتماد مساحة العمل الرئيسية لمؤسسة منتوجات زيت وزيتون الجنوب وتخصيص معرف الشركة رقم 1300',
+        'تأسيس واعتماد مساحة العمل الرئيسية لشركة منتوجات زيت وزيتون الجنوب ش.م.م وتخصيص معرف الشركة رقم 1300',
         'Super Admin (Mohammed Jichi)',
         '{"modules_count": 9, "tier": "ENTERPRISE"}'::jsonb,
         now() - INTERVAL '3 days'
@@ -81,7 +81,7 @@ VALUES
         'BRANDING_UPDATED',
         'تحديث الهوية البصرية وشعار المؤسسة وتعيين اللون الرئيسي المعتمد (#123b70 Vanguard Navy)',
         'Super Admin (Mohammed Jichi)',
-        '{"primary_color": "#123b70", "logo_url": "/assets/images/logo.png"}'::jsonb,
+        '{"primary_color": "#123b70", "logo_url": "/assets/branding/tenants/1300-logo.webp"}'::jsonb,
         now() - INTERVAL '1 day'
     ),
     (
@@ -97,7 +97,7 @@ VALUES
         '00000000-0000-0000-0000-000000000001',
         1300,
         'WORKSPACE_PREVIEW',
-        'دخول ومعاينة مساحة العمل التجريبية لمؤسسة منتوجات زيت وزيتون الجنوب (#1300) والتحقق من الروابط السحابية',
+        'دخول ومعاينة مساحة العمل التجريبية لشركة منتوجات زيت وزيتون الجنوب ش.م.م (#1300) والتحقق من الروابط السحابية',
         'Super Admin (Mohammed Jichi)',
         '{"target_route": "/1300/dashboard"}'::jsonb,
         now() - INTERVAL '1 hour'

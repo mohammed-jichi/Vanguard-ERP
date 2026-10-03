@@ -259,7 +259,7 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className={`relative min-h-screen w-full flex font-sans overflow-hidden transition-all duration-700 ease-in-out ${
+    <div className={`relative min-h-screen w-full flex flex-col font-sans overflow-hidden transition-all duration-700 ease-in-out ${
       is1300 ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'
     }`}>
       {/* REACTIVE TENANT 1300 INDUSTRY BACKDROP WITH SMOOTH 700MS FADE */}
@@ -295,14 +295,14 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#d4b055] via-amber-400 to-cyan-400 blur-[36px] opacity-75 rounded-full animate-pulse w-36 h-36 -translate-x-2 -translate-y-2 group-hover:blur-[50px] group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 pointer-events-none"></div>
 
           {/* Logo Frame with Hover Scale & Border Glow */}
-          <div className={`relative w-28 h-28 md:w-32 md:h-32 max-w-[128px] max-h-[128px] rounded-full overflow-hidden border-[4px] z-10 transition-all duration-500 transform group-hover:scale-110 active:scale-95 shrink-0 ${
-            is1300
-              ? 'border-emerald-500 shadow-[0_0_35px_rgba(16,185,129,0.7)] bg-slate-900'
-              : 'border-[#09152b] group-hover:border-[#d4b055] shadow-[0_0_30px_rgba(171,131,32,0.6)] group-hover:shadow-[0_0_45px_rgba(6,182,212,0.8)] bg-[#09152b]'
-          }`}>
+          <div className="relative w-28 h-28 md:w-32 md:h-32 max-w-[128px] max-h-[128px] rounded-full overflow-hidden border-[4px] border-[#09152b] group-hover:border-[#d4b055] shadow-[0_0_30px_rgba(171,131,32,0.6)] group-hover:shadow-[0_0_45px_rgba(6,182,212,0.8)] bg-[#09152b] z-10 transition-all duration-500 transform group-hover:scale-110 active:scale-95 shrink-0">
+
+
+
+
             <Image
-              src={is1300 ? "/assets/branding/tenants/1300-logo.webp" : "/vanguard.jpg"}
-              alt={is1300 ? "Southern Olive Oil" : "Vanguard Enterprise Demo"}
+              src="/vanguard.jpg"
+              alt="Vanguard Enterprise System"
               fill
               className="object-cover"
               priority
@@ -311,17 +311,20 @@ export default function LoginPage() {
 
           {/* Subtle Elegant Glowing Badge / Tooltip Directly Below */}
           <div className="mt-3.5 z-20 pointer-events-auto">
-            <div className={`inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-bold tracking-wide backdrop-blur-md transition-all duration-500 select-none animate-pulse ${
-              is1300
-                ? 'bg-emerald-950/95 border border-emerald-400 text-emerald-300 shadow-[0_4px_20px_rgba(16,185,129,0.5)]'
-                : 'bg-[#09152b]/95 border border-[#d4b055]/70 text-[#d4b055] shadow-[0_4px_20px_rgba(212,176,85,0.4)] group-hover:border-cyan-400 group-hover:text-cyan-300'
-            }`}>
-              <span className="text-xs">{is1300 ? "🌿" : "✨"}</span>
-              <span>{is1300 ? "✓ منتوجات زيت وزيتون الجنوب ش.م.م (#1300)" : "Click logo to request a demo"}</span>
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-bold tracking-wide backdrop-blur-md transition-all duration-500 select-none animate-pulse bg-[#09152b]/95 border border-[#d4b055]/70 text-[#d4b055] shadow-[0_4px_20px_rgba(212,176,85,0.4)] group-hover:border-cyan-400 group-hover:text-cyan-300">
+
+
+
+
+              <span className="text-xs">✨</span>
+              <span>Click logo to request a demo</span>
             </div>
           </div>
         </button>
       </div>
+
+      {/* ================= MAIN TWO-COLUMN WORKSPACE CONTAINER ================= */}
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row w-full items-stretch">
 
       {/* ================= القسم الأيسر ================= */}
       <div className={`hidden lg:flex w-1/2 flex-1 flex-col justify-center items-center p-8 lg:p-12 relative overflow-hidden text-center z-10 transition-all duration-700 ${
@@ -335,10 +338,10 @@ export default function LoginPage() {
           <div className="space-y-6">
             {is1300 ? (
               <div className="space-y-3 animate-fadeIn">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/60 text-emerald-300 text-xs font-bold tracking-wide shadow-md">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>✓ منتوجات زيت وزيتون الجنوب ش.م.م (#1300)</span>
-                </div>
+
+
+
+
                 <h1 className="text-3xl xl:text-4xl font-black text-white tracking-wider drop-shadow-[0_0_25px_rgba(16,185,129,0.7)]">
                   SOUTHERN OLIVE OIL S.A.R.L.
                 </h1>
@@ -445,7 +448,7 @@ export default function LoginPage() {
                 <div className="relative w-12 h-12 rounded-xl bg-emerald-500/10 p-1 border border-emerald-400/50 overflow-hidden shrink-0 flex items-center justify-center shadow-inner">
                   <img
                     src="/assets/branding/tenants/1300-logo.webp"
-                    alt="Southern Olive Oil"
+                    alt="منتوجات زيت وزيتون الجنوب ش.م.م"
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -463,12 +466,12 @@ export default function LoginPage() {
           )}
 
           {/* DYNAMIC TENANT BRANDING PREVIEW CARD */}
-          {tenantPreview && (
+          {tenantPreview && !is1300 && (
             <div className="p-3.5 rounded-2xl bg-gradient-to-br from-[#09152b] to-[#123b70] border-2 border-[#d4b055]/60 text-white shadow-xl animate-fadeIn transition-all duration-300">
               <div className="flex items-center gap-3">
                 <div className="relative w-12 h-12 rounded-xl bg-white/10 p-1 border border-[#d4b055]/40 overflow-hidden shrink-0 flex items-center justify-center shadow-inner">
                   <img
-                    src={tenantPreview.logoUrl || "/assets/images/logo.png"}
+                    src={tenantPreview.logoUrl || "/vanguard.jpg"}
                     alt={tenantPreview.brandNameEn}
                     className="w-full h-full object-contain"
                     onError={(e) => {
@@ -546,7 +549,7 @@ export default function LoginPage() {
                 placeholder="e.g. 1300, SO-OLIVE, or ADMIN"
                 className={`w-full px-5 py-4 rounded-xl border ${tenantPreview ? 'border-emerald-500 ring-1 ring-emerald-500' : 'border-slate-200/80'} bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold uppercase tracking-wider`}
               />
-              {tenantPreview && (
+              {tenantPreview && !is1300 && (
                 <p className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
                   Dynamic Branding: {tenantPreview.brandNameAr} ({tenantPreview.brandNameEn})
@@ -631,6 +634,47 @@ export default function LoginPage() {
           </form>
         </div>
       </div>
+
+      </div>
+
+      {/* ================= DEDICATED SEPARATE BOTTOM FOOTER BAR ================= */}
+      <footer className={`relative z-20 w-full px-6 py-3 border-t text-xs backdrop-blur-md transition-all duration-700 select-none ${
+        is1300
+          ? 'bg-slate-950/85 border-slate-800/80 text-slate-400'
+          : 'bg-white/85 border-slate-200/80 text-slate-500'
+      }`}>
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          {/* Vanguard ERP Platform Credits */}
+          <div className="flex items-center gap-2">
+            <span className={`font-semibold ${is1300 ? 'text-slate-200' : 'text-slate-700'}`}>
+              © 2026 Vanguard Software Inc.
+            </span>
+            <span className="hidden sm:inline opacity-40">•</span>
+            <span className="text-[11px] opacity-80">All rights reserved</span>
+            <span className="hidden md:inline opacity-40">•</span>
+            <span className="hidden md:inline text-[11px] opacity-75">Enterprise Cloud Platform</span>
+          </div>
+
+          {/* Tenant Identity / Licensed Organization */}
+          <div className="flex items-center gap-2">
+            {is1300 ? (
+              <span className="text-emerald-400 font-medium font-arabic text-[12px] flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span>مرخص لـ: <strong>منتوجات زيت وزيتون الجنوب ش.م.م</strong> (#1300)</span>
+              </span>
+            ) : tenantPreview && tenantPreview.companyId !== 'ADMIN' ? (
+              <span className="text-amber-500 font-medium text-[11px] flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                <span>Workspace: <strong>{tenantPreview.brandNameAr}</strong> (#{tenantPreview.companyId})</span>
+              </span>
+            ) : (
+              <span className="text-slate-400 text-[11px]">
+                Authorized Corporate Access Only
+              </span>
+            )}
+          </div>
+        </div>
+      </footer>
 
       {/* ================= DEMO REQUEST MODAL / DRAWER ================= */}
       {showDemoModal && (

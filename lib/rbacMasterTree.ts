@@ -976,7 +976,7 @@ export const RBAC_MASTER_MODULES: ModulePermissionDefinition[] = [
 // AUTHORIZED BRANDS DIRECTORY (For Product Request Brand Access Selector)
 // ------------------------------------------------------------------------------
 export const AUTHORIZED_BRANDS_DIRECTORY = [
-  { id: 'brand_southern_olive', nameEn: 'Southern Olive Oil Products S.A.R.L', nameAr: 'شركة منتجات زيتون الجنوب ش.م.م' },
+  { id: 'brand_southern_olive', nameEn: 'Southern Olive Oil Products S.A.R.L', nameAr: 'منتوجات زيت وزيتون الجنوب ش.م.م' },
   { id: 'brand_zeit_zaytoun', nameEn: 'Zeit w zaytoun ljanoub', nameAr: 'زيت وزيتون الجنوب' },
   { id: 'brand_jabal_amel', nameEn: 'Jabal Amel Pure Extra Virgin', nameAr: 'جبل عامل البكر الممتاز' },
   { id: 'brand_choueifat_press', nameEn: 'Choueifat Milling & Packaging Co.', nameAr: 'معاصر وتعبئة الشويفات' },

@@ -1,5 +1,5 @@
 // Vanguard ERP - Omega ERP Payment Types Live Simulation Data
-// Extracted from Customer 22901 (شركة منتجات الزيتون والزيت الجنوبية S.A.R.L - Zeit w zaytoun ljanoub)
+// Extracted from Customer 22901 (منتوجات زيت وزيتون الجنوب ش.م.م - Zeit w zaytoun ljanoub)
 
 export interface OmegaPaymentType {
   ID: number;
@@ -102,7 +102,7 @@ export const OMEGA_BRANCHES = [
   {
     BRANCHID: 1,
     BARANCHNAME: "Zeit w zaytoun ljanoub",
-    OTHERNAME: "شركة منتجات الزيتون والزيت الجنوبية S.A.R.L",
+    OTHERNAME: "منتوجات زيت وزيتون الجنوب ش.م.م",
     CITY: "Kfarchima",
     STREET: "Old Saida Raod",
     PHONE1: "707673828"

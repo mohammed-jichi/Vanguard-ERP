@@ -401,7 +401,7 @@ export async function composeInvoiceCloseSMS(invoiceId: string): Promise<{
   }
 
   // Bilingual polite message
-  let messageText = `شكراً لتعاملكم مع مؤسسة منتجات زيتون الجنوب. تم إصدار فاتورتكم رقم ${invoice.invoice_ref} بقيمة $${totalUsd}.`;
+  let messageText = `شكراً لتعاملكم مع شركة منتوجات زيت وزيتون الجنوب ش.م.م. تم إصدار فاتورتكم رقم ${invoice.invoice_ref} بقيمة $${totalUsd}.`;
   if (feedbackUrl) {
     messageText += ` رأيكم يهمنا جداً، يرجى تقييم الخدمة عبر الرابط: ${feedbackUrl}`;
   }

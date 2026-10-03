@@ -19,11 +19,11 @@ export const DEFAULT_MASTER_TENANT = {
   id: '00000000-0000-0000-0000-000000000001',
   company_id: 1300,
   companyId: 1300,
-  name: 'منتوجات زيت وزيتون الجنوب',
+  name: 'منتوجات زيت وزيتون الجنوب ش.م.م',
   slug: 'southern-olive',
-  brandNameAr: 'منتوجات زيت وزيتون الجنوب',
+  brandNameAr: 'منتوجات زيت وزيتون الجنوب ش.م.م',
   brandNameEn: 'Southern Olive and Oil Products S.A.R.L',
-  logoUrl: '/assets/images/logo.png',
+  logoUrl: '/assets/branding/tenants/1300-logo.webp',
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
   aiUsageCount: 0,
@@ -131,7 +131,7 @@ export async function getTenantPreview(companyId: string): Promise<{
           brandNameAr: data.brand_name_ar || data.name,
           brandNameEn: data.brand_name_en || data.name,
           companyId: data.company_id || numericId,
-          logoUrl: data.logo_url || '/assets/images/logo.png',
+          logoUrl: (data.company_id === 1300 || String(data.id) === DEFAULT_MASTER_TENANT.id) ? '/assets/branding/tenants/1300-logo.webp' : (data.logo_url && data.logo_url !== '/assets/images/logo.png' ? data.logo_url : '/vanguard.jpg'),
           tenantId: data.id
         };
       }
@@ -147,7 +147,7 @@ export async function getTenantPreview(companyId: string): Promise<{
         brandNameAr: data.brand_name_ar || data.name,
         brandNameEn: data.brand_name_en || data.name,
         companyId: data.company_id || code,
-        logoUrl: data.logo_url || '/assets/images/logo.png',
+        logoUrl: (data.company_id === 1300 || String(data.id) === DEFAULT_MASTER_TENANT.id) ? '/assets/branding/tenants/1300-logo.webp' : (data.logo_url && data.logo_url !== '/assets/images/logo.png' ? data.logo_url : '/vanguard.jpg'),
         tenantId: data.id
       };
     }

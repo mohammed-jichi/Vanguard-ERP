@@ -17,7 +17,7 @@ ALTER TABLE public.tenants
   ADD COLUMN IF NOT EXISTS exchange_rate_policy TEXT DEFAULT 'PLATFORM_FIXED',
   ADD COLUMN IF NOT EXISTS headquarters_address TEXT,
   ADD COLUMN IF NOT EXISTS phone_number TEXT,
-  ADD COLUMN IF NOT EXISTS brand_name_ar TEXT DEFAULT 'منتوجات زيت وزيتون الجنوب',
+  ADD COLUMN IF NOT EXISTS brand_name_ar TEXT DEFAULT 'منتوجات زيت وزيتون الجنوب ش.م.م',
   ADD COLUMN IF NOT EXISTS brand_name_en TEXT DEFAULT 'Southern Olive Oil Products S.A.R.L',
   ADD COLUMN IF NOT EXISTS primary_color TEXT DEFAULT '#123b70',
   ADD COLUMN IF NOT EXISTS theme_color TEXT DEFAULT '#123b70',
@@ -71,7 +71,7 @@ SET
   base_currency = COALESCE(base_currency, 'USD'),
   secondary_currency = COALESCE(secondary_currency, 'LBP'),
   exchange_rate_policy = COALESCE(exchange_rate_policy, 'PLATFORM_FIXED'),
-  brand_name_ar = COALESCE(brand_name_ar, 'منتوجات زيت وزيتون الجنوب'),
+  brand_name_ar = COALESCE(brand_name_ar, 'منتوجات زيت وزيتون الجنوب ش.م.م'),
   brand_name_en = COALESCE(brand_name_en, 'Southern Olive Oil Products S.A.R.L'),
   updated_at = now()
 WHERE id = '00000000-0000-0000-0000-000000000001'

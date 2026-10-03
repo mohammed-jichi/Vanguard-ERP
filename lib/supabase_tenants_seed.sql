@@ -15,10 +15,10 @@ CREATE TABLE IF NOT EXISTS public.tenants (
     company_id INT UNIQUE DEFAULT nextval('public.tenants_company_id_seq'),
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
-    brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب',
+    brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب ش.م.م',
     brand_name_en TEXT NOT NULL DEFAULT 'Southern Olive Oil Products S.A.R.L',
     owner_email TEXT NOT NULL DEFAULT 'khadeer@vanguard-erp.com',
-    logo_url TEXT DEFAULT '/assets/images/logo.png',
+    logo_url TEXT DEFAULT '/assets/branding/tenants/1300-logo.webp',
     subscription_tier TEXT NOT NULL DEFAULT 'ENTERPRISE' CHECK (subscription_tier IN ('STARTER', 'PRO', 'ENTERPRISE')),
     subscription_status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (subscription_status IN ('ACTIVE', 'PAST_DUE', 'CANCELLED', 'TRIAL')),
     ai_usage_count INT NOT NULL DEFAULT 0,
@@ -36,9 +36,9 @@ CREATE TABLE IF NOT EXISTS public.companies (
     company_id INT,
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
-    brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب',
+    brand_name_ar TEXT NOT NULL DEFAULT 'منتوجات زيت وزيتون الجنوب ش.م.م',
     brand_name_en TEXT NOT NULL DEFAULT 'Southern Olive Oil Products S.A.R.L',
-    logo_url TEXT DEFAULT '/assets/images/logo.png',
+    logo_url TEXT DEFAULT '/assets/branding/tenants/1300-logo.webp',
     subscription_tier TEXT NOT NULL DEFAULT 'ENTERPRISE',
     subscription_status TEXT NOT NULL DEFAULT 'ACTIVE',
     ai_usage_count INT NOT NULL DEFAULT 0,
@@ -46,10 +46,10 @@ CREATE TABLE IF NOT EXISTS public.companies (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 3. SEED TENANT #1: 'منتوجات زيت وزيتون الجنوب' (KHADEER OWNER, COMPANY_ID = 1300)
+-- 3. SEED TENANT #1: 'منتوجات زيت وزيتون الجنوب ش.م.م' (KHADEER OWNER, COMPANY_ID = 1300)
 INSERT INTO public.tenants (id, company_id, name, slug, brand_name_ar, brand_name_en, owner_email, subscription_tier, subscription_status)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 1300, 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'khadeer@vanguard-erp.com', 'ENTERPRISE', 'ACTIVE')
+  ('00000000-0000-0000-0000-000000000001', 1300, 'منتوجات زيت وزيتون الجنوب ش.م.م', 'southern-olive', 'منتوجات زيت وزيتون الجنوب ش.م.م', 'Southern Olive Oil Products S.A.R.L', 'khadeer@vanguard-erp.com', 'ENTERPRISE', 'ACTIVE')
 ON CONFLICT (id) DO UPDATE SET 
   company_id = 1300,
   name = EXCLUDED.name,
@@ -58,7 +58,7 @@ ON CONFLICT (id) DO UPDATE SET
 
 INSERT INTO public.companies (id, company_id, name, slug, brand_name_ar, brand_name_en, subscription_tier, subscription_status)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', 1300, 'منتوجات زيت وزيتون الجنوب', 'southern-olive', 'منتوجات زيت وزيتون الجنوب', 'Southern Olive Oil Products S.A.R.L', 'ENTERPRISE', 'ACTIVE')
+  ('00000000-0000-0000-0000-000000000001', 1300, 'منتوجات زيت وزيتون الجنوب ش.م.م', 'southern-olive', 'منتوجات زيت وزيتون الجنوب ش.م.م', 'Southern Olive Oil Products S.A.R.L', 'ENTERPRISE', 'ACTIVE')
 ON CONFLICT (id) DO UPDATE SET company_id = 1300;
 
 -- 4. CREATE USER PROFILES TABLE WITH TENANT_ID AND KHADEER AS OWNER

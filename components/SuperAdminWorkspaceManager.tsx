@@ -2991,7 +2991,7 @@ export default function SuperAdminWorkspaceManager() {
                         type="text"
                         value={editBrandAr}
                         onChange={(e) => setEditBrandAr(e.target.value)}
-                        placeholder="e.g. منتجات زيت وزيتون الجنوب"
+                        placeholder="e.g. منتوجات زيت وزيتون الجنوب ش.م.م"
                         className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-semibold focus:border-amber-500 focus:outline-none shadow-xs"
                       />
                     </div>

@@ -335,7 +335,7 @@ export function generateEscPosReceipt(input: EscPosReceiptInput): {
   // Double Height & Bold Header
   chunks.push(Buffer.from([0x1b, 0x45, 0x01])); // Bold ON
   chunks.push(Buffer.from([0x1d, 0x21, 0x11])); // Double Height & Width
-  const companyName = input.company_name || 'مؤسسة منتجات زيتون الجنوب S.A.R.L';
+  const companyName = input.company_name || 'منتوجات زيت وزيتون الجنوب ش.م.م';
   chunks.push(Buffer.from(`${companyName}\n`, 'utf-8'));
   textStream.push(`[TITLE: ${companyName}]`);
 
