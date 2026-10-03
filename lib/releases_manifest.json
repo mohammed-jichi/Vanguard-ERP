@@ -1,5 +1,28 @@
 [
   {
+    "id": "937fd3ba-fda7-46c3-a82e-11f792a95d62",
+    "commit_hash": "937fd3bafda786c3f82e11f792a95d62d2cb02e7",
+    "short_hash": "937fd3b",
+    "version": "v2.0.0",
+    "title": "Purify translations across all locales, add Persian support, and strictly isolate all warehouses from drivers",
+    "category": "fix",
+    "description": "fix(i18n-security): purify translations across all locales, add Persian support, and strictly isolate all warehouses from drivers",
+    "bullet_points": [
+      "Resolved: purify translations across all locales, add persian support, and strictly isolate all warehouses from drivers",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Operations & Inventory",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-03T00:23:58.000Z",
+    "created_at": "2026-10-03T00:41:32.348Z"
+  },
+  {
     "id": "897d4eb8-8603-40b6-afab-fc1a585d7217",
     "commit_hash": "897d4eb8860330b60fabfc1a585d72178deab56e",
     "short_hash": "897d4eb",

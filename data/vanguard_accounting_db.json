@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-03T00:23:27.980Z",
+  "last_updated": "2026-10-03T00:41:32.353Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-937fd3b",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (937fd3b) - Purify translations across all locales, add Persian support, and strictly isolate all warehouses from drivers",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "937fd3bafda786c3f82e11f792a95d62d2cb02e7",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Operations & Inventory",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-03T00:23:58.000Z"
+    },
     {
       "id": "act-rel-897d4eb",
       "company_id": 1300,
@@ -6107,6 +6124,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-937fd3b",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Purify translations across all locales, add Persian support, and strictly isolate all warehouses from drivers",
+      "message": "fix(i18n-security): purify translations across all locales, add Persian support, and strictly isolate all warehouses from drivers",
+      "timestamp": "2026-10-03T00:23:58.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "937fd3bafda786c3f82e11f792a95d62d2cb02e7",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-897d4eb",
       "type": "SYSTEM_RELEASE",

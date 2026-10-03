@@ -3436,11 +3436,54 @@ export default function CommercialOilOperationsApp() {
       {printableDoc && (
         <div
           onClick={(e) => { if (e.target === e.currentTarget) setPrintableDoc(null); }}
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto animate-fade-in"
+          className="voucher-modal-overlay fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto animate-fade-in print:p-0 print:m-0 print:bg-transparent print:static print:block"
         >
-          <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-300 shadow-2xl overflow-hidden animate-scale-up text-slate-800 my-8">
+          {/* Scoped Strict Print Engine for Official Voucher */}
+          <style dangerouslySetInnerHTML={{ __html: `
+            @page {
+              size: A4 portrait;
+              margin: 10mm;
+            }
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+              body * {
+                visibility: hidden !important;
+              }
+              .official-printable-voucher,
+              .official-printable-voucher * {
+                visibility: visible !important;
+              }
+              .official-printable-voucher {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 20mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                box-sizing: border-box !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+              /* إخفاء أزرار التحكم داخل المودال أثناء الطباعة */
+              .official-printable-voucher button,
+              .official-printable-voucher .no-print,
+              .official-printable-voucher [class*="print:hidden"],
+              .no-print {
+                display: none !important;
+                visibility: hidden !important;
+              }
+            }
+          `}} />
+
+          <div className="official-printable-voucher bg-white rounded-2xl max-w-2xl w-full border border-slate-300 shadow-2xl overflow-hidden animate-scale-up text-slate-800 my-8">
             {/* Modal Top Actions Bar */}
-            <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between print:hidden">
+            <div className="no-print p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between print:hidden">
               <span className="font-black text-sm text-slate-900 flex items-center gap-2">
                 <FileText className="w-4 h-4 text-emerald-600" />
                 {printableDoc.title}
@@ -3448,14 +3491,14 @@ export default function CommercialOilOperationsApp() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => window.print()}
-                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-2xs"
+                  className="no-print px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-2xs"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   {t.print}
                 </button>
                 <button
                   onClick={() => setPrintableDoc(null)}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+                  className="no-print p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
                   title="Close (Esc)"
                 >
                   <X className="w-4 h-4" />
@@ -3503,7 +3546,12 @@ export default function CommercialOilOperationsApp() {
                     </div>
                     <div>
                       <span className="text-slate-500 block">{t.storageTank}</span>
-                      <span className="font-black text-slate-900 text-sm">{printableDoc.content.targetStorageNameAr}</span>
+                      <span className="font-black text-slate-900 text-sm">
+                        {(() => {
+                          const tankObj = tanks.find(tk => tk.id === printableDoc.content.targetStorageId || tk.nameAr === printableDoc.content.targetStorageNameAr);
+                          return tankObj ? getLocalizedTankName(tankObj) : printableDoc.content.targetStorageNameAr;
+                        })()}
+                      </span>
                       <span className="text-[11px] text-emerald-700 block font-bold">{t.acidity} {printableDoc.content.acidity}%</span>
                     </div>
                   </div>
@@ -3585,7 +3633,12 @@ export default function CommercialOilOperationsApp() {
                   <div className="grid grid-cols-4 gap-3 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
                     <div>
                       <span className="text-slate-500 block">{t.reconciledWarehouse}</span>
-                      <span className="font-black text-slate-900 text-sm">{printableDoc.content.targetWarehouseNameAr}</span>
+                      <span className="font-black text-slate-900 text-sm">
+                        {(() => {
+                          const whObj = warehouses.find(w => w.id === printableDoc.content.targetWarehouseId || w.nameAr === printableDoc.content.targetWarehouseNameAr);
+                          return whObj ? getLocalizedWarehouseName(whObj) : printableDoc.content.targetWarehouseNameAr;
+                        })()}
+                      </span>
                     </div>
                     <div>
                       <span className="text-slate-500 block">{t.totalProducedPieces}</span>
@@ -3615,16 +3668,20 @@ export default function CommercialOilOperationsApp() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {printableDoc.content.skus?.filter((s: any) => s.totalPieces > 0).map((s: any, idx: number) => (
+                        {printableDoc.content.skus?.filter((s: any) => s.totalPieces > 0).map((s: any, idx: number) => {
+                          const stdSku = STANDARD_PACKAGING_SIZES.find((p: StandardPackagingSize) => p.skuId === s.skuId);
+                          const skuLabel = stdSku ? getLocalizedSkuName(stdSku) : (s.name || s.nameAr);
+                          return (
                           <tr key={idx}>
-                            <td className="p-2 font-bold text-slate-900">{s.nameAr}</td>
+                            <td className="p-2 font-bold text-slate-900">{skuLabel}</td>
                             <td className="p-2">{s.boxCapacity} {t.unitPiece}</td>
                             <td className="p-2 font-black">{s.boxes}</td>
                             <td className="p-2">{s.loosePieces}</td>
                             <td className="p-2 font-black text-indigo-700">{s.totalPieces} {t.unitPiece}</td>
                             <td className="p-2 font-bold">{s.totalLiters} {t.unitL}</td>
                           </tr>
-                        ))}
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
