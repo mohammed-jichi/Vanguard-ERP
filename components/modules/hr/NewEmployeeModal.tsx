@@ -18,6 +18,7 @@ import {
   ALL_COUNTRY_DIAL_CODES,
   ALL_WORLD_COUNTRIES_INFO,
 } from '@/lib/countriesData';
+import { sanitizeFormPayload } from '@/lib/utils/formSanitizer';
 import {
   X,
   User,
@@ -228,7 +229,6 @@ interface NewEmployeeModalProps {
   employee?: any;
   hideScheduleTab?: boolean;
 }
-
 
 export {
   DEPARTMENTS_MASTER_KEYS,
@@ -441,7 +441,7 @@ export default function NewEmployeeModal({
   );
   const [posEmailSignature, setPosEmailSignature] = useState(
     initialEmployee?.posCredentials?.emailSignature ||
-      `${activeRecord?.firstName || activeRecord?.first_name || ''} ${activeRecord?.lastName || activeRecord?.last_name || ''} - ${activeRecord?.designation || 'Manager'}\nSouthern Olive and Oil Products S.A.R.L.`
+    `${activeRecord?.firstName || activeRecord?.first_name || ''} ${activeRecord?.lastName || activeRecord?.last_name || ''} - ${activeRecord?.designation || 'Manager'}\nSouthern Olive and Oil Products S.A.R.L.`
   );
 
   // Broadcast Key Prompt Modal
@@ -493,8 +493,6 @@ export default function NewEmployeeModal({
     return ALL_WORLD_COUNTRIES.filter((c) => c.toLowerCase().includes(q));
   }, [countrySearchQuery]);
 
-
-
   if (!isOpen) return null;
 
   // Handle Photo selection
@@ -515,83 +513,111 @@ export default function NewEmployeeModal({
   };
 
   // Handle Save
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      alert('First Name and Last Name are required.');
-      return;
-    }
+    try {
+      // 1. Validate Required Fields
+      if (!formData.firstName.trim() || !formData.lastName.trim()) {
+        setActiveTab('personal');
+        alert('First Name and Last Name are required.');
+        return;
+      }
 
-    const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
-    const allEmployees = HRPersonnelService.getEmployees();
-    const target = initialData || employee || initialEmployee;
-    const nextId = target?.id || `EMP-${(allEmployees.length + 1).toString().padStart(3, '0')}`;
+      if (!formData.department) {
+        setActiveTab('personal');
+        alert('Department is required.');
+        return;
+      }
 
-    const newEmp: HREmployeeRecord = {
-      id: nextId,
-      active: formData.status === 'Active',
-      firstName: formData.firstName.trim(),
-      lastName: formData.lastName.trim(),
-      fullName,
-      email: formData.email.trim() || `${formData.firstName.toLowerCase()}.${formData.lastName.toLowerCase()}@southernolive-lb.com`,
-      phone: formData.phone.trim() ? `${formData.countryCode} ${formData.phone.trim()}` : '+961 70 000000',
-      countryCode: formData.countryCode,
-      dateOfBirth: formData.dateOfBirth,
-      gender: formData.gender,
-      maritalStatus: formData.maritalStatus,
-      childrenCount: formData.numberOfChildren,
-      contactPerson: formData.contactPerson.trim() || undefined,
-      contactPhone: formData.contactPhone.trim() || undefined,
-      profilePicture: profilePicture || undefined,
-      jobOfferDoc: jobOfferDoc || undefined,
-      department: formData.department,
-      designation: formData.designation,
-      location: formData.location,
-      dateHired: formData.dateHired || undefined,
-      dateLeft: formData.dateLeft || undefined,
-      attendanceMacId: formData.attendanceMacId.trim() || undefined,
-      country: formData.country,
-      city: formData.city,
-      address: formData.address.trim() || undefined,
-      nationalId: formData.nationalId.trim() || undefined,
-      socialSecurityNo: formData.socialSecurityNumber.trim() || undefined,
-      brand: formData.brand,
-      branch: formData.branchName,
-      useBranch: formData.useBranch,
-      isBackoffice: formData.createBackoffice,
-      posEmployeeId: formData.posEmployeeId || '1',
-      posCredentials: {
-        nickName: posNickName || formData.firstName || 'Operator',
-        language: posLanguage,
-        active: posActive,
-        accessBackOffice: posAccessBackOffice,
-        salesman: posSalesman,
-        driver: posDriver,
-        training: posTraining,
-        branch: formData.branchName,
-        backOfficeRole: posBackOfficeRole,
-        employeeId: formData.posEmployeeId || '1',
-        password: posPassword,
-        secPassword: posSecPassword,
-        posCloudLoginId,
-        posCloudPassword,
-        configuration: posConfiguration,
-        cashDrawerPort: posCashDrawerPort,
-        printerType: posPrinterType,
-        openCashDrawer: posOpenCashDrawer,
-        hideInTimeAttendance: posHideInTimeAtt,
-        autoTimeAtt: posAutoTimeAtt,
-        emailSignature: posEmailSignature,
-      },
-      schedule: target?.schedule || {
-        templateName: 'Backoffice Administration (08:00 - 16:30)',
-      },
-      socialMediaRep: formData.designation === 'social_media_rep' ? formData.socialMediaRep : undefined,
-      createdAt: target?.createdAt || new Date().toISOString().split('T')[0],
-    };
+      if (!formData.designation) {
+        setActiveTab('personal');
+        alert('Designation is required.');
+        return;
+      }
 
-      // Persist workstation profile, authority, drawer kick, and ESC/POS printer settings to DB and Supabase
+      // 2. Global Sanitization
+      const sanitized = sanitizeFormPayload(formData);
+
+      // Clean city name if it contains composite district suffix (e.g. "Choueifat - Aley" -> "Choueifat")
+      const rawCity = sanitized.city || '';
+      const cleanCity = rawCity.includes(' - ') ? rawCity.split(' - ')[0].trim() : rawCity;
+
+      const cleanFirstName = sanitized.firstName || formData.firstName.trim();
+      const cleanLastName = sanitized.lastName || formData.lastName.trim();
+      const fullName = `${cleanFirstName} ${cleanLastName}`.trim();
+      const allEmployees = HRPersonnelService.getEmployees();
+      const target = initialData || employee || initialEmployee;
+      const nextId = target?.id || `EMP-${(allEmployees.length + 1).toString().padStart(3, '0')}`;
+
+      // Attendance MAC ID: coerce 'Pending Device Sync' or empty to null/undefined
+      const rawMac = sanitized.attendanceMacId;
+      const cleanMacId = (rawMac && rawMac !== 'Pending Device Sync') ? rawMac : undefined;
+
+      const newEmp: HREmployeeRecord = {
+        id: nextId,
+        active: formData.status === 'Active',
+        firstName: cleanFirstName,
+        lastName: cleanLastName,
+        fullName,
+        email: sanitized.email || `${cleanFirstName.toLowerCase()}.${cleanLastName.toLowerCase()}@southernolive-lb.com`,
+        phone: sanitized.phone ? `${sanitized.countryCode || '+961'} ${sanitized.phone}` : '+961 70 000000',
+        countryCode: sanitized.countryCode || '+961',
+        dateOfBirth: sanitized.dateOfBirth || '1995-01-01',
+        gender: formData.gender,
+        maritalStatus: sanitized.maritalStatus || 'Single',
+        childrenCount: sanitized.numberOfChildren ?? 0,
+        contactPerson: sanitized.contactPerson || undefined,
+        contactPhone: sanitized.contactPhone || undefined,
+        profilePicture: profilePicture || undefined,
+        jobOfferDoc: jobOfferDoc || undefined,
+        department: sanitized.department || '',
+        designation: sanitized.designation || '',
+        location: sanitized.location || '',
+        dateHired: sanitized.dateHired || undefined,
+        dateLeft: sanitized.dateLeft || undefined,
+        attendanceMacId: cleanMacId,
+        country: sanitized.country || 'Lebanon',
+        city: cleanCity,
+        address: sanitized.address || undefined,
+        nationalId: sanitized.nationalId || undefined,
+        socialSecurityNo: sanitized.socialSecurityNumber || undefined,
+        brand: sanitized.brand || 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
+        branch: sanitized.branchName || 'Southern Olive and Oil Products - Main',
+        useBranch: formData.useBranch,
+        isBackoffice: formData.createBackoffice,
+        posEmployeeId: sanitized.posEmployeeId || '1',
+        posCredentials: {
+          nickName: posNickName || cleanFirstName || 'Operator',
+          language: posLanguage,
+          active: posActive,
+          accessBackOffice: posAccessBackOffice,
+          salesman: posSalesman,
+          driver: posDriver,
+          training: posTraining,
+          branch: sanitized.branchName || 'Southern Olive and Oil Products - Main',
+          backOfficeRole: posBackOfficeRole,
+          employeeId: sanitized.posEmployeeId || '1',
+          password: posPassword,
+          secPassword: posSecPassword,
+          posCloudLoginId,
+          posCloudPassword,
+          configuration: posConfiguration,
+          cashDrawerPort: posCashDrawerPort,
+          printerType: posPrinterType,
+          openCashDrawer: posOpenCashDrawer,
+          hideInTimeAttendance: posHideInTimeAtt,
+          autoTimeAtt: posAutoTimeAtt,
+          emailSignature: posEmailSignature,
+        },
+        schedule: target?.schedule || {
+          templateName: 'Backoffice Administration (08:00 - 16:30)',
+        },
+        socialMediaRep: formData.designation === 'social_media_rep' ? formData.socialMediaRep : undefined,
+        createdAt: target?.createdAt || new Date().toISOString().split('T')[0],
+      };
+
+      // Persist workstation profile, authority, drawer kick, and ESC/POS printer settings
       fetch('/api/hr/sync-workstation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -625,7 +651,11 @@ export default function NewEmployeeModal({
       HRPersonnelService.saveEmployee(newEmp);
       onEmployeeCreated(newEmp);
       onClose();
-    };
+    } catch (error: any) {
+      console.error('[Vanguard ERP Mutation Failure]: Failed to save employee:', error);
+      alert(`Save Failed: ${error?.message || 'Unexpected database error occurred.'}`);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-80 flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 backdrop-blur-xs">
@@ -660,11 +690,10 @@ export default function NewEmployeeModal({
             <button
               type="button"
               onClick={() => setActiveTab('personal')}
-              className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${
-                activeTab === 'personal'
+              className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'personal'
                   ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               <User className="w-4 h-4" />
               <span>{t('hr.tab_personal', 'Personal *')}</span>
@@ -672,11 +701,10 @@ export default function NewEmployeeModal({
             <button
               type="button"
               onClick={() => setActiveTab('work_location')}
-              className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${
-                activeTab === 'work_location'
+              className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'work_location'
                   ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               <MapPin className="w-4 h-4" />
               <span>{t('hr.tab_work_location', 'Work Location *')}</span>
@@ -685,11 +713,10 @@ export default function NewEmployeeModal({
               <button
                 type="button"
                 onClick={() => setActiveTab('schedule')}
-                className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === 'schedule'
+                className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'schedule'
                     ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
                     : 'border-transparent text-slate-600 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 <Clock className="w-4 h-4" />
                 <span>{t('hr.tab_schedule', 'Schedule')}</span>
@@ -703,7 +730,8 @@ export default function NewEmployeeModal({
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={formData.status === 'Active'} onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked ? 'Active' : 'Inactive' }))}
+                checked={formData.status === 'Active'}
+                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked ? 'Active' : 'Inactive' }))}
                 className="sr-only peer"
               />
               <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
@@ -737,7 +765,8 @@ export default function NewEmployeeModal({
                       <input
                         type="text"
                         required
-                        value={formData.firstName} onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                        value={formData.firstName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                         placeholder="e.g. Hussien"
                         className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
@@ -747,7 +776,8 @@ export default function NewEmployeeModal({
                       <input
                         type="text"
                         required
-                        value={formData.lastName} onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                        value={formData.lastName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                         placeholder="e.g. Jichi"
                         className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
@@ -802,11 +832,10 @@ export default function NewEmployeeModal({
                                     setIsDialCodeDropdownOpen(false);
                                     setDialCodeSearchQuery('');
                                   }}
-                                  className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${
-                                    formData.countryCode === c.code && activeDialCodeObj.country === c.country
+                                  className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${formData.countryCode === c.code && activeDialCodeObj.country === c.country
                                       ? 'bg-primary/10 text-primary font-bold'
                                       : 'text-slate-800'
-                                  }`}
+                                    }`}
                                 >
                                   <div className="flex items-center gap-2 truncate">
                                     <span className="text-base leading-none shrink-0">{c.flag}</span>
@@ -826,9 +855,9 @@ export default function NewEmployeeModal({
                         type="text"
                         required
                         value={formData.phone}
-                          onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                          placeholder="70 123456"
-                          className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        placeholder="70 123456"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
                   </div>
@@ -839,7 +868,8 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">{t('email', 'Email')}</label>
                       <input
                         type="email"
-                        value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         placeholder="user@southernolive-lb.com"
                         className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
@@ -848,7 +878,8 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">{t('date_of_birth', 'Date of birth')}</label>
                       <input
                         type="date"
-                        value={formData.dateOfBirth} onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                        value={formData.dateOfBirth}
+                        onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                         className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
@@ -859,7 +890,8 @@ export default function NewEmployeeModal({
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-700 block">{t('gender', 'Gender')}*</label>
                       <select
-                        value={formData.gender} onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'Male' | 'Female' }))}
+                        value={formData.gender}
+                        onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'Male' | 'Female' }))}
                         className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                       >
                         <option value="Male">{t('hr.gender_male', 'Male')}</option>
@@ -870,10 +902,10 @@ export default function NewEmployeeModal({
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-700 block">{t('hr.marital_status', 'Marital Status')}</label>
                       <select
-                        value={formData.maritalStatus} onChange={(e) => setFormData(prev => ({ ...prev, maritalStatus: e.target.value as any }))}
-                        className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${
-                          !formData.maritalStatus ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
-                        }`}
+                        value={formData.maritalStatus}
+                        onChange={(e) => setFormData(prev => ({ ...prev, maritalStatus: e.target.value as any }))}
+                        className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${!formData.maritalStatus ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
+                          }`}
                       >
                         <option value="" disabled className="text-slate-400 font-normal">
                           {t('common.select', 'Select...')}
@@ -893,7 +925,8 @@ export default function NewEmployeeModal({
                       <input
                         type="number"
                         min="0"
-                        value={formData.numberOfChildren} onChange={(e) => setFormData(prev => ({ ...prev, numberOfChildren: Math.max(0, parseInt(e.target.value, 10) || 0) }))}
+                        value={formData.numberOfChildren}
+                        onChange={(e) => setFormData(prev => ({ ...prev, numberOfChildren: Math.max(0, parseInt(e.target.value, 10) || 0) }))}
                         className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
@@ -905,7 +938,8 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">{t('hr.contact_person', 'Contact Person')}</label>
                       <input
                         type="text"
-                        value={formData.contactPerson} onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
+                        value={formData.contactPerson}
+                        onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
                         placeholder="Emergency contact name"
                         className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
@@ -914,7 +948,8 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">{t('hr.contact_phone', 'Contact Phone')}</label>
                       <input
                         type="text"
-                        value={formData.contactPhone} onChange={(e) => setFormData(prev => ({ ...prev, contactPhone: e.target.value }))}
+                        value={formData.contactPhone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, contactPhone: e.target.value }))}
                         placeholder="+961..."
                         className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary font-mono"
                       />
@@ -1011,10 +1046,10 @@ export default function NewEmployeeModal({
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 block">{t('department', 'Department')}*</label>
                     <select
-                      value={formData.department} onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
-                      className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${
-                        !formData.department ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
-                      }`}
+                      value={formData.department}
+                      onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
+                      className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${!formData.department ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
+                        }`}
                     >
                       <option value="" disabled className="text-slate-400 font-normal">
                         {t('common.select', 'Select...')}
@@ -1035,10 +1070,10 @@ export default function NewEmployeeModal({
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 block">{t('designation', 'Designation')}*</label>
                     <select
-                      value={formData.designation} onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
-                      className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${
-                        !formData.designation ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
-                      }`}
+                      value={formData.designation}
+                      onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
+                      className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${!formData.designation ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
+                        }`}
                     >
                       <option value="" disabled className="text-slate-400 font-normal">
                         {t('common.select', 'Select...')}
@@ -1059,10 +1094,10 @@ export default function NewEmployeeModal({
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 block">{t('location', 'Location')}</label>
                     <select
-                      value={formData.location} onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                      className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${
-                        !formData.location ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
-                      }`}
+                      value={formData.location}
+                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                      className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${!formData.location ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
+                        }`}
                     >
                       <option value="" disabled className="text-slate-400 font-normal">
                         {t('common.select', 'Select...')}
@@ -1100,7 +1135,8 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">{t('hr.date_hired', 'Date Hired')}</label>
                     <input
                       type="date"
-                      value={formData.dateHired} onChange={(e) => setFormData(prev => ({ ...prev, dateHired: e.target.value }))}
+                      value={formData.dateHired}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dateHired: e.target.value }))}
                       className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
                   </div>
@@ -1108,7 +1144,8 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">{t('hr.date_left', 'Date Left (if resigned/terminated)')}</label>
                     <input
                       type="date"
-                      value={formData.dateLeft} onChange={(e) => setFormData(prev => ({ ...prev, dateLeft: e.target.value }))}
+                      value={formData.dateLeft}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dateLeft: e.target.value }))}
                       className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
                   </div>
@@ -1469,9 +1506,8 @@ export default function NewEmployeeModal({
                                 setIsCountryDropdownOpen(false);
                                 setCountrySearchQuery('');
                               }}
-                              className={`w-full text-left px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${
-                                formData.country === ctry ? 'bg-primary/10 text-primary font-bold' : 'text-slate-800'
-                              }`}
+                              className={`w-full text-left px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${formData.country === ctry ? 'bg-primary/10 text-primary font-bold' : 'text-slate-800'
+                                }`}
                             >
                               <span>{ctry}</span>
                               {ctry === 'Lebanon' && (
@@ -1516,7 +1552,8 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">{t('hr.national_id', 'National ID')}</label>
                     <input
                       type="text"
-                      value={formData.nationalId} onChange={(e) => setFormData(prev => ({ ...prev, nationalId: e.target.value }))}
+                      value={formData.nationalId}
+                      onChange={(e) => setFormData(prev => ({ ...prev, nationalId: e.target.value }))}
                       placeholder="100..."
                       className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
@@ -1526,7 +1563,8 @@ export default function NewEmployeeModal({
                     <label className="text-xs font-bold text-slate-700 block">{t('hr.social_security_number', 'Social Security Number')}</label>
                     <input
                       type="text"
-                      value={formData.socialSecurityNumber} onChange={(e) => setFormData(prev => ({ ...prev, socialSecurityNumber: e.target.value }))}
+                      value={formData.socialSecurityNumber}
+                      onChange={(e) => setFormData(prev => ({ ...prev, socialSecurityNumber: e.target.value }))}
                       placeholder="CNSS-..."
                       className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
@@ -1537,7 +1575,8 @@ export default function NewEmployeeModal({
                   <label className="text-xs font-bold text-slate-700 block">{t('hr.address', 'Address')}</label>
                   <input
                     type="text"
-                    value={formData.address} onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                    value={formData.address}
+                    onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                     placeholder={t('hr.address_placeholder', 'Street, building, floor, landmark')}
                     className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                   />
@@ -1646,7 +1685,8 @@ export default function NewEmployeeModal({
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 block">{t('hr.brand', 'Brand')}</label>
                   <select
-                    value={formData.brand} onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
+                    value={formData.brand}
+                    onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
                     className="w-full px-3 py-2.5 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
                   >
                     <option value="Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)">
@@ -1672,14 +1712,14 @@ export default function NewEmployeeModal({
                           <input
                             type="checkbox"
                             checked={formData.useBranch}
-  onChange={(e) => {
-    const checked = e.target.checked;
-    setFormData(prev => ({
-      ...prev,
-      useBranch: checked,
-      createBackoffice: checked ? prev.createBackoffice : false
-    }));
-  }}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              setFormData(prev => ({
+                                ...prev,
+                                useBranch: checked,
+                                createBackoffice: checked ? prev.createBackoffice : false
+                              }));
+                            }}
                             className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                           />
                         </td>
@@ -1692,14 +1732,14 @@ export default function NewEmployeeModal({
                               <input
                                 type="checkbox"
                                 checked={formData.createBackoffice}
-  onChange={(e) => {
-    const checked = e.target.checked;
-    setFormData(prev => ({
-      ...prev,
-      createBackoffice: checked,
-      posEmployeeId: checked && (!prev.posEmployeeId || prev.posEmployeeId === '0') ? '1' : prev.posEmployeeId
-    }));
-  }}
+                                onChange={(e) => {
+                                  const checked = e.target.checked;
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    createBackoffice: checked,
+                                    posEmployeeId: checked && (!prev.posEmployeeId || prev.posEmployeeId === '0') ? '1' : prev.posEmployeeId
+                                  }));
+                                }}
                                 className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
                               />
                               <span>{t('hr.backoffice', 'Backoffice')}</span>
