@@ -1477,12 +1477,12 @@ export default function NewEmployeeModal({
                         value={formData.city}
                         onClick={() => setIsSelectCityModalOpen(true)}
                         placeholder={t('hr.select_city', 'Select City')}
-                        className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 w-full cursor-pointer hover:border-slate-400 focus:outline-none focus:border-blue-600 transition"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer"
                       />
                       <button
                         type="button"
                         onClick={() => setIsSelectCityModalOpen(true)}
-                        className="h-[38px] bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-lg px-3 flex items-center justify-center transition cursor-pointer shrink-0"
+                        className="h-full min-h-[42px] px-3.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-700 flex items-center justify-center transition-all shadow-sm cursor-pointer shrink-0"
                         title={t('hr.select_city', 'Select City')}
                         aria-label={t('hr.select_city', 'Select City')}
                       >
