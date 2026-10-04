@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-03T03:54:45.695Z",
+  "last_updated": "2026-10-04T00:44:57.761Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-c0b9d13",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (c0b9d13) - Unify light theme on city picker, simplify labels, and enhance mac id contrast",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "c0b9d13d41ca71109c5f570b9be6d865d1f7afb2",
+        "version": "v2.0.0",
+        "category": "refactor",
+        "modules": [
+          "HR & Payroll",
+          "Multilingual Engine (i18n)"
+        ]
+      },
+      "created_at": "2026-10-04T00:31:03.000Z"
+    },
     {
       "id": "act-rel-f9f5a07",
       "company_id": 1300,
@@ -6158,6 +6175,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-c0b9d13",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Unify light theme on city picker, simplify labels, and enhance mac id contrast",
+      "message": "style(hr): unify light theme on city picker, simplify labels, and enhance mac id contrast",
+      "timestamp": "2026-10-04T00:31:03.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "c0b9d13d41ca71109c5f570b9be6d865d1f7afb2",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-f9f5a07",
       "type": "SYSTEM_RELEASE",

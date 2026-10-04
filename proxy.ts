@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Vanguard ERP — Authentication & Route Guard Middleware
+ * Vanguard ERP — Authentication & Route Guard Proxy
  * 
  * 1. Protects root (/) and enterprise workspace routes, redirecting unauthenticated users to /login.
  * 2. Inspects active Supabase auth cookies (sb-*-auth-token, sb-access-token, supabase-auth-token)
@@ -100,7 +100,7 @@ const NON_TENANT_PREFIXES = new Set([
   'vtrack', 'oil-hub', 'operations', '_next', 'favicon.ico'
 ]);
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   // 1. Skip auth callback APIs immediately
@@ -248,6 +248,10 @@ export function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
+
+// Backward compatibility alias for both named and default exports
+export { proxy as middleware };
+export default proxy;
 
 export const config = {
   matcher: [
