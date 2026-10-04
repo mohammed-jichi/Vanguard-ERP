@@ -1,4 +1,12 @@
-export function sanitizeFormPayload<T extends Record<string, any>>(raw: T): Partial<T> {
+export interface SanitizeOptions {
+  stripPrefixes?: boolean;
+  emptyToNull?: boolean;
+}
+
+export function sanitizeFormPayload<T extends Record<string, any>>(
+  raw: T,
+  options?: SanitizeOptions
+): Partial<T> {
   const sanitized: Record<string, any> = {};
   for (const [key, value] of Object.entries(raw)) {
     if (typeof value === 'string') {
