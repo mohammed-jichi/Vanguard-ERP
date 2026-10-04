@@ -10,9 +10,9 @@ import {
 } from '@/lib/hrPersonnelService';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
-  searchLebaneseCities,
-  LebaneseCity,
+  LebaneseCityEntry,
 } from '@/lib/lebaneseCities';
+import { SelectCityModal } from './SelectCityModal';
 import {
   ALL_WORLD_COUNTRIES,
   ALL_COUNTRY_DIAL_CODES,
@@ -47,6 +47,7 @@ import {
   Copy,
   RefreshCw,
   ShieldCheck,
+  List,
 } from 'lucide-react';
 
 export interface EmployeeFormData {
@@ -398,8 +399,7 @@ export default function NewEmployeeModal({
   const [dialCodeSearchQuery, setDialCodeSearchQuery] = useState('');
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const [countrySearchQuery, setCountrySearchQuery] = useState('');
-  const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
-  const [citySearchQuery, setCitySearchQuery] = useState('');
+  const [isSelectCityModalOpen, setIsSelectCityModalOpen] = useState(false);
 
   // Nested POS Credentials Configuration Modal State
   const [isPosConfigOpen, setIsPosConfigOpen] = useState<boolean>(false);
@@ -493,10 +493,7 @@ export default function NewEmployeeModal({
     return ALL_WORLD_COUNTRIES.filter((c) => c.toLowerCase().includes(q));
   }, [countrySearchQuery]);
 
-  // Filtered Lebanese Cities
-  const filteredCities = useMemo(() => {
-    return searchLebaneseCities(citySearchQuery);
-  }, [citySearchQuery]);
+
 
   if (!isOpen) return null;
 
@@ -767,7 +764,6 @@ export default function NewEmployeeModal({
                           onClick={() => {
                             setIsDialCodeDropdownOpen(!isDialCodeDropdownOpen);
                             setIsCountryDropdownOpen(false);
-                            setIsCityDropdownOpen(false);
                           }}
                           className="w-36 px-2.5 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus:border-primary shadow-2xs hover:bg-slate-50 transition-colors"
                         >
@@ -1416,7 +1412,6 @@ export default function NewEmployeeModal({
                     <div
                       onClick={() => {
                         setIsCountryDropdownOpen(!isCountryDropdownOpen);
-                        setIsCityDropdownOpen(false);
                         setIsDialCodeDropdownOpen(false);
                       }}
                       className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus-within:border-primary shadow-2xs hover:bg-slate-50 transition-colors"
@@ -1470,66 +1465,30 @@ export default function NewEmployeeModal({
                     )}
                   </div>
 
-                  {/* Custom Searchable Lebanese City Dropdown */}
-                  <div className="space-y-1 relative">
-                    <label className="text-xs font-bold text-slate-700 block">{t('hr.city_lebanon', 'City* (Lebanese Directory)')}</label>
-                    <div
-                      onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
-                      className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus-within:border-primary shadow-2xs"
-                    >
-                      <span className="truncate">{formData.city}</span>
-                      <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-1" />
+                  {/* Searchable Lebanese City Directory Modal Trigger */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                      {t('hr.city_lebanon', 'City / Cadastral Area (Lebanon Directory)')}
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        readOnly
+                        value={formData.city}
+                        onClick={() => setIsSelectCityModalOpen(true)}
+                        placeholder={t('hr.select_city', 'Select City')}
+                        className="flex-1 h-9 px-3 text-xs font-semibold text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary/50 focus:border-primary shadow-2xs transition-colors truncate"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setIsSelectCityModalOpen(true)}
+                        className="h-9 w-9 bg-primary hover:bg-primary/90 text-white rounded-xl flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer shrink-0"
+                        title={t('hr.select_city', 'Select City')}
+                        aria-label={t('hr.select_city', 'Select City')}
+                      >
+                        <List className="w-4 h-4" />
+                      </button>
                     </div>
-
-                    {/* Dropdown Menu */}
-                    {isCityDropdownOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 p-2 max-h-60 overflow-y-auto space-y-1 animate-slideDown">
-                        <div className="relative mb-2">
-                          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="text"
-                            autoFocus
-                            value={citySearchQuery}
-                            onChange={(e) => setCitySearchQuery(e.target.value)}
-                            placeholder="Search Lebanese town or caza..."
-                            className="w-full pl-8 pr-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium outline-hidden"
-                          />
-                        </div>
-
-                        {filteredCities.length === 0 ? (
-                          <div className="py-4 text-center text-xs text-slate-400 font-medium">
-                            No cities found matching "{citySearchQuery}"
-                          </div>
-                        ) : (
-                          filteredCities.map((c) => (
-                            <button
-                              key={c.id}
-                              type="button"
-                              onClick={() => {
-                                setFormData(prev => ({ ...prev, city: `${c.name} - ${c.caza}` }));
-                                setIsCityDropdownOpen(false);
-                                setCitySearchQuery('');
-                              }}
-                              className={`w-full text-left px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer ${
-                                formData.city.startsWith(c.name) ? 'bg-primary/10 text-primary font-bold' : 'text-slate-800'
-                              }`}
-                            >
-                              <div>
-                                <span className="font-bold">{c.name}</span>
-                                {c.nameAr && (
-                                  <span className="text-[11px] text-slate-500 font-arabic ml-1.5">
-                                    {c.nameAr}
-                                  </span>
-                                )}
-                              </div>
-                              <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 font-medium">
-                                {c.caza}
-                              </span>
-                            </button>
-                          ))
-                        )}
-                      </div>
-                    )}
                   </div>
 
                   <div className="space-y-1">
@@ -2269,6 +2228,16 @@ export default function NewEmployeeModal({
             </div>
           </div>
         )}
+
+        {/* Lebanese Cities Searchable Modal */}
+        <SelectCityModal
+          isOpen={isSelectCityModalOpen}
+          onClose={() => setIsSelectCityModalOpen(false)}
+          onSelect={(city: LebaneseCityEntry) => {
+            setFormData((prev) => ({ ...prev, city: `${city.name} - ${city.district}` }));
+          }}
+          selectedCity={formData.city}
+        />
       </div>
     </div>
   );
