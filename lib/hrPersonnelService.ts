@@ -200,9 +200,9 @@ export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
     designation: 'General Operations Manager',
     location: 'Office',
     dateHired: '2020-01-01',
-    attendanceMacId: '00:1A:2B:3C:4D:01',
+    attendanceMacId: '',
     country: 'Lebanon',
-    city: 'Choueifat (معمل الشويفات) - Aley',
+    city: 'Choueifat - Aley',
     address: 'Old Saida Road, Choueifat Central Plant',
     nationalId: '1001122334',
     socialSecurityNo: 'CNSS-1122334',
@@ -255,9 +255,9 @@ export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
     designation: 'Owner / Director',
     location: 'Office',
     dateHired: '2021-03-15',
-    attendanceMacId: '00:1A:2B:3C:4D:5E',
+    attendanceMacId: '',
     country: 'Lebanon',
-    city: 'Choueifat (معمل الشويفات) - Aley',
+    city: 'Choueifat - Aley',
     address: 'Old Saida Road, Choueifat Central Plant',
     nationalId: '1002938475',
     socialSecurityNo: 'CNSS-8899201',
@@ -308,9 +308,9 @@ export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
     designation: 'Accountant',
     location: 'Office',
     dateHired: '2022-01-10',
-    attendanceMacId: '00:1A:2B:3C:4D:03',
+    attendanceMacId: '',
     country: 'Lebanon',
-    city: 'Choueifat (معمل الشويفات) - Aley',
+    city: 'Choueifat - Aley',
     address: 'Old Saida Road, Choueifat Central Plant',
     nationalId: '1003829102',
     socialSecurityNo: 'CNSS-9933503',
@@ -361,9 +361,9 @@ export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
     designation: 'Cashier',
     location: 'Office',
     dateHired: '2023-04-01',
-    attendanceMacId: '00:1A:2B:3C:4D:04',
+    attendanceMacId: '',
     country: 'Lebanon',
-    city: 'Choueifat (معمل الشويفات) - Aley',
+    city: 'Choueifat - Aley',
     address: 'Old Saida Road, Choueifat Central Plant',
     nationalId: '1009182736',
     socialSecurityNo: 'CNSS-4422115',
@@ -414,9 +414,9 @@ export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
     designation: 'oil_press_operator',
     location: 'mill_facility',
     dateHired: '2022-09-01',
-    attendanceMacId: '00:1A:2B:3C:4D:05',
+    attendanceMacId: '',
     country: 'Lebanon',
-    city: 'Choueifat (معمل الشويفات) - Aley',
+    city: 'Choueifat - Aley',
     address: 'Choueifat Plant, Press Line 1',
     nationalId: '1004455667',
     socialSecurityNo: 'CNSS-5544332',
@@ -447,9 +447,9 @@ export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
     designation: 'delivery_driver',
     location: 'on_road',
     dateHired: '2023-01-15',
-    attendanceMacId: '00:1A:2B:3C:4D:06',
+    attendanceMacId: '',
     country: 'Lebanon',
-    city: 'Choueifat (معمل الشويفات) - Aley',
+    city: 'Choueifat - Aley',
     address: 'South Fleet Hub, Truck #4',
     nationalId: '1007788990',
     socialSecurityNo: 'CNSS-7766554',
@@ -480,7 +480,7 @@ export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
     designation: 'social_media_rep',
     location: 'remote',
     dateHired: '2024-01-10',
-    attendanceMacId: '00:1A:2B:3C:4D:07',
+    attendanceMacId: '',
     country: 'Lebanon',
     city: 'Beirut - Achrafieh',
     address: 'Independence Street, Building 12, 4th Floor',
@@ -516,7 +516,7 @@ export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
   },
 ];
 
-const LOCAL_STORAGE_KEY = 'vanguard_hr_personnel_records_omega_v1';
+const LOCAL_STORAGE_KEY = 'vanguard_hr_personnel_records_omega_v2';
 const DAY_OFF_STORAGE_KEY = 'vanguard_hr_day_off_records_v1';
 
 export class HRPersonnelService {
@@ -528,6 +528,7 @@ export class HRPersonnelService {
       // Purge legacy storage keys that held mock personnel
       localStorage.removeItem('vanguard_hr_personnel_records_v1');
       localStorage.removeItem('vanguard_hr_personnel_records_v2');
+      localStorage.removeItem('vanguard_hr_personnel_records_omega_v1');
 
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (stored) {

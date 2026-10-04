@@ -383,7 +383,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
         location: 'Office',
         dateHired: newEmpHireDate,
         country: 'Lebanon',
-        city: 'Choueifat (معمل الشويفات) - Aley',
+        city: 'Choueifat - Aley',
         brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
         branch: 'Southern Olive and Oil Products - Main',
         useBranch: true,

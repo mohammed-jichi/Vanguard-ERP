@@ -2868,7 +2868,7 @@ export const LEBANESE_CITIES: LebaneseCity[] = [
 
   // ALEY CAZA (MOUNT LEBANON)
   { id: 'aamroussieh-choueifat', name: 'Aamroussieh Choueifat', caza: 'Aley', governorate: 'Mount Lebanon', nameAr: 'العمروسية الشويفات' },
-  { id: 'choueifat-central', name: 'Choueifat (معمل الشويفات)', caza: 'Aley', governorate: 'Mount Lebanon', nameAr: 'الشويفات - المعمل المركزي' },
+  { id: 'choueifat-central', name: 'Choueifat', caza: 'Aley', governorate: 'Mount Lebanon', nameAr: 'الشويفات - المعمل المركزي' },
   { id: 'choueifat-omara', name: 'Choueifat Al-Omara', caza: 'Aley', governorate: 'Mount Lebanon', nameAr: 'الشويفات الأمراء' },
   { id: 'choueifat-qubbeh', name: 'Choueifat Al-Qubbeh', caza: 'Aley', governorate: 'Mount Lebanon', nameAr: 'الشويفات القبة' },
   { id: 'aley-city', name: 'Aley', caza: 'Aley', governorate: 'Mount Lebanon', nameAr: 'عاليه' },
