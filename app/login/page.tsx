@@ -436,9 +436,6 @@ export default function LoginPage() {
             <h3 className={`text-3xl font-extrabold tracking-tight ${is1300 ? 'text-white' : 'text-slate-900'}`}>
               Sign In
             </h3>
-            <p className={`mt-2 font-medium ${is1300 ? 'text-slate-300' : 'text-slate-500'}`}>
-              {is1300 ? 'Access Southern Olive Oil Enterprise Portal' : 'Access your Vanguard dashboard'}
-            </p>
           </div>
 
           {/* TENANT 1300 IMMEDIATE CONFIRMATION BADGE */}
@@ -537,7 +534,7 @@ export default function LoginPage() {
                   ) : tenantPreview ? (
                     <span className="text-emerald-600 font-bold">✓ Verified</span>
                   ) : (
-                    '(1300 for Primary Tenant / ADMIN for Master)'
+                    null
                   )}
                 </span>
               </div>
@@ -546,7 +543,7 @@ export default function LoginPage() {
                 value={companyId}
                 onChange={(e) => setCompanyId(e.target.value)}
                 required
-                placeholder="e.g. 1300, SO-OLIVE, or ADMIN"
+                placeholder=""
                 className={`w-full px-5 py-4 rounded-xl border ${tenantPreview ? 'border-emerald-500 ring-1 ring-emerald-500' : 'border-slate-200/80'} bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold uppercase tracking-wider`}
               />
               {tenantPreview && !is1300 && (
@@ -564,7 +561,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@company.com"
+                placeholder=""
                 className={`w-full px-5 py-4 rounded-xl border backdrop-blur-sm transition-all shadow-sm font-semibold ${
                   is1300
                     ? 'border-slate-700 bg-slate-800/90 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500'
@@ -584,7 +581,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder=""
                   className="w-full px-5 py-4 pe-12 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123b70] focus:border-transparent transition-all shadow-sm font-semibold tracking-wider"
                 />
                 <button
