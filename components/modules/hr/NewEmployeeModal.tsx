@@ -739,7 +739,7 @@ export default function NewEmployeeModal({
                         required
                         value={formData.firstName} onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                         placeholder="e.g. Hussien"
-                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
                     <div className="space-y-1">
@@ -749,7 +749,7 @@ export default function NewEmployeeModal({
                         required
                         value={formData.lastName} onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                         placeholder="e.g. Jichi"
-                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
                   </div>
@@ -765,7 +765,7 @@ export default function NewEmployeeModal({
                             setIsDialCodeDropdownOpen(!isDialCodeDropdownOpen);
                             setIsCountryDropdownOpen(false);
                           }}
-                          className="h-[42px] w-36 px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus:border-primary shadow-xs hover:bg-slate-50 transition-colors"
+                          className="h-[42px] w-36 px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus:border-primary shadow-xs hover:bg-slate-50 transition-colors"
                         >
                           <span className="flex items-center gap-1.5 truncate">
                             <span className="text-base leading-none">{activeDialCodeObj.flag}</span>
@@ -828,7 +828,7 @@ export default function NewEmployeeModal({
                         value={formData.phone}
                           onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                           placeholder="70 123456"
-                          className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                          className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
                   </div>
@@ -841,7 +841,7 @@ export default function NewEmployeeModal({
                         type="email"
                         value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         placeholder="user@southernolive-lb.com"
-                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
                     <div className="space-y-1">
@@ -849,7 +849,7 @@ export default function NewEmployeeModal({
                       <input
                         type="date"
                         value={formData.dateOfBirth} onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
                   </div>
@@ -860,7 +860,7 @@ export default function NewEmployeeModal({
                       <label className="text-xs font-bold text-slate-700 block">{t('gender', 'Gender')}*</label>
                       <select
                         value={formData.gender} onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'Male' | 'Female' }))}
-                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
                       >
                         <option value="Male">{t('hr.gender_male', 'Male')}</option>
                         <option value="Female">{t('hr.gender_female', 'Female')}</option>
@@ -872,7 +872,7 @@ export default function NewEmployeeModal({
                       <select
                         value={formData.maritalStatus} onChange={(e) => setFormData(prev => ({ ...prev, maritalStatus: e.target.value as any }))}
                         className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${
-                          !formData.maritalStatus ? 'text-slate-400 font-normal' : 'text-slate-800 font-semibold'
+                          !formData.maritalStatus ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
                         }`}
                       >
                         <option value="" disabled className="text-slate-400 font-normal">
@@ -894,7 +894,7 @@ export default function NewEmployeeModal({
                         type="number"
                         min="0"
                         value={formData.numberOfChildren} onChange={(e) => setFormData(prev => ({ ...prev, numberOfChildren: Math.max(0, parseInt(e.target.value, 10) || 0) }))}
-                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
                   </div>
@@ -907,7 +907,7 @@ export default function NewEmployeeModal({
                         type="text"
                         value={formData.contactPerson} onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
                         placeholder="Emergency contact name"
-                        className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                       />
                     </div>
                     <div className="space-y-1">
@@ -916,7 +916,7 @@ export default function NewEmployeeModal({
                         type="text"
                         value={formData.contactPhone} onChange={(e) => setFormData(prev => ({ ...prev, contactPhone: e.target.value }))}
                         placeholder="+961..."
-                        className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary font-mono"
+                        className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary font-mono"
                       />
                     </div>
                   </div>
@@ -1013,7 +1013,7 @@ export default function NewEmployeeModal({
                     <select
                       value={formData.department} onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
                       className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${
-                        !formData.department ? 'text-slate-400 font-normal' : 'text-slate-800 font-semibold'
+                        !formData.department ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
                       }`}
                     >
                       <option value="" disabled className="text-slate-400 font-normal">
@@ -1037,7 +1037,7 @@ export default function NewEmployeeModal({
                     <select
                       value={formData.designation} onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
                       className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${
-                        !formData.designation ? 'text-slate-400 font-normal' : 'text-slate-800 font-semibold'
+                        !formData.designation ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
                       }`}
                     >
                       <option value="" disabled className="text-slate-400 font-normal">
@@ -1061,7 +1061,7 @@ export default function NewEmployeeModal({
                     <select
                       value={formData.location} onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                       className={`h-[42px] w-full px-3.5 py-0 font-sans text-sm bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer ${
-                        !formData.location ? 'text-slate-400 font-normal' : 'text-slate-800 font-semibold'
+                        !formData.location ? 'text-slate-400 font-normal' : 'text-slate-900 dark:text-slate-100 !text-slate-900 font-semibold'
                       }`}
                     >
                       <option value="" disabled className="text-slate-400 font-normal">
@@ -1090,7 +1090,7 @@ export default function NewEmployeeModal({
                       placeholder={t('hr.pending_device_sync', 'Pending Device Sync')}
                       onKeyDown={(e) => e.preventDefault()}
                       onPaste={(e) => e.preventDefault()}
-                      className="h-[42px] w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 rounded-xl px-3.5 py-0 text-sm font-semibold text-slate-800 dark:text-slate-200 cursor-not-allowed select-none"
+                      className="h-[42px] w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 flex items-center cursor-not-allowed select-none font-sans text-sm font-semibold text-slate-900 !text-slate-900 outline-hidden"
                     />
                   </div>
                 </div>
@@ -1101,7 +1101,7 @@ export default function NewEmployeeModal({
                     <input
                       type="date"
                       value={formData.dateHired} onChange={(e) => setFormData(prev => ({ ...prev, dateHired: e.target.value }))}
-                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1109,7 +1109,7 @@ export default function NewEmployeeModal({
                     <input
                       type="date"
                       value={formData.dateLeft} onChange={(e) => setFormData(prev => ({ ...prev, dateLeft: e.target.value }))}
-                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
                   </div>
                 </div>
@@ -1435,7 +1435,7 @@ export default function NewEmployeeModal({
                         setIsCountryDropdownOpen(!isCountryDropdownOpen);
                         setIsDialCodeDropdownOpen(false);
                       }}
-                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus-within:border-primary shadow-xs hover:bg-slate-50 transition-colors"
+                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl flex items-center justify-between cursor-pointer focus-within:border-primary shadow-xs hover:bg-slate-50 transition-colors"
                     >
                       <span className="truncate">{formData.country}</span>
                       <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-1" />
@@ -1498,7 +1498,7 @@ export default function NewEmployeeModal({
                         value={formData.city}
                         onClick={() => setIsSelectCityModalOpen(true)}
                         placeholder={t('common.select', 'Select...')}
-                        className="h-[42px] py-0 px-3.5 bg-white border border-slate-200 rounded-xl font-sans text-sm font-semibold text-slate-800 placeholder:text-slate-400 placeholder:font-normal w-full cursor-pointer hover:border-slate-300 transition-all outline-hidden"
+                        className="h-[42px] py-0 px-3.5 bg-white border border-slate-200 rounded-xl font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 placeholder:text-slate-400 placeholder:font-normal w-full cursor-pointer hover:border-slate-300 transition-all outline-hidden"
                       />
                       <button
                         type="button"
@@ -1518,7 +1518,7 @@ export default function NewEmployeeModal({
                       type="text"
                       value={formData.nationalId} onChange={(e) => setFormData(prev => ({ ...prev, nationalId: e.target.value }))}
                       placeholder="100..."
-                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
                   </div>
 
@@ -1528,7 +1528,7 @@ export default function NewEmployeeModal({
                       type="text"
                       value={formData.socialSecurityNumber} onChange={(e) => setFormData(prev => ({ ...prev, socialSecurityNumber: e.target.value }))}
                       placeholder="CNSS-..."
-                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                     />
                   </div>
                 </div>
@@ -1539,7 +1539,7 @@ export default function NewEmployeeModal({
                     type="text"
                     value={formData.address} onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                     placeholder={t('hr.address_placeholder', 'Street, building, floor, landmark')}
-                    className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 dark:text-slate-100 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                    className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-900 dark:text-slate-100 !text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                   />
                 </div>
               </div>
