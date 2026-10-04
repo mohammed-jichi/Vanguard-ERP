@@ -85,24 +85,24 @@ export function SelectCityModal({
         dir={isRtl ? 'rtl' : 'ltr'}
       >
         {/* Header */}
-        <div className="px-5 py-3.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/90">
+        <div className="px-5 py-3.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
               <MapPin className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 {t('hr.select_city', 'Select City')}
               </h3>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                {t('hr.city_lebanon', 'City / Cadastral Area (Lebanon Directory)')}
+                {t('hr.city_lebanon', 'City / Town')}
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -122,7 +122,7 @@ export function SelectCityModal({
                 setVisibleCount(150);
               }}
               placeholder={t('hr.search_city_name', 'Search city name...')}
-              className={`w-full py-2 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all ${
+              className={`w-full py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:ring-blue-500 transition-all ${
                 isRtl ? 'pr-9 pl-9 text-right' : 'pl-9 pr-9 text-left'
               }`}
             />
@@ -148,7 +148,7 @@ export function SelectCityModal({
         <div
           ref={listContainerRef}
           onScroll={handleScroll}
-          className="flex-1 overflow-y-auto p-2 space-y-1 divide-y divide-slate-50 dark:divide-slate-800/40"
+          className="flex-1 overflow-y-auto p-2 space-y-1 divide-y divide-slate-100 dark:divide-slate-800/40 bg-white dark:bg-slate-900"
         >
           {displayedCities.length === 0 ? (
             <div className="py-12 text-center text-xs text-slate-400 dark:text-slate-500 font-medium flex flex-col items-center justify-center gap-2">
@@ -173,10 +173,10 @@ export function SelectCityModal({
                     onSelect(city);
                     onClose();
                   }}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer group ${
+                  className={`w-full text-left px-3.5 py-2.5 rounded-lg text-xs flex items-center justify-between transition-all cursor-pointer group ${
                     isSelected
                       ? 'bg-primary/10 text-primary dark:bg-primary/20 font-bold border border-primary/20 shadow-xs'
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-800 dark:text-slate-200'
+                      : 'bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 text-slate-900 dark:text-slate-100'
                   }`}
                 >
                   <div className="flex flex-col items-start gap-0.5">
@@ -188,7 +188,7 @@ export function SelectCityModal({
                       {city.district}
                     </span>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold group-hover:border-primary/30 group-hover:bg-primary/5 transition-colors">
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 font-semibold group-hover:border-primary/30 group-hover:bg-primary/5 transition-colors">
                     {city.district}
                   </span>
                 </button>
@@ -198,7 +198,7 @@ export function SelectCityModal({
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/80 dark:bg-slate-900 text-[11px] text-slate-500 dark:text-slate-400">
+        <div className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 text-[11px] text-slate-500 dark:text-slate-400">
           <span>
             {filteredCities.length} {t('hr.city_lebanon', 'Cities')}
             {visibleCount < filteredCities.length && ` (showing ${visibleCount})`}
@@ -206,7 +206,7 @@ export function SelectCityModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-3.5 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-lg text-xs transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-lg text-xs transition-colors cursor-pointer"
           >
             {t('common.close', 'Close')}
           </button>

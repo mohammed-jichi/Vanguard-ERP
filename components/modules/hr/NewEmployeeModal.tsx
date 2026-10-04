@@ -1060,7 +1060,7 @@ export default function NewEmployeeModal({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">{t('hr.attendance_mac_id', 'Attendance MAC ID')}</label>
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-200 block">{t('hr.attendance_mac_id', 'Attendance MAC ID')}</label>
                     <input
                       type="text"
                       readOnly={true}
@@ -1069,7 +1069,7 @@ export default function NewEmployeeModal({
                       placeholder={t('hr.pending_device_sync', 'Pending Device Sync')}
                       onKeyDown={(e) => e.preventDefault()}
                       onPaste={(e) => e.preventDefault()}
-                      className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-400 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl outline-hidden cursor-not-allowed select-none"
+                      className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 font-medium select-none cursor-not-allowed outline-hidden"
                     />
                   </div>
                 </div>
@@ -1408,7 +1408,7 @@ export default function NewEmployeeModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   {/* Exhaustive Searchable Worldwide Country Dropdown */}
                   <div className="space-y-1 relative">
-                    <label className="text-xs font-bold text-slate-700 block">{t('hr.country_worldwide', 'Country* (ISO Worldwide)')}</label>
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-200 block">{t('hr.country_worldwide', 'Country*')}</label>
                     <div
                       onClick={() => {
                         setIsCountryDropdownOpen(!isCountryDropdownOpen);
@@ -1467,8 +1467,8 @@ export default function NewEmployeeModal({
 
                   {/* Searchable Lebanese City Directory Modal Trigger */}
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                      {t('hr.city_lebanon', 'City / Cadastral Area (Lebanon Directory)')}
+                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-200 block">
+                      {t('hr.city_lebanon', 'City / Town')}
                     </label>
                     <div className="flex items-center gap-1.5">
                       <input
@@ -1477,12 +1477,12 @@ export default function NewEmployeeModal({
                         value={formData.city}
                         onClick={() => setIsSelectCityModalOpen(true)}
                         placeholder={t('hr.select_city', 'Select City')}
-                        className="flex-1 h-9 px-3 text-xs font-semibold text-slate-900 dark:text-slate-100 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-primary/50 focus:border-primary shadow-2xs transition-colors truncate"
+                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white px-3 py-2 text-sm w-full cursor-pointer hover:border-primary/50 focus:border-primary shadow-xs transition-colors truncate"
                       />
                       <button
                         type="button"
                         onClick={() => setIsSelectCityModalOpen(true)}
-                        className="h-9 w-9 bg-primary hover:bg-primary/90 text-white rounded-xl flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer shrink-0"
+                        className="h-9 w-9 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg flex items-center justify-center transition-colors shadow-xs cursor-pointer shrink-0"
                         title={t('hr.select_city', 'Select City')}
                         aria-label={t('hr.select_city', 'Select City')}
                       >
