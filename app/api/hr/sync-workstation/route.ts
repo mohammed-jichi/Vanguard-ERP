@@ -162,6 +162,10 @@ export async function POST(req: NextRequest) {
           national_id: employeeRecord?.nationalId || null,
           is_active: isActiveVal,
         };
+        const scheduleCfg = employeeRecord?.schedule_config || employeeRecord?.schedule;
+        if (scheduleCfg) {
+          empDbPayload.schedule_config = scheduleCfg;
+        }
         if (employeeRecord?.dateHired) {
           empDbPayload.hire_date = employeeRecord.dateHired;
         }
@@ -177,6 +181,16 @@ export async function POST(req: NextRequest) {
 
         if (empErr) {
           console.warn('[API /api/hr/sync-workstation] Supabase employees table notice:', empErr.message);
+          // If schema cache lacks schedule_config column, retry gracefully without it
+          if (empErr.message?.includes('schedule_config') && empDbPayload.schedule_config) {
+            const { schedule_config: _omit, ...fallbackPayload } = empDbPayload;
+            const { data: retryData } = await supabaseServer
+              .from('employees')
+              .upsert(fallbackPayload, { onConflict: isUuid ? 'id' : 'employee_code' })
+              .select()
+              .maybeSingle();
+            if (retryData) savedEmployeeRow = retryData;
+          }
         } else {
           savedEmployeeRow = upsertData;
         }

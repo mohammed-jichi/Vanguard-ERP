@@ -6,6 +6,7 @@ import {
   HREmployeeRecord,
   HRPersonnelService,
   DayOffRecord,
+  EmployeeScheduleConfig,
   STANDARD_SCHEDULE_TEMPLATES,
 } from '@/lib/hrPersonnelService';
 import {
@@ -221,8 +222,22 @@ export default function EmployeeSchedulesPage() {
       return 'OFF';
     }
 
+    // 2. In Schedule Template Mode, derive strictly from selected template
+    if (manageSubView === 'schedule') {
+      const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === selectedTemplateName);
+      if (template) {
+        if (template.workDays.includes(dayAbbr)) {
+          return `${template.slots[0].start} - ${template.slots[0].end}`;
+        }
+        return 'OFF';
+      }
+    }
+
     // 3. Fallback to assigned template
-    const templateName = emp.schedule?.templateName || 'Backoffice Administration (08:00 - 16:30)';
+    const templateName =
+      emp.schedule?.templateName ||
+      selectedTemplateName ||
+      STANDARD_SCHEDULE_TEMPLATES[0].name;
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
     if (template) {
       if (template.workDays.includes(dayAbbr)) {
@@ -231,8 +246,8 @@ export default function EmployeeSchedulesPage() {
       return 'OFF';
     }
 
-    // Default: Mon-Fri working, Sat-Sun OFF
-    if (dayAbbr === 'Sat' || dayAbbr === 'Sun') {
+    // Default: Mon-Sat working, only Sunday OFF (strictly 6-day week)
+    if (dayAbbr === 'Sun') {
       return 'OFF';
     }
     return '08:00 - 16:30';
@@ -262,7 +277,7 @@ export default function EmployeeSchedulesPage() {
       total += getEmployeeMonthOffDaysCount(activeEmployee, m);
     }
     return total;
-  }, [activeEmployee, daysOffList, yearNum, employees]);
+  }, [activeEmployee, daysOffList, yearNum, employees, selectedTemplateName, manageSubView]);
 
   // Sync selectedTemplateName with activeEmployee's assigned template
   useEffect(() => {
@@ -273,7 +288,10 @@ export default function EmployeeSchedulesPage() {
 
   // Helper to extract default working shift timing for an employee
   const getDefaultWorkingShift = (emp: HREmployeeRecord, dayAbbr: string): string => {
-    const templateName = emp.schedule?.templateName || 'Backoffice Administration (08:00 - 16:30)';
+    const templateName =
+      emp.schedule?.templateName ||
+      selectedTemplateName ||
+      STANDARD_SCHEDULE_TEMPLATES[0].name;
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
     if (template && template.slots && template.slots.length > 0) {
       return `${template.slots[0].start} - ${template.slots[0].end}`;
@@ -454,7 +472,7 @@ export default function EmployeeSchedulesPage() {
   };
 
   // Reactive Template Selection & Application across month/year
-  const handleSelectTemplate = (templateName: string) => {
+  const handleSelectTemplate = async (templateName: string) => {
     setSelectedTemplateName(templateName);
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
     if (!template || !activeEmployee) return;
@@ -502,16 +520,23 @@ export default function EmployeeSchedulesPage() {
         }
       }
 
-      const updatedEmp: HREmployeeRecord = {
-        ...targetEmp,
-        schedule: {
-          ...(targetEmp.schedule || {}),
-          templateName: template.name,
-          dateOverrides: updatedOverrides,
-        },
+      const scheduleConfig: EmployeeScheduleConfig = {
+        ...(targetEmp.schedule || {}),
+        templateName: template.name,
+        workDays: template.workDays,
+        offDays: template.offDays,
+        applyToAllMonths: applyToAllMonths,
+        dateOverrides: updatedOverrides,
+        daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
       };
 
-      HRPersonnelService.saveEmployee(updatedEmp);
+      const updatedEmp: HREmployeeRecord = {
+        ...targetEmp,
+        schedule: scheduleConfig,
+        schedule_config: scheduleConfig,
+      };
+
+      await HRPersonnelService.saveEmployee(updatedEmp);
     }
 
     setDaysOffList(HRPersonnelService.getDaysOff());

@@ -65,6 +65,9 @@ export interface DayOffRecord {
 
 export interface EmployeeScheduleConfig {
   templateName?: string;
+  workDays?: string[];
+  offDays?: string[];
+  applyToAllMonths?: boolean;
   // Day-of-week slots, e.g. Mon: [{ start: '08:00', end: '16:30' }]
   weeklySlots?: Record<string, Array<{ start: string; end: string }>>;
   // Overrides per specific date "YYYY-MM-DD" -> "08:00 - 16:30" or "OFF"
@@ -146,6 +149,7 @@ export interface HREmployeeRecord {
   posEmployeeId?: string;
   posCredentials?: POSCredentialsConfig;
   schedule?: EmployeeScheduleConfig;
+  schedule_config?: EmployeeScheduleConfig;
   socialMediaRep?: SocialMediaRepConfig;
   createdAt: string;
 }
@@ -153,15 +157,15 @@ export interface HREmployeeRecord {
 export const STANDARD_SCHEDULE_TEMPLATES = [
   {
     name: 'Standard Factory Shift (07:00 - 15:30)',
-    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     slots: [{ start: '07:00', end: '15:30' }],
-    offDays: ['Sat', 'Sun'],
+    offDays: ['Sun'],
   },
   {
-    name: 'Backoffice Administration (08:00 - 16:30)',
-    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    name: 'Standard 6-Day Operation (08:00 - 16:30)',
+    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     slots: [{ start: '08:00', end: '16:30' }],
-    offDays: ['Sat', 'Sun'],
+    offDays: ['Sun'],
   },
   {
     name: 'Distribution & Fleet Delivery (06:00 - 14:30)',
@@ -171,8 +175,14 @@ export const STANDARD_SCHEDULE_TEMPLATES = [
   },
   {
     name: 'Evening Extraction & Milling (15:00 - 23:30)',
-    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     slots: [{ start: '15:00', end: '23:30' }],
+    offDays: ['Sun'],
+  },
+  {
+    name: 'Backoffice Administration (08:00 - 16:30)',
+    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    slots: [{ start: '08:00', end: '16:30' }],
     offDays: ['Sat', 'Sun'],
   },
   {
@@ -588,9 +598,12 @@ export class HRPersonnelService {
       // 2. Route persistence EXCLUSIVELY through /api/hr/sync-workstation (uses SUPABASE_SERVICE_ROLE_KEY to bypass RLS)
       const isActive = (emp as any).isActive ?? emp.active ?? true;
       const { active: _omitActive, ...empWithoutActive } = emp as any;
+      const scheduleConfig = emp.schedule_config || emp.schedule;
       const employeePayload = {
         ...empWithoutActive,
         is_active: isActive,
+        schedule: scheduleConfig,
+        schedule_config: scheduleConfig,
       };
 
       try {

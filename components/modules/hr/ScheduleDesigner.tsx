@@ -5,6 +5,7 @@ import {
   HREmployeeRecord,
   HRPersonnelService,
   DayOffRecord,
+  EmployeeScheduleConfig,
   STANDARD_SCHEDULE_TEMPLATES,
 } from '@/lib/hrPersonnelService';
 import {
@@ -127,8 +128,9 @@ export default function ScheduleDesigner({
   const [applyToAllCompany, setApplyToAllCompany] = useState<boolean>(false);
   const [daySelectionError, setDaySelectionError] = useState<boolean>(false);
 
-  // Toast Feedback State
+  // Toast & Saving State
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   // Apply Day Off Modal State
   const [isDayOffModalOpen, setIsDayOffModalOpen] = useState(false);
@@ -232,12 +234,7 @@ export default function ScheduleDesigner({
       .toString()
       .padStart(2, '0')}`;
 
-    // 1. Explicit date overrides take top precedence
-    if (emp.schedule?.dateOverrides?.[dateStr]) {
-      return emp.schedule.dateOverrides[dateStr];
-    }
-
-    // 2. Check if employee has a day off recorded for this date
+    // 1. Approved formal Day Off request always takes top precedence
     const hasDayOff = daysOffList.some(
       (d) =>
         d.employeeId === emp.id &&
@@ -248,13 +245,32 @@ export default function ScheduleDesigner({
       return 'OFF';
     }
 
-    // 3. Fallback to template (either forced loaded template or assigned template)
-    const templateName =
+    // 2. In Schedule Template Mode or when forcedTemplateName is specified, derive strictly from template
+    const activeTplName =
       forcedTemplateName ||
+      (manageSubView === 'schedule' ? selectedTemplateName : undefined);
+
+    if (activeTplName) {
+      const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === activeTplName);
+      if (template) {
+        if (template.workDays.includes(dayAbbr)) {
+          return `${template.slots[0].start} - ${template.slots[0].end}`;
+        }
+        return 'OFF';
+      }
+    }
+
+    // 3. Explicit date overrides take precedence in Custom View or when previously applied
+    if (emp.schedule?.dateOverrides?.[dateStr]) {
+      return emp.schedule.dateOverrides[dateStr];
+    }
+
+    // 4. Assigned employee template fallback
+    const assignedTplName =
       emp.schedule?.templateName ||
       selectedTemplateName ||
-      'Backoffice Administration (08:00 - 16:30)';
-    const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
+      STANDARD_SCHEDULE_TEMPLATES[0].name;
+    const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === assignedTplName);
     if (template) {
       if (template.workDays.includes(dayAbbr)) {
         return `${template.slots[0].start} - ${template.slots[0].end}`;
@@ -262,8 +278,8 @@ export default function ScheduleDesigner({
       return 'OFF';
     }
 
-    // Default: Mon-Fri working, Sat-Sun OFF
-    if (dayAbbr === 'Sat' || dayAbbr === 'Sun') {
+    // 5. Default fallback: Only Sunday is OFF for standard 6-day operation; Saturday is standard working day
+    if (dayAbbr === 'Sun') {
       return 'OFF';
     }
     return '08:00 - 16:30';
@@ -304,7 +320,10 @@ export default function ScheduleDesigner({
 
   // Helper to extract default working shift timing for an employee
   const getDefaultWorkingShift = (emp: HREmployeeRecord, dayAbbr: string): string => {
-    const templateName = emp.schedule?.templateName || selectedTemplateName || 'Backoffice Administration (08:00 - 16:30)';
+    const templateName =
+      emp.schedule?.templateName ||
+      selectedTemplateName ||
+      STANDARD_SCHEDULE_TEMPLATES[0].name;
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
     if (template && template.slots && template.slots.length > 0) {
       return `${template.slots[0].start} - ${template.slots[0].end}`;
@@ -395,7 +414,7 @@ export default function ScheduleDesigner({
   };
 
   // Apply to Selected Days with Validation and Scope Control
-  const handleApplyToSelectedDays = () => {
+  const handleApplyToSelectedDays = async () => {
     // 1. Validate Day Selection
     if (!selectedDays || selectedDays.length === 0) {
       setDaySelectionError(true);
@@ -454,19 +473,26 @@ export default function ScheduleDesigner({
         }
       }
 
-      const updatedEmp: HREmployeeRecord = {
-        ...targetEmp,
-        schedule: {
-          ...(targetEmp.schedule || {}),
-          dateOverrides: updatedOverrides,
-        },
+      const scheduleConfig: EmployeeScheduleConfig = {
+        ...(targetEmp.schedule || {}),
+        templateName: targetEmp.schedule?.templateName || selectedTemplateName,
+        applyToAllMonths: applyToAllMonths,
+        dateOverrides: updatedOverrides,
+        daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
       };
 
-      HRPersonnelService.saveEmployee(updatedEmp);
+      const updatedEmp: HREmployeeRecord = {
+        ...targetEmp,
+        schedule: scheduleConfig,
+        schedule_config: scheduleConfig,
+      };
+
+      await HRPersonnelService.saveEmployee(updatedEmp);
     }
 
     setDaysOffList(HRPersonnelService.getDaysOff());
-    setEmployees(HRPersonnelService.getEmployees());
+    const freshEmployees = HRPersonnelService.getEmployees();
+    setEmployees(freshEmployees);
 
     if (applyToAllCompany) {
       showToast(`Global override applied to all ${targetEmployees.length} employees across the company.`);
@@ -480,7 +506,7 @@ export default function ScheduleDesigner({
   };
 
   // Apply Template to Schedule with Scope Control
-  const handleSelectTemplate = (templateName: string) => {
+  const handleSelectTemplate = async (templateName: string) => {
     setSelectedTemplateName(templateName);
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
     if (!template || !activeEmployee) return;
@@ -520,20 +546,28 @@ export default function ScheduleDesigner({
         }
       }
 
-      const updatedEmp: HREmployeeRecord = {
-        ...targetEmp,
-        schedule: {
-          ...(targetEmp.schedule || {}),
-          templateName: template.name,
-          dateOverrides: updatedOverrides,
-        },
+      const scheduleConfig: EmployeeScheduleConfig = {
+        ...(targetEmp.schedule || {}),
+        templateName: template.name,
+        workDays: template.workDays,
+        offDays: template.offDays,
+        applyToAllMonths: applyToAllMonths,
+        dateOverrides: updatedOverrides,
+        daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
       };
 
-      HRPersonnelService.saveEmployee(updatedEmp);
+      const updatedEmp: HREmployeeRecord = {
+        ...targetEmp,
+        schedule: scheduleConfig,
+        schedule_config: scheduleConfig,
+      };
+
+      await HRPersonnelService.saveEmployee(updatedEmp);
     }
 
     setDaysOffList(HRPersonnelService.getDaysOff());
-    setEmployees(HRPersonnelService.getEmployees());
+    const freshEmployees = HRPersonnelService.getEmployees();
+    setEmployees(freshEmployees);
 
     const monthDesc =
       monthsToProcess.length === 12
@@ -555,13 +589,109 @@ export default function ScheduleDesigner({
     if (onSaveSuccess) onSaveSuccess();
   };
 
-  // Top Save Schedule Handler
-  const handleSaveSchedule = () => {
+  // Top Save Schedule Handler: Writes complete 12-month schedule configuration (schedule_config) via /api/hr/sync-workstation
+  const handleSaveSchedule = async () => {
     if (!activeEmployee) return;
-    if (manageSubView === 'schedule') {
-      handleSelectTemplate(selectedTemplateName);
-    } else {
-      handleApplyToSelectedDays();
+    setIsSaving(true);
+    try {
+      const template =
+        STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === selectedTemplateName) ||
+        STANDARD_SCHEDULE_TEMPLATES[0];
+
+      let targetEmployees: HREmployeeRecord[] = [];
+      if (applyToAllCompany) {
+        targetEmployees = [...employees];
+      } else if (applyToAllDept) {
+        targetEmployees = employees.filter((e) => e.department === activeEmployee.department);
+      } else {
+        targetEmployees = [activeEmployee];
+      }
+
+      // Generate complete 12-month schedule matrix
+      for (const targetEmp of targetEmployees) {
+        const updatedOverrides = { ...(targetEmp.schedule?.dateOverrides || {}) };
+
+        if (manageSubView === 'schedule') {
+          const slotStr = `${template.slots[0].start} - ${template.slots[0].end}`;
+          for (let mIdx = 0; mIdx < 12; mIdx++) {
+            const daysInMonth = getDaysInMonth(yearNum, mIdx);
+            for (let day = 1; day <= daysInMonth; day++) {
+              const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+              const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+                .toString()
+                .padStart(2, '0')}`;
+
+              if (template.workDays.includes(dayAbbr)) {
+                updatedOverrides[dateStr] = slotStr;
+                HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+              } else {
+                updatedOverrides[dateStr] = 'OFF';
+              }
+            }
+          }
+        } else {
+          // Custom View: Apply selected days & slots
+          const slotStr = isSetSelectedToOff
+            ? 'OFF'
+            : customSlots.map((s) => `${s.start} - ${s.end}`).join(', ');
+
+          const monthsToProcess = applyToAllMonths
+            ? Array.from({ length: 12 }, (_, i) => i)
+            : [activeMonthIndex];
+
+          for (const mIdx of monthsToProcess) {
+            const daysInMonth = getDaysInMonth(yearNum, mIdx);
+            for (let day = 1; day <= daysInMonth; day++) {
+              const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+              if (selectedDays.includes(dayAbbr)) {
+                const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+                  .toString()
+                  .padStart(2, '0')}`;
+                updatedOverrides[dateStr] = slotStr;
+
+                if (!isSetSelectedToOff) {
+                  HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+                }
+              }
+            }
+          }
+        }
+
+        const scheduleConfig: EmployeeScheduleConfig = {
+          templateName: template.name,
+          workDays: template.workDays,
+          offDays: template.offDays,
+          applyToAllMonths: applyToAllMonths,
+          dateOverrides: updatedOverrides,
+          daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
+        };
+
+        const updatedEmp: HREmployeeRecord = {
+          ...targetEmp,
+          schedule: scheduleConfig,
+          schedule_config: scheduleConfig,
+        };
+
+        await HRPersonnelService.saveEmployee(updatedEmp);
+      }
+
+      setDaysOffList(HRPersonnelService.getDaysOff());
+      const freshEmployees = HRPersonnelService.getEmployees();
+      setEmployees(freshEmployees);
+
+      showToast(
+        `Schedule saved and synced successfully for ${
+          targetEmployees.length > 1
+            ? `${targetEmployees.length} staff members`
+            : activeEmployee.fullName
+        }.`
+      );
+      if (onSaveSuccess) onSaveSuccess();
+    } catch (err: any) {
+      console.error('[ScheduleDesigner] Save error:', err);
+      showToast(`Save error: ${err.message || 'Failed to persist schedule'}`);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -767,31 +897,40 @@ export default function ScheduleDesigner({
           {/* Save Button */}
           <button
             type="button"
+            disabled={isSaving}
             onClick={handleSaveSchedule}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold transition-all shadow-sm cursor-pointer flex items-center gap-2"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold transition-all shadow-sm cursor-pointer flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
-            <span>Save</span>
+            <span>{isSaving ? 'Saving...' : 'Save'}</span>
           </button>
         </div>
       )}
 
-      {/* Month Bar (Jan - Dec) with Normalized Vanguard Blue Active State */}
+      {/* Month Bar (Jan - Dec) with Full-Year Scope Synchronization */}
       <div className="bg-white border border-slate-200 rounded-2xl p-2 shadow-2xs flex items-center justify-between gap-1 overflow-x-auto">
-        {MONTH_SHORT.map((m, idx) => (
-          <button
-            key={m}
-            type="button"
-            onClick={() => setActiveMonthIndex(idx)}
-            className={`flex-1 py-1.5 px-3 rounded-xl text-xs transition-all cursor-pointer text-center ${
-              activeMonthIndex === idx
-                ? 'bg-blue-600 text-white shadow-sm font-semibold'
-                : 'text-slate-600 hover:bg-slate-100 font-bold'
-            }`}
-          >
-            {m}
-          </button>
-        ))}
+        {MONTH_SHORT.map((m, idx) => {
+          const isCurrentActive = activeMonthIndex === idx;
+
+          return (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setActiveMonthIndex(idx)}
+              className={`flex-1 py-1.5 px-3 rounded-xl text-xs transition-all cursor-pointer text-center ${
+                applyToAllMonths
+                  ? isCurrentActive
+                    ? 'bg-blue-700 text-white font-black shadow-sm ring-2 ring-blue-300'
+                    : 'bg-blue-600 text-white font-bold opacity-90 hover:opacity-100'
+                  : isCurrentActive
+                  ? 'bg-blue-600 text-white shadow-sm font-semibold'
+                  : 'text-slate-600 hover:bg-slate-100 font-bold'
+              }`}
+            >
+              {m}
+            </button>
+          );
+        })}
       </div>
 
       {/* Main Grid: Designer Panels & Breakdown Panels */}
@@ -1064,23 +1203,34 @@ export default function ScheduleDesigner({
                     <button
                       type="button"
                       onClick={() => {
-                        setSelectedDays(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
+                        setSelectedDays(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
                         setDaySelectionError(false);
                       }}
                       className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
                     >
-                      Weekdays
+                      6-Day (Mon-Sat)
                     </button>
                     <span className="text-slate-300">|</span>
                     <button
                       type="button"
                       onClick={() => {
-                        setSelectedDays(['Sat', 'Sun']);
+                        setSelectedDays(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
                         setDaySelectionError(false);
                       }}
                       className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
                     >
-                      Weekends
+                      Weekdays (Mon-Fri)
+                    </button>
+                    <span className="text-slate-300">|</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedDays(['Sun']);
+                        setDaySelectionError(false);
+                      }}
+                      className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
+                    >
+                      Sunday OFF
                     </button>
                     <span className="text-slate-300">|</span>
                     <button
@@ -1281,7 +1431,9 @@ export default function ScheduleDesigner({
           <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
               <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
-                Daily Breakdown ({MONTH_SHORT[activeMonthIndex]})
+                {applyToAllMonths
+                  ? `DAILY BREAKDOWN (Full Year ${selectedYear} - All Months)`
+                  : `DAILY BREAKDOWN (${MONTH_SHORT[activeMonthIndex]})`}
               </h4>
               <span className="text-[11px] font-bold text-slate-500 font-mono">
                 {activeEmployee?.firstName}
