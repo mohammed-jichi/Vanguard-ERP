@@ -6,8 +6,19 @@ import {
   HRPersonnelService,
   DayOffRecord,
   EmployeeScheduleConfig,
+  ShiftTemplate,
+  DEFAULT_SHIFT_TEMPLATES,
   STANDARD_SCHEDULE_TEMPLATES,
+  calculateMonthOffDays,
+  generateFullYearMatrix,
 } from '@/lib/hrPersonnelService';
+
+export {
+  type ShiftTemplate,
+  DEFAULT_SHIFT_TEMPLATES,
+  calculateMonthOffDays,
+  generateFullYearMatrix,
+};
 import {
   Calendar,
   Save,
@@ -271,7 +282,12 @@ export default function ScheduleDesigner({
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === activeTplName);
     if (template) {
       if (template.workDays.includes(dayAbbr)) {
-        return `${template.slots[0].start} - ${template.slots[0].end}`;
+        return (
+          template.timing ||
+          (template.slots && template.slots[0]
+            ? `${template.slots[0].start} - ${template.slots[0].end}`
+            : '08:00 - 16:30')
+        );
       }
       return 'OFF';
     }
@@ -323,8 +339,13 @@ export default function ScheduleDesigner({
       selectedTemplateName ||
       STANDARD_SCHEDULE_TEMPLATES[0].name;
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
-    if (template && template.slots && template.slots.length > 0) {
-      return `${template.slots[0].start} - ${template.slots[0].end}`;
+    if (template) {
+      return (
+        template.timing ||
+        (template.slots && template.slots[0]
+          ? `${template.slots[0].start} - ${template.slots[0].end}`
+          : '08:00 - 16:30')
+      );
     }
     return '08:00 - 16:30';
   };
@@ -518,24 +539,42 @@ export default function ScheduleDesigner({
       targetEmployees = [activeEmployee];
     }
 
-    const monthsToProcess = applyToAllMonths
-      ? Array.from({ length: 12 }, (_, i) => i)
-      : [activeMonthIndex];
-
-    const slotStr = `${template.slots[0].start} - ${template.slots[0].end}`;
+    const slotStr =
+      template.timing ||
+      (template.slots && template.slots[0]
+        ? `${template.slots[0].start} - ${template.slots[0].end}`
+        : '08:00 - 16:30');
 
     for (const targetEmp of targetEmployees) {
-      const updatedOverrides = { ...(targetEmp.schedule?.dateOverrides || {}) };
+      let updatedOverrides: { [dateStr: string]: string } = {
+        ...(targetEmp.schedule?.dateOverrides || {}),
+      };
 
-      for (const mIdx of monthsToProcess) {
-        const daysInMonth = getDaysInMonth(yearNum, mIdx);
+      if (applyToAllMonths) {
+        const fullYearMatrix = generateFullYearMatrix(template, yearNum);
+        updatedOverrides = {
+          ...updatedOverrides,
+          ...fullYearMatrix,
+        };
+        for (const dateStr of Object.keys(fullYearMatrix)) {
+          if (fullYearMatrix[dateStr] !== 'OFF') {
+            HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+          }
+        }
+      } else {
+        const daysInMonth = getDaysInMonth(yearNum, activeMonthIndex);
         for (let day = 1; day <= daysInMonth; day++) {
-          const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
-          const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+          const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, day);
+          const dateStr = `${yearNum}-${(activeMonthIndex + 1).toString().padStart(2, '0')}-${day
             .toString()
             .padStart(2, '0')}`;
 
-          if (template.workDays.includes(dayAbbr)) {
+          if (template.dailySchedule && template.dailySchedule[dayAbbr]) {
+            updatedOverrides[dateStr] = template.dailySchedule[dayAbbr];
+            if (template.dailySchedule[dayAbbr] !== 'OFF') {
+              HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+            }
+          } else if (template.workDays.includes(dayAbbr)) {
             updatedOverrides[dateStr] = slotStr;
             HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
           } else {
@@ -568,7 +607,7 @@ export default function ScheduleDesigner({
     setEmployees(freshEmployees);
 
     const monthDesc =
-      monthsToProcess.length === 12
+      applyToAllMonths
         ? 'Full Year 2026 - All Months'
         : `${MONTH_NAMES[activeMonthIndex]} ${selectedYear}`;
 
@@ -607,24 +646,17 @@ export default function ScheduleDesigner({
 
       // Generate complete 12-month schedule matrix
       for (const targetEmp of targetEmployees) {
-        const updatedOverrides = { ...(targetEmp.schedule?.dateOverrides || {}) };
+        let updatedOverrides = { ...(targetEmp.schedule?.dateOverrides || {}) };
 
         if (manageSubView === 'schedule') {
-          const slotStr = `${template.slots[0].start} - ${template.slots[0].end}`;
-          for (let mIdx = 0; mIdx < 12; mIdx++) {
-            const daysInMonth = getDaysInMonth(yearNum, mIdx);
-            for (let day = 1; day <= daysInMonth; day++) {
-              const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
-              const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
-                .toString()
-                .padStart(2, '0')}`;
-
-              if (template.workDays.includes(dayAbbr)) {
-                updatedOverrides[dateStr] = slotStr;
-                HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
-              } else {
-                updatedOverrides[dateStr] = 'OFF';
-              }
+          const fullYearMatrix = generateFullYearMatrix(template, yearNum);
+          updatedOverrides = {
+            ...updatedOverrides,
+            ...fullYearMatrix,
+          };
+          for (const dateStr of Object.keys(fullYearMatrix)) {
+            if (fullYearMatrix[dateStr] !== 'OFF') {
+              HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
             }
           }
         } else {

@@ -154,44 +154,158 @@ export interface HREmployeeRecord {
   createdAt: string;
 }
 
-export const STANDARD_SCHEDULE_TEMPLATES = [
+export interface ShiftTemplate {
+  name: string;
+  workDays: string[];
+  timing: string;
+  offDays: string[];
+  slots: Array<{ start: string; end: string }>;
+  dailySchedule?: { [day: string]: string };
+}
+
+export const DEFAULT_SHIFT_TEMPLATES: ShiftTemplate[] = [
+  {
+    name: 'Backoffice Administration (08:00 - 16:30)',
+    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    timing: '08:00 - 16:30',
+    offDays: ['Sun'], // STRICT: Sunday only, Saturday is a regular working day
+    slots: [{ start: '08:00', end: '16:30' }],
+    dailySchedule: {
+      Mon: '08:00 - 16:30',
+      Tue: '08:00 - 16:30',
+      Wed: '08:00 - 16:30',
+      Thu: '08:00 - 16:30',
+      Fri: '08:00 - 16:30',
+      Sat: '08:00 - 16:30',
+      Sun: 'OFF',
+    },
+  },
   {
     name: 'Standard Factory Shift (07:00 - 15:30)',
     workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    slots: [{ start: '07:00', end: '15:30' }],
+    timing: '07:00 - 15:30',
     offDays: ['Sun'],
+    slots: [{ start: '07:00', end: '15:30' }],
+    dailySchedule: {
+      Mon: '07:00 - 15:30',
+      Tue: '07:00 - 15:30',
+      Wed: '07:00 - 15:30',
+      Thu: '07:00 - 15:30',
+      Fri: '07:00 - 15:30',
+      Sat: '07:00 - 15:30',
+      Sun: 'OFF',
+    },
   },
   {
     name: 'Standard 6-Day Operation (08:00 - 16:30)',
     workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    slots: [{ start: '08:00', end: '16:30' }],
+    timing: '08:00 - 16:30',
     offDays: ['Sun'],
+    slots: [{ start: '08:00', end: '16:30' }],
+    dailySchedule: {
+      Mon: '08:00 - 16:30',
+      Tue: '08:00 - 16:30',
+      Wed: '08:00 - 16:30',
+      Thu: '08:00 - 16:30',
+      Fri: '08:00 - 16:30',
+      Sat: '08:00 - 16:30',
+      Sun: 'OFF',
+    },
   },
   {
     name: 'Distribution & Fleet Delivery (06:00 - 14:30)',
     workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    slots: [{ start: '06:00', end: '14:30' }],
+    timing: '06:00 - 14:30',
     offDays: ['Sun'],
+    slots: [{ start: '06:00', end: '14:30' }],
+    dailySchedule: {
+      Mon: '06:00 - 14:30',
+      Tue: '06:00 - 14:30',
+      Wed: '06:00 - 14:30',
+      Thu: '06:00 - 14:30',
+      Fri: '06:00 - 14:30',
+      Sat: '06:00 - 14:30',
+      Sun: 'OFF',
+    },
   },
   {
     name: 'Evening Extraction & Milling (15:00 - 23:30)',
     workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-    slots: [{ start: '15:00', end: '23:30' }],
+    timing: '15:00 - 23:30',
     offDays: ['Sun'],
-  },
-  {
-    name: 'Backoffice Administration (08:00 - 16:30)',
-    workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-    slots: [{ start: '08:00', end: '16:30' }],
-    offDays: ['Sat', 'Sun'],
+    slots: [{ start: '15:00', end: '23:30' }],
+    dailySchedule: {
+      Mon: '15:00 - 23:30',
+      Tue: '15:00 - 23:30',
+      Wed: '15:00 - 23:30',
+      Thu: '15:00 - 23:30',
+      Fri: '15:00 - 23:30',
+      Sat: '15:00 - 23:30',
+      Sun: 'OFF',
+    },
   },
   {
     name: 'Weekend Retail & Standby (09:00 - 17:00)',
     workDays: ['Fri', 'Sat', 'Sun'],
-    slots: [{ start: '09:00', end: '17:00' }],
+    timing: '09:00 - 17:00',
     offDays: ['Mon', 'Tue', 'Wed', 'Thu'],
+    slots: [{ start: '09:00', end: '17:00' }],
+    dailySchedule: {
+      Mon: 'OFF',
+      Tue: 'OFF',
+      Wed: 'OFF',
+      Thu: 'OFF',
+      Fri: '09:00 - 17:00',
+      Sat: '09:00 - 17:00',
+      Sun: '09:00 - 17:00',
+    },
   },
 ];
+
+export const STANDARD_SCHEDULE_TEMPLATES = DEFAULT_SHIFT_TEMPLATES;
+
+export function calculateMonthOffDays(
+  year: number,
+  month: number,
+  scheduleDays: { [dateStr: string]: string }
+): number {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  let offCount = 0;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const shift = scheduleDays[dateStr];
+    if (shift === 'OFF') {
+      offCount++;
+    }
+  }
+  return offCount;
+}
+
+export function generateFullYearMatrix(
+  template: ShiftTemplate,
+  year: number = 2026
+): { [dateStr: string]: string } {
+  const matrix: { [dateStr: string]: string } = {};
+  for (let m = 1; m <= 12; m++) {
+    const daysInMonth = new Date(year, m, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, m - 1, d);
+      const dayOfWeek = date.getDay(); // 0 is Sunday, 6 is Saturday
+      const dateStr = `${year}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+      if (dayOfWeek === 0 || (template.offDays.includes('Sun') && dayOfWeek === 0)) {
+        matrix[dateStr] = 'OFF';
+      } else {
+        matrix[dateStr] =
+          template.timing ||
+          (template.slots && template.slots[0]
+            ? `${template.slots[0].start} - ${template.slots[0].end}`
+            : '08:00 - 16:30');
+      }
+    }
+  }
+  return matrix;
+}
 
 export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
   {
