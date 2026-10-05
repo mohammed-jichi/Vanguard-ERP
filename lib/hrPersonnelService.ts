@@ -583,14 +583,15 @@ export class HRPersonnelService {
       } catch (err) {
         console.warn('[HRPersonnelService] Failed saving to localStorage:', err);
       }
-      // Supabase upsert to hr_employees table
+      // Supabase upsert to employees table
       if (typeof navigator !== 'undefined' && navigator.onLine) {
         try {
-          const payload = {
-            id: emp.id,
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(emp.id);
+          const payload: Record<string, any> = {
+            employee_code: emp.id,
             first_name: emp.firstName,
             last_name: emp.lastName,
-            full_name: emp.fullName,
+            full_name: emp.fullName || `${emp.firstName || ''} ${emp.lastName || ''}`.trim(),
             email: emp.email || null,
             phone: emp.phone || null,
             country_code: emp.countryCode || null,
@@ -620,36 +621,71 @@ export class HRPersonnelService {
             job_offer_doc: emp.jobOfferDoc || null,
             record_payload: emp,
             active: emp.active,
+            is_active: emp.active,
             updated_at: new Date().toISOString(),
           };
+          if (isUuid) {
+            payload.id = emp.id;
+          }
 
-          const { data, error } = await supabase
-            .from('hr_employees')
-            .upsert(payload, { onConflict: 'id' })
+          let { data, error } = await supabase
+            .from('employees')
+            .upsert(payload, { onConflict: isUuid ? 'id' : 'employee_code' })
             .select();
+
+          // Graceful fallback if extended schema columns haven't been migrated yet in Postgres
+          if (error && (error.code === 'PGRST204' || error.code === '42703')) {
+            console.warn('[HRPersonnelService] Retrying employees upsert with base schema fields...', error.message);
+            const basePayload: Record<string, any> = {
+              employee_code: emp.id,
+              full_name: emp.fullName || `${emp.firstName || ''} ${emp.lastName || ''}`.trim(),
+              phone: emp.phone || null,
+              national_id: emp.nationalId || null,
+              is_active: emp.active,
+            };
+            if (isUuid) {
+              basePayload.id = emp.id;
+            }
+            const fallbackRes = await supabase
+              .from('employees')
+              .upsert(basePayload, { onConflict: isUuid ? 'id' : 'employee_code' })
+              .select();
+            data = fallbackRes.data;
+            error = fallbackRes.error;
+          }
 
           if (error) {
             console.error('[Supabase Save Error]:', error);
-            if (typeof window !== 'undefined') {
-              alert(`Database Save Failed: ${error.message} (${error.details || error.hint || ''})`);
+            // If RLS blocked anon client, server-side sync API will persist using service role
+            if (error.code === '42501') {
+              console.warn('[HRPersonnelService] RLS active for anon on employees table; server sync route handles persistence.');
+            } else {
+              if (typeof window !== 'undefined') {
+                alert(`Database Save Failed: ${error.message} (${error.details || error.hint || ''})`);
+              }
+              throw error;
             }
-            throw error;
+          } else {
+            console.log('[Supabase Save Success]:', data);
           }
-          console.log('[Supabase Save Success]:', data);
         } catch (supaErr: any) {
-          console.error('[HRPersonnelService] Supabase hr_employees upsert exception:', supaErr);
-          throw supaErr;
+          console.error('[HRPersonnelService] Supabase employees upsert exception:', supaErr);
+          if (supaErr?.code !== '42501') {
+            throw supaErr;
+          }
         }
       }
 
       // Background persistence to data/vanguard_accounting_db.json and Supabase workstation_configs table
-      if (emp.posCredentials) {
-        await this.syncWorkstationProfile(emp).catch((err) =>
-          console.warn('[HRPersonnelService] Workstation profile sync warning:', err)
-        );
-      }
+      await this.syncWorkstationProfile(emp).catch((err) =>
+        console.warn('[HRPersonnelService] Workstation profile sync warning:', err)
+      );
     }
     return nextList;
+  }
+
+  public static async updateEmployee(emp: HREmployeeRecord): Promise<HREmployeeRecord[]> {
+    return this.saveEmployee(emp);
   }
 
   public static async fetchEmployees(): Promise<HREmployeeRecord[]> {
@@ -659,7 +695,7 @@ export class HRPersonnelService {
     if (typeof navigator !== 'undefined' && navigator.onLine) {
       try {
         const { data, error } = await supabase
-          .from('hr_employees')
+          .from('employees')
           .select('*')
           .order('created_at', { ascending: false });
 
@@ -722,7 +758,6 @@ export class HRPersonnelService {
   }
 
   public static async syncWorkstationProfile(emp: HREmployeeRecord): Promise<void> {
-    if (!emp.posCredentials) return;
     try {
       await fetch('/api/hr/sync-workstation', {
         method: 'POST',
@@ -731,24 +766,24 @@ export class HRPersonnelService {
           employeeId: emp.id,
           employeeName: emp.fullName,
           branch: emp.branch,
-          workstationAuthority: {
+          workstationAuthority: emp.posCredentials ? {
             accessBackOffice: emp.posCredentials.accessBackOffice,
             backOfficeRole: emp.posCredentials.backOfficeRole,
             salesman: emp.posCredentials.salesman,
             driver: emp.posCredentials.driver,
             training: emp.posCredentials.training,
             active: emp.posCredentials.active,
-          },
-          drawerKickSettings: {
+          } : undefined,
+          drawerKickSettings: emp.posCredentials ? {
             openCashDrawer: emp.posCredentials.openCashDrawer,
             cashDrawerPort: emp.posCredentials.cashDrawerPort,
             pin: 2,
-          },
-          printerConfig: {
+          } : undefined,
+          printerConfig: emp.posCredentials ? {
             printerType: emp.posCredentials.printerType,
             configuration: emp.posCredentials.configuration,
             protocol: 'ESC_POS',
-          },
+          } : undefined,
           posCredentials: emp.posCredentials,
           employeeRecord: emp,
         }),
@@ -768,7 +803,12 @@ export class HRPersonnelService {
         if (typeof navigator !== 'undefined' && navigator.onLine) {
           (async () => {
             try {
-              await supabase.from('hr_employees').delete().eq('id', empId);
+              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(empId);
+              if (isUuid) {
+                await supabase.from('employees').delete().or(`id.eq.${empId},employee_code.eq.${empId}`);
+              } else {
+                await supabase.from('employees').delete().eq('employee_code', empId);
+              }
             } catch (err) {
               console.warn('[HRPersonnelService] Supabase delete employee notice:', err);
             }

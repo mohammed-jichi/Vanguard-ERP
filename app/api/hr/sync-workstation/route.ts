@@ -146,6 +146,32 @@ export async function POST(req: NextRequest) {
       } else {
         persistedToSupabase = true;
       }
+
+      // 3. Persist to Supabase employees table (HR Master Record sync)
+      try {
+        const empCode = String(employeeId);
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(empCode);
+        const empDbPayload: Record<string, any> = {
+          employee_code: empCode,
+          full_name: employeeName || (employeeRecord?.fullName) || 'Employee',
+          phone: employeeRecord?.phone || null,
+          national_id: employeeRecord?.nationalId || null,
+          is_active: employeeRecord?.active ?? true,
+        };
+        if (isUuid) {
+          empDbPayload.id = empCode;
+        }
+
+        const { error: empErr } = await supabaseServer
+          .from('employees')
+          .upsert(empDbPayload, { onConflict: isUuid ? 'id' : 'employee_code' });
+
+        if (empErr) {
+          console.warn('[API /api/hr/sync-workstation] Supabase employees table notice:', empErr.message);
+        }
+      } catch (empEx: any) {
+        console.warn('[API /api/hr/sync-workstation] Supabase employees table exception:', empEx);
+      }
     } catch (supaEx: any) {
       supabaseNotice = supaEx?.message || 'Supabase unreachable';
       console.warn('[API /api/hr/sync-workstation] Supabase workstation_configs exception:', supaEx);
