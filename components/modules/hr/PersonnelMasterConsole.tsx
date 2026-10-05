@@ -71,11 +71,17 @@ export default function PersonnelMasterConsole() {
     setEmployees(list);
     if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && navigator.onLine) {
       HRPersonnelService.fetchEmployees().then((remote) => {
-        if (remote && remote.length > 0) {
+        // DO NOT overwrite the local state if the API/Supabase returns an empty list or errors out while localStorage has records
+        if (remote && Array.isArray(remote) && remote.length > 0) {
           setEmployees(remote);
+        } else if (list && list.length > 0) {
+          setEmployees(list);
         }
       }).catch((err) => {
         console.warn('[PersonnelMasterConsole] Background Supabase fetch notice:', err);
+        if (list && list.length > 0) {
+          setEmployees(list);
+        }
       });
     }
     return list;
@@ -497,9 +503,9 @@ export default function PersonnelMasterConsole() {
                     {/* Picture Thumbnail */}
                     <td className="py-3 px-4 text-center">
                       <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 mx-auto overflow-hidden flex items-center justify-center">
-                        {emp.profilePicture ? (
+                        {emp.profilePicture || emp.profile_picture ? (
                           <img
-                            src={emp.profilePicture}
+                            src={emp.profilePicture || emp.profile_picture}
                             alt={emp.fullName}
                             className="w-full h-full object-cover"
                           />

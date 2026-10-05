@@ -123,6 +123,7 @@ export interface HREmployeeRecord {
   contactPerson?: string;
   contactPhone?: string;
   profilePicture?: string;
+  profile_picture?: string;
   jobOfferDoc?: string;
   department: string;
   designation: string;
@@ -585,53 +586,59 @@ export class HRPersonnelService {
       // Supabase upsert to hr_employees table
       if (typeof navigator !== 'undefined' && navigator.onLine) {
         try {
-          const { error } = await supabase
+          const payload = {
+            id: emp.id,
+            first_name: emp.firstName,
+            last_name: emp.lastName,
+            full_name: emp.fullName,
+            email: emp.email || null,
+            phone: emp.phone || null,
+            country_code: emp.countryCode || null,
+            date_of_birth: emp.dateOfBirth || null,
+            gender: emp.gender || null,
+            marital_status: emp.maritalStatus || null,
+            children_count: emp.childrenCount ?? 0,
+            department: emp.department || null,
+            designation: emp.designation || null,
+            location: emp.location || null,
+            country: emp.country || null,
+            city: emp.city || null,
+            address: emp.address || null,
+            national_id: emp.nationalId || null,
+            social_security_no: emp.socialSecurityNo || null,
+            date_hired: emp.dateHired || null,
+            date_left: emp.dateLeft || null,
+            pos_employee_id: emp.posEmployeeId || null,
+            attendance_mac_id: emp.attendanceMacId || null,
+            brand: emp.brand || null,
+            branch: emp.branch || null,
+            is_backoffice: emp.isBackoffice ?? true,
+            pos_credentials: emp.posCredentials || null,
+            schedule_config: emp.schedule || null,
+            social_media_rep: emp.socialMediaRep || null,
+            profile_picture: emp.profilePicture || emp.profile_picture || null,
+            job_offer_doc: emp.jobOfferDoc || null,
+            record_payload: emp,
+            active: emp.active,
+            updated_at: new Date().toISOString(),
+          };
+
+          const { data, error } = await supabase
             .from('hr_employees')
-            .upsert(
-              {
-                id: emp.id,
-                first_name: emp.firstName,
-                last_name: emp.lastName,
-                full_name: emp.fullName,
-                email: emp.email || null,
-                phone: emp.phone || null,
-                country_code: emp.countryCode || null,
-                date_of_birth: emp.dateOfBirth || null,
-                gender: emp.gender || null,
-                marital_status: emp.maritalStatus || null,
-                children_count: emp.childrenCount ?? 0,
-                department: emp.department || null,
-                designation: emp.designation || null,
-                location: emp.location || null,
-                country: emp.country || null,
-                city: emp.city || null,
-                address: emp.address || null,
-                national_id: emp.nationalId || null,
-                social_security_no: emp.socialSecurityNo || null,
-                date_hired: emp.dateHired || null,
-                date_left: emp.dateLeft || null,
-                pos_employee_id: emp.posEmployeeId || null,
-                attendance_mac_id: emp.attendanceMacId || null,
-                brand: emp.brand || null,
-                branch: emp.branch || null,
-                is_backoffice: emp.isBackoffice ?? true,
-                pos_credentials: emp.posCredentials || null,
-                schedule_config: emp.schedule || null,
-                social_media_rep: emp.socialMediaRep || null,
-                profile_picture: emp.profilePicture || null,
-                job_offer_doc: emp.jobOfferDoc || null,
-                record_payload: emp,
-                active: emp.active,
-                updated_at: new Date().toISOString(),
-              },
-              { onConflict: 'id' }
-            );
+            .upsert(payload, { onConflict: 'id' })
+            .select();
 
           if (error) {
-            console.warn('[HRPersonnelService] Supabase hr_employees upsert notice:', error.message);
+            console.error('[Supabase Save Error]:', error);
+            if (typeof window !== 'undefined') {
+              alert(`Database Save Failed: ${error.message} (${error.details || error.hint || ''})`);
+            }
+            throw error;
           }
-        } catch (supaErr) {
-          console.warn('[HRPersonnelService] Supabase hr_employees upsert exception:', supaErr);
+          console.log('[Supabase Save Success]:', data);
+        } catch (supaErr: any) {
+          console.error('[HRPersonnelService] Supabase hr_employees upsert exception:', supaErr);
+          throw supaErr;
         }
       }
 
