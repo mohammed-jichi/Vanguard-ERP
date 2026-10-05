@@ -189,7 +189,7 @@ export default function PersonnelMasterConsole() {
   };
 
   const handleEmployeeSaved = (savedEmp: HREmployeeRecord) => {
-    // 1. Immediate Optimistic / Local State Update
+    // 1. Immediate State Update from the newly saved/updated record
     setEmployees((prev) => {
       const exists = prev.some((e) => e.id === savedEmp.id);
       if (exists) {
@@ -198,9 +198,7 @@ export default function PersonnelMasterConsole() {
       return [savedEmp, ...prev];
     });
 
-    // 2. Explicit Database / Service Re-Fetch
-    loadEmployees();
-
+    // 2. Close modal, reset editing target, and display success toast without client-side Supabase re-fetch
     setIsModalOpen(false);
     setEditingEmployee(null);
     showToast(`Employee ${savedEmp.fullName} saved successfully.`);

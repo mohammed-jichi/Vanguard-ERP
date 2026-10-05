@@ -117,9 +117,13 @@ export async function POST(req: NextRequest) {
       console.error('[API /api/hr/sync-workstation] File persistence error:', fsErr);
     }
 
-    // 2. Persist to Supabase workstation_configs table
+    // 2. Persist to Supabase workstation_configs & employees tables
     let persistedToSupabase = false;
     let supabaseNotice = '';
+    let savedEmployeeRow: any = null;
+    const isActiveVal = Boolean(
+      employeeRecord?.is_active ?? employeeRecord?.isActive ?? employeeRecord?.active ?? true
+    );
 
     try {
       const supabaseServer = getSupabaseServerClient();
@@ -147,27 +151,34 @@ export async function POST(req: NextRequest) {
         persistedToSupabase = true;
       }
 
-      // 3. Persist to Supabase employees table (HR Master Record sync)
+      // 3. Persist to Supabase employees table (HR Master Record sync using service role)
       try {
         const empCode = String(employeeId);
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(empCode);
         const empDbPayload: Record<string, any> = {
           employee_code: empCode,
-          full_name: employeeName || (employeeRecord?.fullName) || 'Employee',
+          full_name: employeeName || employeeRecord?.fullName || `${employeeRecord?.firstName || ''} ${employeeRecord?.lastName || ''}`.trim() || 'Employee',
           phone: employeeRecord?.phone || null,
           national_id: employeeRecord?.nationalId || null,
-          is_active: employeeRecord?.active ?? true,
+          is_active: isActiveVal,
         };
+        if (employeeRecord?.dateHired) {
+          empDbPayload.hire_date = employeeRecord.dateHired;
+        }
         if (isUuid) {
           empDbPayload.id = empCode;
         }
 
-        const { error: empErr } = await supabaseServer
+        const { data: upsertData, error: empErr } = await supabaseServer
           .from('employees')
-          .upsert(empDbPayload, { onConflict: isUuid ? 'id' : 'employee_code' });
+          .upsert(empDbPayload, { onConflict: isUuid ? 'id' : 'employee_code' })
+          .select()
+          .maybeSingle();
 
         if (empErr) {
           console.warn('[API /api/hr/sync-workstation] Supabase employees table notice:', empErr.message);
+        } else {
+          savedEmployeeRow = upsertData;
         }
       } catch (empEx: any) {
         console.warn('[API /api/hr/sync-workstation] Supabase employees table exception:', empEx);
@@ -177,8 +188,18 @@ export async function POST(req: NextRequest) {
       console.warn('[API /api/hr/sync-workstation] Supabase workstation_configs exception:', supaEx);
     }
 
+    const returnedEmployee = {
+      ...(employeeRecord || {}),
+      id: String(employeeId),
+      fullName: employeeName || employeeRecord?.fullName || 'Employee',
+      is_active: isActiveVal,
+      active: isActiveVal,
+      ...(savedEmployeeRow ? { dbRow: savedEmployeeRow } : {}),
+    };
+
     return NextResponse.json({
       success: true,
+      employee: returnedEmployee,
       data: workstationProfile,
       persistedToJson,
       persistedToSupabase,
@@ -186,6 +207,63 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('[API /api/hr/sync-workstation] Internal error:', error);
+    return NextResponse.json(
+      { success: false, error: error?.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const employeeId = searchParams.get('employeeId');
+    if (!employeeId) {
+      return NextResponse.json(
+        { success: false, error: 'employeeId parameter is required' },
+        { status: 400 }
+      );
+    }
+
+    // 1. Delete from local JSON database
+    try {
+      if (fs.existsSync(DB_FILE)) {
+        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        const dbData = JSON.parse(raw);
+        if (Array.isArray(dbData.employees)) {
+          dbData.employees = dbData.employees.filter(
+            (e: any) => String(e.id) !== String(employeeId)
+          );
+        }
+        if (Array.isArray(dbData.workstation_configs)) {
+          dbData.workstation_configs = dbData.workstation_configs.filter(
+            (w: any) => String(w.employee_id) !== String(employeeId) && w.id !== `ws-emp-${employeeId}`
+          );
+        }
+        dbData.last_updated = new Date().toISOString();
+        fs.writeFileSync(DB_FILE, JSON.stringify(dbData, null, 2), 'utf-8');
+      }
+    } catch (fsErr) {
+      console.warn('[API /api/hr/sync-workstation DELETE] JSON delete notice:', fsErr);
+    }
+
+    // 2. Delete from Supabase via server client
+    try {
+      const supabaseServer = getSupabaseServerClient();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(employeeId);
+      if (isUuid) {
+        await supabaseServer.from('employees').delete().or(`id.eq.${employeeId},employee_code.eq.${employeeId}`);
+      } else {
+        await supabaseServer.from('employees').delete().eq('employee_code', employeeId);
+      }
+      await supabaseServer.from('workstation_configs').delete().eq('employee_id', employeeId);
+    } catch (supaErr) {
+      console.warn('[API /api/hr/sync-workstation DELETE] Supabase delete notice:', supaErr);
+    }
+
+    return NextResponse.json({ success: true, deletedEmployeeId: employeeId });
+  } catch (error: any) {
+    console.error('[API /api/hr/sync-workstation DELETE] Internal error:', error);
     return NextResponse.json(
       { success: false, error: error?.message || 'Internal server error' },
       { status: 500 }

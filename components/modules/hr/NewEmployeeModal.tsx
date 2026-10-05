@@ -622,9 +622,12 @@ export default function NewEmployeeModal({
         ? (sanitized.posEmployeeId || target?.posEmployeeId || '1')
         : (sanitized.posEmployeeId || formData.posEmployeeId || getNextAvailablePosEmployeeId());
 
+      const isEmployeeActive = formData.status === 'Active';
       const newEmp: HREmployeeRecord = {
         id: nextId,
-        active: formData.status === 'Active',
+        active: isEmployeeActive,
+        isActive: isEmployeeActive,
+        is_active: isEmployeeActive,
         firstName: cleanFirstName,
         lastName: cleanLastName,
         fullName,
