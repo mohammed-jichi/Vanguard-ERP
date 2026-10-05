@@ -167,7 +167,7 @@ export async function POST(req: NextRequest) {
           empDbPayload.schedule_config = scheduleCfg;
         }
         if (employeeRecord?.dateHired) {
-          empDbPayload.hire_date = employeeRecord.dateHired;
+          empDbPayload.date_hired = employeeRecord.dateHired;
         }
         if (isUuid) {
           empDbPayload.id = empCode;
@@ -181,15 +181,24 @@ export async function POST(req: NextRequest) {
 
         if (empErr) {
           console.warn('[API /api/hr/sync-workstation] Supabase employees table notice:', empErr.message);
-          // If schema cache lacks schedule_config column, retry gracefully without it
-          if (empErr.message?.includes('schedule_config') && empDbPayload.schedule_config) {
-            const { schedule_config: _omit, ...fallbackPayload } = empDbPayload;
-            const { data: retryData } = await supabaseServer
-              .from('employees')
-              .upsert(fallbackPayload, { onConflict: isUuid ? 'id' : 'employee_code' })
-              .select()
-              .maybeSingle();
-            if (retryData) savedEmployeeRow = retryData;
+          // If schema cache lacks an extended column (e.g. schedule_config, date_hired), retry with standard base columns
+          const basePayload = {
+            employee_code: empCode,
+            full_name: empDbPayload.full_name,
+            phone: empDbPayload.phone,
+            national_id: empDbPayload.national_id,
+            is_active: isActiveVal,
+            ...(isUuid ? { id: empCode } : {}),
+          };
+          const { data: retryData, error: retryErr } = await supabaseServer
+            .from('employees')
+            .upsert(basePayload, { onConflict: isUuid ? 'id' : 'employee_code' })
+            .select()
+            .maybeSingle();
+          if (retryData) {
+            savedEmployeeRow = retryData;
+          } else if (retryErr) {
+            console.warn('[API /api/hr/sync-workstation] Supabase base retry notice:', retryErr.message);
           }
         } else {
           savedEmployeeRow = upsertData;

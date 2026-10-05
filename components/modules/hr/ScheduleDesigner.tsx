@@ -245,13 +245,9 @@ export default function ScheduleDesigner({
       return 'OFF';
     }
 
-    // 2. In Schedule Template Mode or when forcedTemplateName is specified, derive strictly from template
-    const activeTplName =
-      forcedTemplateName ||
-      (manageSubView === 'schedule' ? selectedTemplateName : undefined);
-
-    if (activeTplName) {
-      const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === activeTplName);
+    // 2. Explicit preview if forcedTemplateName is specified and differs from employee's assigned template
+    if (forcedTemplateName && forcedTemplateName !== emp.schedule?.templateName) {
+      const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === forcedTemplateName);
       if (template) {
         if (template.workDays.includes(dayAbbr)) {
           return `${template.slots[0].start} - ${template.slots[0].end}`;
@@ -260,17 +256,19 @@ export default function ScheduleDesigner({
       }
     }
 
-    // 3. Explicit date overrides take precedence in Custom View or when previously applied
+    // 3. Explicit date overrides take top precedence (custom adjustments or inline toggles)
     if (emp.schedule?.dateOverrides?.[dateStr]) {
       return emp.schedule.dateOverrides[dateStr];
     }
 
-    // 4. Assigned employee template fallback
-    const assignedTplName =
+    // 4. In Schedule Template Mode or assigned template fallback
+    const activeTplName =
+      (manageSubView === 'schedule' ? selectedTemplateName : undefined) ||
       emp.schedule?.templateName ||
       selectedTemplateName ||
       STANDARD_SCHEDULE_TEMPLATES[0].name;
-    const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === assignedTplName);
+
+    const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === activeTplName);
     if (template) {
       if (template.workDays.includes(dayAbbr)) {
         return `${template.slots[0].start} - ${template.slots[0].end}`;
