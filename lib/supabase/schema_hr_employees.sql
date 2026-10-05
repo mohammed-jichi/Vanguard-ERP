@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS public.hr_employees (
   pos_credentials JSONB,
   schedule_config JSONB,
   social_media_rep JSONB,
+  profile_picture TEXT,
+  job_offer_doc TEXT,
   record_payload JSONB,
   active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW(),

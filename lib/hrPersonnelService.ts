@@ -618,6 +618,8 @@ export class HRPersonnelService {
                 pos_credentials: emp.posCredentials || null,
                 schedule_config: emp.schedule || null,
                 social_media_rep: emp.socialMediaRep || null,
+                profile_picture: emp.profilePicture || null,
+                job_offer_doc: emp.jobOfferDoc || null,
                 record_payload: emp,
                 active: emp.active,
                 updated_at: new Date().toISOString(),
@@ -657,7 +659,12 @@ export class HRPersonnelService {
         if (!error && Array.isArray(data) && data.length > 0) {
           const remoteRecords: HREmployeeRecord[] = data.map((row: any) => {
             if (row.record_payload && typeof row.record_payload === 'object') {
-              return row.record_payload as HREmployeeRecord;
+              const payload = row.record_payload as HREmployeeRecord;
+              return {
+                ...payload,
+                profilePicture: payload.profilePicture || row.profile_picture || undefined,
+                jobOfferDoc: payload.jobOfferDoc || row.job_offer_doc || undefined,
+              };
             }
             return {
               id: row.id,
@@ -672,6 +679,8 @@ export class HRPersonnelService {
               gender: row.gender || 'Male',
               maritalStatus: row.marital_status || 'Single',
               childrenCount: row.children_count ?? 0,
+              profilePicture: row.profile_picture || undefined,
+              jobOfferDoc: row.job_offer_doc || undefined,
               department: row.department || '',
               designation: row.designation || '',
               location: row.location || '',
