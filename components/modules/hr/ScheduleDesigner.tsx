@@ -189,6 +189,20 @@ export default function ScheduleDesigner({
     return employees.filter((e) => e.department === activeEmployee.department).length;
   }, [employees, activeEmployee?.department]);
 
+  // Dynamically synchronize selected employee with department filter
+  useEffect(() => {
+    if (deptFilter !== 'ALL') {
+      const deptEmployees = employees.filter((e) => e.department === deptFilter);
+      if (deptEmployees.length > 0) {
+        const isCurrentInDept = deptEmployees.some((e) => e.id === selectedEmpId);
+        if (!isCurrentInDept) {
+          setSelectedEmpId(deptEmployees[0].id);
+          if (onEmployeeSelect) onEmployeeSelect(deptEmployees[0].id);
+        }
+      }
+    }
+  }, [deptFilter, employees, selectedEmpId, onEmployeeSelect]);
+
   // Current Month Days Count
   const yearNum = parseInt(selectedYear, 10) || 2026;
   const daysInCurrentMonth = getDaysInMonth(yearNum, activeMonthIndex);
@@ -974,7 +988,7 @@ export default function ScheduleDesigner({
                 <span className="text-xs font-bold text-blue-600">
                   {applyToAllMonths
                     ? `${activeEmployee?.fullName || 'Employee'} (Full Year ${selectedYear} - All Months)`
-                    : `${activeEmployee?.fullName || 'Employee'} (${MONTH_NAMES[activeMonthIndex]})`}
+                    : `${activeEmployee?.fullName || 'Employee'} (${MONTH_NAMES[activeMonthIndex]} ${selectedYear})`}
                 </span>
               </div>
 
@@ -1286,16 +1300,40 @@ export default function ScheduleDesigner({
                   : 'OFF';
                 const isOff = shift === 'OFF';
                 const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, d);
+                const isDayPillActive = selectedDays.includes(dayAbbr);
 
                 return (
                   <div
                     key={d}
-                    className="flex items-center justify-between py-1.5 px-2 rounded-xl hover:bg-slate-50 text-xs border border-transparent hover:border-slate-200 transition-colors"
+                    className={`flex items-center justify-between py-1.5 px-2 rounded-xl text-xs border transition-colors ${
+                      isDayPillActive
+                        ? 'bg-blue-50/70 border-blue-200'
+                        : 'hover:bg-slate-50 border-transparent hover:border-slate-200'
+                    }`}
                   >
-                    <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (manageSubView === 'custom') {
+                          setSelectedDays((prev) =>
+                            prev.includes(dayAbbr)
+                              ? prev.filter((item) => item !== dayAbbr)
+                              : [...prev, dayAbbr]
+                          );
+                        }
+                      }}
+                      title={manageSubView === 'custom' ? `Click to toggle ${dayAbbr} in Day Pills` : undefined}
+                      className="flex items-center gap-2 cursor-pointer text-left"
+                    >
                       <span className="w-5 text-slate-400 font-mono font-bold">{d}</span>
-                      <span className="w-8 text-[11px] text-slate-500 font-semibold">{dayAbbr}</span>
-                    </div>
+                      <span
+                        className={`w-8 text-[11px] font-semibold ${
+                          isDayPillActive ? 'text-blue-700 font-bold' : 'text-slate-500'
+                        }`}
+                      >
+                        {dayAbbr}
+                      </span>
+                    </button>
 
                     {isOff ? (
                       <div className="flex items-center gap-1.5">

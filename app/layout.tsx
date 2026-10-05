@@ -3,6 +3,7 @@ import './globals.css';
 import { DeepLinkFallbackProvider } from '@/components/DeepLinkFallbackProvider';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import { PermissionProvider } from '@/lib/PermissionContext';
+import { ToastContainer } from '@/lib/toast';
 
 export const metadata: Metadata = {
   title: 'Vanguard ERP | Southern Olive Oil Products S.A.R.L',
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <DeepLinkFallbackProvider>
               {children}
             </DeepLinkFallbackProvider>
+            <ToastContainer />
           </PermissionProvider>
         </LanguageProvider>
       </body>

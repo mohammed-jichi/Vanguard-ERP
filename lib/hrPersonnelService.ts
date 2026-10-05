@@ -129,7 +129,7 @@ export interface HREmployeeRecord {
   location: string;
   dateHired?: string;
   dateLeft?: string;
-  attendanceMacId?: string;
+  attendanceMacId?: string | null;
   country: string;
   city: string;
   address?: string;
