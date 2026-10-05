@@ -84,6 +84,23 @@ export interface EmployeeFormData {
   socialMediaRep?: SocialMediaRepConfig;
 }
 
+export function getNextAvailablePosEmployeeId(): string {
+  try {
+    const allEmployees = HRPersonnelService.getEmployees();
+    const numericIds = allEmployees
+      .map((e) => {
+        const idStr = e.posEmployeeId || e.posCredentials?.employeeId || '';
+        const parsed = parseInt(String(idStr).trim(), 10);
+        return isNaN(parsed) ? 0 : parsed;
+      })
+      .filter((n) => n > 0);
+    const nextPosId = (Math.max(0, ...numericIds) + 1).toString();
+    return nextPosId;
+  } catch {
+    return '1';
+  }
+}
+
 export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
   firstName: '',
   lastName: '',
@@ -132,7 +149,12 @@ export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
 };
 
 export function extractEmployeeFormData(data: any): EmployeeFormData {
-  if (!data) return DEFAULT_EMPLOYEE_FORM_DATA;
+  if (!data) {
+    return {
+      ...DEFAULT_EMPLOYEE_FORM_DATA,
+      posEmployeeId: getNextAvailablePosEmployeeId(),
+    };
+  }
 
   let fName = data.firstName || data.first_name || '';
   let lName = data.lastName || data.last_name || '';
@@ -212,7 +234,7 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     nationalId: data.nationalId || '',
     socialSecurityNumber: data.socialSecurityNumber || data.socialSecurityNo || '',
     status: (data.status === 'ACTIVE' || data.status === 'Active' || data.active === true || data.is_active === true) ? 'Active' : 'Inactive',
-    posEmployeeId: data.posEmployeeId || data.pos_login_id || (data.user_code ? String(data.user_code) : '1'),
+    posEmployeeId: data.posEmployeeId || data.pos_login_id || (data.user_code ? String(data.user_code) : (data.posCredentials?.employeeId ? String(data.posCredentials.employeeId) : getNextAvailablePosEmployeeId())),
     brand: data.brand || 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
     useBranch: data.useBranch ?? true,
     branchName: data.branch || data.branchName || 'Southern Olive and Oil Products - Main',
@@ -225,6 +247,8 @@ interface NewEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEmployeeCreated: (employee: HREmployeeRecord) => void;
+  onEmployeeUpdated?: (employee: HREmployeeRecord) => void;
+  handleSaveEmployee?: (employee: HREmployeeRecord) => void;
   initialEmployee?: HREmployeeRecord | null;
   initialData?: any;
   employee?: any;
@@ -251,6 +275,8 @@ export default function NewEmployeeModal({
   isOpen,
   onClose,
   onEmployeeCreated,
+  onEmployeeUpdated,
+  handleSaveEmployee,
   initialEmployee,
   initialData,
   employee,
@@ -310,9 +336,18 @@ export default function NewEmployeeModal({
         );
       }
     } else {
-      setFormData(DEFAULT_EMPLOYEE_FORM_DATA);
+      const nextPosId = getNextAvailablePosEmployeeId();
+      setFormData({
+        ...DEFAULT_EMPLOYEE_FORM_DATA,
+        posEmployeeId: nextPosId,
+      });
       setProfilePicture(null);
       setJobOfferDoc(null);
+      setPosNickName('Operator');
+      setPosPassword('123');
+      setPosSecPassword('');
+      setPosCloudLoginId('1300');
+      setPosCloudPassword('••••••');
     }
   }, [initialData, employee, initialEmployee, isOpen]);
 
@@ -553,7 +588,12 @@ export default function NewEmployeeModal({
 
       // Clean city name if it contains composite district suffix or parentheses (e.g. "Choueifat - Aley" or "Choueifat (معمل الشويفات)" -> "Choueifat")
       const rawCity = sanitized.city || '';
-      const cleanCity = rawCity.replace(/\s*\(.*?\)/g, '').split(' - ')[0].trim();
+      const cleanCity = rawCity
+        .replace(/\s*\(.*?\)/g, '')
+        .split(' - ')[0]
+        .split(' (')[0]
+        .trim();
+      const finalizedCity = (cleanCity && cleanCity !== 'Select...' && cleanCity !== 'Select City') ? cleanCity : '';
 
       const cleanFirstName = sanitized.firstName || formData.firstName.trim();
       const cleanLastName = sanitized.lastName || formData.lastName.trim();
@@ -562,9 +602,21 @@ export default function NewEmployeeModal({
       const target = initialData || employee || initialEmployee;
       const nextId = target?.id || `EMP-${(allEmployees.length + 1).toString().padStart(3, '0')}`;
 
-      // Attendance MAC ID: coerce 'Pending Device Sync' or empty to null/undefined
+      // Attendance MAC ID: coerce 'Pending Device Sync', 'Select...', or empty to null
       const rawMac = sanitized.attendanceMacId;
-      const cleanMacId = (rawMac && rawMac !== 'Pending Device Sync') ? rawMac : null;
+      const cleanMacId =
+        rawMac &&
+        rawMac !== 'Pending Device Sync' &&
+        rawMac !== 'Select...' &&
+        rawMac.trim() !== ''
+          ? rawMac.trim()
+          : null;
+
+      // Sequential / preserved posEmployeeId
+      const isEdit = Boolean(target);
+      const computedPosId = isEdit
+        ? (sanitized.posEmployeeId || target?.posEmployeeId || '1')
+        : (sanitized.posEmployeeId || formData.posEmployeeId || getNextAvailablePosEmployeeId());
 
       const newEmp: HREmployeeRecord = {
         id: nextId,
@@ -590,7 +642,7 @@ export default function NewEmployeeModal({
         dateLeft: sanitized.dateLeft || undefined,
         attendanceMacId: cleanMacId,
         country: sanitized.country || 'Lebanon',
-        city: cleanCity,
+        city: finalizedCity,
         address: sanitized.address || undefined,
         nationalId: sanitized.nationalId || undefined,
         socialSecurityNo: sanitized.socialSecurityNumber || undefined,
@@ -598,7 +650,7 @@ export default function NewEmployeeModal({
         branch: sanitized.branchName || 'Southern Olive and Oil Products - Main',
         useBranch: formData.useBranch,
         isBackoffice: formData.createBackoffice,
-        posEmployeeId: sanitized.posEmployeeId || '1',
+        posEmployeeId: computedPosId,
         posCredentials: {
           nickName: posNickName || cleanFirstName || 'Operator',
           language: posLanguage,
@@ -609,7 +661,7 @@ export default function NewEmployeeModal({
           training: posTraining,
           branch: sanitized.branchName || 'Southern Olive and Oil Products - Main',
           backOfficeRole: posBackOfficeRole,
-          employeeId: sanitized.posEmployeeId || '1',
+          employeeId: computedPosId,
           password: posPassword,
           secPassword: posSecPassword,
           posCloudLoginId,
@@ -629,45 +681,61 @@ export default function NewEmployeeModal({
         createdAt: target?.createdAt || new Date().toISOString().split('T')[0],
       };
 
-      // Persist workstation profile, authority, drawer kick, and ESC/POS printer settings
-      fetch('/api/hr/sync-workstation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          employeeId: newEmp.id,
-          employeeName: newEmp.fullName,
-          branch: newEmp.branch,
-          workstationAuthority: {
-            accessBackOffice: posAccessBackOffice,
-            backOfficeRole: posBackOfficeRole,
-            salesman: posSalesman,
-            driver: posDriver,
-            training: posTraining,
-            active: posActive,
-          },
-          drawerKickSettings: {
-            openCashDrawer: posOpenCashDrawer,
-            cashDrawerPort: posCashDrawerPort,
-            pin: 2,
-          },
-          printerConfig: {
-            printerType: posPrinterType,
-            configuration: posConfiguration,
-            protocol: 'ESC_POS',
-          },
-          posCredentials: newEmp.posCredentials,
-          employeeRecord: newEmp,
-        }),
-      }).catch((err) => console.warn('[NewEmployeeModal] Workstation persistence notice:', err));
+      // 1. Persist workstation profile, authority, drawer kick, and ESC/POS printer settings
+      try {
+        const wsRes = await fetch('/api/hr/sync-workstation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            employeeId: newEmp.id,
+            employeeName: newEmp.fullName,
+            branch: newEmp.branch,
+            workstationAuthority: {
+              accessBackOffice: posAccessBackOffice,
+              backOfficeRole: posBackOfficeRole,
+              salesman: posSalesman,
+              driver: posDriver,
+              training: posTraining,
+              active: posActive,
+            },
+            drawerKickSettings: {
+              openCashDrawer: posOpenCashDrawer,
+              cashDrawerPort: posCashDrawerPort,
+              pin: 2,
+            },
+            printerConfig: {
+              printerType: posPrinterType,
+              configuration: posConfiguration,
+              protocol: 'ESC_POS',
+            },
+            posCredentials: newEmp.posCredentials,
+            employeeRecord: newEmp,
+          }),
+        });
 
-      HRPersonnelService.saveEmployee(newEmp);
-      onEmployeeCreated(newEmp);
-      toast.success(`Employee ${newEmp.fullName} saved successfully`);
+        if (!wsRes.ok) {
+          console.warn('[NewEmployeeModal] Workstation sync notice:', wsRes.status);
+        }
+      } catch (wsErr: any) {
+        console.warn('[NewEmployeeModal] Workstation persistence notice:', wsErr);
+      }
+
+      // 2. Persist to Supabase and LocalStorage via HRPersonnelService
+      await HRPersonnelService.saveEmployee(newEmp);
+
+      // 3. Callback to parent view for immediate state refresh
+      if (onEmployeeCreated) onEmployeeCreated(newEmp);
+      if (onEmployeeUpdated) onEmployeeUpdated(newEmp);
+      if (handleSaveEmployee) handleSaveEmployee(newEmp);
+
+      // 4. Fire success toast and close modal
+      toast.success('Employee record saved successfully');
       onClose();
     } catch (error: any) {
       console.error('[Vanguard ERP Mutation Failure]: Failed to save employee:', error);
       toast.error(error?.message || 'Failed to save employee record');
       alert(`Save Failed: ${error?.message || 'Unexpected database error occurred.'}`);
+      // Do NOT close the modal on error
     }
   };
 
@@ -1752,7 +1820,7 @@ export default function NewEmployeeModal({
                                   setFormData(prev => ({
                                     ...prev,
                                     createBackoffice: checked,
-                                    posEmployeeId: checked && (!prev.posEmployeeId || prev.posEmployeeId === '0') ? '1' : prev.posEmployeeId
+                                    posEmployeeId: checked && (!prev.posEmployeeId || prev.posEmployeeId === '0') ? getNextAvailablePosEmployeeId() : prev.posEmployeeId
                                   }));
                                 }}
                                 className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
@@ -1766,7 +1834,7 @@ export default function NewEmployeeModal({
                             <span className="text-slate-400 font-bold text-sm select-none">-</span>
                           ) : (
                             <div className="flex items-center justify-center gap-2">
-                              <span className="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-xs font-mono font-bold">
+                              <span className="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-xs font-mono font-bold select-none cursor-not-allowed">
                                 #{formData.posEmployeeId}
                               </span>
                               <button
@@ -2056,12 +2124,16 @@ export default function NewEmployeeModal({
                 {/* Employee ID, Password, Sec Password */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">{t('hr.pos_employee_id', 'Employee ID')}</label>
+                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                      <span>{t('hr.pos_employee_id', 'Employee ID')}</span>
+                      <span className="text-[10px] text-slate-400 font-medium">Auto-generated & locked</span>
+                    </label>
                     <input
                       type="text"
+                      readOnly
+                      disabled
                       value={formData.posEmployeeId}
-                      onChange={(e) => setFormData(prev => ({ ...prev, posEmployeeId: e.target.value }))}
-                      className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl"
+                      className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed select-none outline-hidden shadow-2xs"
                     />
                   </div>
                   <div className="space-y-1">

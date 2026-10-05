@@ -66,8 +66,23 @@ export default function PersonnelMasterConsole() {
   };
 
   // Load employees from HRPersonnelService & subscribe to updates
+  const loadEmployees = () => {
+    const list = HRPersonnelService.getEmployees();
+    setEmployees(list);
+    if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && navigator.onLine) {
+      HRPersonnelService.fetchEmployees().then((remote) => {
+        if (remote && remote.length > 0) {
+          setEmployees(remote);
+        }
+      }).catch((err) => {
+        console.warn('[PersonnelMasterConsole] Background Supabase fetch notice:', err);
+      });
+    }
+    return list;
+  };
+
   useEffect(() => {
-    setEmployees(HRPersonnelService.getEmployees());
+    loadEmployees();
     setIsLoading(false);
 
     const handleUpdate = (e: Event) => {
@@ -75,7 +90,7 @@ export default function PersonnelMasterConsole() {
       if (customEvent.detail && Array.isArray(customEvent.detail)) {
         setEmployees(customEvent.detail);
       } else {
-        setEmployees(HRPersonnelService.getEmployees());
+        loadEmployees();
       }
     };
 
@@ -168,7 +183,18 @@ export default function PersonnelMasterConsole() {
   };
 
   const handleEmployeeSaved = (savedEmp: HREmployeeRecord) => {
-    setEmployees(HRPersonnelService.getEmployees());
+    // 1. Immediate Optimistic / Local State Update
+    setEmployees((prev) => {
+      const exists = prev.some((e) => e.id === savedEmp.id);
+      if (exists) {
+        return prev.map((e) => (e.id === savedEmp.id ? savedEmp : e));
+      }
+      return [savedEmp, ...prev];
+    });
+
+    // 2. Explicit Database / Service Re-Fetch
+    loadEmployees();
+
     setIsModalOpen(false);
     setEditingEmployee(null);
     showToast(`Employee ${savedEmp.fullName} saved successfully.`);

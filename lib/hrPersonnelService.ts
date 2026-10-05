@@ -564,7 +564,7 @@ export class HRPersonnelService {
     return INITIAL_HR_PERSONNEL;
   }
 
-  public static saveEmployee(emp: HREmployeeRecord): HREmployeeRecord[] {
+  public static async saveEmployee(emp: HREmployeeRecord): Promise<HREmployeeRecord[]> {
     const list = this.getEmployees();
     const idx = list.findIndex((e) => e.id === emp.id);
     let nextList: HREmployeeRecord[];
@@ -582,14 +582,127 @@ export class HRPersonnelService {
       } catch (err) {
         console.warn('[HRPersonnelService] Failed saving to localStorage:', err);
       }
+      // Supabase upsert to hr_employees table
+      if (typeof navigator !== 'undefined' && navigator.onLine) {
+        try {
+          const { error } = await supabase
+            .from('hr_employees')
+            .upsert(
+              {
+                id: emp.id,
+                first_name: emp.firstName,
+                last_name: emp.lastName,
+                full_name: emp.fullName,
+                email: emp.email || null,
+                phone: emp.phone || null,
+                country_code: emp.countryCode || null,
+                date_of_birth: emp.dateOfBirth || null,
+                gender: emp.gender || null,
+                marital_status: emp.maritalStatus || null,
+                children_count: emp.childrenCount ?? 0,
+                department: emp.department || null,
+                designation: emp.designation || null,
+                location: emp.location || null,
+                country: emp.country || null,
+                city: emp.city || null,
+                address: emp.address || null,
+                national_id: emp.nationalId || null,
+                social_security_no: emp.socialSecurityNo || null,
+                date_hired: emp.dateHired || null,
+                date_left: emp.dateLeft || null,
+                pos_employee_id: emp.posEmployeeId || null,
+                attendance_mac_id: emp.attendanceMacId || null,
+                brand: emp.brand || null,
+                branch: emp.branch || null,
+                is_backoffice: emp.isBackoffice ?? true,
+                pos_credentials: emp.posCredentials || null,
+                schedule_config: emp.schedule || null,
+                social_media_rep: emp.socialMediaRep || null,
+                record_payload: emp,
+                active: emp.active,
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: 'id' }
+            );
+
+          if (error) {
+            console.warn('[HRPersonnelService] Supabase hr_employees upsert notice:', error.message);
+          }
+        } catch (supaErr) {
+          console.warn('[HRPersonnelService] Supabase hr_employees upsert exception:', supaErr);
+        }
+      }
+
       // Background persistence to data/vanguard_accounting_db.json and Supabase workstation_configs table
       if (emp.posCredentials) {
-        this.syncWorkstationProfile(emp).catch((err) =>
+        await this.syncWorkstationProfile(emp).catch((err) =>
           console.warn('[HRPersonnelService] Workstation profile sync warning:', err)
         );
       }
     }
     return nextList;
+  }
+
+  public static async fetchEmployees(): Promise<HREmployeeRecord[]> {
+    if (typeof window === 'undefined') {
+      return INITIAL_HR_PERSONNEL;
+    }
+    if (typeof navigator !== 'undefined' && navigator.onLine) {
+      try {
+        const { data, error } = await supabase
+          .from('hr_employees')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!error && Array.isArray(data) && data.length > 0) {
+          const remoteRecords: HREmployeeRecord[] = data.map((row: any) => {
+            if (row.record_payload && typeof row.record_payload === 'object') {
+              return row.record_payload as HREmployeeRecord;
+            }
+            return {
+              id: row.id,
+              active: row.active ?? true,
+              firstName: row.first_name || '',
+              lastName: row.last_name || '',
+              fullName: row.full_name || `${row.first_name || ''} ${row.last_name || ''}`.trim(),
+              email: row.email || '',
+              phone: row.phone || '',
+              countryCode: row.country_code || '+961',
+              dateOfBirth: row.date_of_birth,
+              gender: row.gender || 'Male',
+              maritalStatus: row.marital_status || 'Single',
+              childrenCount: row.children_count ?? 0,
+              department: row.department || '',
+              designation: row.designation || '',
+              location: row.location || '',
+              country: row.country || 'Lebanon',
+              city: row.city || '',
+              address: row.address,
+              dateHired: row.date_hired,
+              dateLeft: row.date_left,
+              attendanceMacId: row.attendance_mac_id,
+              posEmployeeId: row.pos_employee_id,
+              brand: row.brand || 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
+              branch: row.branch || 'Southern Olive and Oil Products - Main',
+              useBranch: true,
+              isBackoffice: row.is_backoffice ?? true,
+              posCredentials: row.pos_credentials,
+              schedule: row.schedule_config,
+              socialMediaRep: row.social_media_rep,
+              createdAt: row.created_at || new Date().toISOString().split('T')[0],
+            };
+          });
+
+          if (remoteRecords.length > 0) {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(remoteRecords));
+            return remoteRecords;
+          }
+        }
+      } catch (err) {
+        console.warn('[HRPersonnelService] fetchEmployees from Supabase notice:', err);
+      }
+    }
+    return this.getEmployees();
   }
 
   public static async syncWorkstationProfile(emp: HREmployeeRecord): Promise<void> {
@@ -636,6 +749,15 @@ export class HRPersonnelService {
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(nextList));
         window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: nextList }));
+        if (typeof navigator !== 'undefined' && navigator.onLine) {
+          (async () => {
+            try {
+              await supabase.from('hr_employees').delete().eq('id', empId);
+            } catch (err) {
+              console.warn('[HRPersonnelService] Supabase delete employee notice:', err);
+            }
+          })();
+        }
       } catch (err) {
         console.warn('[HRPersonnelService] Failed deleting from localStorage:', err);
       }
