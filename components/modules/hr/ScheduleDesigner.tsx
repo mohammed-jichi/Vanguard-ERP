@@ -1086,7 +1086,7 @@ export default function ScheduleDesigner({
   };
 
   // Revert Day Off Back to Working Day in Modal
-  const handleRevertToWorkingDay = () => {
+  const handleRevertToWorkingDay = async () => {
     const emp = employees.find((e) => e.id === dayOffEmpId) || activeEmployee;
     if (!emp) return;
 
@@ -1106,16 +1106,25 @@ export default function ScheduleDesigner({
         ...(emp.schedule || {}),
         dateOverrides: updatedOverrides,
       },
+      schedule_config: {
+        ...(emp.schedule || {}),
+        dateOverrides: updatedOverrides,
+      },
     };
 
-    HRPersonnelService.saveEmployee(updatedEmp);
-    setEmployees(HRPersonnelService.getEmployees());
-    setIsDayOffModalOpen(false);
-    showToast(`Day ${dayOffStartDate} reverted to active working hours (${workingShift}) for ${emp.fullName}.`);
+    try {
+      await HRPersonnelService.saveEmployee(updatedEmp);
+      setEmployees(HRPersonnelService.getEmployees());
+      setIsDayOffModalOpen(false);
+      showToast(`Day ${dayOffStartDate} reverted to active working hours (${workingShift}) for ${emp.fullName}.`);
+    } catch (err: any) {
+      console.error('[ScheduleDesigner] Revert to working day error:', err);
+      showToast(`Save error: ${err.message || 'Failed to persist schedule changes'}`);
+    }
   };
 
   // Submit Day Off Request in Modal
-  const handleSubmitDayOff = (e: React.FormEvent) => {
+  const handleSubmitDayOff = async (e: React.FormEvent) => {
     e.preventDefault();
     const emp = employees.find((e) => e.id === dayOffEmpId) || activeEmployee;
     if (!emp) return;
@@ -1157,12 +1166,21 @@ export default function ScheduleDesigner({
         ...(emp.schedule || {}),
         dateOverrides: updatedOverrides,
       },
+      schedule_config: {
+        ...(emp.schedule || {}),
+        dateOverrides: updatedOverrides,
+      },
     };
 
-    HRPersonnelService.saveEmployee(updatedEmp);
-    setEmployees(HRPersonnelService.getEmployees());
-    setIsDayOffModalOpen(false);
-    showToast(`Day off request logged for ${emp.fullName} (${dayOffStartDate} to ${dayOffEndDate}).`);
+    try {
+      await HRPersonnelService.saveEmployee(updatedEmp);
+      setEmployees(HRPersonnelService.getEmployees());
+      setIsDayOffModalOpen(false);
+      showToast(`Day off request logged for ${emp.fullName} (${dayOffStartDate} to ${dayOffEndDate}).`);
+    } catch (err: any) {
+      console.error('[ScheduleDesigner] Submit day off error:', err);
+      showToast(`Save error: ${err.message || 'Failed to persist day off schedule'}`);
+    }
   };
 
   const isModalDateCurrentlyOff = useMemo(() => {

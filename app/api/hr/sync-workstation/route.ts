@@ -413,6 +413,51 @@ export async function DELETE(req: NextRequest) {
         await supabaseServer.from('employees').delete().eq('employee_code', employeeId);
       }
       await supabaseServer.from('workstation_configs').delete().eq('employee_id', employeeId);
+
+      // 3. Authoritative cleanup from tenants.feature_flags (hr_employees & employee_schedules)
+      const tenantId = '00000000-0000-0000-0000-000000000001';
+      const { data: tenantData } = await supabaseServer
+        .from('tenants')
+        .select('id, feature_flags')
+        .eq('id', tenantId)
+        .maybeSingle();
+
+      if (tenantData) {
+        const flags = tenantData.feature_flags || {};
+        let modified = false;
+
+        if (flags.hr_employees) {
+          for (const k of Object.keys(flags.hr_employees)) {
+            const item = flags.hr_employees[k];
+            if (
+              k === String(employeeId) ||
+              String(item?.id) === String(employeeId) ||
+              String(item?.employee_code) === String(employeeId) ||
+              String(item?.posEmployeeId) === String(employeeId)
+            ) {
+              delete flags.hr_employees[k];
+              modified = true;
+            }
+          }
+        }
+
+        if (flags.employee_schedules) {
+          for (const k of Object.keys(flags.employee_schedules)) {
+            const item = flags.employee_schedules[k];
+            if (k === String(employeeId) || String(item?.employee_id) === String(employeeId)) {
+              delete flags.employee_schedules[k];
+              modified = true;
+            }
+          }
+        }
+
+        if (modified) {
+          await supabaseServer
+            .from('tenants')
+            .update({ feature_flags: flags, updated_at: new Date().toISOString() })
+            .eq('id', tenantId);
+        }
+      }
     } catch (supaErr) {
       console.warn('[API /api/hr/sync-workstation DELETE] Supabase delete notice:', supaErr);
     }

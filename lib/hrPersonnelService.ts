@@ -711,42 +711,27 @@ export class HRPersonnelService {
       schedule_config: scheduleConfig,
     };
 
-    let nextList: HREmployeeRecord[];
-    if (idx >= 0) {
-      nextList = [...list];
-      nextList[idx] = sanitizedEmp;
-    } else {
-      nextList = [sanitizedEmp, ...list];
-    }
+    const employeePayload = {
+      ...empWithoutActive,
+      is_active: isActive,
+      schedule_template: scheduleTemplate,
+      schedule: scheduleConfig,
+      schedule_config: scheduleConfig,
+    };
 
+    console.log('[HRPersonnelService] Dispatching employee persistence payload to /api/hr/sync-workstation:', {
+      employeeId: sanitizedEmp.id,
+      schedule_template: scheduleTemplate,
+      scheduleConfigSummary: {
+        templateName: scheduleConfig?.templateName,
+        workDays: scheduleConfig?.workDays,
+        offDays: scheduleConfig?.offDays,
+        overridesCount: Object.keys(scheduleConfig?.dateOverrides || {}).length,
+      },
+    });
+
+    // 1. MANDATORY DATABASE-FIRST MUTATION (Rule 1): Await Supabase network call first
     if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(nextList));
-        window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: nextList }));
-      } catch (err) {
-        console.warn('[HRPersonnelService] Failed saving to localStorage:', err);
-      }
-
-      // Route persistence EXCLUSIVELY through /api/hr/sync-workstation (uses SUPABASE_SERVICE_ROLE_KEY to bypass RLS)
-      const employeePayload = {
-        ...empWithoutActive,
-        is_active: isActive,
-        schedule_template: scheduleTemplate,
-        schedule: scheduleConfig,
-        schedule_config: scheduleConfig,
-      };
-
-      console.log('[HRPersonnelService] Dispatching employee persistence payload to /api/hr/sync-workstation:', {
-        employeeId: sanitizedEmp.id,
-        schedule_template: scheduleTemplate,
-        scheduleConfigSummary: {
-          templateName: scheduleConfig?.templateName,
-          workDays: scheduleConfig?.workDays,
-          offDays: scheduleConfig?.offDays,
-          overridesCount: Object.keys(scheduleConfig?.dateOverrides || {}).length,
-        },
-      });
-
       try {
         const res = await fetch('/api/hr/sync-workstation', {
           method: 'POST',
@@ -789,10 +774,35 @@ export class HRPersonnelService {
       } catch (apiErr: any) {
         console.error('[HRPersonnelService] Employee persistence error:', apiErr);
         if (typeof navigator !== 'undefined' && !navigator.onLine) {
-          console.warn('[HRPersonnelService] Offline: record persisted locally.');
+          console.warn('[HRPersonnelService] Offline: local buffer used.');
         } else {
           throw apiErr;
         }
+      }
+    }
+
+    // 2. Only upon confirmed database success: update local cache and dispatch sync event
+    const finalRecord: HREmployeeRecord = {
+      ...sanitizedEmp,
+      schedule_template: scheduleTemplate,
+      schedule: scheduleConfig,
+      schedule_config: scheduleConfig,
+    };
+
+    let nextList: HREmployeeRecord[];
+    if (idx >= 0) {
+      nextList = [...list];
+      nextList[idx] = finalRecord;
+    } else {
+      nextList = [finalRecord, ...list];
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(nextList));
+        window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: nextList }));
+      } catch (err) {
+        console.warn('[HRPersonnelService] Failed saving to localStorage:', err);
       }
     }
     return nextList;
@@ -959,31 +969,39 @@ export class HRPersonnelService {
     }
   }
 
-  public static deleteEmployee(empId: string): HREmployeeRecord[] {
+  public static async deleteEmployee(empId: string): Promise<HREmployeeRecord[]> {
+    const cleanId = String(empId).trim();
+    if (!cleanId) {
+      throw new Error('Employee ID cannot be empty');
+    }
+
+    // 1. MANDATORY DATABASE-FIRST MUTATION (Rule 1 & 3): Strictly await remote deletion from Supabase
+    if (typeof window !== 'undefined') {
+      const res = await fetch(`/api/hr/sync-workstation?employeeId=${encodeURIComponent(cleanId)}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        const msg = errData?.error || `Failed to delete employee from database (HTTP ${res.status})`;
+        console.error('[HRPersonnelService] Database deletion error:', msg);
+        throw new Error(msg);
+      }
+    }
+
+    // 2. Only on confirmed remote DB deletion: update local cache and dispatch sync event
     const list = this.getEmployees();
-    const nextList = list.filter((e) => e.id !== empId);
+    const nextList = list.filter((e) => String(e.id) !== cleanId && (e as any).employee_code !== cleanId);
+
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(nextList));
         window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: nextList }));
-        if (typeof navigator !== 'undefined' && navigator.onLine) {
-          (async () => {
-            try {
-              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(empId);
-              if (isUuid) {
-                await supabase.from('employees').delete().or(`id.eq.${empId},employee_code.eq.${empId}`);
-              } else {
-                await supabase.from('employees').delete().eq('employee_code', empId);
-              }
-            } catch (err) {
-              console.warn('[HRPersonnelService] Supabase delete employee notice:', err);
-            }
-          })();
-        }
       } catch (err) {
         console.warn('[HRPersonnelService] Failed deleting from localStorage:', err);
       }
     }
+
     return nextList;
   }
 

@@ -181,11 +181,19 @@ export default function PersonnelMasterConsole() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteEmployee = (emp: HREmployeeRecord) => {
+  const handleDeleteEmployee = async (emp: HREmployeeRecord) => {
     if (confirm(`Are you sure you want to delete employee "${emp.fullName}" (${emp.id})?`)) {
-      const updated = HRPersonnelService.deleteEmployee(emp.id);
-      setEmployees(updated);
-      showToast(`Employee ${emp.fullName} deleted successfully.`);
+      try {
+        setIsLoading(true);
+        const updated = await HRPersonnelService.deleteEmployee(emp.id);
+        setEmployees(updated);
+        showToast(`Employee ${emp.fullName} deleted successfully.`);
+      } catch (err: any) {
+        console.error('[PersonnelMasterConsole] Delete employee error:', err);
+        alert(`Delete Failed: ${err?.message || 'Database error occurred while deleting employee.'}`);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
