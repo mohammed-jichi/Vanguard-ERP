@@ -472,9 +472,7 @@ function applyCustomDesignerAction(
         if (selectedDays.includes(dayAbbr)) {
           updatedMatrix[dateStr] = 'OFF';
         } else {
-          if (updatedMatrix[dateStr] === 'OFF') {
-            updatedMatrix[dateStr] = workingShiftHours;
-          }
+          updatedMatrix[dateStr] = workingShiftHours;
         }
       } else {
         if (selectedDays.includes(dayAbbr)) {
@@ -556,6 +554,37 @@ assert.strictEqual(totalOffSunOnly, 52, `Total yearly OFF days with only Sun OFF
 assert.strictEqual(liveScheduleMatrix['2026-01-03'], '08:00 - 16:30', 'Saturday Jan 3 must be restored to 08:00 - 16:30');
 assert.strictEqual(liveScheduleMatrix['2026-01-04'], 'OFF', 'Sunday Jan 4 must remain OFF');
 console.log(`  ✔ Only Sun marked OFF successfully recomputed all 12 months to 4-5 days (Total: ${totalOffSunOnly} OFF days).`);
+
+// Step e: Applying Custom Designer action with Mon-Fri set to OFF across all 12 months (5 weekdays OFF)
+console.log('  Action (e): Applying Custom Designer with Weekdays (Mon-Fri) set to OFF (All 12 Months)...');
+liveScheduleMatrix = applyCustomDesignerAction(
+  liveScheduleMatrix,
+  ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  true,  // isSetSelectedToOff = true
+  true,  // applyToAllMonths = true
+  0,
+  '08:00 - 16:30',
+  2026
+);
+
+// Step f: Assert all 12 months recompute to 20-23 OFF days (total 261 OFF days)
+let totalOffWeekdays = 0;
+for (let m = 1; m <= 12; m++) {
+  const monthOff = calculateMonthOffDays(2026, m, liveScheduleMatrix);
+  totalOffWeekdays += monthOff;
+  assert.ok(
+    monthOff >= 20 && monthOff <= 23,
+    `Month ${m} with Mon-Fri OFF must have between 20 and 23 OFF days, got ${monthOff}`
+  );
+  console.log(`    Month ${m} (Mon-Fri OFF): ${monthOff} OFF days ✔`);
+}
+assert.strictEqual(totalOffWeekdays, 261, `Total yearly OFF days with Mon-Fri OFF must be 261, got ${totalOffWeekdays}`);
+assert.strictEqual(liveScheduleMatrix['2026-01-01'], 'OFF', 'Thursday Jan 1 must be OFF');
+assert.strictEqual(liveScheduleMatrix['2026-01-02'], 'OFF', 'Friday Jan 2 must be OFF');
+assert.strictEqual(liveScheduleMatrix['2026-01-03'], '08:00 - 16:30', 'Saturday Jan 3 must be restored to 08:00 - 16:30');
+assert.strictEqual(liveScheduleMatrix['2026-01-04'], '08:00 - 16:30', 'Sunday Jan 4 must be restored to 08:00 - 16:30');
+assert.strictEqual(liveScheduleMatrix['2026-01-05'], 'OFF', 'Monday Jan 5 must be OFF');
+console.log(`  ✔ Mon-Fri marked OFF successfully recomputed all 12 months to 20-23 days (Total: ${totalOffWeekdays} OFF days).`);
 
 console.log('\n====================================================');
 console.log('🎉 ALL 8 RUNTIME AUDIT TEST SUITES PASSED (Exit Code: 0)');

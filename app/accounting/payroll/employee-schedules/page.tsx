@@ -9,6 +9,7 @@ import {
   EmployeeScheduleConfig,
   STANDARD_SCHEDULE_TEMPLATES,
 } from '@/lib/hrPersonnelService';
+import ScheduleDesigner from '@/components/modules/hr/ScheduleDesigner';
 import {
   Calendar,
   Clock,
@@ -220,6 +221,11 @@ export default function EmployeeSchedulesPage() {
     );
     if (hasDayOff) {
       return 'OFF';
+    }
+
+    // Explicit date overrides
+    if (emp.schedule?.dateOverrides?.[dateStr]) {
+      return emp.schedule.dateOverrides[dateStr];
     }
 
     // 2. In Schedule Template Mode, derive strictly from selected template
@@ -434,15 +440,23 @@ export default function EmployeeSchedulesPage() {
         const daysInMonth = getDaysInMonth(yearNum, mIdx);
         for (let day = 1; day <= daysInMonth; day++) {
           const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
-          if (selectedDays.includes(dayAbbr)) {
-            const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
-              .toString()
-              .padStart(2, '0')}`;
-            updatedOverrides[dateStr] = slotStr;
+          const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+            .toString()
+            .padStart(2, '0')}`;
 
-            // When applying working slots, strip any OFF day-off records for this date
-            if (!isSetSelectedToOff) {
+          if (isSetSelectedToOff) {
+            if (selectedDays.includes(dayAbbr)) {
+              updatedOverrides[dateStr] = 'OFF';
+            } else {
+              updatedOverrides[dateStr] = getDefaultWorkingShift(targetEmp, dayAbbr);
               HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+            }
+          } else {
+            if (selectedDays.includes(dayAbbr)) {
+              updatedOverrides[dateStr] = slotStr;
+              HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+            } else {
+              updatedOverrides[dateStr] = 'OFF';
             }
           }
         }

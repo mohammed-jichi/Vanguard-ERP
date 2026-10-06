@@ -256,22 +256,38 @@ export default function ScheduleDesigner({
     return matrix;
   };
 
-  // Sync selectedTemplateName & selectedDays and initialize live scheduleDays when activeEmployee changes
+  const lastLoadedEmpIdRef = React.useRef<string | null>(null);
+  const lastLoadedYearRef = React.useRef<number>(yearNum);
+
+  // Sync selectedTemplateName & selectedDays and initialize live scheduleDays when switching employees or year
   useEffect(() => {
-    if (activeEmployee?.schedule?.templateName) {
-      const tplName = activeEmployee.schedule.templateName;
-      setSelectedTemplateName(tplName);
-      const tpl = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === tplName);
-      if (tpl) {
-        setSelectedDays(isSetSelectedToOff ? [...tpl.offDays] : [...tpl.workDays]);
-        setCustomSlots(tpl.slots.map((s, idx) => ({ id: String(idx + 1), start: s.start, end: s.end })));
+    if (!activeEmployee) return;
+
+    const isDifferentEmp = lastLoadedEmpIdRef.current !== activeEmployee.id;
+    const isDifferentYear = lastLoadedYearRef.current !== yearNum;
+
+    if (isDifferentEmp || isDifferentYear) {
+      lastLoadedEmpIdRef.current = activeEmployee.id;
+      lastLoadedYearRef.current = yearNum;
+
+      if (activeEmployee.schedule?.templateName) {
+        const tplName = activeEmployee.schedule.templateName;
+        setSelectedTemplateName(tplName);
+        const tpl = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === tplName);
+        if (tpl) {
+          setSelectedDays([...tpl.workDays]);
+          setCustomSlots(tpl.slots.map((s, idx) => ({ id: String(idx + 1), start: s.start, end: s.end })));
+        }
+      } else {
+        const defaultTpl = STANDARD_SCHEDULE_TEMPLATES[0];
+        setSelectedDays([...defaultTpl.workDays]);
+        setCustomSlots(defaultTpl.slots.map((s, idx) => ({ id: String(idx + 1), start: s.start, end: s.end })));
       }
-    }
-    if (activeEmployee) {
+
       const initialMatrix = buildInitialEmployeeMatrix(activeEmployee, yearNum);
       setScheduleDays(initialMatrix);
     }
-  }, [activeEmployee?.id, activeEmployee?.schedule?.templateName, yearNum]);
+  }, [activeEmployee?.id, yearNum]);
 
   // Helper to extract default working shift timing for an employee
   const getDefaultWorkingShift = (emp: HREmployeeRecord, dayAbbr: string): string => {
@@ -503,7 +519,8 @@ export default function ScheduleDesigner({
   // Apply to Selected Days with Validation and Scope Control
   const handleApplyToSelectedDays = async () => {
     // 1. Validate Day Selection
-    if (!selectedDays || selectedDays.length === 0) {
+    const selectedDaysOfWeek = selectedDays;
+    if (!selectedDaysOfWeek || selectedDaysOfWeek.length === 0) {
       setDaySelectionError(true);
       showToast('Please select at least one day of the week (e.g., Sat, Sun) before applying.');
       return;
@@ -540,7 +557,10 @@ export default function ScheduleDesigner({
       : [activeMonthIndex];
 
     // Compute updated schedule matrix for active employee immediately
-    const updatedActiveMatrix = { ...scheduleDays };
+    const baseMatrix = Object.keys(scheduleDays).length > 0
+      ? scheduleDays
+      : buildInitialEmployeeMatrix(activeEmployee, yearNum);
+    const updatedActiveMatrix: { [dateStr: string]: string } = { ...baseMatrix };
 
     for (const mIdx of monthsToProcess) {
       const daysInMonth = getDaysInMonth(yearNum, mIdx);
@@ -551,16 +571,16 @@ export default function ScheduleDesigner({
           .padStart(2, '0')}`;
 
         if (isSetSelectedToOff) {
-          if (selectedDays.includes(dayAbbr)) {
+          if (selectedDaysOfWeek.includes(dayAbbr)) {
+            // For every selected day of the week, assign its value to 'OFF'
             updatedActiveMatrix[dateStr] = 'OFF';
           } else {
-            // Restore to active working shift if it was previously OFF
-            if (updatedActiveMatrix[dateStr] === 'OFF') {
-              updatedActiveMatrix[dateStr] = getDefaultWorkingShift(activeEmployee, dayAbbr);
-            }
+            // For unselected days, assign default working shift timing (e.g., '08:00 - 16:30')
+            updatedActiveMatrix[dateStr] = getDefaultWorkingShift(activeEmployee, dayAbbr);
+            HRPersonnelService.removeDayOffForEmployeeDate(activeEmployee.id, dateStr);
           }
         } else {
-          if (selectedDays.includes(dayAbbr)) {
+          if (selectedDaysOfWeek.includes(dayAbbr)) {
             updatedActiveMatrix[dateStr] = workingShiftHours;
             HRPersonnelService.removeDayOffForEmployeeDate(activeEmployee.id, dateStr);
           } else {
@@ -572,6 +592,7 @@ export default function ScheduleDesigner({
     }
 
     // 4. Update in-memory live schedule matrix IMMEDIATELY
+    // Forces React to re-render Daily Breakdown rows and Yearly Overview cards
     setScheduleDays(updatedActiveMatrix);
 
     // 5. Update employees in local component state IMMEDIATELY
@@ -580,7 +601,11 @@ export default function ScheduleDesigner({
       prevEmployees.map((emp) => {
         if (!targetEmpIds.has(emp.id)) return emp;
 
-        const empMatrix = { ...(emp.schedule?.dateOverrides || updatedActiveMatrix) };
+        const empBase = Object.keys(emp.schedule?.dateOverrides || {}).length > 0
+          ? emp.schedule!.dateOverrides!
+          : (emp.id === activeEmployee.id ? updatedActiveMatrix : buildInitialEmployeeMatrix(emp, yearNum));
+        const empMatrix: { [dateStr: string]: string } = { ...empBase };
+
         for (const mIdx of monthsToProcess) {
           const daysInMonth = getDaysInMonth(yearNum, mIdx);
           for (let day = 1; day <= daysInMonth; day++) {
@@ -590,15 +615,14 @@ export default function ScheduleDesigner({
               .padStart(2, '0')}`;
 
             if (isSetSelectedToOff) {
-              if (selectedDays.includes(dayAbbr)) {
+              if (selectedDaysOfWeek.includes(dayAbbr)) {
                 empMatrix[dateStr] = 'OFF';
               } else {
-                if (empMatrix[dateStr] === 'OFF') {
-                  empMatrix[dateStr] = getDefaultWorkingShift(emp, dayAbbr);
-                }
+                empMatrix[dateStr] = getDefaultWorkingShift(emp, dayAbbr);
+                HRPersonnelService.removeDayOffForEmployeeDate(emp.id, dateStr);
               }
             } else {
-              if (selectedDays.includes(dayAbbr)) {
+              if (selectedDaysOfWeek.includes(dayAbbr)) {
                 empMatrix[dateStr] = workingShiftHours;
                 HRPersonnelService.removeDayOffForEmployeeDate(emp.id, dateStr);
               } else {
@@ -628,7 +652,11 @@ export default function ScheduleDesigner({
     (async () => {
       try {
         for (const targetEmp of targetEmployees) {
-          const empMatrix = { ...(targetEmp.schedule?.dateOverrides || updatedActiveMatrix) };
+          const empBase = Object.keys(targetEmp.schedule?.dateOverrides || {}).length > 0
+            ? targetEmp.schedule!.dateOverrides!
+            : (targetEmp.id === activeEmployee.id ? updatedActiveMatrix : buildInitialEmployeeMatrix(targetEmp, yearNum));
+          const empMatrix: { [dateStr: string]: string } = { ...empBase };
+
           for (const mIdx of monthsToProcess) {
             const daysInMonth = getDaysInMonth(yearNum, mIdx);
             for (let day = 1; day <= daysInMonth; day++) {
@@ -638,15 +666,13 @@ export default function ScheduleDesigner({
                 .padStart(2, '0')}`;
 
               if (isSetSelectedToOff) {
-                if (selectedDays.includes(dayAbbr)) {
+                if (selectedDaysOfWeek.includes(dayAbbr)) {
                   empMatrix[dateStr] = 'OFF';
                 } else {
-                  if (empMatrix[dateStr] === 'OFF') {
-                    empMatrix[dateStr] = getDefaultWorkingShift(targetEmp, dayAbbr);
-                  }
+                  empMatrix[dateStr] = getDefaultWorkingShift(targetEmp, dayAbbr);
                 }
               } else {
-                if (selectedDays.includes(dayAbbr)) {
+                if (selectedDaysOfWeek.includes(dayAbbr)) {
                   empMatrix[dateStr] = workingShiftHours;
                 } else {
                   empMatrix[dateStr] = 'OFF';
@@ -1157,10 +1183,12 @@ export default function ScheduleDesigner({
               type="button"
               onClick={() => {
                 setManageSubView('custom');
-                const tpl = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === selectedTemplateName);
-                if (tpl) {
-                  setSelectedDays(isSetSelectedToOff ? [...tpl.offDays] : [...tpl.workDays]);
-                  setCustomSlots(tpl.slots.map((s, idx) => ({ id: String(idx + 1), start: s.start, end: s.end })));
+                if (selectedDays.length === 0) {
+                  const tpl = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === selectedTemplateName);
+                  if (tpl) {
+                    setSelectedDays([...tpl.workDays]);
+                    setCustomSlots(tpl.slots.map((s, idx) => ({ id: String(idx + 1), start: s.start, end: s.end })));
+                  }
                 }
               }}
               className={`flex-1 py-2 rounded-xl text-xs transition-all cursor-pointer ${
@@ -1428,6 +1456,17 @@ export default function ScheduleDesigner({
                     <button
                       type="button"
                       onClick={() => {
+                        setSelectedDays(['Sat', 'Sun']);
+                        setDaySelectionError(false);
+                      }}
+                      className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
+                    >
+                      Weekends (Sat-Sun)
+                    </button>
+                    <span className="text-slate-300">|</span>
+                    <button
+                      type="button"
+                      onClick={() => {
                         setSelectedDays(['Sun']);
                         setDaySelectionError(false);
                       }}
@@ -1496,12 +1535,7 @@ export default function ScheduleDesigner({
                   id="offToggle"
                   checked={isSetSelectedToOff}
                   onChange={(e) => {
-                    const willBeOff = e.target.checked;
-                    setIsSetSelectedToOff(willBeOff);
-                    const tpl = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === selectedTemplateName);
-                    if (tpl) {
-                      setSelectedDays(willBeOff ? [...tpl.offDays] : [...tpl.workDays]);
-                    }
+                    setIsSetSelectedToOff(e.target.checked);
                   }}
                   className="w-4 h-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
                 />
