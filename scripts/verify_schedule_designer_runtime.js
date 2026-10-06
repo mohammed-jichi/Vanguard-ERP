@@ -445,7 +445,119 @@ assert.strictEqual(empDbPayload.date_hired, '2023-03-01');
 assert.ok(empDbPayload.schedule_config);
 console.log('  ✔ Persistence payload conforms strictly to Supabase employees schema.');
 
+// Helper simulating Custom Designer Action
+function applyCustomDesignerAction(
+  initialMatrix,
+  selectedDays,
+  isSetSelectedToOff,
+  applyToAllMonths,
+  activeMonthIdx = 0,
+  workingShiftHours = '08:00 - 16:30',
+  yearNum = 2026
+) {
+  const updatedMatrix = { ...initialMatrix };
+  const monthsToProcess = applyToAllMonths
+    ? Array.from({ length: 12 }, (_, i) => i)
+    : [activeMonthIdx];
+
+  for (const mIdx of monthsToProcess) {
+    const daysInMonth = getDaysInMonth(yearNum, mIdx);
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+      const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+        .toString()
+        .padStart(2, '0')}`;
+
+      if (isSetSelectedToOff) {
+        if (selectedDays.includes(dayAbbr)) {
+          updatedMatrix[dateStr] = 'OFF';
+        } else {
+          if (updatedMatrix[dateStr] === 'OFF') {
+            updatedMatrix[dateStr] = workingShiftHours;
+          }
+        }
+      } else {
+        if (selectedDays.includes(dayAbbr)) {
+          updatedMatrix[dateStr] = workingShiftHours;
+        } else {
+          updatedMatrix[dateStr] = 'OFF';
+        }
+      }
+    }
+  }
+  return updatedMatrix;
+}
+
+// TEST 8: Dynamic Live Matrix Recalculation from Custom Designer Actions (Sat+Sun OFF vs Sun-only OFF)
+console.log('\nTEST 8: Simulating Live Custom Designer Actions & Reactive Matrix Recalculation...');
+
+// Step 0: Start from baseline 6-day Backoffice template (52 OFF days)
+let liveScheduleMatrix = generateFullYearMatrix(backofficeTpl, 2026);
+let initialOffDays = 0;
+for (let m = 1; m <= 12; m++) {
+  initialOffDays += calculateMonthOffDays(2026, m, liveScheduleMatrix);
+}
+assert.strictEqual(initialOffDays, 52, 'Initial template baseline must have 52 OFF days');
+console.log('  Baseline live matrix initialized: 52 Total OFF days.');
+
+// Step a: Apply Custom Designer action with Sat + Sun set to OFF across all 12 months
+console.log('  Action (a): Applying Custom Designer with Sat + Sun set to OFF (All 12 Months)...');
+liveScheduleMatrix = applyCustomDesignerAction(
+  liveScheduleMatrix,
+  ['Sat', 'Sun'],
+  true,  // isSetSelectedToOff = true
+  true,  // applyToAllMonths = true
+  0,
+  '08:00 - 16:30',
+  2026
+);
+
+// Step b: Assert all 12 months recompute to 8-9 OFF days (total 104 OFF days)
+let totalOffSatSun = 0;
+for (let m = 1; m <= 12; m++) {
+  const monthOff = calculateMonthOffDays(2026, m, liveScheduleMatrix);
+  totalOffSatSun += monthOff;
+  assert.ok(
+    monthOff >= 8 && monthOff <= 10,
+    `Month ${m} with Sat+Sun OFF must have between 8 and 10 OFF days, got ${monthOff}`
+  );
+  console.log(`    Month ${m} (Sat+Sun OFF): ${monthOff} OFF days ✔`);
+}
+assert.strictEqual(totalOffSatSun, 104, `Total yearly OFF days with Sat+Sun OFF must be 104, got ${totalOffSatSun}`);
+assert.strictEqual(liveScheduleMatrix['2026-01-03'], 'OFF', 'Saturday Jan 3 must be OFF');
+assert.strictEqual(liveScheduleMatrix['2026-01-04'], 'OFF', 'Sunday Jan 4 must be OFF');
+assert.strictEqual(liveScheduleMatrix['2026-01-05'], '08:00 - 16:30', 'Monday Jan 5 must be 08:00 - 16:30');
+console.log(`  ✔ Sat + Sun marked OFF successfully recomputed all 12 months to 8-9 days (Total: ${totalOffSatSun} OFF days).`);
+
+// Step c: Applying Custom Designer action with only Sun set to OFF across all 12 months
+console.log('  Action (c): Applying Custom Designer with ONLY Sun set to OFF (All 12 Months)...');
+liveScheduleMatrix = applyCustomDesignerAction(
+  liveScheduleMatrix,
+  ['Sun'],
+  true,  // isSetSelectedToOff = true
+  true,  // applyToAllMonths = true
+  0,
+  '08:00 - 16:30',
+  2026
+);
+
+// Step d: Assert all 12 months recompute to 4-5 OFF days (total 52 OFF days)
+let totalOffSunOnly = 0;
+for (let m = 1; m <= 12; m++) {
+  const monthOff = calculateMonthOffDays(2026, m, liveScheduleMatrix);
+  totalOffSunOnly += monthOff;
+  assert.ok(
+    monthOff === 4 || monthOff === 5,
+    `Month ${m} with only Sun OFF must have 4 or 5 OFF days, got ${monthOff}`
+  );
+  console.log(`    Month ${m} (Sun-only OFF): ${monthOff} OFF days ✔`);
+}
+assert.strictEqual(totalOffSunOnly, 52, `Total yearly OFF days with only Sun OFF must be 52, got ${totalOffSunOnly}`);
+assert.strictEqual(liveScheduleMatrix['2026-01-03'], '08:00 - 16:30', 'Saturday Jan 3 must be restored to 08:00 - 16:30');
+assert.strictEqual(liveScheduleMatrix['2026-01-04'], 'OFF', 'Sunday Jan 4 must remain OFF');
+console.log(`  ✔ Only Sun marked OFF successfully recomputed all 12 months to 4-5 days (Total: ${totalOffSunOnly} OFF days).`);
+
 console.log('\n====================================================');
-console.log('🎉 ALL 7 RUNTIME AUDIT TEST SUITES PASSED (Exit Code: 0)');
+console.log('🎉 ALL 8 RUNTIME AUDIT TEST SUITES PASSED (Exit Code: 0)');
 console.log('====================================================\n');
 process.exit(0);

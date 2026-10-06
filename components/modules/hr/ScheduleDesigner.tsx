@@ -220,7 +220,43 @@ export default function ScheduleDesigner({
   const yearNum = parseInt(selectedYear, 10) || 2026;
   const daysInCurrentMonth = getDaysInMonth(yearNum, activeMonthIndex);
 
-  // Sync selectedTemplateName & selectedDays when activeEmployee changes
+  // In-Memory Live Schedule Matrix ({ [dateStr: string]: string })
+  const [scheduleDays, setScheduleDays] = useState<{ [dateStr: string]: string }>({});
+
+  // Helper to build/resolve in-memory 365-day schedule matrix for an employee
+  const buildInitialEmployeeMatrix = (
+    emp: HREmployeeRecord | undefined,
+    targetYear: number
+  ): { [dateStr: string]: string } => {
+    if (!emp) return {};
+    const tplName =
+      emp.schedule?.templateName ||
+      selectedTemplateName ||
+      STANDARD_SCHEDULE_TEMPLATES[0].name;
+    const template =
+      STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === tplName) ||
+      STANDARD_SCHEDULE_TEMPLATES[0];
+
+    const baseMatrix = generateFullYearMatrix(template, targetYear);
+    const matrix = { ...baseMatrix, ...(emp.schedule?.dateOverrides || {}) };
+
+    // Overlay approved days off
+    if (daysOffList.length > 0) {
+      daysOffList.forEach((d) => {
+        if (d.employeeId === emp.id) {
+          for (const dateKey of Object.keys(matrix)) {
+            if (dateKey >= d.startDate && dateKey <= d.endDate) {
+              matrix[dateKey] = 'OFF';
+            }
+          }
+        }
+      });
+    }
+
+    return matrix;
+  };
+
+  // Sync selectedTemplateName & selectedDays and initialize live scheduleDays when activeEmployee changes
   useEffect(() => {
     if (activeEmployee?.schedule?.templateName) {
       const tplName = activeEmployee.schedule.templateName;
@@ -231,7 +267,32 @@ export default function ScheduleDesigner({
         setCustomSlots(tpl.slots.map((s, idx) => ({ id: String(idx + 1), start: s.start, end: s.end })));
       }
     }
-  }, [activeEmployee?.id, activeEmployee?.schedule?.templateName, isSetSelectedToOff]);
+    if (activeEmployee) {
+      const initialMatrix = buildInitialEmployeeMatrix(activeEmployee, yearNum);
+      setScheduleDays(initialMatrix);
+    }
+  }, [activeEmployee?.id, activeEmployee?.schedule?.templateName, yearNum]);
+
+  // Helper to extract default working shift timing for an employee
+  const getDefaultWorkingShift = (emp: HREmployeeRecord, dayAbbr: string): string => {
+    const templateName =
+      emp.schedule?.templateName ||
+      selectedTemplateName ||
+      STANDARD_SCHEDULE_TEMPLATES[0].name;
+    const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
+    if (template) {
+      if (template.dailySchedule && template.dailySchedule[dayAbbr] && template.dailySchedule[dayAbbr] !== 'OFF') {
+        return template.dailySchedule[dayAbbr];
+      }
+      return (
+        template.timing ||
+        (template.slots && template.slots[0]
+          ? `${template.slots[0].start} - ${template.slots[0].end}`
+          : '08:00 - 16:30')
+      );
+    }
+    return '08:00 - 16:30';
+  };
 
   // Shift timing calculation for employee on specific day
   const getEmployeeShiftForDay = (
@@ -260,19 +321,27 @@ export default function ScheduleDesigner({
     if (forcedTemplateName && forcedTemplateName !== emp.schedule?.templateName) {
       const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === forcedTemplateName);
       if (template) {
+        if (template.dailySchedule && template.dailySchedule[dayAbbr]) {
+          return template.dailySchedule[dayAbbr];
+        }
         if (template.workDays.includes(dayAbbr)) {
-          return `${template.slots[0].start} - ${template.slots[0].end}`;
+          return template.timing || `${template.slots[0].start} - ${template.slots[0].end}`;
         }
         return 'OFF';
       }
     }
 
-    // 3. Explicit date overrides take top precedence (custom adjustments or inline toggles)
+    // 3. In-memory live schedule matrix (reactive state takes top precedence for active employee)
+    if (emp.id === activeEmployee?.id && scheduleDays[dateStr] !== undefined) {
+      return scheduleDays[dateStr];
+    }
+
+    // 4. Explicit date overrides in employee record
     if (emp.schedule?.dateOverrides?.[dateStr]) {
       return emp.schedule.dateOverrides[dateStr];
     }
 
-    // 4. In Schedule Template Mode or assigned template fallback
+    // 5. In Schedule Template Mode or assigned template fallback
     const activeTplName =
       (manageSubView === 'schedule' ? selectedTemplateName : undefined) ||
       emp.schedule?.templateName ||
@@ -281,6 +350,9 @@ export default function ScheduleDesigner({
 
     const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === activeTplName);
     if (template) {
+      if (template.dailySchedule && template.dailySchedule[dayAbbr]) {
+        return template.dailySchedule[dayAbbr];
+      }
       if (template.workDays.includes(dayAbbr)) {
         return (
           template.timing ||
@@ -292,7 +364,7 @@ export default function ScheduleDesigner({
       return 'OFF';
     }
 
-    // 5. Default fallback: Only Sunday is OFF for standard 6-day operation; Saturday is standard working day
+    // 6. Default fallback: Only Sunday is OFF for standard 6-day operation; Saturday is standard working day
     if (dayAbbr === 'Sun') {
       return 'OFF';
     }
@@ -305,6 +377,9 @@ export default function ScheduleDesigner({
     monthIdx: number
   ): number => {
     if (!emp) return 0;
+    if (emp.id === activeEmployee?.id && Object.keys(scheduleDays).length > 0) {
+      return calculateMonthOffDays(yearNum, monthIdx + 1, scheduleDays);
+    }
     const daysInMonth = getDaysInMonth(yearNum, monthIdx);
     let count = 0;
     for (let d = 1; d <= daysInMonth; d++) {
@@ -325,30 +400,19 @@ export default function ScheduleDesigner({
   // Total OFF Days across the entire year for active employee
   const totalYearlyOffDays = useMemo(() => {
     if (!activeEmployee) return 0;
+    if (Object.keys(scheduleDays).length > 0) {
+      let total = 0;
+      for (let m = 1; m <= 12; m++) {
+        total += calculateMonthOffDays(yearNum, m, scheduleDays);
+      }
+      return total;
+    }
     let total = 0;
     for (let m = 0; m < 12; m++) {
       total += getEmployeeMonthOffDaysCount(activeEmployee, m);
     }
     return total;
-  }, [activeEmployee, daysOffList, yearNum, employees, selectedTemplateName, manageSubView]);
-
-  // Helper to extract default working shift timing for an employee
-  const getDefaultWorkingShift = (emp: HREmployeeRecord, dayAbbr: string): string => {
-    const templateName =
-      emp.schedule?.templateName ||
-      selectedTemplateName ||
-      STANDARD_SCHEDULE_TEMPLATES[0].name;
-    const template = STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === templateName);
-    if (template) {
-      return (
-        template.timing ||
-        (template.slots && template.slots[0]
-          ? `${template.slots[0].start} - ${template.slots[0].end}`
-          : '08:00 - 16:30')
-      );
-    }
-    return '08:00 - 16:30';
-  };
+  }, [activeEmployee, scheduleDays, daysOffList, yearNum, selectedTemplateName, manageSubView]);
 
   // Dual View: Copy from Template to Custom
   const handleCopyFromTemplate = () => {
@@ -367,15 +431,17 @@ export default function ScheduleDesigner({
     const dateStr = `${yearNum}-${(activeMonthIndex + 1).toString().padStart(2, '0')}-${dayNumber
       .toString()
       .padStart(2, '0')}`;
-    const currentShift = getEmployeeShiftForDay(
-      emp,
-      dayNumber,
-      activeMonthIndex,
-      manageSubView === 'schedule' ? selectedTemplateName : undefined
-    );
+    const currentShift = scheduleDays[dateStr] !== undefined
+      ? scheduleDays[dateStr]
+      : getEmployeeShiftForDay(
+          emp,
+          dayNumber,
+          activeMonthIndex,
+          manageSubView === 'schedule' ? selectedTemplateName : undefined
+        );
     const isCurrentlyOff = currentShift === 'OFF';
 
-    const updatedOverrides = { ...(emp.schedule?.dateOverrides || {}) };
+    const updatedOverrides = { ...scheduleDays, ...(emp.schedule?.dateOverrides || {}) };
 
     if (isCurrentlyOff) {
       // Turn ON: restore to working shift
@@ -385,6 +451,7 @@ export default function ScheduleDesigner({
       // Strip any day-off records for this date
       HRPersonnelService.removeDayOffForEmployeeDate(emp.id, dateStr);
       setDaysOffList(HRPersonnelService.getDaysOff());
+      setScheduleDays(updatedOverrides);
 
       const updatedEmp: HREmployeeRecord = {
         ...emp,
@@ -394,12 +461,13 @@ export default function ScheduleDesigner({
         },
       };
 
-      HRPersonnelService.saveEmployee(updatedEmp);
-      setEmployees(HRPersonnelService.getEmployees());
+      setEmployees((prev) => prev.map((e) => (e.id === emp.id ? updatedEmp : e)));
+      HRPersonnelService.saveEmployee(updatedEmp).catch((err) => console.warn(err));
       showToast(`${MONTH_SHORT[activeMonthIndex]} ${dayNumber}: Reverted to active working day (${workingShift}) for ${emp.fullName}.`);
     } else {
       // Turn OFF
       updatedOverrides[dateStr] = 'OFF';
+      setScheduleDays(updatedOverrides);
 
       const quickRecord: DayOffRecord = {
         id: `DO-${Date.now()}`,
@@ -426,8 +494,8 @@ export default function ScheduleDesigner({
         },
       };
 
-      HRPersonnelService.saveEmployee(updatedEmp);
-      setEmployees(HRPersonnelService.getEmployees());
+      setEmployees((prev) => prev.map((e) => (e.id === emp.id ? updatedEmp : e)));
+      HRPersonnelService.saveEmployee(updatedEmp).catch((err) => console.warn(err));
       showToast(`${MONTH_SHORT[activeMonthIndex]} ${dayNumber}: Marked OFF for ${emp.fullName}.`);
     }
   };
@@ -454,9 +522,8 @@ export default function ScheduleDesigner({
 
     if (!activeEmployee) return;
 
-    const slotStr = isSetSelectedToOff
-      ? 'OFF'
-      : customSlots.map((s) => `${s.start} - ${s.end}`).join(', ');
+    const workingShiftHours =
+      customSlots.map((s) => `${s.start} - ${s.end}`).join(', ') || '08:00 - 16:30';
 
     // 3. Resolve Target Employees based on Scope Controls
     let targetEmployees: HREmployeeRecord[] = [];
@@ -472,53 +539,158 @@ export default function ScheduleDesigner({
       ? Array.from({ length: 12 }, (_, i) => i)
       : [activeMonthIndex];
 
-    for (const targetEmp of targetEmployees) {
-      const updatedOverrides = { ...(targetEmp.schedule?.dateOverrides || {}) };
+    // Compute updated schedule matrix for active employee immediately
+    const updatedActiveMatrix = { ...scheduleDays };
 
-      for (const mIdx of monthsToProcess) {
-        const daysInMonth = getDaysInMonth(yearNum, mIdx);
-        for (let day = 1; day <= daysInMonth; day++) {
-          const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+    for (const mIdx of monthsToProcess) {
+      const daysInMonth = getDaysInMonth(yearNum, mIdx);
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+        const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+          .toString()
+          .padStart(2, '0')}`;
+
+        if (isSetSelectedToOff) {
           if (selectedDays.includes(dayAbbr)) {
-            const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
-              .toString()
-              .padStart(2, '0')}`;
-            updatedOverrides[dateStr] = slotStr;
-
-            if (!isSetSelectedToOff) {
-              HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
+            updatedActiveMatrix[dateStr] = 'OFF';
+          } else {
+            // Restore to active working shift if it was previously OFF
+            if (updatedActiveMatrix[dateStr] === 'OFF') {
+              updatedActiveMatrix[dateStr] = getDefaultWorkingShift(activeEmployee, dayAbbr);
             }
+          }
+        } else {
+          if (selectedDays.includes(dayAbbr)) {
+            updatedActiveMatrix[dateStr] = workingShiftHours;
+            HRPersonnelService.removeDayOffForEmployeeDate(activeEmployee.id, dateStr);
+          } else {
+            // Not in selected working days -> OFF
+            updatedActiveMatrix[dateStr] = 'OFF';
           }
         }
       }
-
-      const scheduleConfig: EmployeeScheduleConfig = {
-        ...(targetEmp.schedule || {}),
-        templateName: targetEmp.schedule?.templateName || selectedTemplateName,
-        applyToAllMonths: applyToAllMonths,
-        dateOverrides: updatedOverrides,
-        daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
-      };
-
-      const updatedEmp: HREmployeeRecord = {
-        ...targetEmp,
-        schedule: scheduleConfig,
-        schedule_config: scheduleConfig,
-      };
-
-      await HRPersonnelService.saveEmployee(updatedEmp);
     }
 
-    setDaysOffList(HRPersonnelService.getDaysOff());
-    const freshEmployees = HRPersonnelService.getEmployees();
-    setEmployees(freshEmployees);
+    // 4. Update in-memory live schedule matrix IMMEDIATELY
+    setScheduleDays(updatedActiveMatrix);
+
+    // 5. Update employees in local component state IMMEDIATELY
+    const targetEmpIds = new Set(targetEmployees.map((e) => e.id));
+    setEmployees((prevEmployees) =>
+      prevEmployees.map((emp) => {
+        if (!targetEmpIds.has(emp.id)) return emp;
+
+        const empMatrix = { ...(emp.schedule?.dateOverrides || updatedActiveMatrix) };
+        for (const mIdx of monthsToProcess) {
+          const daysInMonth = getDaysInMonth(yearNum, mIdx);
+          for (let day = 1; day <= daysInMonth; day++) {
+            const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+            const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+              .toString()
+              .padStart(2, '0')}`;
+
+            if (isSetSelectedToOff) {
+              if (selectedDays.includes(dayAbbr)) {
+                empMatrix[dateStr] = 'OFF';
+              } else {
+                if (empMatrix[dateStr] === 'OFF') {
+                  empMatrix[dateStr] = getDefaultWorkingShift(emp, dayAbbr);
+                }
+              }
+            } else {
+              if (selectedDays.includes(dayAbbr)) {
+                empMatrix[dateStr] = workingShiftHours;
+                HRPersonnelService.removeDayOffForEmployeeDate(emp.id, dateStr);
+              } else {
+                empMatrix[dateStr] = 'OFF';
+              }
+            }
+          }
+        }
+
+        const scheduleConfig: EmployeeScheduleConfig = {
+          ...(emp.schedule || {}),
+          templateName: emp.schedule?.templateName || selectedTemplateName,
+          applyToAllMonths: applyToAllMonths,
+          dateOverrides: empMatrix,
+          daysOff: daysOffList.filter((d) => d.employeeId === emp.id),
+        };
+
+        return {
+          ...emp,
+          schedule: scheduleConfig,
+          schedule_config: scheduleConfig,
+        };
+      })
+    );
+
+    // 6. Background asynchronous persistence
+    (async () => {
+      try {
+        for (const targetEmp of targetEmployees) {
+          const empMatrix = { ...(targetEmp.schedule?.dateOverrides || updatedActiveMatrix) };
+          for (const mIdx of monthsToProcess) {
+            const daysInMonth = getDaysInMonth(yearNum, mIdx);
+            for (let day = 1; day <= daysInMonth; day++) {
+              const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
+              const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
+                .toString()
+                .padStart(2, '0')}`;
+
+              if (isSetSelectedToOff) {
+                if (selectedDays.includes(dayAbbr)) {
+                  empMatrix[dateStr] = 'OFF';
+                } else {
+                  if (empMatrix[dateStr] === 'OFF') {
+                    empMatrix[dateStr] = getDefaultWorkingShift(targetEmp, dayAbbr);
+                  }
+                }
+              } else {
+                if (selectedDays.includes(dayAbbr)) {
+                  empMatrix[dateStr] = workingShiftHours;
+                } else {
+                  empMatrix[dateStr] = 'OFF';
+                }
+              }
+            }
+          }
+
+          const scheduleConfig: EmployeeScheduleConfig = {
+            ...(targetEmp.schedule || {}),
+            templateName: targetEmp.schedule?.templateName || selectedTemplateName,
+            applyToAllMonths: applyToAllMonths,
+            dateOverrides: empMatrix,
+            daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
+          };
+
+          const updatedEmp: HREmployeeRecord = {
+            ...targetEmp,
+            schedule: scheduleConfig,
+            schedule_config: scheduleConfig,
+          };
+
+          await HRPersonnelService.saveEmployee(updatedEmp).catch((e) => console.warn(e));
+        }
+      } catch (err) {
+        console.warn('[ScheduleDesigner] Background persistence warning:', err);
+      }
+    })();
+
+    const monthDesc =
+      applyToAllMonths
+        ? 'Full Year 2026 - All Months'
+        : `${MONTH_NAMES[activeMonthIndex]} ${selectedYear}`;
 
     if (applyToAllCompany) {
-      showToast(`Global override applied to all ${targetEmployees.length} employees across the company.`);
+      showToast(
+        `Global override applied to all ${targetEmployees.length} employees across the company (${monthDesc}).`
+      );
     } else if (applyToAllDept) {
-      showToast(`Schedule applied to all ${targetEmployees.length} staff in ${activeEmployee.department}.`);
+      showToast(
+        `Schedule applied to all ${targetEmployees.length} staff in ${activeEmployee.department} (${monthDesc}).`
+      );
     } else {
-      showToast(`Schedule updated for ${activeEmployee.fullName} (${applyToAllMonths ? 'Full Year 2026 - All Months' : `${MONTH_NAMES[activeMonthIndex]} ${selectedYear}`}).`);
+      showToast(`Schedule updated for ${activeEmployee.fullName} (${monthDesc}).`);
     }
 
     if (onSaveSuccess) onSaveSuccess();
@@ -545,66 +717,85 @@ export default function ScheduleDesigner({
         ? `${template.slots[0].start} - ${template.slots[0].end}`
         : '08:00 - 16:30');
 
-    for (const targetEmp of targetEmployees) {
-      let updatedOverrides: { [dateStr: string]: string } = {
-        ...(targetEmp.schedule?.dateOverrides || {}),
-      };
+    let updatedActiveMatrix = { ...scheduleDays };
 
-      if (applyToAllMonths) {
-        const fullYearMatrix = generateFullYearMatrix(template, yearNum);
-        updatedOverrides = {
-          ...updatedOverrides,
-          ...fullYearMatrix,
-        };
-        for (const dateStr of Object.keys(fullYearMatrix)) {
-          if (fullYearMatrix[dateStr] !== 'OFF') {
-            HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
-          }
-        }
-      } else {
-        const daysInMonth = getDaysInMonth(yearNum, activeMonthIndex);
-        for (let day = 1; day <= daysInMonth; day++) {
-          const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, day);
-          const dateStr = `${yearNum}-${(activeMonthIndex + 1).toString().padStart(2, '0')}-${day
-            .toString()
-            .padStart(2, '0')}`;
-
-          if (template.dailySchedule && template.dailySchedule[dayAbbr]) {
-            updatedOverrides[dateStr] = template.dailySchedule[dayAbbr];
-            if (template.dailySchedule[dayAbbr] !== 'OFF') {
-              HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
-            }
-          } else if (template.workDays.includes(dayAbbr)) {
-            updatedOverrides[dateStr] = slotStr;
-            HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
-          } else {
-            updatedOverrides[dateStr] = 'OFF';
-          }
+    if (applyToAllMonths) {
+      updatedActiveMatrix = generateFullYearMatrix(template, yearNum);
+      for (const dateStr of Object.keys(updatedActiveMatrix)) {
+        if (updatedActiveMatrix[dateStr] !== 'OFF') {
+          HRPersonnelService.removeDayOffForEmployeeDate(activeEmployee.id, dateStr);
         }
       }
+    } else {
+      const daysInMonth = getDaysInMonth(yearNum, activeMonthIndex);
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, day);
+        const dateStr = `${yearNum}-${(activeMonthIndex + 1).toString().padStart(2, '0')}-${day
+          .toString()
+          .padStart(2, '0')}`;
 
-      const scheduleConfig: EmployeeScheduleConfig = {
-        ...(targetEmp.schedule || {}),
-        templateName: template.name,
-        workDays: template.workDays,
-        offDays: template.offDays,
-        applyToAllMonths: applyToAllMonths,
-        dateOverrides: updatedOverrides,
-        daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
-      };
-
-      const updatedEmp: HREmployeeRecord = {
-        ...targetEmp,
-        schedule: scheduleConfig,
-        schedule_config: scheduleConfig,
-      };
-
-      await HRPersonnelService.saveEmployee(updatedEmp);
+        if (template.dailySchedule && template.dailySchedule[dayAbbr]) {
+          updatedActiveMatrix[dateStr] = template.dailySchedule[dayAbbr];
+          if (template.dailySchedule[dayAbbr] !== 'OFF') {
+            HRPersonnelService.removeDayOffForEmployeeDate(activeEmployee.id, dateStr);
+          }
+        } else if (template.workDays.includes(dayAbbr)) {
+          updatedActiveMatrix[dateStr] = slotStr;
+          HRPersonnelService.removeDayOffForEmployeeDate(activeEmployee.id, dateStr);
+        } else {
+          updatedActiveMatrix[dateStr] = 'OFF';
+        }
+      }
     }
 
-    setDaysOffList(HRPersonnelService.getDaysOff());
-    const freshEmployees = HRPersonnelService.getEmployees();
-    setEmployees(freshEmployees);
+    setScheduleDays(updatedActiveMatrix);
+
+    const targetEmpIds = new Set(targetEmployees.map((e) => e.id));
+    setEmployees((prevEmployees) =>
+      prevEmployees.map((emp) => {
+        if (!targetEmpIds.has(emp.id)) return emp;
+        const matrix = applyToAllMonths
+          ? generateFullYearMatrix(template, yearNum)
+          : { ...(emp.schedule?.dateOverrides || {}), ...updatedActiveMatrix };
+        const scheduleConfig: EmployeeScheduleConfig = {
+          ...(emp.schedule || {}),
+          templateName: template.name,
+          workDays: template.workDays,
+          offDays: template.offDays,
+          applyToAllMonths: applyToAllMonths,
+          dateOverrides: matrix,
+          daysOff: daysOffList.filter((d) => d.employeeId === emp.id),
+        };
+        return {
+          ...emp,
+          schedule: scheduleConfig,
+          schedule_config: scheduleConfig,
+        };
+      })
+    );
+
+    (async () => {
+      for (const targetEmp of targetEmployees) {
+        const matrix = applyToAllMonths
+          ? generateFullYearMatrix(template, yearNum)
+          : { ...(targetEmp.schedule?.dateOverrides || {}), ...updatedActiveMatrix };
+        const scheduleConfig: EmployeeScheduleConfig = {
+          ...(targetEmp.schedule || {}),
+          templateName: template.name,
+          workDays: template.workDays,
+          offDays: template.offDays,
+          applyToAllMonths: applyToAllMonths,
+          dateOverrides: matrix,
+          daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
+        };
+        const updatedEmp: HREmployeeRecord = {
+          ...targetEmp,
+          schedule: scheduleConfig,
+          schedule_config: scheduleConfig,
+        };
+        await HRPersonnelService.saveEmployee(updatedEmp).catch((e) => console.warn(e));
+      }
+    })();
 
     const monthDesc =
       applyToAllMonths
@@ -660,31 +851,11 @@ export default function ScheduleDesigner({
             }
           }
         } else {
-          // Custom View: Apply selected days & slots
-          const slotStr = isSetSelectedToOff
-            ? 'OFF'
-            : customSlots.map((s) => `${s.start} - ${s.end}`).join(', ');
-
-          const monthsToProcess = applyToAllMonths
-            ? Array.from({ length: 12 }, (_, i) => i)
-            : [activeMonthIndex];
-
-          for (const mIdx of monthsToProcess) {
-            const daysInMonth = getDaysInMonth(yearNum, mIdx);
-            for (let day = 1; day <= daysInMonth; day++) {
-              const dayAbbr = getDayOfWeekAbbr(yearNum, mIdx, day);
-              if (selectedDays.includes(dayAbbr)) {
-                const dateStr = `${yearNum}-${(mIdx + 1).toString().padStart(2, '0')}-${day
-                  .toString()
-                  .padStart(2, '0')}`;
-                updatedOverrides[dateStr] = slotStr;
-
-                if (!isSetSelectedToOff) {
-                  HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
-                }
-              }
-            }
-          }
+          // Custom View: Persist live schedule matrix
+          updatedOverrides = {
+            ...updatedOverrides,
+            ...scheduleDays,
+          };
         }
 
         const scheduleConfig: EmployeeScheduleConfig = {
@@ -724,6 +895,8 @@ export default function ScheduleDesigner({
       setIsSaving(false);
     }
   };
+
+
 
   // Open Apply Day Off Modal
   const handleOpenDayOffModal = (empId: string, day: number) => {
@@ -1472,14 +1645,20 @@ export default function ScheduleDesigner({
 
             <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
               {Array.from({ length: daysInCurrentMonth }, (_, i) => i + 1).map((d) => {
-                const shift = activeEmployee
-                  ? getEmployeeShiftForDay(
-                      activeEmployee,
-                      d,
-                      activeMonthIndex,
-                      manageSubView === 'schedule' ? selectedTemplateName : undefined
-                    )
-                  : 'OFF';
+                const dateStr = `${yearNum}-${(activeMonthIndex + 1).toString().padStart(2, '0')}-${d
+                  .toString()
+                  .padStart(2, '0')}`;
+                const shift =
+                  scheduleDays[dateStr] !== undefined
+                    ? scheduleDays[dateStr]
+                    : activeEmployee
+                    ? getEmployeeShiftForDay(
+                        activeEmployee,
+                        d,
+                        activeMonthIndex,
+                        manageSubView === 'schedule' ? selectedTemplateName : undefined
+                      )
+                    : 'OFF';
                 const isOff = shift === 'OFF';
                 const dayAbbr = getDayOfWeekAbbr(yearNum, activeMonthIndex, d);
                 const isDayPillActive = selectedDays.includes(dayAbbr);
