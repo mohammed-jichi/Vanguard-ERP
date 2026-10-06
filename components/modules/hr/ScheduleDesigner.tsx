@@ -406,7 +406,7 @@ export default function ScheduleDesigner({
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Load employees and days off on mount
+  // Load employees and days off on mount with authoritative Supabase reconciliation
   useEffect(() => {
     const list = HRPersonnelService.getEmployees();
     setEmployees(list);
@@ -415,6 +415,19 @@ export default function ScheduleDesigner({
       setSelectedEmpId(defaultId);
     }
     setDaysOffList(HRPersonnelService.getDaysOff());
+
+    // Authoritative remote fetch immediately overrides local cache (Part 1)
+    if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && navigator.onLine) {
+      HRPersonnelService.fetchEmployees()
+        .then((remote) => {
+          if (Array.isArray(remote)) {
+            setEmployees(remote);
+          }
+        })
+        .catch((err) => {
+          console.warn('[ScheduleDesigner] Background fetch notice:', err);
+        });
+    }
 
     const handleHREvent = (e: any) => {
       if (e.detail) setEmployees(e.detail);
@@ -430,6 +443,18 @@ export default function ScheduleDesigner({
       window.removeEventListener('vanguard_day_off_updated', handleDayOffEvent);
     };
   }, [initialEmployeeId, selectedEmpId]);
+
+  // Global Escape key listener for isDayOffModalOpen
+  useEffect(() => {
+    if (!isDayOffModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsDayOffModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDayOffModalOpen]);
 
   // Sync external initialEmployeeId or employeeRecord.id
   useEffect(() => {
@@ -2049,152 +2074,165 @@ export default function ScheduleDesigner({
         </div>
       </div>
 
-      {/* Modal: Apply Day Off Request */}
+      {/* Modal: Apply Day Off Request (Universal Viewport Contract) */}
       {isDayOffModalOpen && (
-        <div className="fixed inset-0 z-80 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl max-w-md w-full space-y-4 animate-zoomIn">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity"
+          onClick={() => setIsDayOffModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Header - Fixed/Pinned */}
+            <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50/90 dark:bg-gray-900/90">
               <div className="flex items-center gap-2.5">
                 <Calendar className="w-5 h-5 text-rose-600" />
-                <h3 className="text-sm font-black text-slate-900">
+                <h3 className="text-sm font-black text-slate-900 dark:text-white">
                   Apply Day Off Request
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsDayOffModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 p-1"
+                className="text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200 p-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmitDayOff} className="space-y-3.5">
-              {/* Start Date & End Date */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">Start Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={dayOffStartDate}
-                    onChange={(e) => setDayOffStartDate(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs font-mono font-bold text-slate-800 bg-white border border-slate-200 rounded-xl"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">End Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={dayOffEndDate}
-                    onChange={(e) => setDayOffEndDate(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs font-mono font-bold text-slate-800 bg-white border border-slate-200 rounded-xl"
-                  />
-                </div>
-              </div>
-
-              {/* Reason Dropdown */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">Reason</label>
-                <select
-                  value={dayOffReason}
-                  onChange={(e) => setDayOffReason(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl"
-                >
-                  {DAY_OFF_REASONS.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Type: Full Day / Partial */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">Type</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setDayOffType('Full Day')}
-                    className={`py-1.5 text-xs font-bold rounded-xl border transition-all ${
-                      dayOffType === 'Full Day'
-                        ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-200'
-                    }`}
-                  >
-                    Full Day
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDayOffType('Partial')}
-                    className={`py-1.5 text-xs font-bold rounded-xl border transition-all ${
-                      dayOffType === 'Partial'
-                        ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-200'
-                    }`}
-                  >
-                    Partial
-                  </button>
-                </div>
-              </div>
-
-              {/* Hours Off (If partial) */}
-              {dayOffType === 'Partial' && (
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 block">Hours Off</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="8"
-                    value={dayOffHours}
-                    onChange={(e) => setDayOffHours(parseInt(e.target.value, 10) || 1)}
-                    className="w-full px-3 py-1.5 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl"
-                  />
-                </div>
-              )}
-
-              {/* Paid: Yes / No */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">Paid</label>
-                <div className="flex items-center gap-4 text-xs font-bold text-slate-800">
-                  <label className="flex items-center gap-1.5 cursor-pointer">
+            {/* Scrollable Form Body with Pinned Footer */}
+            <form onSubmit={handleSubmitDayOff} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {/* Start Date & End Date */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-gray-300 block">Start Date</label>
                     <input
-                      type="radio"
-                      name="dayOffPaid"
-                      checked={dayOffPaid === 'Yes'}
-                      onChange={() => setDayOffPaid('Yes')}
-                      className="text-blue-600"
+                      type="date"
+                      required
+                      value={dayOffStartDate}
+                      onChange={(e) => setDayOffStartDate(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs font-mono font-bold text-slate-800 dark:text-white bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl"
                     />
-                    <span>Yes</span>
-                  </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer">
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-gray-300 block">End Date</label>
                     <input
-                      type="radio"
-                      name="dayOffPaid"
-                      checked={dayOffPaid === 'No'}
-                      onChange={() => setDayOffPaid('No')}
-                      className="text-blue-600"
+                      type="date"
+                      required
+                      value={dayOffEndDate}
+                      onChange={(e) => setDayOffEndDate(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs font-mono font-bold text-slate-800 dark:text-white bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl"
                     />
-                    <span>No</span>
-                  </label>
+                  </div>
+                </div>
+
+                {/* Reason Dropdown */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-gray-300 block">Reason</label>
+                  <select
+                    value={dayOffReason}
+                    onChange={(e) => setDayOffReason(e.target.value)}
+                    className="w-full px-3 py-2 text-xs font-bold text-slate-900 dark:text-white bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl"
+                  >
+                    {DAY_OFF_REASONS.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Type: Full Day / Partial */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-gray-300 block">Type</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDayOffType('Full Day')}
+                      className={`py-1.5 text-xs font-bold rounded-xl border transition-all ${
+                        dayOffType === 'Full Day'
+                          ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-sm'
+                          : 'bg-white dark:bg-gray-800 text-slate-700 dark:text-gray-300 border-slate-200 dark:border-gray-700'
+                      }`}
+                    >
+                      Full Day
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDayOffType('Partial')}
+                      className={`py-1.5 text-xs font-bold rounded-xl border transition-all ${
+                        dayOffType === 'Partial'
+                          ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-sm'
+                          : 'bg-white dark:bg-gray-800 text-slate-700 dark:text-gray-300 border-slate-200 dark:border-gray-700'
+                      }`}
+                    >
+                      Partial
+                    </button>
+                  </div>
+                </div>
+
+                {/* Hours Off (If partial) */}
+                {dayOffType === 'Partial' && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-gray-300 block">Hours Off</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="8"
+                      value={dayOffHours}
+                      onChange={(e) => setDayOffHours(parseInt(e.target.value, 10) || 1)}
+                      className="w-full px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-white bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl"
+                    />
+                  </div>
+                )}
+
+                {/* Paid: Yes / No */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-gray-300 block">Paid</label>
+                  <div className="flex items-center gap-4 text-xs font-bold text-slate-800 dark:text-gray-200">
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="dayOffPaid"
+                        checked={dayOffPaid === 'Yes'}
+                        onChange={() => setDayOffPaid('Yes')}
+                        className="text-blue-600"
+                      />
+                      <span>Yes</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="dayOffPaid"
+                        checked={dayOffPaid === 'No'}
+                        onChange={() => setDayOffPaid('No')}
+                        className="text-blue-600"
+                      />
+                      <span>No</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Notes Textarea */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-gray-300 block">Notes</label>
+                  <textarea
+                    rows={2}
+                    value={dayOffNotes}
+                    onChange={(e) => setDayOffNotes(e.target.value)}
+                    placeholder="Optional remarks for HR review..."
+                    className="w-full px-3 py-2 text-xs font-medium text-slate-900 dark:text-white bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl outline-hidden focus:border-blue-600"
+                  />
                 </div>
               </div>
 
-              {/* Notes Textarea */}
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">Notes</label>
-                <textarea
-                  rows={2}
-                  value={dayOffNotes}
-                  onChange={(e) => setDayOffNotes(e.target.value)}
-                  placeholder="Optional remarks for HR review..."
-                  className="w-full px-3 py-2 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-blue-600"
-                />
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-100">
+              {/* Actions - Pinned Footer */}
+              <div className="flex-shrink-0 px-6 py-3.5 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50/80 dark:bg-gray-900/80">
                 {isModalDateCurrentlyOff ? (
                   <button
                     type="button"
@@ -2213,7 +2251,7 @@ export default function ScheduleDesigner({
                   <button
                     type="button"
                     onClick={() => setIsDayOffModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 cursor-pointer"
                   >
                     Cancel
                   </button>

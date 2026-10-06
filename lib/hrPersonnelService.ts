@@ -580,6 +580,7 @@ export class HRPersonnelService {
 
         // WIPE OUT stale records in localStorage unconditionally (Rule 1 & 2)
         localStorage.setItem('vanguard_hr_employees', JSON.stringify(finalHydratedRecords));
+        localStorage.setItem('hr_employees_cache', JSON.stringify(finalHydratedRecords));
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(finalHydratedRecords));
         window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: finalHydratedRecords }));
         return finalHydratedRecords;
@@ -696,6 +697,7 @@ export class HRPersonnelService {
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('vanguard_hr_employees', JSON.stringify(nextList));
+        localStorage.setItem('hr_employees_cache', JSON.stringify(nextList));
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(nextList));
         window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: nextList }));
       } catch (err) {

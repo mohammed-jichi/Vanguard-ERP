@@ -255,6 +255,7 @@ interface NewEmployeeModalProps {
   initialData?: any;
   employee?: any;
   hideScheduleTab?: boolean;
+  headerActions?: React.ReactNode;
 }
 
 export {
@@ -283,6 +284,7 @@ export default function NewEmployeeModal({
   initialData,
   employee,
   hideScheduleTab = false,
+  headerActions,
 }: NewEmployeeModalProps) {
   const { t, isRtl, language } = useLanguage();
   const activeRecord = initialData || employee || initialEmployee;
@@ -533,6 +535,27 @@ export default function NewEmployeeModal({
     return ALL_WORLD_COUNTRIES.filter((c) => c.toLowerCase().includes(q));
   }, [countrySearchQuery]);
 
+  // Global Escape key event listener (Universal Modal Contract)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (isApplyAllPromptOpen) {
+          setIsApplyAllPromptOpen(false);
+          setApplyAllKey('');
+        } else if (isPosConfigOpen) {
+          setIsPosConfigOpen(false);
+        } else if (isSelectCityModalOpen) {
+          setIsSelectCityModalOpen(false);
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isApplyAllPromptOpen, isPosConfigOpen, isSelectCityModalOpen, onClose]);
+
   if (!isOpen) return null;
 
   // Handle Photo selection
@@ -719,41 +742,64 @@ export default function NewEmployeeModal({
   };
 
   return (
-    <div className="fixed inset-0 z-80 flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 backdrop-blur-xs">
-      <div className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col z-10 animate-zoomIn overflow-hidden">
-        {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/90">
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Top Header - Fixed / flex-shrink-0 */}
+        <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50/90 dark:bg-gray-900/90">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold">
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-                {(initialData || employee || initialEmployee) ? `Edit Employee: ${formData.firstName} ${formData.lastName}` : 'New Employee (HR Personnel Engine)'}
-              </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <div className="flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                  {(initialData || employee || initialEmployee) ? `Edit Employee: ${formData.firstName} ${formData.lastName}` : 'New Employee (HR Personnel Engine)'}
+                </h2>
+                {(initialData || employee || initialEmployee) && (
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    formData.status === 'Active'
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400'
+                      : 'bg-slate-100 text-slate-700 dark:bg-gray-800 dark:text-gray-300'
+                  }`}>
+                    {formData.status || 'Active'}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-500 dark:text-gray-400 font-medium">
                 Module 6 Personnel Master Record, Biometric Clock Binding & POS Credentials
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-200/60 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {headerActions && <div className="flex items-center gap-1.5">{headerActions}</div>}
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-xl hover:bg-slate-200/60 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Tab Switcher Header (3 Tabs: Personal *, Work Location *, Schedule) */}
-        <div className="flex items-center justify-between px-6 pt-3 border-b border-slate-200 bg-slate-50/50">
+        {/* Tab Switcher Header - Fixed / flex-shrink-0 */}
+        <div className="flex-shrink-0 flex items-center justify-between px-6 pt-3 border-b border-gray-200 dark:border-gray-800 bg-slate-50/50 dark:bg-gray-900/50">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setActiveTab('personal')}
               className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'personal'
                   ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                  : 'border-transparent text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
             >
               <User className="w-4 h-4" />
@@ -764,7 +810,7 @@ export default function NewEmployeeModal({
               onClick={() => setActiveTab('work_location')}
               className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'work_location'
                   ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                  : 'border-transparent text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
             >
               <MapPin className="w-4 h-4" />
@@ -776,7 +822,7 @@ export default function NewEmployeeModal({
                 onClick={() => setActiveTab('schedule')}
                 className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'schedule'
                     ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
-                    : 'border-transparent text-slate-600 hover:text-slate-900'
+                    : 'border-transparent text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
               >
                 <Clock className="w-4 h-4" />
@@ -787,7 +833,7 @@ export default function NewEmployeeModal({
 
           {/* Active Switch Toggle at Top */}
           <div className="flex items-center gap-2 pb-2">
-            <span className="text-xs font-bold text-slate-700">{t('status', 'Status')}:</span>
+            <span className="text-xs font-bold text-slate-700 dark:text-gray-300">{t('status', 'Status')}:</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -795,16 +841,17 @@ export default function NewEmployeeModal({
                 onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked ? 'Active' : 'Inactive' }))}
                 className="sr-only peer"
               />
-              <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-              <span className={`ml-2 text-xs font-bold ${formData.status === 'Active' ? 'text-emerald-700' : 'text-slate-500'}`}>
+              <div className="w-9 h-5 bg-slate-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+              <span className={`ml-2 text-xs font-bold ${formData.status === 'Active' ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-gray-400'}`}>
                 {formData.status === 'Active' ? t('hr.status_active', 'Active') : t('hr.status_inactive', 'Inactive')}
               </span>
             </label>
           </div>
         </div>
 
-        {/* Modal Form Content */}
-        <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Modal Form Content with Independent Internal Scroll & Pinned Footer */}
+        <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* ================================================================= */}
           {/* TAB 1: PERSONAL *                                                 */}
           {/* ================================================================= */}
@@ -1863,23 +1910,24 @@ export default function NewEmployeeModal({
             </div>
           )}
 
-          {/* Modal Footer */}
-          <div className="pt-4 border-t border-slate-200 flex items-center justify-between bg-white">
-            <div className="text-[11px] text-slate-500 font-semibold">
+          </div>
+
+          {/* Modal Footer - Fixed / Pinned */}
+          <div className="flex-shrink-0 px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-gray-900">
+            <div className="text-[11px] text-slate-500 dark:text-gray-400 font-semibold">
               Fields marked with an asterisk (*) are strictly required by the Vanguard HR engine.
             </div>
             <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
               >
                 {t('hr.cancel', 'Cancel')}
               </button>
               <button
-                type="button"
-                onClick={handleSave}
-                className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                type="submit"
+                className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-primary dark:hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
               >
                 <Save className="w-4 h-4" />
                 <span>{t('hr.save_employee', 'Save')}</span>
@@ -1892,17 +1940,25 @@ export default function NewEmployeeModal({
         {/* NESTED MODAL: EDIT BACKOFFICE / POS CREDENTIALS                   */}
         {/* ================================================================= */}
         {isPosConfigOpen && (
-          <div className="fixed inset-0 z-90 flex items-center justify-center p-3 sm:p-5 bg-slate-900/70 backdrop-blur-xs">
-            <div className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col z-20 animate-zoomIn overflow-hidden">
-              {/* Header */}
-              <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/90">
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsPosConfigOpen(false)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header - Fixed/Pinned */}
+              <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50/90 dark:bg-gray-900/90">
                 <div className="flex items-center gap-2.5">
                   <Laptop className="w-5 h-5 text-primary" />
                   <div>
-                    <h3 className="text-sm sm:text-base font-black text-slate-900">
+                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                       POS & Backoffice Credentials: {formData.firstName || 'Operator'} {formData.lastName}
                     </h3>
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-[11px] text-slate-500 dark:text-gray-400">
                       Terminal interface localization, workstation authority, and hardware peripherals
                     </p>
                   </div>
@@ -1910,7 +1966,8 @@ export default function NewEmployeeModal({
                 <button
                   type="button"
                   onClick={() => setIsPosConfigOpen(false)}
-                  className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg"
+                  className="text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200 p-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                  aria-label="Close"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -2200,14 +2257,14 @@ export default function NewEmployeeModal({
                 </div>
               </div>
 
-              {/* POS Footer */}
-              <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/80">
+              {/* POS Footer - Fixed/Pinned */}
+              <div className="flex-shrink-0 px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50/80 dark:bg-gray-900/80">
                 <button
                   type="button"
                   onClick={() => {
                     showPosToast('POS configuration broadcasted to all branches.');
                   }}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer shadow-2xs"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors cursor-pointer shadow-2xs"
                 >
                   Save for all Branches
                 </button>
@@ -2215,7 +2272,7 @@ export default function NewEmployeeModal({
                   <button
                     type="button"
                     onClick={() => setIsPosConfigOpen(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -2238,15 +2295,26 @@ export default function NewEmployeeModal({
         {/* NESTED PROMPT: ENTER KEY TO PERFORM THIS ACTION ?                 */}
         {/* ================================================================= */}
         {isApplyAllPromptOpen && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xl max-w-sm w-full space-y-4 animate-zoomIn">
+          <div
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity"
+            onClick={() => {
+              setIsApplyAllPromptOpen(false);
+              setApplyAllKey('');
+            }}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 shadow-2xl max-w-sm w-full space-y-4 animate-zoomIn"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400 flex items-center justify-center shrink-0">
                   <Key className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Broadcast POS Settings</h4>
-                  <p className="text-xs text-slate-600 mt-0.5">
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">Broadcast POS Settings</h4>
+                  <p className="text-xs text-slate-600 dark:text-gray-400 mt-0.5">
                     Enter key to perform this action ?
                   </p>
                 </div>
@@ -2258,17 +2326,17 @@ export default function NewEmployeeModal({
                 value={applyAllKey}
                 onChange={(e) => setApplyAllKey(e.target.value)}
                 placeholder="Enter security key..."
-                className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-slate-50 border border-slate-200 rounded-xl"
+                className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl"
               />
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-gray-800">
                 <button
                   type="button"
                   onClick={() => {
                     setIsApplyAllPromptOpen(false);
                     setApplyAllKey('');
                   }}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>

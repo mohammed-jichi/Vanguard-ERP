@@ -100,15 +100,19 @@ export async function POST(req: NextRequest) {
 
           if (targetId) {
             await supabaseServer.from('employees').delete().eq('id', targetId);
+            try { await supabaseServer.from('hr_employees').delete().eq('id', targetId); } catch (e) {}
           }
           if (targetCode) {
             await supabaseServer.from('employees').delete().eq('employee_code', targetCode);
+            try { await supabaseServer.from('hr_employees').delete().eq('employee_code', targetCode); } catch (e) {}
           }
           if (!targetId && isUuid) {
             await supabaseServer.from('employees').delete().eq('id', idStr);
+            try { await supabaseServer.from('hr_employees').delete().eq('id', idStr); } catch (e) {}
           }
           if (!targetCode) {
             await supabaseServer.from('employees').delete().eq('employee_code', idStr);
+            try { await supabaseServer.from('hr_employees').delete().eq('employee_code', idStr); } catch (e) {}
           }
 
           await supabaseServer.from('workstation_configs').delete().or(

@@ -6,6 +6,7 @@ import {
   HREmployeeRecord,
   HRPersonnelService,
 } from '@/lib/hrPersonnelService';
+import { dispatchMasterHRAction } from '@/lib/hrMasterActionDispatcher';
 import NewEmployeeModal, { DEPARTMENTS_MASTER_KEYS, DESIGNATIONS_MASTER_KEYS } from './NewEmployeeModal';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
@@ -188,8 +189,13 @@ export default function PersonnelMasterConsole() {
     if (confirm(`Are you sure you want to delete employee "${emp.fullName}" (${emp.id})?`)) {
       try {
         setIsLoading(true);
-        const updated = await HRPersonnelService.deleteEmployee(emp.id);
-        setEmployees(updated);
+        const updated = await dispatchMasterHRAction({
+          type: 'DELETE_EMPLOYEE',
+          employeeId: emp.id,
+        });
+        if (Array.isArray(updated)) {
+          setEmployees(updated);
+        }
         showToast(`Employee ${emp.fullName} deleted successfully.`);
       } catch (err: any) {
         console.error('[PersonnelMasterConsole] Delete employee error:', err);
