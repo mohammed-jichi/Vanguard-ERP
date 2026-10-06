@@ -95,15 +95,19 @@ function getDayOfWeekAbbr(year: number, monthIndex: number, day: number): string
 
 export interface ScheduleDesignerProps {
   initialEmployeeId?: string;
+  employeeRecord?: Partial<HREmployeeRecord> | null;
   onEmployeeSelect?: (empId: string) => void;
   onSaveSuccess?: () => void;
+  onScheduleChange?: (scheduleConfig: EmployeeScheduleConfig, matrix: { [dateStr: string]: string }) => void;
   showTopBar?: boolean;
 }
 
 export default function ScheduleDesigner({
   initialEmployeeId,
+  employeeRecord,
   onEmployeeSelect,
   onSaveSuccess,
+  onScheduleChange,
   showTopBar = true,
 }: ScheduleDesignerProps) {
   // Master HR Data State
@@ -111,7 +115,9 @@ export default function ScheduleDesigner({
   const [daysOffList, setDaysOffList] = useState<DayOffRecord[]>([]);
 
   // Top Selectors State
-  const [selectedEmpId, setSelectedEmpId] = useState<string>(initialEmployeeId || '');
+  const [selectedEmpId, setSelectedEmpId] = useState<string>(
+    employeeRecord?.id || initialEmployeeId || ''
+  );
   const [deptFilter, setDeptFilter] = useState<string>('ALL');
   const [brandFilter, setBrandFilter] = useState<string>(
     'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)'
@@ -184,17 +190,67 @@ export default function ScheduleDesigner({
     };
   }, [initialEmployeeId, selectedEmpId]);
 
-  // Sync external initialEmployeeId
+  // Sync external initialEmployeeId or employeeRecord.id
   useEffect(() => {
-    if (initialEmployeeId) {
+    if (employeeRecord?.id) {
+      setSelectedEmpId(employeeRecord.id);
+    } else if (initialEmployeeId) {
       setSelectedEmpId(initialEmployeeId);
     }
-  }, [initialEmployeeId]);
+  }, [initialEmployeeId, employeeRecord?.id]);
 
-  // Current Selected Employee
-  const activeEmployee = useMemo(() => {
-    return employees.find((e) => e.id === selectedEmpId) || employees[0];
-  }, [employees, selectedEmpId]);
+  // Current Selected Employee (handles existing DB records as well as in-memory / new employee drafts)
+  const activeEmployee = useMemo((): HREmployeeRecord => {
+    if (employeeRecord) {
+      return {
+        id: employeeRecord.id || 'DRAFT_NEW_EMPLOYEE',
+        fullName:
+          employeeRecord.fullName ||
+          `${employeeRecord.firstName || 'New'} ${employeeRecord.lastName || 'Employee'}`.trim(),
+        firstName: employeeRecord.firstName || 'New',
+        lastName: employeeRecord.lastName || 'Employee',
+        department: employeeRecord.department || 'Administration',
+        designation: employeeRecord.designation || 'Staff',
+        brand:
+          employeeRecord.brand ||
+          'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
+        branch:
+          employeeRecord.branch || 'Southern Olive and Oil Products - Main',
+        posEmployeeId: employeeRecord.posEmployeeId || '1',
+        active: employeeRecord.active ?? true,
+        email: employeeRecord.email || '',
+        phone: employeeRecord.phone || '',
+        countryCode: employeeRecord.countryCode || '+961',
+        schedule: employeeRecord.schedule || {
+          templateName: 'Backoffice Administration (08:00 - 16:30)',
+        },
+        ...employeeRecord,
+      } as HREmployeeRecord;
+    }
+    return (
+      employees.find((e) => e.id === selectedEmpId) ||
+      employees[0] ||
+      ({
+        id: 'DRAFT_NEW_EMPLOYEE',
+        fullName: 'New Employee Draft',
+        firstName: 'New',
+        lastName: 'Employee',
+        department: 'Administration',
+        designation: 'Staff',
+        brand:
+          'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
+        branch: 'Southern Olive and Oil Products - Main',
+        posEmployeeId: '1',
+        active: true,
+        email: '',
+        phone: '',
+        countryCode: '+961',
+        schedule: {
+          templateName: 'Backoffice Administration (08:00 - 16:30)',
+        },
+      } as HREmployeeRecord)
+    );
+  }, [employeeRecord, employees, selectedEmpId]);
 
   // Department Head Count for Dynamic Scope Indicator
   const deptStaffCount = useMemo(() => {
@@ -595,6 +651,18 @@ export default function ScheduleDesigner({
     // Forces React to re-render Daily Breakdown rows and Yearly Overview cards
     setScheduleDays(updatedActiveMatrix);
 
+    const activeScheduleConfig: EmployeeScheduleConfig = {
+      ...(activeEmployee.schedule || {}),
+      templateName: activeEmployee.schedule?.templateName || selectedTemplateName,
+      applyToAllMonths: applyToAllMonths,
+      dateOverrides: updatedActiveMatrix,
+      daysOff: daysOffList.filter((d) => d.employeeId === activeEmployee.id),
+    };
+
+    if (onScheduleChange) {
+      onScheduleChange(activeScheduleConfig, updatedActiveMatrix);
+    }
+
     // 5. Update employees in local component state IMMEDIATELY
     const targetEmpIds = new Set(targetEmployees.map((e) => e.id));
     setEmployees((prevEmployees) =>
@@ -652,6 +720,11 @@ export default function ScheduleDesigner({
     (async () => {
       try {
         for (const targetEmp of targetEmployees) {
+          // If this is a draft/in-memory employee not yet saved to DB, skip DB call
+          if (!targetEmp.id || targetEmp.id.startsWith('DRAFT-') || targetEmp.id === 'DRAFT_NEW_EMPLOYEE') {
+            continue;
+          }
+
           const empBase = Object.keys(targetEmp.schedule?.dateOverrides || {}).length > 0
             ? targetEmp.schedule!.dateOverrides!
             : (targetEmp.id === activeEmployee.id ? updatedActiveMatrix : buildInitialEmployeeMatrix(targetEmp, yearNum));
@@ -776,6 +849,19 @@ export default function ScheduleDesigner({
 
     setScheduleDays(updatedActiveMatrix);
 
+    if (onScheduleChange && activeEmployee) {
+      const activeScheduleConfig: EmployeeScheduleConfig = {
+        ...(activeEmployee.schedule || {}),
+        templateName: template.name,
+        workDays: template.workDays,
+        offDays: template.offDays,
+        applyToAllMonths: applyToAllMonths,
+        dateOverrides: updatedActiveMatrix,
+        daysOff: daysOffList.filter((d) => d.employeeId === activeEmployee.id),
+      };
+      onScheduleChange(activeScheduleConfig, updatedActiveMatrix);
+    }
+
     const targetEmpIds = new Set(targetEmployees.map((e) => e.id));
     setEmployees((prevEmployees) =>
       prevEmployees.map((emp) => {
@@ -802,6 +888,9 @@ export default function ScheduleDesigner({
 
     (async () => {
       for (const targetEmp of targetEmployees) {
+        if (!targetEmp.id || targetEmp.id.startsWith('DRAFT-') || targetEmp.id === 'DRAFT_NEW_EMPLOYEE') {
+          continue;
+        }
         const matrix = applyToAllMonths
           ? generateFullYearMatrix(template, yearNum)
           : { ...(targetEmp.schedule?.dateOverrides || {}), ...updatedActiveMatrix };
@@ -893,13 +982,19 @@ export default function ScheduleDesigner({
           daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
         };
 
+        if (targetEmp.id === activeEmployee.id && onScheduleChange) {
+          onScheduleChange(scheduleConfig, updatedOverrides);
+        }
+
         const updatedEmp: HREmployeeRecord = {
           ...targetEmp,
           schedule: scheduleConfig,
           schedule_config: scheduleConfig,
         };
 
-        await HRPersonnelService.saveEmployee(updatedEmp);
+        if (targetEmp.id && !targetEmp.id.startsWith('DRAFT-') && targetEmp.id !== 'DRAFT_NEW_EMPLOYEE') {
+          await HRPersonnelService.saveEmployee(updatedEmp);
+        }
       }
 
       setDaysOffList(HRPersonnelService.getDaysOff());

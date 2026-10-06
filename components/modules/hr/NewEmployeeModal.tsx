@@ -7,7 +7,9 @@ import {
   POSCredentialsConfig,
   SocialMediaRepConfig,
   ExtraPlatformChannel,
+  EmployeeScheduleConfig,
 } from '@/lib/hrPersonnelService';
+import ScheduleDesigner from './ScheduleDesigner';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
   LebaneseCityEntry,
@@ -288,6 +290,11 @@ export default function NewEmployeeModal({
   // Tabs: 'personal' (Tab 1: Personal *) | 'work_location' (Tab 2: Work Location *) | 'schedule' (Tab 3: Schedule)
   const [activeTab, setActiveTab] = useState<'personal' | 'work_location' | 'schedule'>('personal');
 
+  // Custom In-Modal Schedule Configuration State
+  const [modalScheduleConfig, setModalScheduleConfig] = useState<EmployeeScheduleConfig | undefined>(
+    activeRecord?.schedule || activeRecord?.schedule_config
+  );
+
   // Unified Form Data State with Instant Dynamic Binding
   const [formData, setFormData] = useState<EmployeeFormData>(() => {
     return extractEmployeeFormData(activeRecord);
@@ -298,6 +305,7 @@ export default function NewEmployeeModal({
     const target = initialData || employee || initialEmployee;
     if (target) {
       setFormData(extractEmployeeFormData(target));
+      setModalScheduleConfig(target.schedule || target.schedule_config);
 
       if (target.profilePicture) setProfilePicture(target.profilePicture);
       if (target.jobOfferDoc) setJobOfferDoc(target.jobOfferDoc);
@@ -348,6 +356,7 @@ export default function NewEmployeeModal({
       setPosSecPassword('');
       setPosCloudLoginId('1300');
       setPosCloudPassword('••••••');
+      setModalScheduleConfig(undefined);
     }
   }, [initialData, employee, initialEmployee, isOpen]);
 
@@ -485,11 +494,6 @@ export default function NewEmployeeModal({
   const [applyAllKey, setApplyAllKey] = useState('');
   const [posToastMsg, setPosToastMsg] = useState<string | null>(null);
 
-  // Tab 3: Schedule Tab State
-  const [schedBrand, setSchedBrand] = useState('Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)');
-  const [schedBranch, setSchedBranch] = useState('Southern Olive and Oil Products - Main');
-  const [schedYear, setSchedYear] = useState('2026');
-  const [schedMonth, setSchedMonth] = useState('January');
 
   const showPosToast = (msg: string) => {
     setPosToastMsg(msg);
@@ -681,7 +685,10 @@ export default function NewEmployeeModal({
           autoTimeAtt: posAutoTimeAtt,
           emailSignature: posEmailSignature,
         },
-        schedule: target?.schedule || {
+        schedule: modalScheduleConfig || target?.schedule || {
+          templateName: 'Backoffice Administration (08:00 - 16:30)',
+        },
+        schedule_config: modalScheduleConfig || target?.schedule || {
           templateName: 'Backoffice Administration (08:00 - 16:30)',
         },
         socialMediaRep: formData.designation === 'social_media_rep' ? formData.socialMediaRep : undefined,
@@ -1864,99 +1871,30 @@ export default function NewEmployeeModal({
           )}
 
           {/* ================================================================= */}
-          {/* TAB 3: SCHEDULE TAB (IN MODAL)                                     */}
+          {/* TAB 3: SCHEDULE TAB (IN MODAL - SHARED SCHEDULE DESIGNER ENGINE)  */}
           {/* ================================================================= */}
           {!hideScheduleTab && activeTab === 'schedule' && (
-            <div className="space-y-6">
-              <div className="border border-slate-200 bg-slate-50/70 rounded-2xl p-5 space-y-4">
-                <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center justify-between">
-                  <span>{t('hr.tab_schedule', 'Assigned Work Shift Schedule')}</span>
-                  <span className="text-[11px] font-bold text-primary font-mono">Payroll Year 2026</span>
-                </div>
-
-                {/* Filter Ribbon Inside Modal */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">{t('hr.brand', 'Brand')}</label>
-                    <select
-                      value={schedBrand}
-                      onChange={(e) => setSchedBrand(e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
-                    >
-                      <option value="Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)">
-                        Southern Olive and Oil Products
-                      </option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">{t('hr.branch', 'Branch')}</label>
-                    <select
-                      value={schedBranch}
-                      onChange={(e) => setSchedBranch(e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
-                    >
-                      <option value="Southern Olive and Oil Products - Main">
-                        Southern Olive and Oil Products - Main
-                      </option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">{t('year', 'Year')}</label>
-                    <select
-                      value={schedYear}
-                      onChange={(e) => setSchedYear(e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
-                    >
-                      <option value="2026">2026</option>
-                      <option value="2027">2027</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 block">{t('month', 'Month')}</label>
-                    <select
-                      value={schedMonth}
-                      onChange={(e) => setSchedMonth(e.target.value)}
-                      className="w-full px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
-                    >
-                      {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
-                        (m) => (
-                          <option key={m} value={m}>
-                            {m}
-                          </option>
-                        )
-                      )}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Empty State / Direct Navigation Callout */}
-                <div className="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-8 flex flex-col items-center justify-center text-center space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-                    <Calendar className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      No Active Shift Schedule Assigned for {schedMonth} {schedYear}
-                    </h3>
-                    <p className="text-xs text-slate-500 max-w-md mt-1">
-                      Configure custom rotational shift slots, time attendance calendars, and off-day requests in the full Schedule Manager engine.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      window.open('/accounting/payroll/employee-schedules', '_blank');
-                    }}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
-                  >
-                    <span>+ Assign Schedule</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+            <div className="space-y-4">
+              <ScheduleDesigner
+                showTopBar={false}
+                employeeRecord={{
+                  id: activeRecord?.id || `DRAFT-${formData.posEmployeeId || '1'}`,
+                  fullName: `${formData.firstName || 'New'} ${formData.lastName || 'Employee'}`.trim(),
+                  firstName: formData.firstName || 'New',
+                  lastName: formData.lastName || 'Employee',
+                  department: formData.department || 'Administration',
+                  designation: formData.designation || 'Staff',
+                  brand: formData.brand,
+                  branch: formData.branchName,
+                  posEmployeeId: formData.posEmployeeId || '1',
+                  schedule: modalScheduleConfig || activeRecord?.schedule || {
+                    templateName: 'Backoffice Administration (08:00 - 16:30)',
+                  },
+                }}
+                onScheduleChange={(newConfig) => {
+                  setModalScheduleConfig(newConfig);
+                }}
+              />
             </div>
           )}
 
