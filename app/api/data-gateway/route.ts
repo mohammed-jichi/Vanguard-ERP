@@ -82,12 +82,38 @@ export async function POST(req: NextRequest) {
         // b) Delete from Supabase employees and workstation_configs tables
         try {
           const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idStr);
-          if (isUuid) {
-            await supabaseServer.from('employees').delete().or(`id.eq.${idStr},employee_code.eq.${idStr}`);
-          } else {
+          let targetId: string | null = isUuid ? idStr : null;
+          let targetCode: string | null = !isUuid ? idStr : null;
+
+          try {
+            const query = supabaseServer.from('employees').select('id, employee_code');
+            const { data: matched } = isUuid
+              ? await query.eq('id', idStr).maybeSingle()
+              : await query.eq('employee_code', idStr).maybeSingle();
+            if (matched) {
+              if (matched.id) targetId = matched.id;
+              if (matched.employee_code) targetCode = matched.employee_code;
+            }
+          } catch (findErr) {
+            console.warn('[DataGateway DELETE employee] Find matched employee notice:', findErr);
+          }
+
+          if (targetId) {
+            await supabaseServer.from('employees').delete().eq('id', targetId);
+          }
+          if (targetCode) {
+            await supabaseServer.from('employees').delete().eq('employee_code', targetCode);
+          }
+          if (!targetId && isUuid) {
+            await supabaseServer.from('employees').delete().eq('id', idStr);
+          }
+          if (!targetCode) {
             await supabaseServer.from('employees').delete().eq('employee_code', idStr);
           }
-          await supabaseServer.from('workstation_configs').delete().eq('employee_id', idStr);
+
+          await supabaseServer.from('workstation_configs').delete().or(
+            `employee_id.eq.${idStr}${targetCode ? `,employee_id.eq.${targetCode}` : ''}${targetId ? `,employee_id.eq.${targetId}` : ''}`
+          );
         } catch (tableErr) {
           console.warn('[DataGateway DELETE employee] Supabase table delete notice:', tableErr);
         }
@@ -107,11 +133,15 @@ export async function POST(req: NextRequest) {
             if (flags.hr_employees) {
               for (const k of Object.keys(flags.hr_employees)) {
                 const item = flags.hr_employees[k];
+                const kStr = String(k);
+                const idVal = String(item?.id);
+                const codeVal = String(item?.employee_code);
+                const posVal = String(item?.posEmployeeId);
                 if (
-                  k === idStr ||
-                  String(item?.id) === idStr ||
-                  String(item?.employee_code) === idStr ||
-                  String(item?.posEmployeeId) === idStr
+                  kStr === idStr ||
+                  idVal === idStr ||
+                  codeVal === idStr ||
+                  posVal === idStr
                 ) {
                   delete flags.hr_employees[k];
                   modified = true;
@@ -122,7 +152,9 @@ export async function POST(req: NextRequest) {
             if (flags.employee_schedules) {
               for (const k of Object.keys(flags.employee_schedules)) {
                 const item = flags.employee_schedules[k];
-                if (k === idStr || String(item?.employee_id) === idStr) {
+                const kStr = String(k);
+                const empIdVal = String(item?.employee_id);
+                if (kStr === idStr || empIdVal === idStr) {
                   delete flags.employee_schedules[k];
                   modified = true;
                 }

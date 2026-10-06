@@ -407,12 +407,39 @@ export async function DELETE(req: NextRequest) {
     try {
       const supabaseServer = getSupabaseServerClient();
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(employeeId);
-      if (isUuid) {
-        await supabaseServer.from('employees').delete().or(`id.eq.${employeeId},employee_code.eq.${employeeId}`);
-      } else {
+      
+      let targetId: string | null = isUuid ? employeeId : null;
+      let targetCode: string | null = !isUuid ? employeeId : null;
+
+      try {
+        const query = supabaseServer.from('employees').select('id, employee_code');
+        const { data: matched } = isUuid
+          ? await query.eq('id', employeeId).maybeSingle()
+          : await query.eq('employee_code', employeeId).maybeSingle();
+        if (matched) {
+          if (matched.id) targetId = matched.id;
+          if (matched.employee_code) targetCode = matched.employee_code;
+        }
+      } catch (findErr) {
+        console.warn('[API /api/hr/sync-workstation DELETE] Find matched employee notice:', findErr);
+      }
+
+      if (targetId) {
+        await supabaseServer.from('employees').delete().eq('id', targetId);
+      }
+      if (targetCode) {
+        await supabaseServer.from('employees').delete().eq('employee_code', targetCode);
+      }
+      if (!targetId && isUuid) {
+        await supabaseServer.from('employees').delete().eq('id', employeeId);
+      }
+      if (!targetCode) {
         await supabaseServer.from('employees').delete().eq('employee_code', employeeId);
       }
-      await supabaseServer.from('workstation_configs').delete().eq('employee_id', employeeId);
+
+      await supabaseServer.from('workstation_configs').delete().or(
+        `employee_id.eq.${employeeId}${targetCode ? `,employee_id.eq.${targetCode}` : ''}${targetId ? `,employee_id.eq.${targetId}` : ''}`
+      );
 
       // 3. Authoritative cleanup from tenants.feature_flags (hr_employees & employee_schedules)
       const tenantId = '00000000-0000-0000-0000-000000000001';
@@ -429,11 +456,17 @@ export async function DELETE(req: NextRequest) {
         if (flags.hr_employees) {
           for (const k of Object.keys(flags.hr_employees)) {
             const item = flags.hr_employees[k];
+            const kStr = String(k);
+            const idVal = String(item?.id);
+            const codeVal = String(item?.employee_code);
+            const posVal = String(item?.posEmployeeId);
             if (
-              k === String(employeeId) ||
-              String(item?.id) === String(employeeId) ||
-              String(item?.employee_code) === String(employeeId) ||
-              String(item?.posEmployeeId) === String(employeeId)
+              kStr === String(employeeId) ||
+              idVal === String(employeeId) ||
+              codeVal === String(employeeId) ||
+              posVal === String(employeeId) ||
+              (targetCode && (kStr === targetCode || codeVal === targetCode || posVal === targetCode)) ||
+              (targetId && (kStr === targetId || idVal === targetId))
             ) {
               delete flags.hr_employees[k];
               modified = true;
@@ -444,7 +477,14 @@ export async function DELETE(req: NextRequest) {
         if (flags.employee_schedules) {
           for (const k of Object.keys(flags.employee_schedules)) {
             const item = flags.employee_schedules[k];
-            if (k === String(employeeId) || String(item?.employee_id) === String(employeeId)) {
+            const kStr = String(k);
+            const empIdVal = String(item?.employee_id);
+            if (
+              kStr === String(employeeId) ||
+              empIdVal === String(employeeId) ||
+              (targetCode && (kStr === targetCode || empIdVal === targetCode)) ||
+              (targetId && (kStr === targetId || empIdVal === targetId))
+            ) {
               delete flags.employee_schedules[k];
               modified = true;
             }

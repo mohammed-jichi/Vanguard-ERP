@@ -308,341 +308,7 @@ export function generateFullYearMatrix(
   return matrix;
 }
 
-export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [
-  {
-    id: '641',
-    active: true,
-    firstName: 'Mohammed',
-    lastName: 'Jichi',
-    fullName: 'Mohammed Jichi',
-    email: 'mohammed@southernolive-lb.com',
-    phone: '71384506',
-    countryCode: '+961',
-    dateOfBirth: '1985-01-01',
-    gender: 'Male',
-    maritalStatus: 'Married',
-    childrenCount: 2,
-    contactPerson: 'Headquarters Admin',
-    contactPhone: '+961 71 384506',
-    department: 'Management',
-    designation: 'General Operations Manager',
-    location: 'Office',
-    dateHired: '2020-01-01',
-    attendanceMacId: '',
-    country: 'Lebanon',
-    city: 'Choueifat - Aley',
-    address: 'Old Saida Road, Choueifat Central Plant',
-    nationalId: '1001122334',
-    socialSecurityNo: 'CNSS-1122334',
-    brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-    branch: 'Southern Olive and Oil Products - Main',
-    useBranch: true,
-    isBackoffice: true,
-    posEmployeeId: '1',
-    posCredentials: {
-      nickName: 'Mohammed',
-      language: 'ARABIC',
-      active: true,
-      accessBackOffice: true,
-      salesman: true,
-      driver: false,
-      training: false,
-      branch: 'Southern Olive and Oil Products - Main',
-      backOfficeRole: 'MANAGER',
-      employeeId: '1',
-      password: '123',
-      configuration: 'Standard POS Retail Config ✔',
-      cashDrawerPort: 'Usb',
-      printerType: 'TM-267',
-      openCashDrawer: true,
-      hideInTimeAttendance: false,
-      autoTimeAtt: true,
-      emailSignature: 'Mohammed Jichi - General Operations Manager\nSouthern Olive and Oil Products S.A.R.L.',
-    },
-    schedule: {
-      templateName: 'Backoffice Administration (08:00 - 16:30)',
-    },
-    createdAt: '2024-01-01',
-  },
-  {
-    id: '642',
-    active: true,
-    firstName: 'Hussien',
-    lastName: 'Jichi',
-    fullName: 'Hussien Jichi',
-    email: 'jamaljichihusseinmahdi@gmail.com',
-    phone: '71390241',
-    countryCode: '+961',
-    dateOfBirth: '1988-06-14',
-    gender: 'Male',
-    maritalStatus: 'Married',
-    childrenCount: 2,
-    contactPerson: 'Jamal Jichi',
-    contactPhone: '+961 71 390241',
-    department: 'Owners',
-    designation: 'Owner / Director',
-    location: 'Office',
-    dateHired: '2021-03-15',
-    attendanceMacId: '',
-    country: 'Lebanon',
-    city: 'Choueifat - Aley',
-    address: 'Old Saida Road, Choueifat Central Plant',
-    nationalId: '1002938475',
-    socialSecurityNo: 'CNSS-8899201',
-    brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-    branch: 'Southern Olive and Oil Products - Main',
-    useBranch: true,
-    isBackoffice: true,
-    posEmployeeId: '9',
-    posCredentials: {
-      nickName: 'Hussien',
-      language: 'ARABIC',
-      active: true,
-      accessBackOffice: true,
-      salesman: true,
-      driver: false,
-      training: false,
-      branch: 'Southern Olive and Oil Products - Main',
-      backOfficeRole: 'MANAGER',
-      employeeId: '9',
-      password: '123456',
-      configuration: 'Standard POS Retail Config ✔',
-      cashDrawerPort: 'Usb',
-      printerType: 'TM-267',
-      openCashDrawer: true,
-      hideInTimeAttendance: false,
-      autoTimeAtt: true,
-      emailSignature: 'Hussien Jichi - Owner / Director\nSouthern Olive and Oil Products S.A.R.L.',
-    },
-    schedule: {
-      templateName: 'Backoffice Administration (08:00 - 16:30)',
-    },
-    createdAt: '2024-05-15',
-  },
-  {
-    id: '644',
-    active: true,
-    firstName: 'Hussein',
-    lastName: 'Jichi',
-    fullName: 'Hussein Jichi',
-    email: 'hussein.jichi@southernolive-lb.com',
-    phone: '81958823',
-    countryCode: '+961',
-    dateOfBirth: '1990-05-10',
-    gender: 'Male',
-    maritalStatus: 'Single',
-    childrenCount: 0,
-    department: 'Accounting',
-    designation: 'Accountant',
-    location: 'Office',
-    dateHired: '2022-01-10',
-    attendanceMacId: '',
-    country: 'Lebanon',
-    city: 'Choueifat - Aley',
-    address: 'Old Saida Road, Choueifat Central Plant',
-    nationalId: '1003829102',
-    socialSecurityNo: 'CNSS-9933503',
-    brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-    branch: 'Southern Olive and Oil Products - Main',
-    useBranch: true,
-    isBackoffice: true,
-    posEmployeeId: '5',
-    posCredentials: {
-      nickName: 'Hussein',
-      language: 'ARABIC',
-      active: true,
-      accessBackOffice: true,
-      salesman: false,
-      driver: false,
-      training: false,
-      branch: 'Southern Olive and Oil Products - Main',
-      backOfficeRole: 'MANAGER',
-      employeeId: '5',
-      password: '123',
-      configuration: 'Standard POS Retail Config ✔',
-      cashDrawerPort: 'Usb',
-      printerType: 'TM-267',
-      openCashDrawer: true,
-      hideInTimeAttendance: false,
-      autoTimeAtt: true,
-      emailSignature: 'Hussein Jichi - Accountant\nSouthern Olive and Oil Products S.A.R.L.',
-    },
-    schedule: {
-      templateName: 'Backoffice Administration (08:00 - 16:30)',
-    },
-    createdAt: '2024-06-15',
-  },
-  {
-    id: '649',
-    active: true,
-    firstName: 'Hiba',
-    lastName: 'Aloulou',
-    fullName: 'Hiba Aloulou',
-    email: 'hiba.aloulou@southernolive-lb.com',
-    phone: '78846247',
-    countryCode: '+961',
-    dateOfBirth: '1995-09-20',
-    gender: 'Female',
-    maritalStatus: 'Single',
-    childrenCount: 0,
-    department: 'Sales',
-    designation: 'Cashier',
-    location: 'Office',
-    dateHired: '2023-04-01',
-    attendanceMacId: '',
-    country: 'Lebanon',
-    city: 'Choueifat - Aley',
-    address: 'Old Saida Road, Choueifat Central Plant',
-    nationalId: '1009182736',
-    socialSecurityNo: 'CNSS-4422115',
-    brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-    branch: 'Southern Olive and Oil Products - Main',
-    useBranch: true,
-    isBackoffice: false,
-    posEmployeeId: '10',
-    posCredentials: {
-      nickName: 'Hiba',
-      language: 'ARABIC',
-      active: true,
-      accessBackOffice: false,
-      salesman: true,
-      driver: false,
-      training: false,
-      branch: 'Southern Olive and Oil Products - Main',
-      backOfficeRole: 'CASHIER',
-      employeeId: '10',
-      password: '123',
-      configuration: 'Standard POS Retail Config ✔',
-      cashDrawerPort: 'Usb',
-      printerType: 'TM-267',
-      openCashDrawer: true,
-      hideInTimeAttendance: false,
-      autoTimeAtt: true,
-      emailSignature: 'Hiba Aloulou - Cashier\nSouthern Olive and Oil Products S.A.R.L.',
-    },
-    schedule: {
-      templateName: 'Standard Factory Shift (07:00 - 15:30)',
-    },
-    createdAt: '2024-07-01',
-  },
-  {
-    id: '650',
-    active: true,
-    firstName: 'Charbel',
-    lastName: 'Khoury',
-    fullName: 'Charbel Khoury',
-    email: 'charbel.khoury@southernolive-lb.com',
-    phone: '70112233',
-    countryCode: '+961',
-    dateOfBirth: '1992-03-12',
-    gender: 'Male',
-    maritalStatus: 'Married',
-    childrenCount: 1,
-    department: 'oil_processing',
-    designation: 'oil_press_operator',
-    location: 'mill_facility',
-    dateHired: '2022-09-01',
-    attendanceMacId: '',
-    country: 'Lebanon',
-    city: 'Choueifat - Aley',
-    address: 'Choueifat Plant, Press Line 1',
-    nationalId: '1004455667',
-    socialSecurityNo: 'CNSS-5544332',
-    brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-    branch: 'Southern Olive and Oil Products - Main',
-    useBranch: true,
-    isBackoffice: false,
-    posEmployeeId: '11',
-    schedule: {
-      templateName: 'Standard Factory Shift (07:00 - 15:30)',
-    },
-    createdAt: '2024-08-01',
-  },
-  {
-    id: '651',
-    active: true,
-    firstName: 'Hadi',
-    lastName: 'Saad',
-    fullName: 'Hadi Saad',
-    email: 'hadi.saad@southernolive-lb.com',
-    phone: '71445566',
-    countryCode: '+961',
-    dateOfBirth: '1990-11-05',
-    gender: 'Male',
-    maritalStatus: 'Single',
-    childrenCount: 0,
-    department: 'logistics_delivery',
-    designation: 'delivery_driver',
-    location: 'on_road',
-    dateHired: '2023-01-15',
-    attendanceMacId: '',
-    country: 'Lebanon',
-    city: 'Choueifat - Aley',
-    address: 'South Fleet Hub, Truck #4',
-    nationalId: '1007788990',
-    socialSecurityNo: 'CNSS-7766554',
-    brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-    branch: 'Southern Olive and Oil Products - Main',
-    useBranch: true,
-    isBackoffice: false,
-    posEmployeeId: '12',
-    schedule: {
-      templateName: 'Standard Factory Shift (07:00 - 15:30)',
-    },
-    createdAt: '2024-09-01',
-  },
-  {
-    id: '652',
-    active: true,
-    firstName: 'Nour',
-    lastName: 'Salameh',
-    fullName: 'Nour Salameh',
-    email: 'nour.salameh@southernolive-lb.com',
-    phone: '76554433',
-    countryCode: '+961',
-    dateOfBirth: '1996-07-22',
-    gender: 'Female',
-    maritalStatus: 'Single',
-    childrenCount: 0,
-    department: 'social_media_marketing',
-    designation: 'social_media_rep',
-    location: 'remote',
-    dateHired: '2024-01-10',
-    attendanceMacId: '',
-    country: 'Lebanon',
-    city: 'Beirut - Achrafieh',
-    address: 'Independence Street, Building 12, 4th Floor',
-    nationalId: '1008899001',
-    socialSecurityNo: 'CNSS-8877665',
-    brand: 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-    branch: 'Southern Olive and Oil Products - Main',
-    useBranch: true,
-    isBackoffice: false,
-    posEmployeeId: '13',
-    socialMediaRep: {
-      area: 'Beirut',
-      street: 'Independence Street',
-      building: 'Building 12',
-      floor: '4th Floor, Unit 401',
-      personalPhone: '+961 76 554 433',
-      businessWhatsapp: '+961 3 554 433',
-      repAdminCode: 'REP-8801',
-      systemUuid: 'e92a839f-43b8-4c6d-9be2-58190d79bf20',
-      facebookUrl: 'https://facebook.com/southernolive.nour',
-      tiktokUrl: 'https://tiktok.com/@southernolive_nour',
-      instagramUrl: 'https://instagram.com/southernolive.nour',
-      extraChannels: [
-        { id: 'chan-01', platform: 'Snapchat', url: 'https://snapchat.com/add/nour_olive' }
-      ],
-      promotionalOffersPercentage: 5.0,
-      generalItemsPercentage: 10.0,
-    },
-    schedule: {
-      templateName: 'Backoffice Administration (08:00 - 16:30)',
-    },
-    createdAt: '2024-10-01',
-  },
-];
+export const INITIAL_HR_PERSONNEL: HREmployeeRecord[] = [];
 
 const LOCAL_STORAGE_KEY = 'vanguard_hr_personnel_records_omega_v2';
 const DAY_OFF_STORAGE_KEY = 'vanguard_hr_day_off_records_v1';
@@ -650,7 +316,7 @@ const DAY_OFF_STORAGE_KEY = 'vanguard_hr_day_off_records_v1';
 export class HRPersonnelService {
   public static getEmployees(): HREmployeeRecord[] {
     if (typeof window === 'undefined') {
-      return INITIAL_HR_PERSONNEL;
+      return [];
     }
     try {
       // Purge legacy storage keys that held mock personnel
@@ -658,38 +324,41 @@ export class HRPersonnelService {
       localStorage.removeItem('vanguard_hr_personnel_records_v2');
       localStorage.removeItem('vanguard_hr_personnel_records_omega_v1');
 
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const stored =
+        localStorage.getItem('vanguard_hr_employees') ||
+        localStorage.getItem(LOCAL_STORAGE_KEY);
+
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // If stored records still have mock employees (Sarah Khoury, Ali Hassan, etc.), purge and reseed
-          const hasLegacyMock = parsed.some(
+        if (Array.isArray(parsed)) {
+          // Filter out any residual mock seed employees that might exist in browser storage
+          const clean = parsed.filter(
             (e: any) =>
-              e.firstName === 'Sarah' ||
-              e.lastName === 'Khoury' ||
-              e.firstName === 'Omar' ||
-              e.lastName === 'Zaiter' ||
-              e.firstName === 'Nour' ||
-              e.lastName === 'Mansour' ||
-              e.firstName === 'Ali' ||
-              e.id === 'EMP-001' ||
-              e.id === 'EMP-002' ||
-              e.id === 'EMP-003'
+              e.firstName !== 'Sarah' &&
+              e.lastName !== 'Khoury' &&
+              e.firstName !== 'Omar' &&
+              e.lastName !== 'Zaiter' &&
+              e.firstName !== 'Charbel' &&
+              e.lastName !== 'Mansour' &&
+              e.firstName !== 'Nour' &&
+              e.lastName !== 'Salameh' &&
+              e.firstName !== 'Hadi' &&
+              e.lastName !== 'Saad' &&
+              e.id !== 'EMP-001' &&
+              e.id !== 'EMP-002' &&
+              e.id !== 'EMP-003' &&
+              e.id !== '650' &&
+              e.id !== '651' &&
+              e.id !== '652'
           );
-          if (!hasLegacyMock) {
-            return parsed;
-          }
+          return clean;
         }
       }
     } catch (err) {
       console.warn('[HRPersonnelService] Failed reading from localStorage:', err);
     }
 
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_HR_PERSONNEL));
-    } catch (e) {}
-
-    return INITIAL_HR_PERSONNEL;
+    return [];
   }
 
   public static async saveEmployee(emp: HREmployeeRecord): Promise<HREmployeeRecord[]> {
@@ -814,9 +483,8 @@ export class HRPersonnelService {
 
   public static async fetchEmployees(): Promise<HREmployeeRecord[]> {
     if (typeof window === 'undefined') {
-      return INITIAL_HR_PERSONNEL;
+      return [];
     }
-    const localRecords = this.getEmployees();
 
     if (typeof navigator !== 'undefined' && navigator.onLine) {
       try {
@@ -836,26 +504,20 @@ export class HRPersonnelService {
           console.warn('[HRPersonnelService] /api/hr/sync-workstation GET fetch notice:', apiFetchErr);
         }
 
-        // Build unified map of employees from localRecords, remoteEmployeesMap, and serverDbEmployees
+        // Build unified map of employees EXCLUSIVELY from remote authoritative Supabase records (Rule 1 & 2)
+        // Zero seeding from stale local records or mock data
         const mergedMap = new Map<string, HREmployeeRecord>();
 
-        // 1. Seed with local records (preserving local cache foundation)
-        for (const local of localRecords) {
-          mergedMap.set(String(local.id), { ...local });
-        }
-
-        // 2. Overlay with remoteEmployeesMap from Supabase PostgreSQL (tenants.feature_flags)
+        // 1. Overlay with remoteEmployeesMap from Supabase PostgreSQL (tenants.feature_flags)
         for (const [key, remoteEmp] of Object.entries(remoteEmployeesMap)) {
           const empId = String(remoteEmp.id || key);
-          const existing = mergedMap.get(empId) || ({} as HREmployeeRecord);
           mergedMap.set(empId, {
-            ...existing,
             ...remoteEmp,
             id: empId,
           });
         }
 
-        // 3. Overlay with serverDbEmployees rows from Supabase employees table
+        // 2. Overlay with serverDbEmployees rows from Supabase employees table
         for (const row of serverDbEmployees) {
           const empId = String(row.employee_code || row.id);
           const existing = mergedMap.get(empId) || mergedMap.get(String(row.id)) || ({} as HREmployeeRecord);
@@ -872,7 +534,7 @@ export class HRPersonnelService {
           });
         }
 
-        // 4. Hydrate every employee with live remote schedule and template from Supabase
+        // 3. Hydrate every employee with live remote schedule and template from Supabase
         const finalHydratedRecords: HREmployeeRecord[] = Array.from(mergedMap.values()).map((emp) => {
           const empId = String(emp.id);
           const empCode = String(emp.posEmployeeId || emp.id);
@@ -916,16 +578,16 @@ export class HRPersonnelService {
           };
         });
 
-        if (finalHydratedRecords.length > 0) {
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(finalHydratedRecords));
-          window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: finalHydratedRecords }));
-          return finalHydratedRecords;
-        }
+        // WIPE OUT stale records in localStorage unconditionally (Rule 1 & 2)
+        localStorage.setItem('vanguard_hr_employees', JSON.stringify(finalHydratedRecords));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(finalHydratedRecords));
+        window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: finalHydratedRecords }));
+        return finalHydratedRecords;
       } catch (err) {
         console.warn('[HRPersonnelService] fetchEmployees from Supabase notice:', err);
       }
     }
-    return localRecords;
+    return this.getEmployees();
   }
 
   public static async syncWorkstationProfile(emp: HREmployeeRecord): Promise<void> {
@@ -975,7 +637,40 @@ export class HRPersonnelService {
       throw new Error('Employee ID cannot be empty');
     }
 
-    // 1. MANDATORY DATABASE-FIRST MUTATION (Rule 1 & 3): Strictly await remote deletion from Supabase
+    // 1. Explicitly purge from all known localStorage keys immediately (Step 3)
+    if (typeof window !== 'undefined') {
+      const keysToPurge = [
+        'vanguard_hr_employees',
+        LOCAL_STORAGE_KEY,
+        'hr_employees_cache',
+        'vanguard_employee_schedules',
+        'vanguard_hr_personnel_records_v1',
+        'vanguard_hr_personnel_records_v2',
+        'vanguard_hr_personnel_records_omega_v1',
+      ];
+      for (const k of keysToPurge) {
+        try {
+          const raw = localStorage.getItem(k);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              const filtered = parsed.filter(
+                (item: any) =>
+                  String(item?.id) !== cleanId &&
+                  String(item?.employee_code) !== cleanId &&
+                  String(item?.posEmployeeId) !== cleanId
+              );
+              localStorage.setItem(k, JSON.stringify(filtered));
+            } else if (parsed && typeof parsed === 'object') {
+              delete parsed[cleanId];
+              localStorage.setItem(k, JSON.stringify(parsed));
+            }
+          }
+        } catch (e) {}
+      }
+    }
+
+    // 2. MANDATORY DATABASE-FIRST MUTATION (Rule 1 & 3): Strictly await remote deletion from Supabase
     if (typeof window !== 'undefined') {
       const res = await fetch(`/api/hr/sync-workstation?employeeId=${encodeURIComponent(cleanId)}`, {
         method: 'DELETE',
@@ -989,12 +684,18 @@ export class HRPersonnelService {
       }
     }
 
-    // 2. Only on confirmed remote DB deletion: update local cache and dispatch sync event
+    // 3. Obtain clean list and notify all subscribers
     const list = this.getEmployees();
-    const nextList = list.filter((e) => String(e.id) !== cleanId && (e as any).employee_code !== cleanId);
+    const nextList = list.filter(
+      (e) =>
+        String(e.id) !== cleanId &&
+        String((e as any).employee_code) !== cleanId &&
+        String((e as any).posEmployeeId) !== cleanId
+    );
 
     if (typeof window !== 'undefined') {
       try {
+        localStorage.setItem('vanguard_hr_employees', JSON.stringify(nextList));
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(nextList));
         window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: nextList }));
       } catch (err) {

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   HREmployeeRecord,
   HRPersonnelService,
-  INITIAL_HR_PERSONNEL,
 } from '@/lib/hrPersonnelService';
 import NewEmployeeModal, { DEPARTMENTS_MASTER_KEYS, DESIGNATIONS_MASTER_KEYS } from './NewEmployeeModal';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -67,24 +66,28 @@ export default function PersonnelMasterConsole() {
 
   // Load employees from HRPersonnelService & subscribe to updates
   const loadEmployees = () => {
-    const list = HRPersonnelService.getEmployees();
-    setEmployees(list);
+    // 1. Initial cached render
+    const cached = HRPersonnelService.getEmployees();
+    setEmployees(cached);
+
+    // 2. Authoritative remote fetch immediately overrides local cache (Rule 1 & 2)
     if (typeof window !== 'undefined' && typeof navigator !== 'undefined' && navigator.onLine) {
-      HRPersonnelService.fetchEmployees().then((remote) => {
-        // DO NOT overwrite the local state if the API/Supabase returns an empty list or errors out while localStorage has records
-        if (remote && Array.isArray(remote) && remote.length > 0) {
-          setEmployees(remote);
-        } else if (list && list.length > 0) {
-          setEmployees(list);
-        }
-      }).catch((err) => {
-        console.warn('[PersonnelMasterConsole] Background Supabase fetch notice:', err);
-        if (list && list.length > 0) {
-          setEmployees(list);
-        }
-      });
+      HRPersonnelService.fetchEmployees()
+        .then((remote) => {
+          if (Array.isArray(remote)) {
+            setEmployees(remote);
+          }
+        })
+        .catch((err) => {
+          console.warn('[PersonnelMasterConsole] Background Supabase fetch notice:', err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
     }
-    return list;
+    return cached;
   };
 
   useEffect(() => {
