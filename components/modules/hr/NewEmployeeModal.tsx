@@ -685,6 +685,10 @@ export default function NewEmployeeModal({
           autoTimeAtt: posAutoTimeAtt,
           emailSignature: posEmailSignature,
         },
+        schedule_template:
+          modalScheduleConfig?.templateName ||
+          target?.schedule?.templateName ||
+          'Backoffice Administration (08:00 - 16:30)',
         schedule: modalScheduleConfig || target?.schedule || {
           templateName: 'Backoffice Administration (08:00 - 16:30)',
         },
@@ -695,46 +699,7 @@ export default function NewEmployeeModal({
         createdAt: target?.createdAt || new Date().toISOString().split('T')[0],
       };
 
-      // 1. Persist workstation profile, authority, drawer kick, and ESC/POS printer settings
-      try {
-        const wsRes = await fetch('/api/hr/sync-workstation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            employeeId: newEmp.id,
-            employeeName: newEmp.fullName,
-            branch: newEmp.branch,
-            workstationAuthority: {
-              accessBackOffice: posAccessBackOffice,
-              backOfficeRole: posBackOfficeRole,
-              salesman: posSalesman,
-              driver: posDriver,
-              training: posTraining,
-              active: posActive,
-            },
-            drawerKickSettings: {
-              openCashDrawer: posOpenCashDrawer,
-              cashDrawerPort: posCashDrawerPort,
-              pin: 2,
-            },
-            printerConfig: {
-              printerType: posPrinterType,
-              configuration: posConfiguration,
-              protocol: 'ESC_POS',
-            },
-            posCredentials: newEmp.posCredentials,
-            employeeRecord: newEmp,
-          }),
-        });
-
-        if (!wsRes.ok) {
-          console.warn('[NewEmployeeModal] Workstation sync notice:', wsRes.status);
-        }
-      } catch (wsErr: any) {
-        console.warn('[NewEmployeeModal] Workstation persistence notice:', wsErr);
-      }
-
-      // 2. Persist to Supabase and LocalStorage via HRPersonnelService
+      // Persist to Supabase and LocalStorage via HRPersonnelService (routes through /api/hr/sync-workstation)
       await HRPersonnelService.saveEmployee(newEmp);
 
       // 3. Callback to parent view for immediate state refresh

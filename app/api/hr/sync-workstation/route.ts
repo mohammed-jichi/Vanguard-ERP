@@ -125,6 +125,21 @@ export async function POST(req: NextRequest) {
       employeeRecord?.is_active ?? employeeRecord?.isActive ?? employeeRecord?.active ?? true
     );
 
+    const empCode = String(employeeId);
+    const scheduleCfg = employeeRecord?.schedule_config || employeeRecord?.schedule || null;
+    const scheduleTemplate = scheduleCfg?.templateName || employeeRecord?.schedule_template || 'Backoffice Administration (08:00 - 16:30)';
+    const completeScheduleConfig = scheduleCfg ? {
+      templateName: scheduleTemplate,
+      timing: scheduleCfg.timing || '08:00 - 16:30',
+      workDays: scheduleCfg.workDays || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      offDays: scheduleCfg.offDays || ['Sun'],
+      applyToAllMonths: Boolean(scheduleCfg.applyToAllMonths),
+      dailySchedule: scheduleCfg.dailySchedule || undefined,
+      weeklySlots: scheduleCfg.weeklySlots || undefined,
+      dateOverrides: scheduleCfg.dateOverrides || {},
+      daysOff: scheduleCfg.daysOff || [],
+    } : null;
+
     try {
       const supabaseServer = getSupabaseServerClient();
       const { error: supaErr } = await supabaseServer
@@ -153,7 +168,6 @@ export async function POST(req: NextRequest) {
 
       // 3. Persist to Supabase employees table (HR Master Record sync using service role)
       try {
-        const empCode = String(employeeId);
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(empCode);
         const empDbPayload: Record<string, any> = {
           employee_code: empCode,
@@ -162,9 +176,9 @@ export async function POST(req: NextRequest) {
           national_id: employeeRecord?.nationalId || null,
           is_active: isActiveVal,
         };
-        const scheduleCfg = employeeRecord?.schedule_config || employeeRecord?.schedule;
-        if (scheduleCfg) {
-          empDbPayload.schedule_config = scheduleCfg;
+        if (completeScheduleConfig) {
+          empDbPayload.schedule_template = scheduleTemplate;
+          empDbPayload.schedule_config = completeScheduleConfig;
         }
         if (employeeRecord?.dateHired) {
           empDbPayload.date_hired = employeeRecord.dateHired;
@@ -197,18 +211,77 @@ export async function POST(req: NextRequest) {
             .maybeSingle();
           if (retryData) {
             savedEmployeeRow = retryData;
+            persistedToSupabase = true;
           } else if (retryErr) {
-            console.warn('[API /api/hr/sync-workstation] Supabase base retry notice:', retryErr.message);
+            console.error('[API /api/hr/sync-workstation] Supabase base retry failure:', retryErr);
           }
         } else {
           savedEmployeeRow = upsertData;
+          persistedToSupabase = true;
         }
       } catch (empEx: any) {
-        console.warn('[API /api/hr/sync-workstation] Supabase employees table exception:', empEx);
+        console.error('[API /api/hr/sync-workstation] Supabase employees table exception:', empEx);
+      }
+
+      // 4. Guaranteed Supabase JSONB persistence via tenants.feature_flags (survives hard reload)
+      try {
+        const tenantId = employeeRecord?.tenant_id || '00000000-0000-0000-0000-000000000001';
+        const { data: tenantData } = await supabaseServer
+          .from('tenants')
+          .select('id, feature_flags')
+          .eq('id', tenantId)
+          .maybeSingle();
+
+        if (tenantData) {
+          const existingFlags = tenantData.feature_flags || {};
+          const existingSchedules = existingFlags.employee_schedules || {};
+          const existingEmployees = existingFlags.hr_employees || {};
+
+          if (completeScheduleConfig) {
+            existingSchedules[empCode] = {
+              employee_id: empCode,
+              schedule_template: scheduleTemplate,
+              schedule_config: completeScheduleConfig,
+              updated_at: now,
+            };
+          }
+
+          existingEmployees[empCode] = {
+            ...(employeeRecord || {}),
+            id: empCode,
+            fullName: employeeName || employeeRecord?.fullName || 'Employee',
+            is_active: isActiveVal,
+            active: isActiveVal,
+            schedule_template: scheduleTemplate,
+            schedule: completeScheduleConfig,
+            schedule_config: completeScheduleConfig,
+            updated_at: now,
+          };
+
+          const { error: tenantErr } = await supabaseServer
+            .from('tenants')
+            .update({
+              feature_flags: {
+                ...existingFlags,
+                employee_schedules: existingSchedules,
+                hr_employees: existingEmployees,
+              },
+              updated_at: now,
+            })
+            .eq('id', tenantData.id);
+
+          if (tenantErr) {
+            console.warn('[API /api/hr/sync-workstation] Tenant feature_flags update notice:', tenantErr.message);
+          } else {
+            persistedToSupabase = true;
+          }
+        }
+      } catch (tenantEx: any) {
+        console.warn('[API /api/hr/sync-workstation] Tenant feature_flags exception:', tenantEx);
       }
     } catch (supaEx: any) {
       supabaseNotice = supaEx?.message || 'Supabase unreachable';
-      console.warn('[API /api/hr/sync-workstation] Supabase workstation_configs exception:', supaEx);
+      console.warn('[API /api/hr/sync-workstation] Supabase general exception:', supaEx);
     }
 
     const returnedEmployee = {
@@ -217,6 +290,9 @@ export async function POST(req: NextRequest) {
       fullName: employeeName || employeeRecord?.fullName || 'Employee',
       is_active: isActiveVal,
       active: isActiveVal,
+      schedule_template: scheduleTemplate,
+      schedule: completeScheduleConfig || employeeRecord?.schedule,
+      schedule_config: completeScheduleConfig || employeeRecord?.schedule_config,
       ...(savedEmployeeRow ? { dbRow: savedEmployeeRow } : {}),
     };
 
@@ -232,6 +308,55 @@ export async function POST(req: NextRequest) {
     console.error('[API /api/hr/sync-workstation] Internal error:', error);
     return NextResponse.json(
       { success: false, error: error?.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const supabaseServer = getSupabaseServerClient();
+
+    // 1. Fetch remote employees from Supabase table
+    const { data: empRows } = await supabaseServer
+      .from('employees')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    // 2. Fetch remote schedules & rich hr_employees from tenants.feature_flags
+    const { data: tenantData } = await supabaseServer
+      .from('tenants')
+      .select('feature_flags')
+      .eq('id', '00000000-0000-0000-0000-000000000001')
+      .maybeSingle();
+
+    const flags = tenantData?.feature_flags || {};
+    const remoteSchedules = flags.employee_schedules || {};
+    const remoteEmployees = flags.hr_employees || {};
+
+    // 3. Fallback/merge local JSON file
+    let jsonEmployees: any[] = [];
+    try {
+      if (fs.existsSync(DB_FILE)) {
+        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        const dbData = JSON.parse(raw);
+        if (Array.isArray(dbData.employees)) {
+          jsonEmployees = dbData.employees;
+        }
+      }
+    } catch {}
+
+    return NextResponse.json({
+      success: true,
+      employees: empRows || [],
+      remoteSchedules,
+      remoteEmployees,
+      jsonEmployees,
+    });
+  } catch (err: any) {
+    console.error('[API /api/hr/sync-workstation GET] Error:', err);
+    return NextResponse.json(
+      { success: false, error: err?.message || 'Failed to fetch HR data' },
       { status: 500 }
     );
   }

@@ -330,7 +330,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  const handleCreateEmployee = (e: React.FormEvent) => {
+  const handleCreateEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmpName.trim() || !newEmpNationalId.trim()) {
       showToast(t('please_fill_required_fields', 'Please fill in all required fields.'));
@@ -391,7 +391,7 @@ export default function UnifiedHRConsole({ initialTab = 'employees' }: UnifiedHR
         posEmployeeId: String(employees.length + 1),
         createdAt: new Date().toISOString().split('T')[0],
       };
-      HRPersonnelService.saveEmployee(hrRecord);
+      await HRPersonnelService.saveEmployee(hrRecord);
     } catch (saveErr) {
       console.warn('Failed to save to HRPersonnelService:', saveErr);
     }

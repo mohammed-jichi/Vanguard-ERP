@@ -150,6 +150,7 @@ export interface HREmployeeRecord {
   posCredentials?: POSCredentialsConfig;
   schedule?: EmployeeScheduleConfig;
   schedule_config?: EmployeeScheduleConfig;
+  schedule_template?: string;
   socialMediaRep?: SocialMediaRepConfig;
   createdAt: string;
 }
@@ -713,9 +714,11 @@ export class HRPersonnelService {
       const isActive = (emp as any).isActive ?? emp.active ?? true;
       const { active: _omitActive, ...empWithoutActive } = emp as any;
       const scheduleConfig = emp.schedule_config || emp.schedule;
+      const scheduleTemplate = scheduleConfig?.templateName || (emp as any).schedule_template || 'Backoffice Administration (08:00 - 16:30)';
       const employeePayload = {
         ...empWithoutActive,
         is_active: isActive,
+        schedule_template: scheduleTemplate,
         schedule: scheduleConfig,
         schedule_config: scheduleConfig,
       };
@@ -779,8 +782,26 @@ export class HRPersonnelService {
     if (typeof window === 'undefined') {
       return INITIAL_HR_PERSONNEL;
     }
+    const localRecords = this.getEmployees();
+
     if (typeof navigator !== 'undefined' && navigator.onLine) {
       try {
+        // Strategy A: Call /api/hr/sync-workstation which has service role access and combines Supabase + tenant schedules + JSON backup
+        let remoteSchedules: Record<string, any> = {};
+        let remoteEmployeesMap: Record<string, any> = {};
+
+        try {
+          const apiRes = await fetch('/api/hr/sync-workstation');
+          if (apiRes.ok) {
+            const apiData = await apiRes.json();
+            if (apiData.remoteSchedules) remoteSchedules = apiData.remoteSchedules;
+            if (apiData.remoteEmployees) remoteEmployeesMap = apiData.remoteEmployees;
+          }
+        } catch (apiFetchErr) {
+          console.warn('[HRPersonnelService] /api/hr/sync-workstation GET fetch notice:', apiFetchErr);
+        }
+
+        // Strategy B: Direct Supabase client query for live employee rows
         const { data, error } = await supabase
           .from('employees')
           .select('*')
@@ -788,47 +809,78 @@ export class HRPersonnelService {
 
         if (!error && Array.isArray(data) && data.length > 0) {
           const remoteRecords: HREmployeeRecord[] = data.map((row: any) => {
+            const empCode = row.employee_code || row.id;
+            const savedSchedule =
+              remoteSchedules[empCode]?.schedule_config ||
+              remoteEmployeesMap[empCode]?.schedule_config ||
+              remoteEmployeesMap[empCode]?.schedule ||
+              row.schedule_config ||
+              row.schedule ||
+              localRecords.find((l) => l.id === row.id || l.id === empCode)?.schedule;
+
+            const savedTemplate =
+              remoteSchedules[empCode]?.schedule_template ||
+              remoteEmployeesMap[empCode]?.schedule_template ||
+              savedSchedule?.templateName ||
+              'Backoffice Administration (08:00 - 16:30)';
+
+            const scheduleFinal: EmployeeScheduleConfig = savedSchedule
+              ? {
+                  ...savedSchedule,
+                  templateName: savedTemplate,
+                }
+              : {
+                  templateName: savedTemplate,
+                };
+
             if (row.record_payload && typeof row.record_payload === 'object') {
               const payload = row.record_payload as HREmployeeRecord;
               return {
                 ...payload,
+                schedule: scheduleFinal,
+                schedule_config: scheduleFinal,
                 profilePicture: payload.profilePicture || row.profile_picture || undefined,
                 jobOfferDoc: payload.jobOfferDoc || row.job_offer_doc || undefined,
               };
             }
+
+            const richEmployee = remoteEmployeesMap[empCode] || {};
+            const localEmp = localRecords.find((l) => l.id === row.id || l.id === empCode);
+
             return {
-              id: row.id,
-              active: row.active ?? true,
-              firstName: row.first_name || '',
-              lastName: row.last_name || '',
-              fullName: row.full_name || `${row.first_name || ''} ${row.last_name || ''}`.trim(),
-              email: row.email || '',
-              phone: row.phone || '',
-              countryCode: row.country_code || '+961',
-              dateOfBirth: row.date_of_birth,
-              gender: row.gender || 'Male',
-              maritalStatus: row.marital_status || 'Single',
-              childrenCount: row.children_count ?? 0,
-              profilePicture: row.profile_picture || undefined,
-              jobOfferDoc: row.job_offer_doc || undefined,
-              department: row.department || '',
-              designation: row.designation || '',
-              location: row.location || '',
-              country: row.country || 'Lebanon',
-              city: row.city || '',
-              address: row.address,
-              dateHired: row.date_hired,
-              dateLeft: row.date_left,
-              attendanceMacId: row.attendance_mac_id,
-              posEmployeeId: row.pos_employee_id,
-              brand: row.brand || 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-              branch: row.branch || 'Southern Olive and Oil Products - Main',
+              id: row.id || empCode,
+              active: row.is_active ?? row.active ?? richEmployee.active ?? true,
+              firstName: row.first_name || richEmployee.firstName || localEmp?.firstName || '',
+              lastName: row.last_name || richEmployee.lastName || localEmp?.lastName || '',
+              fullName: row.full_name || richEmployee.fullName || localEmp?.fullName || `${row.first_name || ''} ${row.last_name || ''}`.trim() || 'Employee',
+              email: row.email || richEmployee.email || localEmp?.email || '',
+              phone: row.phone || richEmployee.phone || localEmp?.phone || '',
+              countryCode: row.country_code || richEmployee.countryCode || localEmp?.countryCode || '+961',
+              dateOfBirth: row.date_of_birth || richEmployee.dateOfBirth || localEmp?.dateOfBirth,
+              gender: row.gender || richEmployee.gender || localEmp?.gender || 'Male',
+              maritalStatus: row.marital_status || richEmployee.maritalStatus || localEmp?.maritalStatus || 'Single',
+              childrenCount: row.children_count ?? richEmployee.childrenCount ?? localEmp?.childrenCount ?? 0,
+              profilePicture: row.profile_picture || richEmployee.profilePicture || localEmp?.profilePicture || undefined,
+              jobOfferDoc: row.job_offer_doc || richEmployee.jobOfferDoc || localEmp?.jobOfferDoc || undefined,
+              department: row.department || richEmployee.department || localEmp?.department || 'Administration',
+              designation: row.designation || richEmployee.designation || localEmp?.designation || 'Staff',
+              location: row.location || richEmployee.location || localEmp?.location || 'Office',
+              country: row.country || richEmployee.country || localEmp?.country || 'Lebanon',
+              city: row.city || richEmployee.city || localEmp?.city || '',
+              address: row.address || richEmployee.address || localEmp?.address,
+              dateHired: row.date_hired || row.hire_date || richEmployee.dateHired || localEmp?.dateHired,
+              dateLeft: row.date_left || richEmployee.dateLeft || localEmp?.dateLeft,
+              attendanceMacId: row.attendance_mac_id || richEmployee.attendanceMacId || localEmp?.attendanceMacId,
+              posEmployeeId: row.pos_employee_id || richEmployee.posEmployeeId || localEmp?.posEmployeeId || row.employee_code,
+              brand: row.brand || richEmployee.brand || localEmp?.brand || 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
+              branch: row.branch || richEmployee.branch || localEmp?.branch || 'Southern Olive and Oil Products - Main',
               useBranch: true,
-              isBackoffice: row.is_backoffice ?? true,
-              posCredentials: row.pos_credentials,
-              schedule: row.schedule_config,
-              socialMediaRep: row.social_media_rep,
-              createdAt: row.created_at || new Date().toISOString().split('T')[0],
+              isBackoffice: row.is_backoffice ?? richEmployee.isBackoffice ?? localEmp?.isBackoffice ?? true,
+              posCredentials: row.pos_credentials || richEmployee.posCredentials || localEmp?.posCredentials,
+              schedule: scheduleFinal,
+              schedule_config: scheduleFinal,
+              socialMediaRep: row.social_media_rep || richEmployee.socialMediaRep || localEmp?.socialMediaRep,
+              createdAt: row.created_at || richEmployee.createdAt || localEmp?.createdAt || new Date().toISOString().split('T')[0],
             };
           });
 
@@ -841,7 +893,7 @@ export class HRPersonnelService {
         console.warn('[HRPersonnelService] fetchEmployees from Supabase notice:', err);
       }
     }
-    return this.getEmployees();
+    return localRecords;
   }
 
   public static async syncWorkstationProfile(emp: HREmployeeRecord): Promise<void> {

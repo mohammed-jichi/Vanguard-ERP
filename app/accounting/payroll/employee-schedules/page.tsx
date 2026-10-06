@@ -267,7 +267,7 @@ export default function EmployeeSchedulesPage() {
   };
 
   // Revert Day Off Back to Working Day in Modal
-  const handleRevertToWorkingDay = () => {
+  const handleRevertToWorkingDay = async () => {
     const emp = employees.find((e) => e.id === dayOffEmpId) || employees[0];
     if (!emp) return;
 
@@ -289,9 +289,13 @@ export default function EmployeeSchedulesPage() {
         ...(emp.schedule || {}),
         dateOverrides: updatedOverrides,
       },
+      schedule_config: {
+        ...(emp.schedule || {}),
+        dateOverrides: updatedOverrides,
+      },
     };
 
-    HRPersonnelService.saveEmployee(updatedEmp);
+    await HRPersonnelService.saveEmployee(updatedEmp);
     setEmployees(HRPersonnelService.getEmployees());
     setIsDayOffModalOpen(false);
     showToast(`Day ${dayOffStartDate} reverted to active working hours (${workingShift}) for ${emp.fullName}.`);
