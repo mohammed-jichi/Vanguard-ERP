@@ -167,57 +167,40 @@ export async function POST(req: NextRequest) {
       }
 
       // 3. Persist to Supabase employees table (HR Master Record sync using service role)
+      // 3. Persist to Supabase employees table (HR Master Record sync using service role)
       try {
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(empCode);
-        const empDbPayload: Record<string, any> = {
+        const basePayload: Record<string, any> = {
           employee_code: empCode,
           full_name: employeeName || employeeRecord?.fullName || `${employeeRecord?.firstName || ''} ${employeeRecord?.lastName || ''}`.trim() || 'Employee',
           phone: employeeRecord?.phone || null,
           national_id: employeeRecord?.nationalId || null,
           is_active: isActiveVal,
         };
-        if (completeScheduleConfig) {
-          empDbPayload.schedule_template = scheduleTemplate;
-          empDbPayload.schedule_config = completeScheduleConfig;
-        }
         if (employeeRecord?.dateHired) {
-          empDbPayload.date_hired = employeeRecord.dateHired;
+          basePayload.hire_date = employeeRecord.dateHired;
         }
         if (isUuid) {
-          empDbPayload.id = empCode;
+          basePayload.id = empCode;
         }
 
         const { data: upsertData, error: empErr } = await supabaseServer
           .from('employees')
-          .upsert(empDbPayload, { onConflict: isUuid ? 'id' : 'employee_code' })
+          .upsert(basePayload, { onConflict: isUuid ? 'id' : 'employee_code' })
           .select()
           .maybeSingle();
 
         if (empErr) {
-          console.warn('[API /api/hr/sync-workstation] Supabase employees table notice:', empErr.message);
-          // If schema cache lacks an extended column (e.g. schedule_config, date_hired), retry with standard base columns
-          const basePayload = {
-            employee_code: empCode,
-            full_name: empDbPayload.full_name,
-            phone: empDbPayload.phone,
-            national_id: empDbPayload.national_id,
-            is_active: isActiveVal,
-            ...(isUuid ? { id: empCode } : {}),
-          };
-          const { data: retryData, error: retryErr } = await supabaseServer
-            .from('employees')
-            .upsert(basePayload, { onConflict: isUuid ? 'id' : 'employee_code' })
-            .select()
-            .maybeSingle();
-          if (retryData) {
-            savedEmployeeRow = retryData;
-            persistedToSupabase = true;
-          } else if (retryErr) {
-            console.error('[API /api/hr/sync-workstation] Supabase base retry failure:', retryErr);
-          }
+          console.error('[API /api/hr/sync-workstation] Supabase employees table error:', {
+            message: empErr.message,
+            details: empErr.details,
+            hint: empErr.hint,
+            code: empErr.code,
+          });
         } else {
           savedEmployeeRow = upsertData;
           persistedToSupabase = true;
+          console.log('[API /api/hr/sync-workstation] Supabase employees row persisted successfully:', savedEmployeeRow?.id || empCode);
         }
       } catch (empEx: any) {
         console.error('[API /api/hr/sync-workstation] Supabase employees table exception:', empEx);
@@ -226,11 +209,16 @@ export async function POST(req: NextRequest) {
       // 4. Guaranteed Supabase JSONB persistence via tenants.feature_flags (survives hard reload)
       try {
         const tenantId = employeeRecord?.tenant_id || '00000000-0000-0000-0000-000000000001';
-        const { data: tenantData } = await supabaseServer
+        const { data: tenantData, error: tenantReadErr } = await supabaseServer
           .from('tenants')
           .select('id, feature_flags')
           .eq('id', tenantId)
           .maybeSingle();
+
+        if (tenantReadErr) {
+          console.error('[API /api/hr/sync-workstation] Tenant read error:', tenantReadErr);
+          throw new Error(`Failed to read tenant feature flags: ${tenantReadErr.message}`);
+        }
 
         if (tenantData) {
           const existingFlags = tenantData.feature_flags || {};
@@ -238,17 +226,22 @@ export async function POST(req: NextRequest) {
           const existingEmployees = existingFlags.hr_employees || {};
 
           if (completeScheduleConfig) {
-            existingSchedules[empCode] = {
+            const scheduleEntry = {
               employee_id: empCode,
               schedule_template: scheduleTemplate,
               schedule_config: completeScheduleConfig,
               updated_at: now,
             };
+            existingSchedules[empCode] = scheduleEntry;
+            if (String(employeeId) !== empCode) {
+              existingSchedules[String(employeeId)] = scheduleEntry;
+            }
           }
 
-          existingEmployees[empCode] = {
+          const richEmployeeEntry = {
             ...(employeeRecord || {}),
-            id: empCode,
+            id: String(employeeId),
+            employee_code: empCode,
             fullName: employeeName || employeeRecord?.fullName || 'Employee',
             is_active: isActiveVal,
             active: isActiveVal,
@@ -257,6 +250,10 @@ export async function POST(req: NextRequest) {
             schedule_config: completeScheduleConfig,
             updated_at: now,
           };
+          existingEmployees[empCode] = richEmployeeEntry;
+          if (String(employeeId) !== empCode) {
+            existingEmployees[String(employeeId)] = richEmployeeEntry;
+          }
 
           const { error: tenantErr } = await supabaseServer
             .from('tenants')
@@ -271,17 +268,28 @@ export async function POST(req: NextRequest) {
             .eq('id', tenantData.id);
 
           if (tenantErr) {
-            console.warn('[API /api/hr/sync-workstation] Tenant feature_flags update notice:', tenantErr.message);
+            console.error('[API /api/hr/sync-workstation] Tenant feature_flags update error:', {
+              message: tenantErr.message,
+              details: tenantErr.details,
+              hint: tenantErr.hint,
+              code: tenantErr.code,
+            });
+            throw new Error(`Tenant schedule persistence failed: ${tenantErr.message}`);
           } else {
             persistedToSupabase = true;
+            console.log('[API /api/hr/sync-workstation] Supabase tenant feature_flags schedule persisted for:', empCode);
           }
+        } else {
+          console.warn('[API /api/hr/sync-workstation] Tenant record not found for ID:', tenantId);
         }
       } catch (tenantEx: any) {
-        console.warn('[API /api/hr/sync-workstation] Tenant feature_flags exception:', tenantEx);
+        console.error('[API /api/hr/sync-workstation] Tenant feature_flags exception:', tenantEx);
+        throw tenantEx;
       }
     } catch (supaEx: any) {
       supabaseNotice = supaEx?.message || 'Supabase unreachable';
-      console.warn('[API /api/hr/sync-workstation] Supabase general exception:', supaEx);
+      console.error('[API /api/hr/sync-workstation] Supabase general exception:', supaEx);
+      throw supaEx;
     }
 
     const returnedEmployee = {

@@ -695,12 +695,28 @@ export class HRPersonnelService {
   public static async saveEmployee(emp: HREmployeeRecord): Promise<HREmployeeRecord[]> {
     const list = this.getEmployees();
     const idx = list.findIndex((e) => e.id === emp.id);
+
+    const isActive = (emp as any).isActive ?? emp.active ?? true;
+    const { active: _omitActive, ...empWithoutActive } = emp as any;
+    const scheduleConfig = emp.schedule_config || emp.schedule;
+    const scheduleTemplate = scheduleConfig?.templateName || (emp as any).schedule_template || 'Backoffice Administration (08:00 - 16:30)';
+
+    const sanitizedEmp: HREmployeeRecord = {
+      ...emp,
+      active: isActive,
+      isActive: isActive,
+      is_active: isActive,
+      schedule_template: scheduleTemplate,
+      schedule: scheduleConfig,
+      schedule_config: scheduleConfig,
+    };
+
     let nextList: HREmployeeRecord[];
     if (idx >= 0) {
       nextList = [...list];
-      nextList[idx] = emp;
+      nextList[idx] = sanitizedEmp;
     } else {
-      nextList = [emp, ...list];
+      nextList = [sanitizedEmp, ...list];
     }
 
     if (typeof window !== 'undefined') {
@@ -710,11 +726,8 @@ export class HRPersonnelService {
       } catch (err) {
         console.warn('[HRPersonnelService] Failed saving to localStorage:', err);
       }
-      // 2. Route persistence EXCLUSIVELY through /api/hr/sync-workstation (uses SUPABASE_SERVICE_ROLE_KEY to bypass RLS)
-      const isActive = (emp as any).isActive ?? emp.active ?? true;
-      const { active: _omitActive, ...empWithoutActive } = emp as any;
-      const scheduleConfig = emp.schedule_config || emp.schedule;
-      const scheduleTemplate = scheduleConfig?.templateName || (emp as any).schedule_template || 'Backoffice Administration (08:00 - 16:30)';
+
+      // Route persistence EXCLUSIVELY through /api/hr/sync-workstation (uses SUPABASE_SERVICE_ROLE_KEY to bypass RLS)
       const employeePayload = {
         ...empWithoutActive,
         is_active: isActive,
@@ -723,40 +736,51 @@ export class HRPersonnelService {
         schedule_config: scheduleConfig,
       };
 
+      console.log('[HRPersonnelService] Dispatching employee persistence payload to /api/hr/sync-workstation:', {
+        employeeId: sanitizedEmp.id,
+        schedule_template: scheduleTemplate,
+        scheduleConfigSummary: {
+          templateName: scheduleConfig?.templateName,
+          workDays: scheduleConfig?.workDays,
+          offDays: scheduleConfig?.offDays,
+          overridesCount: Object.keys(scheduleConfig?.dateOverrides || {}).length,
+        },
+      });
+
       try {
         const res = await fetch('/api/hr/sync-workstation', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            employeeId: emp.id,
-            employeeName: emp.fullName || `${emp.firstName || ''} ${emp.lastName || ''}`.trim(),
-            branch: emp.branch || 'Southern Olive and Oil Products - Main',
-            workstationAuthority: emp.posCredentials ? {
-              accessBackOffice: emp.posCredentials.accessBackOffice,
-              backOfficeRole: emp.posCredentials.backOfficeRole,
-              salesman: emp.posCredentials.salesman,
-              driver: emp.posCredentials.driver,
-              training: emp.posCredentials.training,
-              active: emp.posCredentials.active,
+            employeeId: sanitizedEmp.id,
+            employeeName: sanitizedEmp.fullName || `${sanitizedEmp.firstName || ''} ${sanitizedEmp.lastName || ''}`.trim(),
+            branch: sanitizedEmp.branch || 'Southern Olive and Oil Products - Main',
+            workstationAuthority: sanitizedEmp.posCredentials ? {
+              accessBackOffice: sanitizedEmp.posCredentials.accessBackOffice,
+              backOfficeRole: sanitizedEmp.posCredentials.backOfficeRole,
+              salesman: sanitizedEmp.posCredentials.salesman,
+              driver: sanitizedEmp.posCredentials.driver,
+              training: sanitizedEmp.posCredentials.training,
+              active: sanitizedEmp.posCredentials.active,
             } : undefined,
-            drawerKickSettings: emp.posCredentials ? {
-              openCashDrawer: emp.posCredentials.openCashDrawer,
-              cashDrawerPort: emp.posCredentials.cashDrawerPort,
+            drawerKickSettings: sanitizedEmp.posCredentials ? {
+              openCashDrawer: sanitizedEmp.posCredentials.openCashDrawer,
+              cashDrawerPort: sanitizedEmp.posCredentials.cashDrawerPort,
               pin: 2,
             } : undefined,
-            printerConfig: emp.posCredentials ? {
-              printerType: emp.posCredentials.printerType,
-              configuration: emp.posCredentials.configuration,
+            printerConfig: sanitizedEmp.posCredentials ? {
+              printerType: sanitizedEmp.posCredentials.printerType,
+              configuration: sanitizedEmp.posCredentials.configuration,
               protocol: 'ESC_POS',
             } : undefined,
-            posCredentials: emp.posCredentials,
+            posCredentials: sanitizedEmp.posCredentials,
             employeeRecord: employeePayload,
           }),
         });
 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          console.error('[HRPersonnelService] /api/hr/sync-workstation error:', res.status, errData);
+          console.error('[HRPersonnelService] /api/hr/sync-workstation persistence failure:', res.status, errData);
           throw new Error(errData?.error || `Server sync failed with HTTP ${res.status}`);
         }
 
@@ -786,9 +810,9 @@ export class HRPersonnelService {
 
     if (typeof navigator !== 'undefined' && navigator.onLine) {
       try {
-        // Strategy A: Call /api/hr/sync-workstation which has service role access and combines Supabase + tenant schedules + JSON backup
         let remoteSchedules: Record<string, any> = {};
         let remoteEmployeesMap: Record<string, any> = {};
+        let serverDbEmployees: any[] = [];
 
         try {
           const apiRes = await fetch('/api/hr/sync-workstation');
@@ -796,98 +820,96 @@ export class HRPersonnelService {
             const apiData = await apiRes.json();
             if (apiData.remoteSchedules) remoteSchedules = apiData.remoteSchedules;
             if (apiData.remoteEmployees) remoteEmployeesMap = apiData.remoteEmployees;
+            if (Array.isArray(apiData.employees)) serverDbEmployees = apiData.employees;
           }
         } catch (apiFetchErr) {
           console.warn('[HRPersonnelService] /api/hr/sync-workstation GET fetch notice:', apiFetchErr);
         }
 
-        // Strategy B: Direct Supabase client query for live employee rows
-        const { data, error } = await supabase
-          .from('employees')
-          .select('*')
-          .order('created_at', { ascending: false });
+        // Build unified map of employees from localRecords, remoteEmployeesMap, and serverDbEmployees
+        const mergedMap = new Map<string, HREmployeeRecord>();
 
-        if (!error && Array.isArray(data) && data.length > 0) {
-          const remoteRecords: HREmployeeRecord[] = data.map((row: any) => {
-            const empCode = row.employee_code || row.id;
-            const savedSchedule =
-              remoteSchedules[empCode]?.schedule_config ||
-              remoteEmployeesMap[empCode]?.schedule_config ||
-              remoteEmployeesMap[empCode]?.schedule ||
-              row.schedule_config ||
-              row.schedule ||
-              localRecords.find((l) => l.id === row.id || l.id === empCode)?.schedule;
+        // 1. Seed with local records (preserving local cache foundation)
+        for (const local of localRecords) {
+          mergedMap.set(String(local.id), { ...local });
+        }
 
-            const savedTemplate =
-              remoteSchedules[empCode]?.schedule_template ||
-              remoteEmployeesMap[empCode]?.schedule_template ||
-              savedSchedule?.templateName ||
-              'Backoffice Administration (08:00 - 16:30)';
-
-            const scheduleFinal: EmployeeScheduleConfig = savedSchedule
-              ? {
-                  ...savedSchedule,
-                  templateName: savedTemplate,
-                }
-              : {
-                  templateName: savedTemplate,
-                };
-
-            if (row.record_payload && typeof row.record_payload === 'object') {
-              const payload = row.record_payload as HREmployeeRecord;
-              return {
-                ...payload,
-                schedule: scheduleFinal,
-                schedule_config: scheduleFinal,
-                profilePicture: payload.profilePicture || row.profile_picture || undefined,
-                jobOfferDoc: payload.jobOfferDoc || row.job_offer_doc || undefined,
-              };
-            }
-
-            const richEmployee = remoteEmployeesMap[empCode] || {};
-            const localEmp = localRecords.find((l) => l.id === row.id || l.id === empCode);
-
-            return {
-              id: row.id || empCode,
-              active: row.is_active ?? row.active ?? richEmployee.active ?? true,
-              firstName: row.first_name || richEmployee.firstName || localEmp?.firstName || '',
-              lastName: row.last_name || richEmployee.lastName || localEmp?.lastName || '',
-              fullName: row.full_name || richEmployee.fullName || localEmp?.fullName || `${row.first_name || ''} ${row.last_name || ''}`.trim() || 'Employee',
-              email: row.email || richEmployee.email || localEmp?.email || '',
-              phone: row.phone || richEmployee.phone || localEmp?.phone || '',
-              countryCode: row.country_code || richEmployee.countryCode || localEmp?.countryCode || '+961',
-              dateOfBirth: row.date_of_birth || richEmployee.dateOfBirth || localEmp?.dateOfBirth,
-              gender: row.gender || richEmployee.gender || localEmp?.gender || 'Male',
-              maritalStatus: row.marital_status || richEmployee.maritalStatus || localEmp?.maritalStatus || 'Single',
-              childrenCount: row.children_count ?? richEmployee.childrenCount ?? localEmp?.childrenCount ?? 0,
-              profilePicture: row.profile_picture || richEmployee.profilePicture || localEmp?.profilePicture || undefined,
-              jobOfferDoc: row.job_offer_doc || richEmployee.jobOfferDoc || localEmp?.jobOfferDoc || undefined,
-              department: row.department || richEmployee.department || localEmp?.department || 'Administration',
-              designation: row.designation || richEmployee.designation || localEmp?.designation || 'Staff',
-              location: row.location || richEmployee.location || localEmp?.location || 'Office',
-              country: row.country || richEmployee.country || localEmp?.country || 'Lebanon',
-              city: row.city || richEmployee.city || localEmp?.city || '',
-              address: row.address || richEmployee.address || localEmp?.address,
-              dateHired: row.date_hired || row.hire_date || richEmployee.dateHired || localEmp?.dateHired,
-              dateLeft: row.date_left || richEmployee.dateLeft || localEmp?.dateLeft,
-              attendanceMacId: row.attendance_mac_id || richEmployee.attendanceMacId || localEmp?.attendanceMacId,
-              posEmployeeId: row.pos_employee_id || richEmployee.posEmployeeId || localEmp?.posEmployeeId || row.employee_code,
-              brand: row.brand || richEmployee.brand || localEmp?.brand || 'Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)',
-              branch: row.branch || richEmployee.branch || localEmp?.branch || 'Southern Olive and Oil Products - Main',
-              useBranch: true,
-              isBackoffice: row.is_backoffice ?? richEmployee.isBackoffice ?? localEmp?.isBackoffice ?? true,
-              posCredentials: row.pos_credentials || richEmployee.posCredentials || localEmp?.posCredentials,
-              schedule: scheduleFinal,
-              schedule_config: scheduleFinal,
-              socialMediaRep: row.social_media_rep || richEmployee.socialMediaRep || localEmp?.socialMediaRep,
-              createdAt: row.created_at || richEmployee.createdAt || localEmp?.createdAt || new Date().toISOString().split('T')[0],
-            };
+        // 2. Overlay with remoteEmployeesMap from Supabase PostgreSQL (tenants.feature_flags)
+        for (const [key, remoteEmp] of Object.entries(remoteEmployeesMap)) {
+          const empId = String(remoteEmp.id || key);
+          const existing = mergedMap.get(empId) || ({} as HREmployeeRecord);
+          mergedMap.set(empId, {
+            ...existing,
+            ...remoteEmp,
+            id: empId,
           });
+        }
 
-          if (remoteRecords.length > 0) {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(remoteRecords));
-            return remoteRecords;
-          }
+        // 3. Overlay with serverDbEmployees rows from Supabase employees table
+        for (const row of serverDbEmployees) {
+          const empId = String(row.employee_code || row.id);
+          const existing = mergedMap.get(empId) || mergedMap.get(String(row.id)) || ({} as HREmployeeRecord);
+          mergedMap.set(empId, {
+            ...existing,
+            id: existing.id || empId,
+            fullName: row.full_name || existing.fullName || 'Employee',
+            phone: row.phone || existing.phone || '',
+            nationalId: row.national_id || existing.nationalId,
+            active: row.is_active ?? existing.active ?? true,
+            isActive: row.is_active ?? existing.isActive ?? true,
+            is_active: row.is_active ?? existing.is_active ?? true,
+            dateHired: row.hire_date || existing.dateHired,
+          });
+        }
+
+        // 4. Hydrate every employee with live remote schedule and template from Supabase
+        const finalHydratedRecords: HREmployeeRecord[] = Array.from(mergedMap.values()).map((emp) => {
+          const empId = String(emp.id);
+          const empCode = String(emp.posEmployeeId || emp.id);
+
+          const remoteSched =
+            remoteSchedules[empId] ||
+            remoteSchedules[empCode] ||
+            (emp.schedule_config ? { schedule_config: emp.schedule_config, schedule_template: emp.schedule_template } : null);
+
+          const templateName =
+            remoteSched?.schedule_template ||
+            remoteSched?.schedule_config?.templateName ||
+            emp.schedule_template ||
+            emp.schedule?.templateName ||
+            'Backoffice Administration (08:00 - 16:30)';
+
+          const scheduleConfig: EmployeeScheduleConfig = remoteSched?.schedule_config
+            ? {
+                ...remoteSched.schedule_config,
+                templateName,
+              }
+            : emp.schedule
+            ? {
+                ...emp.schedule,
+                templateName,
+              }
+            : {
+                templateName,
+                workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                offDays: ['Sun'],
+                applyToAllMonths: false,
+                dateOverrides: {},
+                daysOff: [],
+              };
+
+          return {
+            ...emp,
+            schedule_template: templateName,
+            schedule: scheduleConfig,
+            schedule_config: scheduleConfig,
+          };
+        });
+
+        if (finalHydratedRecords.length > 0) {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(finalHydratedRecords));
+          window.dispatchEvent(new CustomEvent('vanguard_hr_employees_updated', { detail: finalHydratedRecords }));
+          return finalHydratedRecords;
         }
       } catch (err) {
         console.warn('[HRPersonnelService] fetchEmployees from Supabase notice:', err);

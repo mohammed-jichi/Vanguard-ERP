@@ -370,12 +370,13 @@ export default function EmployeeSchedulesPage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => {
-              setEmployees(HRPersonnelService.getEmployees());
+            onClick={async () => {
+              const list = await HRPersonnelService.fetchEmployees();
+              setEmployees(list);
               setDaysOffList(HRPersonnelService.getDaysOff());
-              showToast('Employee schedules reloaded from master store.');
+              showToast('Employee schedules reloaded from database.');
             }}
-            title="Reload from Store"
+            title="Reload from Database"
             className="p-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1"
           >
             <RefreshCw className="w-4 h-4 text-slate-600" />

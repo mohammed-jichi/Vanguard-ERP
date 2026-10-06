@@ -145,10 +145,11 @@ export default function PersonnelMasterConsole() {
 
       // 5. Template Filter
       if (templateFilter !== 'Show All Templates') {
+        const empTpl = emp.schedule_template || emp.schedule?.templateName || '';
         if (templateFilter === 'Custom schedule') {
-          if (emp.schedule?.templateName) return false;
+          if (empTpl) return false;
         } else {
-          if (emp.schedule?.templateName !== templateFilter) return false;
+          if (empTpl !== templateFilter) return false;
         }
       }
 
@@ -472,7 +473,7 @@ export default function PersonnelMasterConsole() {
 
                     {/* Schedule Template */}
                     <td className="py-3 px-4 text-xs font-medium text-slate-600">
-                      {emp.schedule?.templateName || (
+                      {emp.schedule_template || emp.schedule?.templateName || (
                         <span className="text-slate-400 italic">Custom schedule</span>
                       )}
                     </td>

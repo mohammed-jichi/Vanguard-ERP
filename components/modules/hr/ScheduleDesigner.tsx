@@ -120,6 +120,11 @@ export type ScheduleAction = BaseScheduleAction & (
       shift: string;
     }
   | {
+      type: 'COMMIT_SCHEDULE_PERSIST';
+      employeeId?: string;
+      scheduleConfig?: any;
+    }
+  | {
       type: 'RESET_SCHEDULE';
       templateName?: string;
       allMonths?: boolean;
@@ -259,6 +264,13 @@ export function calculateScheduleMatrixMutation(
     case 'SET_DATE_SHIFT': {
       if (rawAction.dateStr) {
         newMatrix[rawAction.dateStr] = rawAction.shift || 'OFF';
+      }
+      return newMatrix;
+    }
+
+    case 'COMMIT_SCHEDULE_PERSIST': {
+      if (rawAction.scheduleConfig?.dateOverrides) {
+        return { ...newMatrix, ...rawAction.scheduleConfig.dateOverrides };
       }
       return newMatrix;
     }
@@ -762,12 +774,17 @@ export default function ScheduleDesigner({
     // 3. Update React state immediately
     setScheduleDays(updatedActiveMatrix);
 
+    const effectiveTemplateName =
+      action.type === 'APPLY_TEMPLATE'
+        ? action.templateName
+        : (action as any).scheduleConfig?.templateName ||
+          activeEmployee.schedule_template ||
+          activeEmployee.schedule?.templateName ||
+          selectedTemplateName;
+
     const activeScheduleConfig: EmployeeScheduleConfig = {
       ...(activeEmployee.schedule || {}),
-      templateName:
-        action.type === 'APPLY_TEMPLATE'
-          ? action.templateName
-          : activeEmployee.schedule?.templateName || selectedTemplateName,
+      templateName: effectiveTemplateName,
       applyToAllMonths: Boolean((action as any).allMonths ?? applyToAllMonths),
       dateOverrides: updatedActiveMatrix,
       daysOff: daysOffList.filter((d) => d.employeeId === activeEmployee.id),
@@ -794,12 +811,17 @@ export default function ScheduleDesigner({
           templates: STANDARD_SCHEDULE_TEMPLATES,
         });
 
+        const empTplName =
+          action.type === 'APPLY_TEMPLATE'
+            ? action.templateName
+            : (action as any).scheduleConfig?.templateName ||
+              emp.schedule_template ||
+              emp.schedule?.templateName ||
+              selectedTemplateName;
+
         const cfg: EmployeeScheduleConfig = {
           ...(emp.schedule || {}),
-          templateName:
-            action.type === 'APPLY_TEMPLATE'
-              ? action.templateName
-              : emp.schedule?.templateName || selectedTemplateName,
+          templateName: empTplName,
           applyToAllMonths: Boolean((action as any).allMonths ?? applyToAllMonths),
           dateOverrides: empMatrix,
           daysOff: daysOffList.filter((d) => d.employeeId === emp.id),
@@ -807,54 +829,61 @@ export default function ScheduleDesigner({
 
         return {
           ...emp,
+          schedule_template: empTplName,
           schedule: cfg,
           schedule_config: cfg,
         };
       })
     );
 
-    // 5. Asynchronous persistence to Supabase via HRPersonnelService
-    (async () => {
-      try {
-        for (const targetEmp of targetEmployees) {
-          if (!targetEmp.id || targetEmp.id.startsWith('DRAFT-') || targetEmp.id === 'DRAFT_NEW_EMPLOYEE') {
-            continue;
-          }
-
-          const empBase = Object.keys(targetEmp.schedule?.dateOverrides || {}).length > 0
-            ? targetEmp.schedule!.dateOverrides!
-            : (targetEmp.id === activeEmployee.id ? updatedActiveMatrix : buildInitialEmployeeMatrix(targetEmp, yearNum));
-
-          const empMatrix = calculateScheduleMatrixMutation(empBase, action, {
-            year: yearNum,
-            activeMonthIndex,
-            employee: targetEmp,
-            templates: STANDARD_SCHEDULE_TEMPLATES,
-          });
-
-          const cfg: EmployeeScheduleConfig = {
-            ...(targetEmp.schedule || {}),
-            templateName:
-              action.type === 'APPLY_TEMPLATE'
-                ? action.templateName
-                : targetEmp.schedule?.templateName || selectedTemplateName,
-            applyToAllMonths: Boolean((action as any).allMonths ?? applyToAllMonths),
-            dateOverrides: empMatrix,
-            daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
-          };
-
-          const updatedEmp: HREmployeeRecord = {
-            ...targetEmp,
-            schedule: cfg,
-            schedule_config: cfg,
-          };
-
-          await HRPersonnelService.saveEmployee(updatedEmp).catch((e) => console.warn(e));
+    // 5. Strictly Awaited Persistence to Supabase via HRPersonnelService
+    try {
+      for (const targetEmp of targetEmployees) {
+        if (!targetEmp.id || targetEmp.id.startsWith('DRAFT-') || targetEmp.id === 'DRAFT_NEW_EMPLOYEE') {
+          continue;
         }
-      } catch (err) {
-        console.warn('[ScheduleDesigner] dispatchScheduleAction persistence notice:', err);
+
+        const empBase = Object.keys(targetEmp.schedule?.dateOverrides || {}).length > 0
+          ? targetEmp.schedule!.dateOverrides!
+          : (targetEmp.id === activeEmployee.id ? updatedActiveMatrix : buildInitialEmployeeMatrix(targetEmp, yearNum));
+
+        const empMatrix = calculateScheduleMatrixMutation(empBase, action, {
+          year: yearNum,
+          activeMonthIndex,
+          employee: targetEmp,
+          templates: STANDARD_SCHEDULE_TEMPLATES,
+        });
+
+        const empTplName =
+          action.type === 'APPLY_TEMPLATE'
+            ? action.templateName
+            : (action as any).scheduleConfig?.templateName ||
+              targetEmp.schedule_template ||
+              targetEmp.schedule?.templateName ||
+              selectedTemplateName;
+
+        const cfg: EmployeeScheduleConfig = {
+          ...(targetEmp.schedule || {}),
+          templateName: empTplName,
+          applyToAllMonths: Boolean((action as any).allMonths ?? applyToAllMonths),
+          dateOverrides: empMatrix,
+          daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
+        };
+
+        const updatedEmp: HREmployeeRecord = {
+          ...targetEmp,
+          schedule_template: empTplName,
+          schedule: cfg,
+          schedule_config: cfg,
+        };
+
+        await HRPersonnelService.saveEmployee(updatedEmp);
       }
-    })();
+    } catch (err: any) {
+      console.error('[ScheduleDesigner] dispatchScheduleAction persistence error:', err);
+      showToast(`Persistence warning: ${err?.message || 'Failed to save to Supabase'}`);
+      throw err;
+    }
 
     if (onSaveSuccess) onSaveSuccess();
   };
@@ -987,73 +1016,48 @@ export default function ScheduleDesigner({
         STANDARD_SCHEDULE_TEMPLATES.find((t) => t.name === selectedTemplateName) ||
         STANDARD_SCHEDULE_TEMPLATES[0];
 
-      let targetEmployees: HREmployeeRecord[] = [];
-      if (applyToAllCompany) {
-        targetEmployees = [...employees];
-      } else if (applyToAllDept) {
-        targetEmployees = employees.filter((e) => e.department === activeEmployee.department);
-      } else {
-        targetEmployees = [activeEmployee];
-      }
+      let updatedOverrides = { ...(activeEmployee.schedule?.dateOverrides || {}) };
 
-      // Generate complete 12-month schedule matrix
-      for (const targetEmp of targetEmployees) {
-        let updatedOverrides = { ...(targetEmp.schedule?.dateOverrides || {}) };
-
-        if (manageSubView === 'schedule') {
-          const fullYearMatrix = generateFullYearMatrix(template, yearNum);
-          updatedOverrides = {
-            ...updatedOverrides,
-            ...fullYearMatrix,
-          };
-          for (const dateStr of Object.keys(fullYearMatrix)) {
-            if (fullYearMatrix[dateStr] !== 'OFF') {
-              HRPersonnelService.removeDayOffForEmployeeDate(targetEmp.id, dateStr);
-            }
+      if (manageSubView === 'schedule') {
+        const fullYearMatrix = generateFullYearMatrix(template, yearNum);
+        updatedOverrides = {
+          ...updatedOverrides,
+          ...fullYearMatrix,
+        };
+        for (const dateStr of Object.keys(fullYearMatrix)) {
+          if (fullYearMatrix[dateStr] !== 'OFF') {
+            HRPersonnelService.removeDayOffForEmployeeDate(activeEmployee.id, dateStr);
           }
-        } else {
-          // Custom View: Persist live schedule matrix
-          updatedOverrides = {
-            ...updatedOverrides,
-            ...scheduleDays,
-          };
         }
-
-        const scheduleConfig: EmployeeScheduleConfig = {
-          templateName: template.name,
-          workDays: template.workDays,
-          offDays: template.offDays,
-          applyToAllMonths: applyToAllMonths,
-          dateOverrides: updatedOverrides,
-          daysOff: daysOffList.filter((d) => d.employeeId === targetEmp.id),
+      } else {
+        // Custom View: Persist live schedule matrix
+        updatedOverrides = {
+          ...updatedOverrides,
+          ...scheduleDays,
         };
-
-        if (targetEmp.id === activeEmployee.id && onScheduleChange) {
-          onScheduleChange(scheduleConfig, updatedOverrides);
-        }
-
-        const updatedEmp: HREmployeeRecord = {
-          ...targetEmp,
-          schedule: scheduleConfig,
-          schedule_config: scheduleConfig,
-        };
-
-        if (targetEmp.id && !targetEmp.id.startsWith('DRAFT-') && targetEmp.id !== 'DRAFT_NEW_EMPLOYEE') {
-          await HRPersonnelService.saveEmployee(updatedEmp);
-        }
       }
+
+      const scheduleConfig: EmployeeScheduleConfig = {
+        templateName: template.name,
+        workDays: template.workDays,
+        offDays: template.offDays,
+        applyToAllMonths: applyToAllMonths,
+        dateOverrides: updatedOverrides,
+        daysOff: daysOffList.filter((d) => d.employeeId === activeEmployee.id),
+      };
+
+      await dispatchScheduleAction({
+        type: 'COMMIT_SCHEDULE_PERSIST',
+        employeeId: activeEmployee.id,
+        scheduleConfig,
+        scope: applyToAllCompany ? 'company' : applyToAllDept ? 'department' : 'employee',
+      });
 
       setDaysOffList(HRPersonnelService.getDaysOff());
       const freshEmployees = HRPersonnelService.getEmployees();
       setEmployees(freshEmployees);
 
-      showToast(
-        `Schedule saved and synced successfully for ${
-          targetEmployees.length > 1
-            ? `${targetEmployees.length} staff members`
-            : activeEmployee.fullName
-        }.`
-      );
+      showToast(`Schedule saved and synchronized successfully to database.`);
       if (onSaveSuccess) onSaveSuccess();
     } catch (err: any) {
       console.error('[ScheduleDesigner] Save error:', err);
@@ -1805,8 +1809,8 @@ export default function ScheduleDesigner({
                     icon: <Calendar className="w-3.5 h-3.5" />,
                     className:
                       'px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border border-slate-200',
-                    onClick: () => {
-                      dispatchScheduleAction({
+                    onClick: async () => {
+                      await dispatchScheduleAction({
                         type: 'APPLY_DAYS_OVERRIDE',
                         days: ['Sun'],
                         shift: '08:00 - 16:30',
@@ -1814,7 +1818,7 @@ export default function ScheduleDesigner({
                         allMonths: applyToAllMonths,
                         scope: applyToAllCompany ? 'company' : applyToAllDept ? 'department' : 'employee',
                       });
-                      showToast('Standard 6-day schedule (Sunday OFF) applied.');
+                      showToast('Standard 6-day schedule (Sunday OFF) applied and persisted.');
                     },
                   },
                   {
@@ -1823,8 +1827,8 @@ export default function ScheduleDesigner({
                     icon: <Calendar className="w-3.5 h-3.5" />,
                     className:
                       'px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border border-slate-200',
-                    onClick: () => {
-                      dispatchScheduleAction({
+                    onClick: async () => {
+                      await dispatchScheduleAction({
                         type: 'APPLY_DAYS_OVERRIDE',
                         days: ['Sat', 'Sun'],
                         shift: '08:00 - 16:30',
@@ -1832,7 +1836,7 @@ export default function ScheduleDesigner({
                         allMonths: applyToAllMonths,
                         scope: applyToAllCompany ? 'company' : applyToAllDept ? 'department' : 'employee',
                       });
-                      showToast('Weekend OFF (Sat + Sun) applied.');
+                      showToast('Weekend OFF (Sat + Sun) applied and persisted.');
                     },
                   },
                   {
@@ -1841,8 +1845,8 @@ export default function ScheduleDesigner({
                     icon: <RefreshCw className="w-3.5 h-3.5" />,
                     className:
                       'px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border border-rose-200',
-                    onClick: () => {
-                      dispatchScheduleAction({
+                    onClick: async () => {
+                      await dispatchScheduleAction({
                         type: 'RESET_SCHEDULE',
                         templateName: selectedTemplateName,
                         allMonths: applyToAllMonths,

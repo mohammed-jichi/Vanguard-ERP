@@ -149,6 +149,13 @@ function calculateScheduleMatrixMutation(baseMatrix, action, options) {
       return newMatrix;
     }
 
+    case 'COMMIT_SCHEDULE_PERSIST': {
+      if (rawAction.scheduleConfig?.dateOverrides) {
+        return { ...newMatrix, ...rawAction.scheduleConfig.dateOverrides };
+      }
+      return newMatrix;
+    }
+
     case 'RESET_SCHEDULE':
     case 'CLEAR_OVERRIDES': {
       const template = templates[0];
@@ -228,14 +235,34 @@ async function runRuntimeVerification() {
     throw new Error(`Expected 2026-05-01 to be OFF`);
   }
 
+  // Action 3: COMMIT_SCHEDULE_PERSIST to verify extensible commit action
+  const action3 = {
+    type: 'COMMIT_SCHEDULE_PERSIST',
+    employeeId: testEmp.employee_code,
+    scheduleConfig: {
+      templateName: 'Standard Factory Shift (07:00 - 15:30)',
+      dateOverrides: {
+        '2026-05-01': 'OFF',
+        '2026-11-22': 'OFF',
+      },
+    },
+  };
+  const mutatedMatrix3 = calculateScheduleMatrixMutation(mutatedMatrix2, action3, {
+    year: 2026,
+    activeMonthIndex: 4,
+    employee: testEmp,
+    templates: STANDARD_SCHEDULE_TEMPLATES,
+  });
+  console.log(`  ✔ Dispatched COMMIT_SCHEDULE_PERSIST: Overrides intact for 2026-05-01: ${mutatedMatrix3['2026-05-01']}`);
+
   // -------------------------------------------------------------------------
   // PHASE 2: End-to-End Supabase Write-Path Persistence
   // -------------------------------------------------------------------------
   console.log('\n▶ [PHASE 2] Executing Write-Path Persistence to Supabase...');
 
   const targetScheduleConfig = {
-    templateName: 'Backoffice Administration (08:00 - 16:30)',
-    timing: '08:00 - 16:30',
+    templateName: 'Standard Factory Shift (07:00 - 15:30)',
+    timing: '07:00 - 15:30',
     workDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
     offDays: ['Sat', 'Sun'],
     applyToAllMonths: true,
@@ -349,8 +376,12 @@ async function runRuntimeVerification() {
   // -------------------------------------------------------------------------
   console.log('\n▶ [PHASE 4] Asserting Identity Between Dispatched Action & Hydrated State...');
 
-  if (hydratedScheduleEntry.schedule_template !== targetScheduleConfig.templateName) {
-    throw new Error('Template name mismatch after hydration');
+  if (hydratedScheduleEntry.schedule_template !== 'Standard Factory Shift (07:00 - 15:30)') {
+    throw new Error(`Template name mismatch in schedule: expected 'Standard Factory Shift (07:00 - 15:30)', got '${hydratedScheduleEntry.schedule_template}'`);
+  }
+
+  if (hydratedEmpEntry.schedule_template !== 'Standard Factory Shift (07:00 - 15:30)') {
+    throw new Error(`Template name mismatch in employee record: expected 'Standard Factory Shift (07:00 - 15:30)', got '${hydratedEmpEntry.schedule_template}'`);
   }
 
   if (JSON.stringify(hydratedScheduleEntry.schedule_config.offDays) !== JSON.stringify(['Sat', 'Sun'])) {
@@ -365,7 +396,7 @@ async function runRuntimeVerification() {
     throw new Error('Date override for 2026-11-22 was lost after hydration');
   }
 
-  console.log('  ✔ Persisted schedule configuration EXACTLY matches dispatched changes.');
+  console.log('  ✔ Persisted schedule configuration & template name EXACTLY match dispatched changes.');
   console.log('  ✔ Data survives hard page reload with 100% fidelity.');
 
   // -------------------------------------------------------------------------
