@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import '@/components/reports/PrintStyles.css';
 import { DeepLinkFallbackProvider } from '@/components/DeepLinkFallbackProvider';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import { PermissionProvider } from '@/lib/PermissionContext';
