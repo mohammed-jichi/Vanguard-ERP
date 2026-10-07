@@ -33,7 +33,9 @@ import {
   Trash2,
   FileText,
   RefreshCw,
+  Printer
 } from 'lucide-react';
+import { printFormattedReport } from '@/components/reports/ReportLayoutShell';
 
 const MONTH_NAMES = [
   'January',
@@ -1229,6 +1231,14 @@ export default function ScheduleDesigner({
 
   return (
     <div className="space-y-4">
+      <style>{`
+        @media print {
+          .schedule-matrix-card {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+          }
+        }
+      `}</style>
       {/* Toast Feedback */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-90 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 animate-slideUp">
@@ -1239,15 +1249,15 @@ export default function ScheduleDesigner({
 
       {/* Top Filter & Dropdown Bar */}
       {showTopBar && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3 flex-1">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 flex-1">
             {/* Department Selector */}
-            <div className="min-w-[190px] flex-1 sm:flex-initial">
+            <div className="min-w-[170px] flex-1 sm:flex-initial">
               <select
                 value={deptFilter}
                 onChange={(e) => setDeptFilter(e.target.value)}
                 title={deptFilter === 'ALL' ? 'All Departments' : deptFilter}
-                className="w-full min-w-[190px] px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 cursor-pointer"
+                className="w-full min-w-[170px] h-8 px-2.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg outline-hidden focus:border-slate-400 cursor-pointer"
               >
                 <option value="ALL">All Departments</option>
                 <option value="Production">Production</option>
@@ -1261,7 +1271,7 @@ export default function ScheduleDesigner({
             </div>
 
             {/* Employee Selector */}
-            <div className="min-w-[280px] flex-1 sm:flex-initial">
+            <div className="min-w-[240px] flex-1 sm:flex-initial">
               <select
                 value={selectedEmpId}
                 onChange={(e) => {
@@ -1269,7 +1279,7 @@ export default function ScheduleDesigner({
                   if (onEmployeeSelect) onEmployeeSelect(e.target.value);
                 }}
                 title={activeEmployee ? `${activeEmployee.fullName} (${activeEmployee.designation})` : 'Select Employee'}
-                className="w-full min-w-[280px] px-3 py-2 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 shadow-2xs cursor-pointer"
+                className="w-full min-w-[240px] h-8 px-2.5 text-xs font-medium text-slate-900 bg-white border border-slate-200 rounded-lg outline-hidden focus:border-slate-400 cursor-pointer"
               >
                 {employees
                   .filter((e) => deptFilter === 'ALL' || e.department === deptFilter)
@@ -1282,12 +1292,12 @@ export default function ScheduleDesigner({
             </div>
 
             {/* Brand / Company Selector */}
-            <div className="min-w-[280px] flex-1 sm:flex-initial">
+            <div className="min-w-[240px] flex-1 sm:flex-initial">
               <select
                 value={brandFilter}
                 onChange={(e) => setBrandFilter(e.target.value)}
                 title={brandFilter}
-                className="w-full min-w-[280px] px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 cursor-pointer"
+                className="w-full min-w-[240px] h-8 px-2.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg outline-hidden focus:border-slate-400 cursor-pointer"
               >
                 <option value="Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)">
                   Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)
@@ -1296,12 +1306,12 @@ export default function ScheduleDesigner({
             </div>
 
             {/* Branch Selector */}
-            <div className="min-w-[260px] flex-1 sm:flex-initial">
+            <div className="min-w-[220px] flex-1 sm:flex-initial">
               <select
                 value={branchFilter}
                 onChange={(e) => setBranchFilter(e.target.value)}
                 title={branchFilter}
-                className="w-full min-w-[260px] px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 cursor-pointer"
+                className="w-full min-w-[220px] h-8 px-2.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg outline-hidden focus:border-slate-400 cursor-pointer"
               >
                 <option value="Southern Olive and Oil Products - Main">
                   Southern Olive and Oil Products - Main
@@ -1310,12 +1320,12 @@ export default function ScheduleDesigner({
             </div>
 
             {/* Year Selector */}
-            <div className="min-w-[110px] w-auto">
+            <div className="min-w-[90px] w-auto">
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
                 title={`Year ${selectedYear}`}
-                className="w-full min-w-[110px] px-3 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-blue-600 cursor-pointer"
+                className="w-full min-w-[90px] h-8 px-2.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg outline-hidden focus:border-slate-400 cursor-pointer"
               >
                 <option value="2026">2026</option>
                 <option value="2027">2027</option>
@@ -1323,16 +1333,28 @@ export default function ScheduleDesigner({
             </div>
           </div>
 
-          {/* Save Button */}
-          <button
-            type="button"
-            disabled={isSaving}
-            onClick={handleSaveSchedule}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold transition-all shadow-sm cursor-pointer flex items-center gap-2"
-          >
-            <Save className="w-4 h-4" />
-            <span>{isSaving ? 'Saving...' : 'Save'}</span>
-          </button>
+          {/* Action Buttons: Print & Save */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => printFormattedReport({ format: 'A4', orientation: 'landscape' })}
+              className="h-8 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium transition-all shadow-none cursor-pointer flex items-center gap-1.5"
+              title="Print Monthly Schedule (Landscape A4)"
+            >
+              <Printer className="w-3.5 h-3.5 text-slate-500" />
+              <span>Print Schedule</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={isSaving}
+              onClick={handleSaveSchedule}
+              className="h-8 px-4 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-all shadow-none cursor-pointer flex items-center gap-1.5"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{isSaving ? 'Saving...' : 'Save'}</span>
+            </button>
+          </div>
         </div>
       )}
 
@@ -1349,7 +1371,7 @@ export default function ScheduleDesigner({
               className={`flex-1 py-1.5 px-3 rounded-xl text-xs transition-all cursor-pointer text-center ${
                 applyToAllMonths
                   ? isCurrentActive
-                    ? 'bg-blue-700 text-white font-black shadow-sm ring-2 ring-blue-300'
+                    ? 'bg-blue-700 text-white font-semibold shadow-sm ring-2 ring-blue-300'
                     : 'bg-blue-600 text-white font-bold opacity-90 hover:opacity-100'
                   : isCurrentActive
                   ? 'bg-blue-600 text-white shadow-sm font-semibold'
@@ -1405,7 +1427,7 @@ export default function ScheduleDesigner({
           {manageSubView === 'schedule' && (
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                   Shift Schedule Template
                 </h3>
                 <span className="text-xs font-bold text-blue-600">
@@ -1552,7 +1574,7 @@ export default function ScheduleDesigner({
           {manageSubView === 'custom' && (
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-2xs space-y-5">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                   Schedule Designer
                 </h3>
                 <span className="text-xs font-bold text-blue-600">
@@ -1930,7 +1952,7 @@ export default function ScheduleDesigner({
           {/* Daily Breakdown (Month) */}
           <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+              <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                 {applyToAllMonths
                   ? `DAILY BREAKDOWN (Full Year ${selectedYear} - All Months)`
                   : `DAILY BREAKDOWN (${MONTH_SHORT[activeMonthIndex]})`}
@@ -2000,7 +2022,7 @@ export default function ScheduleDesigner({
                           type="button"
                           onClick={() => activeEmployee && handleToggleDayOnOff(activeEmployee, d)}
                           title="Click to quickly turn ON (reverts to standard working shift)"
-                          className="px-2.5 py-0.5 rounded-md bg-rose-50 hover:bg-emerald-50 text-rose-600 hover:text-emerald-700 border border-rose-200 hover:border-emerald-300 font-black text-[11px] cursor-pointer transition-all flex items-center gap-1 group shadow-2xs"
+                          className="px-2.5 py-0.5 rounded-md bg-rose-50 hover:bg-emerald-50 text-rose-600 hover:text-emerald-700 border border-rose-200 hover:border-emerald-300 font-semibold text-[11px] cursor-pointer transition-all flex items-center gap-1 group shadow-2xs"
                         >
                           <span className="group-hover:hidden">OFF</span>
                           <span className="hidden group-hover:inline text-[10px]">Revert ON</span>
@@ -2048,7 +2070,7 @@ export default function ScheduleDesigner({
           {/* Yearly Overview Matrix */}
           <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+              <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                 Yearly Overview ({selectedYear})
               </h4>
               <span className="text-[11px] font-bold text-rose-600">

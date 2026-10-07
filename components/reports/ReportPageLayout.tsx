@@ -301,22 +301,22 @@ export function ReportHeader({
           )}
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
-          <h1 className="text-2xl font-normal text-slate-800 tracking-tight">
+          <h1 className="text-lg font-semibold text-slate-800 tracking-tight">
             {t(title, title)}
           </h1>
           {reportCode && (
-            <span className="px-2 py-0.5 text-xs font-mono font-bold tracking-wide rounded-md border bg-slate-100 text-slate-700 border-slate-300">
+            <span className="px-2 py-0.5 text-xs font-mono font-medium tracking-wide rounded-md border bg-slate-100 text-slate-700 border-slate-300">
               {reportCode}
             </span>
           )}
           {badgeText && (
-            <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+            <span className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200">
               {t(badgeText, badgeText)}
             </span>
           )}
         </div>
         {subtitle && (
-          <p className="mt-0.5 text-xs text-slate-500 font-medium">
+          <p className="mt-0.5 text-xs font-normal text-slate-400">
             {t(subtitle, subtitle)}
           </p>
         )}
@@ -416,14 +416,14 @@ export function ExportButtons({
       <button
         type="button"
         title={t('zoom_in', 'Zoom In')}
-        className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer transition-colors shadow-2xs"
+        className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition cursor-pointer"
       >
         <ZoomIn className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         title={t('zoom_out', 'Zoom Out')}
-        className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer transition-colors shadow-2xs"
+        className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition cursor-pointer"
       >
         <ZoomOut className="w-3.5 h-3.5" />
       </button>
@@ -435,7 +435,7 @@ export function ExportButtons({
           const next = orientation === 'landscape' ? 'portrait' : 'landscape';
           onOrientationChange?.(next);
         }}
-        className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs rounded-lg font-semibold border border-slate-200 transition-colors cursor-pointer shadow-2xs"
+        className="h-8 px-3 text-xs font-medium rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 transition inline-flex items-center gap-1.5 cursor-pointer"
         title={t('toggle_orientation', `Orientation: ${orientation === 'landscape' ? 'Landscape' : 'Portrait'}`)}
       >
         <RotateCcw className="w-3.5 h-3.5" />
@@ -446,11 +446,11 @@ export function ExportButtons({
       <button
         type="button"
         onClick={handlePrint}
-        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs rounded-lg font-semibold shadow-2xs transition-colors cursor-pointer"
+        className="h-8 px-3 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-white shadow-none transition inline-flex items-center gap-1.5 cursor-pointer"
         title={t('print_report', 'Print Report')}
       >
-        <Printer className="w-3.5 h-3.5" />
-        <span>{t('print_report', 'Print Report')}</span>
+        <Printer className="w-3.5 h-3.5 text-slate-200" />
+        <span>{t('print_report', 'Print')}</span>
       </button>
 
       {/* Export Report Button */}
@@ -458,11 +458,11 @@ export function ExportButtons({
         type="button"
         onClick={handleExport}
         disabled={isLoadingPdf || isLoadingExcel}
-        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs rounded-lg font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+        className="h-8 px-3 text-xs font-medium rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 transition inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
         title={t('export_report', 'Export Report')}
       >
-        <FileDown className="w-3.5 h-3.5" />
-        <span>{t('export_report', 'Export Report')}</span>
+        <FileDown className="w-3.5 h-3.5 text-slate-500" />
+        <span>{t('export_report', 'Export')}</span>
       </button>
 
       {customActions}
@@ -660,7 +660,7 @@ export function ReportFilters({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs px-3.5 py-2 rounded-lg font-semibold shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+            className="flex-1 lg:flex-initial w-full h-8 px-3 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-white shadow-none transition inline-flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
           >
             <Filter className="w-3.5 h-3.5 shrink-0" />
             <span>{t('filter_report', 'Filter Report')}</span>
@@ -670,7 +670,7 @@ export function ReportFilters({
           <button
             type="button"
             onClick={onResetFilters}
-            className="flex-1 lg:flex-initial w-full inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs px-3.5 py-2 rounded-lg font-semibold shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+            className="flex-1 lg:flex-initial w-full h-8 px-3 text-xs font-medium rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 transition inline-flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
           >
             <RotateCcw className="w-3.5 h-3.5 shrink-0" />
             <span>{t('reset_filters', 'Reset Filters')}</span>

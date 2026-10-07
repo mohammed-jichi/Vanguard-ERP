@@ -122,12 +122,12 @@ export function MasterReportDocument<T = any>({
       <div className="report-table-container w-full overflow-x-auto print:overflow-visible">
         <table className="w-full text-[11px] sm:text-xs border-collapse">
           <thead>
-            <tr className="border-y-2 border-slate-900 bg-slate-50/70">
+            <tr className="border-b border-slate-200 bg-slate-50/75">
               {columns.map((col, idx) => (
                 <th
                   key={String(col.key) || idx}
                   style={col.width ? { width: col.width } : undefined}
-                  className={`py-2 px-1.5 sm:px-2 font-bold text-slate-900 tracking-tight ${col.isMonospace || col.align === 'right' ? 'nowrap-cell' : 'print:whitespace-normal'} ${getAlignClass(col.align)}`}
+                  className={`py-2.5 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider ${col.isMonospace || col.align === 'right' ? 'nowrap-cell' : 'print:whitespace-normal'} ${getAlignClass(col.align)}`}
                 >
                   {t(col.label, col.label)}
                 </th>
@@ -221,37 +221,37 @@ export function MasterReportDocument<T = any>({
           {/* 4. Grand Total Row */}
           {grandTotal && (
             <tfoot>
-              <tr className="border-t-2 border-slate-400 border-b-4 border-double border-b-slate-900 font-bold bg-slate-50/80">
-                <td colSpan={columns.length - 1} className="py-2.5 px-1.5 sm:px-2 text-slate-900 text-xs sm:text-sm align-top">
+              <tr className="border-t border-slate-200 bg-slate-50 font-semibold text-slate-900">
+                <td colSpan={columns.length - 1} className="py-3 px-3 text-slate-900 text-xs align-top">
                   <div className="flex flex-col gap-1">
-                    <span className="font-bold text-slate-900 tracking-tight">
+                    <span className="font-semibold text-slate-900 tracking-tight">
                       {t(grandTotal.label, grandTotal.label)}
                     </span>
                     {grandTotal.breakdownText && (
-                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono font-medium text-slate-700">
-                        <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-500 bg-slate-200/80 px-1.5 py-0.5 rounded">
+                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-mono font-medium text-slate-600">
+                        <span className="text-[10px] font-sans font-medium uppercase tracking-wider text-slate-500 bg-slate-200/80 px-1.5 py-0.5 rounded">
                           {t('Breakdown', 'Breakdown')}
                         </span>
                         <span>{grandTotal.breakdownText}</span>
                       </div>
                     )}
                     {grandTotal.convertedSubtext && (
-                      <span className="text-[10.5px] text-slate-500 font-normal italic">
+                      <span className="text-[10.5px] text-slate-400 font-normal italic">
                         {grandTotal.convertedSubtext}
                       </span>
                     )}
                   </div>
                 </td>
                 <td
-                  className={`py-2.5 px-1.5 sm:px-2 text-right font-mono tabular-nums text-xs sm:text-sm align-top numeric-cell nowrap-cell ${
+                  className={`py-3 px-3 text-right font-mono tabular-nums text-xs align-top numeric-cell nowrap-cell ${
                     grandTotal.isNegative
-                      ? 'text-destructive font-bold'
-                      : 'text-foreground font-extrabold'
+                      ? 'text-rose-600 font-semibold'
+                      : 'text-slate-900 font-semibold'
                   }`}
                 >
-                  <div className="text-xs sm:text-sm font-bold">{grandTotal.value}</div>
+                  <div className="text-xs font-semibold">{grandTotal.value}</div>
                   {grandTotal.targetCurrency && (
-                    <div className="text-[10px] font-sans font-semibold uppercase tracking-wider text-slate-500 mt-0.5">
+                    <div className="text-[10px] font-sans font-medium uppercase tracking-wider text-slate-400 mt-0.5">
                       {t('Consolidated', 'Consolidated')} ({grandTotal.targetCurrency})
                     </div>
                   )}

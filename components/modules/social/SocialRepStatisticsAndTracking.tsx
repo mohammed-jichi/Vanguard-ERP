@@ -17,8 +17,10 @@ import {
   Users,
   Phone,
   Navigation,
-  X
+  X,
+  Printer
 } from 'lucide-react';
+import { printFormattedReport } from '@/components/reports/ReportLayoutShell';
 import {
   getDefaultInitialDateRange,
   resolveDateRangeFromPreset,
@@ -144,28 +146,28 @@ export default function SocialRepStatisticsAndTracking() {
           </p>
         </div>
 
-        {/* Tab & Role Toggles */}
+        {/* Tab & Role Toggles & Print Action */}
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setIsManagementView(!isManagementView)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+            className={`h-8 px-3 rounded-lg text-xs font-medium border transition-all cursor-pointer inline-flex items-center ${
               isManagementView
-                ? 'bg-primary text-primary-foreground border-primary shadow-xs'
-                : 'bg-card text-foreground border-border hover:bg-muted'
+                ? 'bg-slate-900 text-white border-slate-900 shadow-none'
+                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
             }`}
           >
             {isManagementView ? 'Management View (All Reps)' : 'Personal View (My Account)'}
           </button>
 
-          <div className="flex items-center bg-muted p-1 rounded-xl border border-border gap-1">
+          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 gap-1">
             <button
               type="button"
               onClick={() => setActiveTab('statistics')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`h-7 px-3 rounded-md text-xs font-medium transition-all cursor-pointer ${
                 activeTab === 'statistics'
-                  ? 'bg-card text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {t('statistics_dashboard', 'Statistics Dashboard')}
@@ -174,15 +176,25 @@ export default function SocialRepStatisticsAndTracking() {
             <button
               type="button"
               onClick={() => setActiveTab('live_tracking')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`h-7 px-3 rounded-md text-xs font-medium transition-all cursor-pointer ${
                 activeTab === 'live_tracking'
-                  ? 'bg-card text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {t('live_fleet_tracking', 'Live Fleet Tracking')}
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => printFormattedReport({ format: 'A4', orientation: 'landscape' })}
+            className="h-8 px-3 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-white shadow-none transition inline-flex items-center gap-1.5 cursor-pointer no-print"
+            title="Print Orders & Performance Report"
+          >
+            <Printer className="w-3.5 h-3.5 text-slate-200" />
+            <span>{t('print', 'Print')}</span>
+          </button>
         </div>
       </div>
 
@@ -214,10 +226,10 @@ export default function SocialRepStatisticsAndTracking() {
                     setToDate(resolved.toDate);
                   }
                 }}
-                className={`px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                className={`h-8 px-3 rounded-lg border transition-all cursor-pointer inline-flex items-center text-xs font-medium ${
                   periodFilter === btn.id
-                    ? 'bg-primary text-primary-foreground border-primary shadow-xs'
-                    : 'bg-muted text-foreground border-border hover:bg-slate-200'
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-none'
+                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                 }`}
               >
                 {btn.label}
@@ -330,44 +342,44 @@ export default function SocialRepStatisticsAndTracking() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse font-sans">
                 <thead>
-                  <tr className="border-b border-border bg-muted/50 text-muted-foreground font-semibold uppercase tracking-wider text-[11px]">
-                    <th className="py-2.5 px-3">{t('order_id', 'Order ID')}</th>
-                    <th className="py-2.5 px-3">{t('customer_contact', 'Customer & Contact')}</th>
-                    <th className="py-2.5 px-3">{t('package_offer_details', 'Package / Offer Details')}</th>
-                    <th className="py-2.5 px-3 text-right">Amount ($)</th>
-                    <th className="py-2.5 px-3 text-right">Commission ($)</th>
-                    <th className="py-2.5 px-3 text-center">{t('status', 'Status')}</th>
-                    <th className="py-2.5 px-3">{t('remarks_reason', 'Remarks / Reason')}</th>
+                  <tr className="border-b border-slate-200 bg-slate-50/75 text-slate-500 font-medium uppercase tracking-wider text-xs">
+                    <th className="py-2.5 px-4">{t('order_id', 'Order ID')}</th>
+                    <th className="py-2.5 px-4">{t('customer_contact', 'Customer & Contact')}</th>
+                    <th className="py-2.5 px-4">{t('package_offer_details', 'Package / Offer Details')}</th>
+                    <th className="py-2.5 px-4 text-right">Amount ($)</th>
+                    <th className="py-2.5 px-4 text-right">Commission ($)</th>
+                    <th className="py-2.5 px-4 text-center">{t('status', 'Status')}</th>
+                    <th className="py-2.5 px-4">{t('remarks_reason', 'Remarks / Reason')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60 font-medium text-xs">
+                <tbody className="divide-y divide-slate-100 font-normal text-xs text-slate-700">
                   {SAMPLE_TRACKING_ORDERS.map((ord) => (
-                    <tr key={ord.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="py-2.5 px-3 font-mono font-bold text-primary">{ord.id}</td>
-                      <td className="py-2.5 px-3 font-medium text-foreground">
-                        <div>{ord.customerName}</div>
-                        <div className="text-[11px] font-mono text-muted-foreground">{ord.customerPhone}</div>
+                    <tr key={ord.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-2.5 px-4 font-mono font-medium text-slate-900">{ord.id}</td>
+                      <td className="py-2.5 px-4 font-normal text-slate-800">
+                        <div className="font-medium text-slate-900">{ord.customerName}</div>
+                        <div className="text-[11px] font-mono text-slate-400">{ord.customerPhone}</div>
                       </td>
-                      <td className="py-2.5 px-3 text-muted-foreground">{ord.offerDetails}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-foreground">${ord.amountUsd.toFixed(2)}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">
+                      <td className="py-2.5 px-4 text-slate-600 font-normal">{ord.offerDetails}</td>
+                      <td className="py-2.5 px-4 text-right font-mono text-slate-800 tabular-nums">${ord.amountUsd.toFixed(2)}</td>
+                      <td className="py-2.5 px-4 text-right font-mono text-emerald-700 tabular-nums">
                         ${ord.repCommission.toFixed(2)}
                       </td>
-                      <td className="py-2.5 px-3 text-center">
+                      <td className="py-2.5 px-4 text-center">
                         {ord.status === 'DELIVERED' && (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10.5px] font-bold">{t('delivered', 'Delivered ✓')}</span>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10.5px] font-medium">{t('delivered', 'Delivered ✓')}</span>
                         )}
                         {ord.status === 'IN_TRANSIT' && (
-                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10.5px] font-bold">{t('in_transit', 'In Transit 🚗')}</span>
+                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10.5px] font-medium">{t('in_transit', 'In Transit 🚗')}</span>
                         )}
                         {ord.status === 'PENDING' && (
-                          <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10.5px] font-bold">{t('pending', 'Pending ⏳')}</span>
+                          <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10.5px] font-medium">{t('pending', 'Pending ⏳')}</span>
                         )}
                         {ord.status === 'CANCELLED' && (
-                          <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold">{t('cancelled', 'Cancelled ✕')}</span>
+                          <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-medium">{t('cancelled', 'Cancelled ✕')}</span>
                         )}
                       </td>
-                      <td className="py-2.5 px-3 text-muted-foreground text-[11px]">
+                      <td className="py-2.5 px-4 text-slate-500 text-[11px] font-normal">
                         {ord.statusReason || 'Successfully Delivered'}
                       </td>
                     </tr>

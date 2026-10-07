@@ -30,6 +30,7 @@ import {
 } from '@/lib/pressingMillData';
 import { DynamicPressingLine, ScaleTicket, LineOperationalStatus } from '@/types/pressingMill';
 import { useLanguage } from '@/lib/LanguageContext';
+import ReportLayoutShell from '@/components/reports/ReportLayoutShell';
 
 export default function PressingBatchesView() {
   const { currentTenant } = useTenant();
@@ -319,36 +320,32 @@ export default function PressingBatchesView() {
         </div>
       )}
 
-      {/* HEADER BAR */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200 rounded-lg p-5 shadow-2xs">
-        <div>
-          <div className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-slate-700" />
-            <h1 className="text-base font-bold text-slate-900">
-              {t('pm_batches', 'Pressing Lines & Extraction Batches')}
-            </h1>
-          </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            {t('pm_batches_sub', 'Real-time batch progress across provisioned continuous lines, malaxing temperature regulation (< 27°C), and separation centrifugation.')}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs">
-          <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold flex items-center gap-1.5 shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+      <ReportLayoutShell
+        title={t('pm_batches', 'Pressing Lines & Extraction Batches')}
+        subtitle={t('pm_batches_sub', 'Real-time batch progress across continuous lines, malaxing temperature regulation (< 27°C), and separation centrifugation.')}
+        badge={
+          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-medium flex items-center gap-1.5 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>{lines.filter((l) => l.status === 'Active').length} {t('active_extraction_lines', 'Active Extraction Lines')}</span>
           </span>
+        }
+        headerActions={
           <Link
             href="/pressing-mill/setup"
-            className="px-3 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded text-slate-700 font-semibold transition"
+            className="h-8 px-3 text-xs font-medium rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 transition inline-flex items-center gap-1.5 cursor-pointer"
           >
             {t('configure_lines', 'Configure Lines')}
           </Link>
-        </div>
-      </div>
-
-      {/* DYNAMIC PRESSING LINES GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        }
+        printConfig={{
+          defaultOrientation: 'landscape',
+          defaultFormat: 'A4',
+          supportedFormats: ['A4', 'A3', 'Letter', 'Legal']
+        }}
+      >
+        <div className="p-4 sm:p-5 space-y-6">
+          {/* DYNAMIC PRESSING LINES GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {lines.map((line) => {
           const isColdPressCertified = line.malaxingTempC <= 27.0;
 
@@ -516,34 +513,34 @@ export default function PressingBatchesView() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10px] tracking-wider">
-                <th className="py-2.5 px-3">{t('queue_num', 'Queue #')}</th>
-                <th className="py-2.5 px-3">{t('ticket_num', 'Ticket Ref')}</th>
-                <th className="py-2.5 px-3">{t('farmer_grower', 'Farmer / Grower')}</th>
-                <th className="py-2.5 px-3">{t('variety', 'Variety')}</th>
-                <th className="py-2.5 px-3 text-right">{t('net_olive_weight', 'Net Olive Weight')}</th>
-                <th className="py-2.5 px-3">{t('target_silo', 'Target Tank')}</th>
-                <th className="py-2.5 px-3">{t('assigned_line', 'Target Line')}</th>
-                <th className="py-2.5 px-3 text-right">{t('action', 'Action')}</th>
+              <tr className="bg-slate-50/75 border-b border-slate-200 text-slate-500 uppercase text-xs font-medium tracking-wider">
+                <th className="py-2.5 px-4">{t('queue_num', 'Queue #')}</th>
+                <th className="py-2.5 px-4">{t('ticket_num', 'Ticket Ref')}</th>
+                <th className="py-2.5 px-4">{t('farmer_grower', 'Farmer / Grower')}</th>
+                <th className="py-2.5 px-4">{t('variety', 'Variety')}</th>
+                <th className="py-2.5 px-4 text-right">{t('net_olive_weight', 'Net Olive Weight')}</th>
+                <th className="py-2.5 px-4">{t('target_silo', 'Target Tank')}</th>
+                <th className="py-2.5 px-4">{t('assigned_line', 'Target Line')}</th>
+                <th className="py-2.5 px-4 text-right">{t('action', 'Action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {lineQueue.length > 0 ? (
                 lineQueue.map((qItem, idx) => (
                   <tr key={qItem.id || `q-${idx}`} className="hover:bg-slate-50/80 transition">
-                    <td className="py-2.5 px-3 font-mono font-bold text-slate-700">Q-0{idx + 1}</td>
-                    <td className="py-2.5 px-3 font-mono font-semibold text-slate-900">{qItem.ticket_number || qItem.ticketNumber}</td>
-                    <td className="py-2.5 px-3 font-semibold text-slate-800">{qItem.farmer_name || qItem.farmerName}</td>
-                    <td className="py-2.5 px-3 text-slate-600">{t(qItem.variety, qItem.variety)}</td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">
+                    <td className="py-2.5 px-4 font-mono font-medium text-slate-700">Q-0{idx + 1}</td>
+                    <td className="py-2.5 px-4 font-mono font-medium text-slate-900">{qItem.ticket_number || qItem.ticketNumber}</td>
+                    <td className="py-2.5 px-4 font-medium text-slate-800">{qItem.farmer_name || qItem.farmerName}</td>
+                    <td className="py-2.5 px-4 text-slate-600 font-normal">{t(qItem.variety, qItem.variety)}</td>
+                    <td className="py-2.5 px-4 text-right font-mono text-slate-800 tabular-nums">
                       {(qItem.net_weight || qItem.netWeight || 0).toLocaleString()} KG
                     </td>
-                    <td className="py-2.5 px-3 font-mono text-slate-700">{qItem.target_tank_id || qItem.targetTankId || 'TK-01'}</td>
-                    <td className="py-2.5 px-3 text-slate-700 font-medium">
+                    <td className="py-2.5 px-4 font-mono text-slate-600">{qItem.target_tank_id || qItem.targetTankId || 'TK-01'}</td>
+                    <td className="py-2.5 px-4 text-slate-700 font-normal">
                       {qItem.line_name || qItem.lineName || 'Line 01 - Pieralisi Leopard'}
                     </td>
-                    <td className="py-2.5 px-3 text-right">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-amber-100 text-amber-800">
+                    <td className="py-2.5 px-4 text-right">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase bg-amber-100 text-amber-800">
                         {t('Pending', 'Pending')}
                       </span>
                     </td>
@@ -554,19 +551,19 @@ export default function PressingBatchesView() {
                   .filter((t) => t.status === 'In_Queue' || t.status === 'Crushing' || t.status === 'Malaxing')
                   .map((tItem, idx) => (
                     <tr key={tItem.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-2.5 px-3 font-mono font-bold text-slate-700">Q-0{idx + 1}</td>
-                      <td className="py-2.5 px-3 font-mono font-semibold text-slate-900">{tItem.ticketNumber}</td>
-                      <td className="py-2.5 px-3 font-semibold text-slate-800">{tItem.farmerName}</td>
-                      <td className="py-2.5 px-3 text-slate-600">{t(tItem.variety, tItem.variety)}</td>
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-800">
+                      <td className="py-2.5 px-4 font-mono font-medium text-slate-700">Q-0{idx + 1}</td>
+                      <td className="py-2.5 px-4 font-mono font-medium text-slate-900">{tItem.ticketNumber}</td>
+                      <td className="py-2.5 px-4 font-medium text-slate-800">{tItem.farmerName}</td>
+                      <td className="py-2.5 px-4 text-slate-600 font-normal">{t(tItem.variety, tItem.variety)}</td>
+                      <td className="py-2.5 px-4 text-right font-mono text-slate-800 tabular-nums">
                         {tItem.netWeight.toLocaleString()} KG
                       </td>
-                      <td className="py-2.5 px-3 font-mono text-slate-700">{tItem.targetTankId}</td>
-                      <td className="py-2.5 px-3 text-slate-700 font-medium">
+                      <td className="py-2.5 px-4 font-mono text-slate-600">{tItem.targetTankId}</td>
+                      <td className="py-2.5 px-4 text-slate-700 font-normal">
                         {tItem.lineName || 'Line 01 - Pieralisi Leopard'}
                       </td>
-                      <td className="py-2.5 px-3 text-right">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-amber-100 text-amber-800">
+                      <td className="py-2.5 px-4 text-right">
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase bg-amber-100 text-amber-800">
                           {t(tItem.status, tItem.status)}
                         </span>
                       </td>
@@ -577,6 +574,8 @@ export default function PressingBatchesView() {
           </table>
         </div>
       </div>
+      </div>
+    </ReportLayoutShell>
     </div>
   );
 }

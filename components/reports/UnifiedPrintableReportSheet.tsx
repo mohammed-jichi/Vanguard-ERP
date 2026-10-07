@@ -167,14 +167,14 @@ export function StandardReportHeader({
   const resolvedDirect = facilityDirect || (isConsolidated ? 'Facility Code: ALL-1300' : 'Facility Code: SO-HQ-MAIN-01');
 
   return (
-    <div className={`w-full pb-3 mb-3 border-b-2 border-slate-900 font-sans text-slate-800 ${className}`}>
+    <div className={`w-full pb-3 mb-3 border-b border-slate-200 font-sans text-slate-800 ${className}`}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
         {/* [LEFT ZONE - Head Office] */}
         <div className="text-left flex flex-col justify-start text-[11px] leading-tight space-y-0.5">
-          <div className="font-bold text-[13.5px] text-slate-950 tracking-tight">
+          <div className="font-semibold text-[13px] text-slate-800 tracking-tight">
             {t(companyName, companyName)}
           </div>
-          <div className="text-slate-600 font-medium">
+          <div className="text-slate-500 font-normal">
             {t(hqAddress, hqAddress)}
           </div>
           <div>
@@ -182,41 +182,41 @@ export function StandardReportHeader({
               href={companyWebsite.startsWith('http') ? companyWebsite : `https://${companyWebsite}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-700 hover:underline font-mono text-[10.5px]"
+              className="text-emerald-700 hover:underline font-mono text-[10.5px]"
             >
               {companyWebsite}
             </a>
           </div>
-          <div className="text-slate-600 font-mono text-[10.5px]">
+          <div className="text-slate-500 font-mono text-[10.5px]">
             {hqPhone}
           </div>
-          <div className="text-slate-500 font-mono text-[10px] pt-0.5">
+          <div className="text-slate-400 font-mono text-[10px] pt-0.5">
             {displayDate}
           </div>
         </div>
 
         {/* [CENTER ZONE - Dynamic Report Title & Period] */}
         <div className="text-center flex flex-col items-center justify-center pt-0.5">
-          <h1 className="font-black text-[16px] sm:text-[18px] text-slate-950 tracking-tight uppercase leading-snug">
+          <h1 className="font-semibold text-[15px] sm:text-[17px] text-slate-800 tracking-tight uppercase leading-snug">
             {t(reportTitle, reportTitle)}
           </h1>
-          <div className="mt-1 text-[11.5px] font-semibold text-slate-700 font-mono">
+          <div className="mt-1 text-[11px] font-medium text-slate-500 font-mono">
             {cleanPeriod}
           </div>
         </div>
 
         {/* [RIGHT ZONE - Active Facility & Pagination] */}
         <div className="text-right flex flex-col justify-start items-end text-[11px] leading-tight space-y-0.5">
-          <div className="font-bold text-[13px] text-slate-900">
+          <div className="font-semibold text-[13px] text-slate-800">
             {t(cleanFacility, cleanFacility)}
           </div>
-          <div className="text-slate-600 font-medium">
+          <div className="text-slate-500 font-normal">
             {t(resolvedAddress, resolvedAddress)}
           </div>
-          <div className="text-slate-600 font-mono text-[10.5px]">
+          <div className="text-slate-500 font-mono text-[10.5px]">
             {resolvedDirect}
           </div>
-          <div className="text-slate-500 font-mono text-[10px] pt-1">
+          <div className="text-slate-400 font-mono text-[10px] pt-1">
             {pageInfo}
           </div>
         </div>
@@ -543,6 +543,8 @@ export default function UnifiedPrintableReportSheet({
 }
 
 export { UnifiedPrintableReportSheet };
+export { default as ReportLayoutShell, printFormattedReport } from './ReportLayoutShell';
+export type { ReportLayoutShellProps, PaperFormat, PaperOrientation, PrintFormatOptions } from './ReportLayoutShell';
 export { default as GlobalReportTemplate } from './GlobalReportTemplate';
 export { MasterReportDocument } from './MasterReportDocument';
 export { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
