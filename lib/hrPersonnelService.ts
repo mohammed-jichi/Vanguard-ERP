@@ -81,6 +81,15 @@ export interface ExtraPlatformChannel {
   url: string;
 }
 
+export type CommercialUnitType = 'fixed_amount' | 'percentage';
+
+export interface CommercialBoundariesConfig {
+  promotionalMarkup: number;
+  generalMarkup: number;
+  currency: string; // Defaults to '$' / 'USD'
+  unitType: CommercialUnitType; // Extensible for future multi-currency or percentage toggles
+}
+
 export interface SocialMediaRepConfig {
   // Detailed Address
   area: string;
@@ -98,9 +107,62 @@ export interface SocialMediaRepConfig {
   tiktokUrl?: string;
   instagramUrl?: string;
   extraChannels?: ExtraPlatformChannel[];
-  // Markups
+  // Markups & Extensible Commercial Boundaries ($ or %)
+  promotionalMarkup?: number;
+  generalMarkup?: number;
+  currency?: string; // Defaults to '$'
+  unitType?: CommercialUnitType; // Defaults to 'fixed_amount' ($)
+  commercialBoundaries?: CommercialBoundariesConfig;
+  // Backward compatibility aliases
   promotionalOffersPercentage?: number;
   generalItemsPercentage?: number;
+}
+
+export function getCommercialMarkupDisplay(
+  rep?: SocialMediaRepConfig,
+  defaultPromo: number = 5,
+  defaultGeneral: number = 10
+): { promoText: string; generalText: string; badgeText: string } {
+  const unit = rep?.unitType || rep?.commercialBoundaries?.unitType || 'fixed_amount';
+  const currency = rep?.currency || rep?.commercialBoundaries?.currency || '$';
+  const promoVal =
+    rep?.promotionalMarkup ??
+    rep?.commercialBoundaries?.promotionalMarkup ??
+    rep?.promotionalOffersPercentage ??
+    defaultPromo;
+  const generalVal =
+    rep?.generalMarkup ??
+    rep?.commercialBoundaries?.generalMarkup ??
+    rep?.generalItemsPercentage ??
+    defaultGeneral;
+
+  if (unit === 'percentage') {
+    return {
+      promoText: `${promoVal}%`,
+      generalText: `${generalVal}%`,
+      badgeText: `+${promoVal}% / +${generalVal}%`,
+    };
+  }
+
+  const promoFormatted = Number(promoVal).toFixed(2);
+  const generalFormatted = Number(generalVal).toFixed(2);
+  return {
+    promoText: `${currency}${promoFormatted}`,
+    generalText: `${currency}${generalFormatted}`,
+    badgeText: `+${currency}${promoFormatted} / +${currency}${generalFormatted}`,
+  };
+}
+
+export function applyCommercialMarkup(
+  basePrice: number,
+  markup: number,
+  unitType: CommercialUnitType = 'fixed_amount'
+): number {
+  if (unitType === 'percentage') {
+    return Number((basePrice * (1 + markup / 100)).toFixed(2));
+  }
+  // Default: fixed dollar increment ($)
+  return Number((basePrice + markup).toFixed(2));
 }
 
 export interface HREmployeeRecord {

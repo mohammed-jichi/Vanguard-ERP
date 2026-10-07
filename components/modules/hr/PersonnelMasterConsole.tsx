@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   HREmployeeRecord,
   HRPersonnelService,
+  getCommercialMarkupDisplay,
 } from '@/lib/hrPersonnelService';
 import { dispatchMasterHRAction } from '@/lib/hrMasterActionDispatcher';
 import NewEmployeeModal, { DEPARTMENTS_MASTER_KEYS, DESIGNATIONS_MASTER_KEYS } from './NewEmployeeModal';
@@ -479,9 +480,12 @@ export default function PersonnelMasterConsole() {
                           <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
                             {emp.socialMediaRep?.repAdminCode ? `REP #${emp.socialMediaRep.repAdminCode}` : t('designations.social_media_rep')}
                           </span>
-                          {(emp.socialMediaRep?.promotionalOffersPercentage !== undefined || emp.socialMediaRep?.generalItemsPercentage !== undefined) && (
+                          {(emp.socialMediaRep?.promotionalMarkup !== undefined ||
+                            emp.socialMediaRep?.generalMarkup !== undefined ||
+                            emp.socialMediaRep?.promotionalOffersPercentage !== undefined ||
+                            emp.socialMediaRep?.generalItemsPercentage !== undefined) && (
                             <span className="text-[10px] text-emerald-700 font-mono font-bold">
-                              {emp.socialMediaRep?.promotionalOffersPercentage ?? 5}% / {emp.socialMediaRep?.generalItemsPercentage ?? 10}%
+                              {getCommercialMarkupDisplay(emp.socialMediaRep).badgeText}
                             </span>
                           )}
                         </div>

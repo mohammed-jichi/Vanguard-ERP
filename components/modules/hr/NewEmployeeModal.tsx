@@ -8,6 +8,9 @@ import {
   SocialMediaRepConfig,
   ExtraPlatformChannel,
   EmployeeScheduleConfig,
+  CommercialBoundariesConfig,
+  CommercialUnitType,
+  getCommercialMarkupDisplay,
 } from '@/lib/hrPersonnelService';
 import ScheduleDesigner from './ScheduleDesigner';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -48,6 +51,7 @@ import {
   Globe,
   Phone,
   Percent,
+  DollarSign,
   Copy,
   RefreshCw,
   ShieldCheck,
@@ -147,6 +151,16 @@ export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
     extraChannels: [],
     promotionalOffersPercentage: 5,
     generalItemsPercentage: 10,
+    promotionalMarkup: 5,
+    generalMarkup: 10,
+    currency: '$',
+    unitType: 'fixed_amount',
+    commercialBoundaries: {
+      promotionalMarkup: 5,
+      generalMarkup: 10,
+      currency: '$',
+      unitType: 'fixed_amount',
+    },
   },
 };
 
@@ -180,21 +194,45 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     }
   }
 
-  const repConfig: SocialMediaRepConfig = data.socialMediaRep ? {
-    area: data.socialMediaRep.area || '',
-    street: data.socialMediaRep.street || '',
-    building: data.socialMediaRep.building || '',
-    floor: data.socialMediaRep.floor || '',
-    personalPhone: data.socialMediaRep.personalPhone || '',
-    businessWhatsapp: data.socialMediaRep.businessWhatsapp || '',
-    repAdminCode: data.socialMediaRep.repAdminCode || '',
-    systemUuid: data.socialMediaRep.systemUuid || '',
-    facebookUrl: data.socialMediaRep.facebookUrl || '',
-    tiktokUrl: data.socialMediaRep.tiktokUrl || '',
-    instagramUrl: data.socialMediaRep.instagramUrl || '',
-    extraChannels: Array.isArray(data.socialMediaRep.extraChannels) ? data.socialMediaRep.extraChannels : [],
-    promotionalOffersPercentage: data.socialMediaRep.promotionalOffersPercentage ?? 5,
-    generalItemsPercentage: data.socialMediaRep.generalItemsPercentage ?? 10,
+  const rep = data.socialMediaRep;
+  const promoMarkup =
+    rep?.promotionalMarkup ??
+    rep?.commercialBoundaries?.promotionalMarkup ??
+    rep?.promotionalOffersPercentage ??
+    5;
+  const genMarkup =
+    rep?.generalMarkup ??
+    rep?.commercialBoundaries?.generalMarkup ??
+    rep?.generalItemsPercentage ??
+    10;
+  const curr = rep?.currency || rep?.commercialBoundaries?.currency || '$';
+  const unit = rep?.unitType || rep?.commercialBoundaries?.unitType || 'fixed_amount';
+
+  const repConfig: SocialMediaRepConfig = rep ? {
+    area: rep.area || '',
+    street: rep.street || '',
+    building: rep.building || '',
+    floor: rep.floor || '',
+    personalPhone: rep.personalPhone || '',
+    businessWhatsapp: rep.businessWhatsapp || '',
+    repAdminCode: rep.repAdminCode || '',
+    systemUuid: rep.systemUuid || '',
+    facebookUrl: rep.facebookUrl || '',
+    tiktokUrl: rep.tiktokUrl || '',
+    instagramUrl: rep.instagramUrl || '',
+    extraChannels: Array.isArray(rep.extraChannels) ? rep.extraChannels : [],
+    promotionalOffersPercentage: promoMarkup,
+    generalItemsPercentage: genMarkup,
+    promotionalMarkup: promoMarkup,
+    generalMarkup: genMarkup,
+    currency: curr,
+    unitType: unit,
+    commercialBoundaries: {
+      promotionalMarkup: promoMarkup,
+      generalMarkup: genMarkup,
+      currency: curr,
+      unitType: unit,
+    },
   } : {
     area: '',
     street: '',
@@ -210,6 +248,16 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     extraChannels: [],
     promotionalOffersPercentage: 5,
     generalItemsPercentage: 10,
+    promotionalMarkup: 5,
+    generalMarkup: 10,
+    currency: '$',
+    unitType: 'fixed_amount',
+    commercialBoundaries: {
+      promotionalMarkup: 5,
+      generalMarkup: 10,
+      currency: '$',
+      unitType: 'fixed_amount',
+    },
   };
 
   return {
@@ -379,13 +427,42 @@ export default function NewEmployeeModal({
   }, [formData.designation]);
 
   const handleUpdateRepField = (field: keyof SocialMediaRepConfig, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      socialMediaRep: {
-        ...(prev.socialMediaRep || DEFAULT_EMPLOYEE_FORM_DATA.socialMediaRep!),
+    setFormData(prev => {
+      const current = prev.socialMediaRep || DEFAULT_EMPLOYEE_FORM_DATA.socialMediaRep!;
+      const updated: SocialMediaRepConfig = {
+        ...current,
         [field]: value,
+      };
+
+      // Keep fixed dollar markup and legacy percentage fields synchronized
+      if (field === 'promotionalMarkup') {
+        updated.promotionalOffersPercentage = value;
+      } else if (field === 'promotionalOffersPercentage') {
+        updated.promotionalMarkup = value;
+      } else if (field === 'generalMarkup') {
+        updated.generalItemsPercentage = value;
+      } else if (field === 'generalItemsPercentage') {
+        updated.generalMarkup = value;
       }
-    }));
+
+      // Ensure commercialBoundaries nested configuration is kept in sync
+      const promo = updated.promotionalMarkup ?? updated.promotionalOffersPercentage ?? 5;
+      const gen = updated.generalMarkup ?? updated.generalItemsPercentage ?? 10;
+      const curr = updated.currency || '$';
+      const unit = updated.unitType || 'fixed_amount';
+
+      updated.commercialBoundaries = {
+        promotionalMarkup: promo,
+        generalMarkup: gen,
+        currency: curr,
+        unitType: unit,
+      };
+
+      return {
+        ...prev,
+        socialMediaRep: updated,
+      };
+    });
   };
 
   const handleAddExtraChannel = () => {
@@ -1519,40 +1596,42 @@ export default function NewEmployeeModal({
                     {/* 5. Commercial Markup Boundaries */}
                     <div className="space-y-2.5 pt-2 border-t border-emerald-200/50">
                       <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-emerald-800">
-                        <Percent className="w-3.5 h-3.5" />
+                        <DollarSign className="w-3.5 h-3.5" />
                         <span>{t('hr_rep.markups_heading')}</span>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.promotional_offers_percentage')}</label>
                           <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-emerald-700 pointer-events-none">
+                              {formData.socialMediaRep?.currency || '$'}
+                            </span>
                             <input
                               type="number"
                               min="0"
-                              max="100"
-                              step="0.1"
-                              value={formData.socialMediaRep?.promotionalOffersPercentage ?? 5}
-                              onChange={(e) => handleUpdateRepField('promotionalOffersPercentage', parseFloat(e.target.value) || 0)}
+                              step="0.01"
+                              value={formData.socialMediaRep?.promotionalMarkup ?? formData.socialMediaRep?.promotionalOffersPercentage ?? 5}
+                              onChange={(e) => handleUpdateRepField('promotionalMarkup', parseFloat(e.target.value) || 0)}
                               placeholder={t('hr_rep.promotional_offers_placeholder')}
-                              className="w-full px-3 py-2 pr-8 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                              className="w-full pl-7 pr-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
                             />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">%</span>
                           </div>
                         </div>
                         <div className="space-y-1">
                           <label className="text-xs font-bold text-slate-700 block">{t('hr_rep.general_items_percentage')}</label>
                           <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-emerald-700 pointer-events-none">
+                              {formData.socialMediaRep?.currency || '$'}
+                            </span>
                             <input
                               type="number"
                               min="0"
-                              max="100"
-                              step="0.1"
-                              value={formData.socialMediaRep?.generalItemsPercentage ?? 10}
-                              onChange={(e) => handleUpdateRepField('generalItemsPercentage', parseFloat(e.target.value) || 0)}
+                              step="0.01"
+                              value={formData.socialMediaRep?.generalMarkup ?? formData.socialMediaRep?.generalItemsPercentage ?? 10}
+                              onChange={(e) => handleUpdateRepField('generalMarkup', parseFloat(e.target.value) || 0)}
                               placeholder={t('hr_rep.general_items_placeholder')}
-                              className="w-full px-3 py-2 pr-8 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
+                              className="w-full pl-7 pr-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-emerald-600 shadow-2xs"
                             />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">%</span>
                           </div>
                         </div>
                       </div>
