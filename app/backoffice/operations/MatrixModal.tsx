@@ -29,6 +29,15 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [focusedNode, setFocusedNode] = useState<string | null>(selectedEntity || 'ITEM-01');
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const filteredLayers = MATRIX_GRAPH.filter(l => 
@@ -36,30 +45,37 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col border border-slate-200 overflow-hidden font-sans">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm animate-in fade-in duration-200"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col border border-slate-200 overflow-hidden font-sans"
+      >
         
         {/* MODAL HEADER */}
-        <div className="px-6 py-4 bg-gradient-to-r bg-primary text-white flex items-center justify-between shrink-0 shadow-md">
+        <div className="px-6 py-4 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
-              <Network className="w-5 h-5 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
+              <Network className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-black tracking-tight">Operations Center Matrix & Relational Connections</h2>
-                <span className="text-[10px] bg-primary text-black font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Operations Center Matrix &amp; Relational Connections</h2>
+                <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
                   Live ERP Graph
                 </span>
               </div>
-              <p className="text-xs text-white/80 mt-0.5">
-                Multi-tier topological links across Taxonomy, Procurement, Press Mill Assembly, Inter-Branch Logistics & POS Sales
+              <p className="text-xs text-slate-500 mt-0.5">
+                Multi-tier topological links across Taxonomy, Procurement, Press Mill Assembly, Inter-Branch Logistics &amp; POS Sales
               </p>
             </div>
           </div>
           <button 
+            type="button"
             onClick={onClose}
-            className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg p-2 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -75,7 +91,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
                 onClick={() => setActiveLayer(ly)}
                 className={`px-3 py-1 rounded-lg font-bold transition-all ${
                   activeLayer === ly 
-                    ? 'bg-primary text-white shadow-xs' 
+                    ? 'bg-emerald-600 text-white shadow-xs' 
                     : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
                 }`}
               >
@@ -195,7 +211,7 @@ export default function MatrixModal({ isOpen, onClose, selectedEntity }: MatrixM
             </div>
             <button
               onClick={onClose}
-              className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-black font-extrabold text-xs rounded-xl shadow-md transition-all shrink-0"
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all shrink-0 cursor-pointer"
             >
               Return to Operations Workspace
             </button>

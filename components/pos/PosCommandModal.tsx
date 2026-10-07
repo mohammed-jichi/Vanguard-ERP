@@ -82,8 +82,14 @@ export default function PosCommandModal({
     'p-4 sm:p-5 rounded-xl border text-left flex flex-col justify-between transition-all select-none cursor-pointer active:translate-y-0.5 shadow-md group relative overflow-hidden';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150 font-sans">
-      <div className="bg-[#141822] border border-slate-700 rounded-2xl w-full max-w-3xl text-slate-100 overflow-hidden shadow-2xl flex flex-col select-none">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150 font-sans"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[#141822] border border-slate-700 rounded-2xl w-full max-w-3xl text-slate-100 overflow-hidden shadow-2xl flex flex-col select-none"
+      >
         {/* Modal Header */}
         <div className="px-5 py-4 bg-[#1b212c] border-b border-slate-700 flex items-center justify-between">
           <div className="flex items-center gap-2.5">

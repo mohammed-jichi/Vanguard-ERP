@@ -5,6 +5,7 @@ import { useTenant, SOUTHERN_OLIVE_OFFICIAL_LICENSE } from '@/lib/TenantContext'
 import { useLanguage } from '@/lib/LanguageContext';
 import LicenseActivationCertificateModal from './LicenseActivationCertificateModal';
 import { uploadBrandAsset, uploadDataUrlToStorage } from '@/lib/supabaseStorage';
+import ModalShell from './ModalShell';
 import {
   Settings,
   Building,
@@ -166,39 +167,20 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
   };
 
   return (
-    <div className={`fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans ${dir === 'rtl' ? 'dir-rtl' : 'dir-ltr'}`}>
-      <div className="bg-white border border-slate-200 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden space-y-0">
-        
-        {/* MODAL HEADER */}
-        <div className="bg-slate-900 text-white p-5 flex items-center justify-between border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-slate-800 border border-slate-700 rounded-xl flex items-center justify-center text-blue-400">
-              <Settings className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-bold text-base text-white flex items-center gap-2">
-                <span>{t('tenant_profile_title', 'Company Identity & Legal Settings')}</span>
-                <span className="bg-blue-600/20 text-blue-300 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-500/30">
-                  {t('tenant_profile', 'Tenant Profile')}
-                </span>
-              </h3>
-              <p className="text-xs text-slate-400 font-medium mt-0.5">
-                {t('tenant_profile_subtitle', 'Edit official name, logo, commercial registration, and tax ID.')}
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-            title={t('close_modal', 'Close modal')}
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* MODAL FORM BODY */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    <>
+      <ModalShell
+        isOpen={isOpen}
+        onClose={onClose}
+        maxWidthClass="max-w-2xl"
+        dir={dir === 'rtl' ? 'rtl' : 'ltr'}
+        icon={<Settings className="w-5 h-5 text-emerald-700" />}
+        title={t('tenant_profile_title', 'Company Identity & Legal Settings')}
+        badge={t('tenant_profile', 'Tenant Profile')}
+        subtitle={t('tenant_profile_subtitle', 'Edit official name, logo, commercial registration, and tax ID.')}
+        contentScrollable={false}
+      >
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
           
           {statusMessage && (
             <div
@@ -415,12 +397,14 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
             </div>
           </div>
 
-          {/* FOOTER ACTIONS */}
-          <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+          </div>
+
+          {/* FOOTER ACTIONS - PINNED */}
+          <div className="flex-shrink-0 px-6 py-4 border-t border-slate-100 bg-slate-50/80 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors"
+              className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors cursor-pointer"
             >
               {t('cancel', 'Cancel')}
             </button>
@@ -428,21 +412,19 @@ export default function TenantSettingsModal({ isOpen, onClose }: TenantSettingsM
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50 cursor-pointer"
             >
               <Save className="w-4 h-4" />
               <span>{isSaving ? t('saving', 'Saving Changes...') : t('save_changes', 'Save Changes')}</span>
             </button>
           </div>
-
         </form>
-
-      </div>
+      </ModalShell>
 
       <LicenseActivationCertificateModal
         isOpen={isCertModalOpen}
         onClose={() => setIsCertModalOpen(false)}
       />
-    </div>
+    </>
   );
 }

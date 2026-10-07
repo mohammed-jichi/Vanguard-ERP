@@ -17,6 +17,7 @@ import {
   EXTENDED_LANGUAGES,
   LanguageMeta
 } from '@/lib/LanguageContext';
+import ModalShell from './ModalShell';
 
 interface LanguageSwitcherModalProps {
   isOpen: boolean;
@@ -57,48 +58,31 @@ export default function LanguageSwitcherModal({ isOpen, onClose }: LanguageSwitc
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity animate-fadeIn"
-        onClick={onClose}
-      />
-
-      {/* Modal Dialog Card */}
-      <div
-        dir={dir}
-        className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden z-10 animate-zoomIn flex flex-col max-h-[85vh] font-sans"
-      >
-        {/* Modal Header */}
-        <div className="px-6 py-4.5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center font-bold">
-              <Globe className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-extrabold text-white flex items-center gap-2">
-                <span>{language === 'ar' ? 'اختر لغة النظام' : 'Select System Language'}</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  {ALL_LANGUAGES.length} Languages
-                </span>
-              </h2>
-              <p className="text-[11px] text-slate-400">
-                {language === 'ar'
-                  ? 'التبديل بين اللغات العالمية وضبط اتجاه الشاشة (RTL / LTR) لحظياً'
-                  : 'Toggle interface language with automated document direction (RTL / LTR) switching'}
-              </p>
-            </div>
-          </div>
-
+    <ModalShell
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidthClass="max-w-2xl"
+      dir={dir}
+      icon={<Globe className="w-5 h-5 text-emerald-700" />}
+      title={language === 'ar' ? 'اختر لغة النظام' : 'Select System Language'}
+      badge={`${ALL_LANGUAGES.length} Languages`}
+      subtitle={language === 'ar' ? 'التبديل بين اللغات العالمية وضبط اتجاه الشاشة (RTL / LTR) لحظياً' : 'Toggle interface language with automated document direction (RTL / LTR) switching'}
+      contentScrollable={false}
+      footer={
+        <div className="w-full flex items-center justify-between text-[11px] text-slate-500">
+          <span className="font-mono">
+            Active: <strong className="text-slate-800 uppercase">{language} ({dir})</strong>
+          </span>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-            title="Close"
+            className="px-4 py-1.5 bg-white hover:bg-slate-100 text-slate-800 font-bold rounded-lg border border-slate-200 transition-colors cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            {language === 'ar' ? 'إغلاق' : 'Close'}
           </button>
         </div>
+      }
+    >
 
         {/* Live Search Input */}
         <div className="p-4 bg-slate-50 border-b border-slate-200">
@@ -209,20 +193,6 @@ export default function LanguageSwitcherModal({ isOpen, onClose }: LanguageSwitc
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
-          <span className="font-mono">
-            Active: <strong className="text-slate-800 uppercase">{language} ({dir})</strong>
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg transition-colors cursor-pointer"
-          >
-            {language === 'ar' ? 'إغلاق' : 'Close'}
-          </button>
-        </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }

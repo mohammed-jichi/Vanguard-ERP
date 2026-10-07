@@ -406,6 +406,18 @@ export default function ScheduleDesigner({
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  // Escape key listener for Day Off modal
+  useEffect(() => {
+    if (!isDayOffModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsDayOffModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDayOffModalOpen]);
+
   // Load employees and days off on mount with authoritative Supabase reconciliation
   useEffect(() => {
     const list = HRPersonnelService.getEmployees();
@@ -2077,7 +2089,7 @@ export default function ScheduleDesigner({
       {/* Modal: Apply Day Off Request (Universal Viewport Contract) */}
       {isDayOffModalOpen && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm transition-opacity"
           onClick={() => setIsDayOffModalOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -2158,7 +2170,7 @@ export default function ScheduleDesigner({
                       onClick={() => setDayOffType('Full Day')}
                       className={`py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                         dayOffType === 'Full Day'
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                       }`}
                     >
@@ -2169,7 +2181,7 @@ export default function ScheduleDesigner({
                       onClick={() => setDayOffType('Partial')}
                       className={`py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                         dayOffType === 'Partial'
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                       }`}
                     >
@@ -2259,7 +2271,7 @@ export default function ScheduleDesigner({
                   </button>
                   <button
                     type="submit"
-                    className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm rounded-lg px-5 py-2 font-medium transition cursor-pointer text-xs"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm rounded-lg px-5 py-2 font-medium transition cursor-pointer text-xs"
                   >
                     Save Request
                   </button>

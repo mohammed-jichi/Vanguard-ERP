@@ -18,6 +18,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
+import ModalShell from './ModalShell';
 
 interface SupportCenterModalProps {
   isOpen: boolean;
@@ -121,48 +122,29 @@ export default function SupportCenterModal({ isOpen, onClose }: SupportCenterMod
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-      {/* Dimmed backdrop */}
-      <div
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-fadeIn"
-        onClick={onClose}
-      />
-
-      {/* Modal Dialog Card */}
-      <div
-        dir={dir}
-        className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden z-10 animate-zoomIn flex flex-col max-h-[90vh]"
-      >
-        {/* Modal Header */}
-        <div className="px-6 py-4.5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center font-bold">
-              <HelpCircle className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-extrabold text-white flex items-center gap-2">
-                <span>{language === 'ar' ? 'مركز الدعم والمساعدة الفنية' : 'Enterprise Support Center'}</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  24/7 LIVE
-                </span>
-              </h2>
-              <p className="text-[11px] text-slate-400">
-                {language === 'ar'
-                  ? 'الأدلة التشغيلية، قنوات الاتصال المباشر، وتذاكر الدعم'
-                  : 'Operations manuals, direct emergency channels & support ticketing'}
-              </p>
-            </div>
-          </div>
-
+    <ModalShell
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidthClass="max-w-2xl"
+      dir={dir}
+      icon={<HelpCircle className="w-5 h-5 text-emerald-700" />}
+      title={language === 'ar' ? 'مركز الدعم والمساعدة الفنية' : 'Enterprise Support Center'}
+      badge="24/7 LIVE"
+      subtitle={language === 'ar' ? 'الأدلة التشغيلية، قنوات الاتصال المباشر، وتذاكر الدعم' : 'Operations manuals, direct emergency channels & support ticketing'}
+      contentScrollable={false}
+      footer={
+        <div className="w-full flex items-center justify-between text-[11px] text-slate-500">
+          <span className="font-mono">Vanguard ERP v2.6.4 Support Desk</span>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-            title="Close"
+            className="px-4 py-1.5 bg-white hover:bg-slate-100 text-slate-800 font-bold rounded-lg border border-slate-200 transition-colors cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            {language === 'ar' ? 'إغلاق' : 'Close'}
           </button>
         </div>
+      }
+    >
 
         {/* Tab Navigation */}
         <div className="grid grid-cols-3 border-b border-slate-200 bg-slate-50 text-xs font-bold text-slate-600">
@@ -399,18 +381,6 @@ export default function SupportCenterModal({ isOpen, onClose }: SupportCenterMod
           )}
         </div>
 
-        {/* Modal Footer */}
-        <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
-          <span className="font-mono">Vanguard ERP v2.6.4 Support Desk</span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg transition-colors cursor-pointer"
-          >
-            {language === 'ar' ? 'إغلاق' : 'Close'}
-          </button>
-        </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }

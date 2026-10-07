@@ -1,7 +1,9 @@
 'use client';
-import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState } from 'react';
+import { useLanguage } from '@/lib/LanguageContext';
+import { Share2 } from 'lucide-react';
+import ModalShell from '@/components/ModalShell';
 
 interface SocialRepFormModalProps {
   isOpen: boolean;
@@ -101,29 +103,41 @@ export default function SocialRepFormModal({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 font-sans text-left select-none overflow-y-auto">
-      <div className="bg-card w-full max-w-2xl rounded-xl border border-border shadow-xl overflow-hidden my-6">
-        
-        {/* Modal Header */}
-        <div className="bg-primary text-primary-foreground px-5 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-            <h2 className="text-sm font-bold tracking-tight uppercase">
-              {isManagerRole ? 'Add Social Media Manager' : 'Add Social Media Sales Representative'}
-            </h2>
-          </div>
-          <button 
-            type="button" 
-            onClick={onClose} 
-            className="text-primary-foreground/70 hover:text-primary-foreground text-base font-bold transition-colors cursor-pointer"
-          >
-            ✕
-          </button>
-        </div>
+  const footerContent = (
+    <div className="flex items-center justify-between w-full">
+      <span className="text-[11px] text-slate-500 font-mono">
+        {t('vanguard_erp_personnel_ledger', 'Vanguard ERP Personnel Ledger')}
+      </span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2 border border-slate-200 bg-white rounded-lg text-slate-700 font-semibold hover:bg-slate-50 transition-colors cursor-pointer text-xs"
+        >
+          {t('cancel', 'Cancel')}
+        </button>
+        <button
+          type="button"
+          onClick={handleSave}
+          className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-xs transition-colors cursor-pointer text-xs"
+        >
+          {t('save_representative', 'Save Representative')}
+        </button>
+      </div>
+    </div>
+  );
 
-        {/* Modal Body Form */}
-        <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto custom-scrollbar text-xs text-foreground">
+  return (
+    <ModalShell
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isManagerRole ? 'Add Social Media Manager' : 'Add Social Media Sales Representative'}
+      subtitle="Vanguard ERP Personnel Ledger & Representative Engine"
+      icon={<Share2 className="w-5 h-5" />}
+      maxWidth="2xl"
+      footer={footerContent}
+    >
+      <div className="p-6 space-y-4 text-xs text-slate-900 font-sans">
           
           {/* Section 1: Full Name */}
           <div className="border-b border-border/60 pb-3">
@@ -396,30 +410,7 @@ export default function SocialRepFormModal({
             </div>
           )}
 
-        </div>
-
-        {/* Modal Footer */}
-        <div className="bg-muted border-t border-border px-5 py-3 flex items-center justify-between">
-          <span className="text-[11px] text-muted-foreground font-mono">{t('vanguard_erp_personnel_ledger', 'Vanguard ERP Personnel Ledger')}</span>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 border border-border bg-card rounded-lg text-foreground font-semibold hover:bg-muted transition-colors cursor-pointer"
-            >
-              {t('cancel', 'Cancel')}
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="px-5 py-2 bg-primary hover:bg-slate-800 text-primary-foreground font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
-            >
-              {t('save_representative', 'Save Representative')}
-            </button>
-          </div>
-        </div>
-
       </div>
-    </div>
+    </ModalShell>
   );
 }

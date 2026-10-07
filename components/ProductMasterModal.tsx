@@ -266,30 +266,55 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
     setConfirmInputText('');
   };
 
+  // Global Escape key event listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (safeguardModalType) {
+          setSafeguardModalType(null);
+          setConfirmInputText('');
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose, safeguardModalType]);
+
+  if (!isOpen) return null;
+
   return (
-    <div dir="rtl" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-
+    <div
+      dir="rtl"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
       {/* PERSISTENT MODAL CONTAINER SHELL */}
-      <div className="bg-[#142013] border-2 border-[#2b3e2a] rounded-2xl w-full max-w-6xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
-
+      <div
+        className="relative w-full max-w-6xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* 1. PERSISTENT HEADER WITH LOCKED ITEM NAME & ID DISPLAY */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b-2 border-amber-500 p-4 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0 shadow-lg">
-
+        <div className="bg-white border-b border-slate-100 p-4 px-6 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-amber-400 text-slate-950 rounded-xl flex items-center justify-center shadow-lg font-black border border-amber-300">
-              <Package className="w-7 h-7 text-slate-950" />
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold shrink-0">
+              <Package className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg md:text-xl font-black text-white">
+                <h2 className="text-lg md:text-xl font-bold text-slate-900">
                   {itemNameAr}
                 </h2>
-                <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-xs px-2.5 py-0.5 rounded-full font-mono font-bold">
+                <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-mono font-bold">
                   (ID: {systemId})
                 </span>
               </div>
-              <p className="text-xs text-amber-300 font-bold mt-0.5">
-                منتوجات زيت وزيتون الجنوب ش.م.م -- Vanguard ERP Products & Services Master Engine
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                منتوجات زيت وزيتون الجنوب ش.م.م — Vanguard ERP Products & Services Master Engine
               </p>
             </div>
           </div>
@@ -298,14 +323,14 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setSafeguardModalType('SUBSTITUTE')}
-              className="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 border border-sky-400 shadow transition-all"
+              className="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 border border-sky-400 shadow-xs transition-all cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" /> استبدال صنف (Substitute)
             </button>
 
             <button
               onClick={() => setSafeguardModalType('MERGE')}
-              className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 border border-purple-400 shadow transition-all"
+              className="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 border border-purple-400 shadow-xs transition-all cursor-pointer"
             >
               <Layers className="w-3.5 h-3.5" /> دمج الأصناف (Merge)
             </button>
@@ -316,20 +341,19 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
                 alert('تم حفظ كافة ترويسات وتفاصيل الصنف والأسعار وتركيبة BOM بنجاح في قاعدة البيانات!');
                 onClose();
               }}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-4 py-1.5 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-400 shadow-lg transition-all"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500 shadow-xs transition-all cursor-pointer"
             >
               <Save className="w-4 h-4" /> حفظ التغييرات (Save)
             </button>
 
             <button
               onClick={onClose}
-              className="bg-red-900/60 hover:bg-red-800 text-red-200 p-1.5 rounded-xl border border-red-700 transition-all"
+              className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition cursor-pointer"
               title="إغلاق الشاشة"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-
         </div>
 
         {/* 2. TAB ARCHITECTURE NAVIGATION BAR */}
@@ -1268,8 +1292,19 @@ export default function ProductMasterModal({ isOpen, onClose, initialItemId, onS
 
       {/* SAFEGUARD TYPE-TO-CONFIRM MODALS ("YES" VALIDATION REQUIRED) */}
       {safeguardModalType && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-[#142013] border-2 border-red-500 rounded-2xl max-w-md w-full p-6 text-white space-y-4 shadow-2xl">
+        <div
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+          onClick={() => {
+            setSafeguardModalType(null);
+            setConfirmInputText('');
+          }}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="bg-[#142013] border-2 border-red-500 rounded-2xl max-w-md w-full p-6 text-white space-y-4 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
 
             <div className="flex items-center gap-3 text-red-400">
               <ShieldAlert className="w-8 h-8 shrink-0" />

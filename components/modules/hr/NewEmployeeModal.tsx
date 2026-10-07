@@ -579,6 +579,27 @@ export default function NewEmployeeModal({
     setTimeout(() => setPosToastMsg(null), 3000);
   };
 
+  // Global Escape key listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (isApplyAllPromptOpen) {
+          setIsApplyAllPromptOpen(false);
+          setApplyAllKey('');
+        } else if (isPosConfigOpen) {
+          setIsPosConfigOpen(false);
+        } else if (isSelectCityModalOpen) {
+          setIsSelectCityModalOpen(false);
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isApplyAllPromptOpen, isPosConfigOpen, isSelectCityModalOpen, onClose]);
+
   // Active dial code details
   const activeDialCodeObj = useMemo(() => {
     return (
@@ -818,9 +839,11 @@ export default function NewEmployeeModal({
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm transition-opacity"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -2020,7 +2043,7 @@ export default function NewEmployeeModal({
         {/* ================================================================= */}
         {isPosConfigOpen && (
           <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm transition-opacity"
             onClick={() => setIsPosConfigOpen(false)}
             role="dialog"
             aria-modal="true"
@@ -2056,9 +2079,9 @@ export default function NewEmployeeModal({
 
               {/* Toast Inside POS Config */}
               {posToastMsg && (
-                <div className="bg-slate-900 text-white text-xs px-4 py-2 flex items-center justify-between">
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs px-4 py-2 flex items-center justify-between font-medium rounded-lg">
                   <span className="font-bold">{posToastMsg}</span>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>
               )}
 
@@ -2362,7 +2385,7 @@ export default function NewEmployeeModal({
                     onClick={() => {
                       setIsPosConfigOpen(false);
                     }}
-                    className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm rounded-lg px-5 py-2 font-medium transition cursor-pointer text-xs"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm rounded-lg px-5 py-2 font-medium transition cursor-pointer text-xs"
                   >
                     Save
                   </button>
@@ -2377,7 +2400,7 @@ export default function NewEmployeeModal({
         {/* ================================================================= */}
         {isApplyAllPromptOpen && (
           <div
-            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm transition-opacity"
             onClick={() => {
               setIsApplyAllPromptOpen(false);
               setApplyAllKey('');
@@ -2428,7 +2451,7 @@ export default function NewEmployeeModal({
                     setApplyAllKey('');
                     showPosToast('POS configuration successfully broadcast to all employees.');
                   }}
-                  className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm rounded-lg px-4 py-1.5 text-xs font-medium transition cursor-pointer"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm rounded-lg px-4 py-1.5 text-xs font-medium transition cursor-pointer"
                 >
                   OK
                 </button>

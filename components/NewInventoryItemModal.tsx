@@ -24,6 +24,7 @@ import {
   AuthenticInventoryItem
 } from '@/lib/omegaInventoryCatalog';
 import { OMEGA_ITEM_BRANDS, OMEGA_SOURCES } from '@/lib/omegaProductsData';
+import ModalShell from './ModalShell';
 
 interface NewInventoryItemModalProps {
   isOpen: boolean;
@@ -178,36 +179,16 @@ export default function NewInventoryItemModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-fade-in">
-      <div
-        className="relative w-full max-w-3xl bg-white rounded-xl shadow-2xl border border-slate-300 flex flex-col max-h-[92vh] overflow-hidden text-slate-800 font-sans"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* =========================================================================
-            1. HEADER
-            ========================================================================= */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-[#2c3e50] to-[#34495e] text-white">
-          <div className="flex items-center gap-2.5">
-            <div className="p-1.5 bg-white/15 rounded-md">
-              <Package className="w-5 h-5 text-amber-300" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold tracking-wide flex items-center gap-2">
-                <span>New Inventory Item</span>
-                <span className="text-xs font-normal text-slate-300">| صنف مخزني جديد</span>
-              </h2>
-              <p className="text-[11px] text-slate-300">Omega ERP Setup • Products & Services Registry</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-slate-300 hover:text-white p-1 rounded hover:bg-white/10 transition"
-            title="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <ModalShell
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidthClass="max-w-3xl"
+      icon={<Package className="w-5 h-5 text-emerald-700" />}
+      title="New Inventory Item"
+      badge="صنف مخزني جديد"
+      subtitle="Omega ERP Setup • Products & Services Registry"
+      contentScrollable={false}
+    >
 
         {/* Success Toast */}
         {successToast && (
@@ -798,7 +779,6 @@ export default function NewInventoryItemModal({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }

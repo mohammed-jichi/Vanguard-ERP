@@ -76,11 +76,11 @@ export function SelectCityModal({
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div
-        className="relative z-[10000] bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden w-full max-w-lg flex flex-col max-h-[85vh]"
+        className="relative z-[10001] bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden w-full max-w-lg flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
         dir={isRtl ? 'rtl' : 'ltr'}
       >
@@ -122,7 +122,7 @@ export function SelectCityModal({
                 setVisibleCount(150);
               }}
               placeholder={t('hr.search_city_name', 'Search city name...')}
-              className={`w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${
+              className={`w-full bg-slate-50 border border-slate-300 rounded-xl py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all ${
                 isRtl ? 'pr-10 pl-10 text-right' : 'pl-10 pr-10 text-left'
               }`}
             />

@@ -57,6 +57,18 @@ export default function SearchInventoryItemsModal({
   const [rowRemarks, setRowRemarks] = useState<Record<string, string>>({});
   const [selectedItemCodes, setSelectedItemCodes] = useState<Record<string, boolean>>({});
 
+  // Global Escape key event listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   // Sync initial search when opened
   useEffect(() => {
     if (isOpen) {
@@ -220,21 +232,36 @@ export default function SearchInventoryItemsModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-2xs animate-fade-in">
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
       <div
-        className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl border border-slate-300 flex flex-col max-h-[92vh] overflow-hidden text-slate-800 font-sans"
+        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[90vh] overflow-hidden text-slate-800 font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* =========================================================================
-            1. MODAL HEADER (Matching Omega ERP)
+            1. MODAL HEADER
             ========================================================================= */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 bg-white">
-          <h2 className="text-base font-semibold text-slate-700">
-            Search Inventory Items
-          </h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
+              <Search className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900">
+                Search Inventory Items
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Catalog lookup, multi-item selection, and transfer staging
+              </p>
+            </div>
+          </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 transition p-1 rounded hover:bg-slate-100"
+            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition cursor-pointer"
             title="Close"
           >
             <X className="w-5 h-5" />

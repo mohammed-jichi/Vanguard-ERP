@@ -1,7 +1,7 @@
 'use client';
 import { useLanguage } from '@/lib/LanguageContext';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck,
   Award,
@@ -33,6 +33,18 @@ export default function LicenseActivationCertificateModal({
   const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
+  // Global Escape key event listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const license = SOUTHERN_OLIVE_OFFICIAL_LICENSE;
@@ -48,23 +60,31 @@ export default function LicenseActivationCertificateModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white border-2 border-amber-500/40 rounded-3xl shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+    <div
+      className="fixed inset-0 z-[10000] bg-slate-900/45 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fadeIn"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="relative w-full max-w-4xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* NON-PRINTABLE TOP TOOLBAR */}
-        <div className="print:hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 p-4 px-6 text-white flex flex-wrap items-center justify-between gap-3 border-b border-amber-500/30">
+        <div className="print:hidden bg-white p-4 px-6 text-slate-900 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shadow-sm">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+              <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
                 <span>{t('vanguard_erp_official_license', 'Vanguard ERP Official License Certificate')}</span>
-                <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/30 uppercase tracking-wider">
+                <span className="bg-emerald-50 text-emerald-700 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wider">
                   {t('verified_authorized', 'Verified & Authorized')}
                 </span>
               </h3>
-              <p className="text-[11px] text-slate-300">
+              <p className="text-[11px] text-slate-500">
                 {t('official_perpetual_enterprise_license', 'Official perpetual enterprise license authorized for Southern Olive Oil Products S.A.R.L')}
               </p>
             </div>
@@ -73,16 +93,16 @@ export default function LicenseActivationCertificateModal({
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopyKey}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
               title={t('copy_license_key_to_clipboard', 'Copy License Key to Clipboard')}
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-600" />}
               <span>{copied ? 'Key Copied!' : 'Copy License Key'}</span>
             </button>
 
             <button
               onClick={handlePrint}
-              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
               title={t('print_official_certificate', 'Print Official Certificate')}
             >
               <Printer className="w-3.5 h-3.5" />
@@ -91,7 +111,7 @@ export default function LicenseActivationCertificateModal({
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
               title={t('close_modal', 'Close modal')}
             >
               <X className="w-5 h-5" />
@@ -100,7 +120,7 @@ export default function LicenseActivationCertificateModal({
         </div>
 
         {/* PRINTABLE CERTIFICATE CANVAS */}
-        <div id="vanguard-license-certificate" className="p-6 sm:p-8 md:p-10 bg-[#faf9f5] text-slate-900 relative overflow-hidden font-serif">
+        <div id="vanguard-license-certificate" className="p-6 sm:p-8 md:p-10 bg-[#faf9f5] text-slate-900 relative overflow-y-auto flex-1 font-serif">
           
           {/* ORNATE CERTIFICATE BORDER */}
           <div className="absolute inset-2 sm:inset-3 border-4 border-double border-amber-600/50 pointer-events-none rounded-2xl" />
@@ -300,14 +320,14 @@ export default function LicenseActivationCertificateModal({
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm cursor-pointer"
             >
-              <Printer className="w-4 h-4 text-amber-400" />
+              <Printer className="w-4 h-4 text-emerald-100" />
               <span>{t('print_official_certificate', 'Print Official Certificate')}</span>
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-white hover:bg-slate-200 text-slate-800 font-bold rounded-xl border border-slate-300 transition cursor-pointer"
+              className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-800 font-bold rounded-xl border border-slate-200 transition cursor-pointer"
             >
               {t('close', 'Close')}
             </button>

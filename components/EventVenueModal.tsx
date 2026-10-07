@@ -318,16 +318,16 @@ export default function EventVenueModal({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4"
+        className="fixed inset-0 z-[9999] bg-slate-900/45 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
         onClick={onClose}
       >
         <div
-          className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]"
+          className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]"
           onClick={e => e.stopPropagation()}
         >
           
           {/* Modal Header */}
-          <div className="flex items-center justify-between px-5 py-3.5 bg-slate-50 border-b border-slate-200 shrink-0">
+          <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-100 shrink-0">
             <h2 className="text-base font-bold text-slate-800 tracking-tight">
               {venueToEdit ? 'Edit Event Venue' : 'New Event Venue'}
             </h2>
@@ -805,11 +805,11 @@ export default function EventVenueModal({
       {/* ============================================================== */}
       {selectStateModalOpen && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs"
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
           onClick={() => setSelectStateModalOpen(false)}
         >
           <div
-            className="relative z-[10000] bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden flex flex-col max-h-[85vh]"
+            className="relative z-[10001] bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden flex flex-col max-h-[85vh]"
             onClick={e => e.stopPropagation()}
           >
             <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
@@ -868,7 +868,7 @@ export default function EventVenueModal({
               <button
                 type="button"
                 onClick={() => setSelectStateModalOpen(false)}
-                className="px-4 py-1.5 bg-[#007bff] hover:bg-[#0069d9] text-white font-semibold rounded text-xs transition-colors shadow-sm cursor-pointer"
+                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-xs transition-colors shadow-sm cursor-pointer"
               >
                 Close
               </button>
@@ -882,11 +882,11 @@ export default function EventVenueModal({
       {/* ============================================================== */}
       {selectCityModalOpen && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 bg-black/40 backdrop-blur-xs"
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
           onClick={() => setSelectCityModalOpen(false)}
         >
           <div
-            className="relative z-[10000] bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]"
+            className="relative z-[10001] bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh]"
             onClick={e => e.stopPropagation()}
           >
             <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
@@ -956,7 +956,7 @@ export default function EventVenueModal({
               <button
                 type="button"
                 onClick={() => setSelectCityModalOpen(false)}
-                className="px-4 py-1.5 bg-[#007bff] hover:bg-[#0069d9] text-white font-semibold rounded text-xs transition-colors shadow-sm cursor-pointer"
+                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-xs transition-colors shadow-sm cursor-pointer"
               >
                 Close
               </button>

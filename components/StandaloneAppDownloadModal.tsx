@@ -14,6 +14,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
+import ModalShell from './ModalShell';
 
 export type StandaloneAppType = 'v-driver' | 'v-connect' | 'pressing-mill';
 
@@ -128,36 +129,16 @@ export default function StandaloneAppDownloadModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fadeIn font-sans">
-      <div className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden my-auto">
-        
-        {/* Top Header Bar */}
-        <div className="bg-slate-900 p-5 px-6 text-white flex items-center justify-between border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 font-bold">
-              <Download className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-extrabold text-base text-white flex items-center gap-2">
-                <span>{t('standalone_app_portals', 'Standalone Application Workstations')}</span>
-                <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/30 uppercase tracking-wider">
-                  PWA Active
-                </span>
-              </h3>
-              <p className="text-xs text-slate-300">
-                {t('standalone_app_sub', 'Download manifests, install PWA clients, or launch dedicated full-screen workstations')}
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-            title={t('close_modal', 'Close modal')}
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <ModalShell
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidthClass="max-w-2xl"
+      icon={<Download className="w-5 h-5 text-emerald-700" />}
+      title={t('standalone_app_portals', 'Standalone Application Workstations')}
+      badge="PWA Active"
+      subtitle={t('standalone_app_sub', 'Download manifests, install PWA clients, or launch dedicated full-screen workstations')}
+      contentScrollable={false}
+    >
 
         {/* Tab Switcher for 3 Apps */}
         <div className="flex border-b border-slate-200 bg-slate-50/80 p-2 gap-1.5 overflow-x-auto">
@@ -251,7 +232,7 @@ export default function StandaloneAppDownloadModal({
                 href={current.launchUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-md hover:shadow-lg cursor-pointer"
+                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-md hover:shadow-lg cursor-pointer"
               >
                 <span>Launch Workstation App</span>
                 <ExternalLink className="w-4 h-4" />
@@ -259,7 +240,6 @@ export default function StandaloneAppDownloadModal({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }

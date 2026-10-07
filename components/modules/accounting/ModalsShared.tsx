@@ -12,7 +12,7 @@ import { useLanguage } from '@/lib/LanguageContext';
  * Strictly adheres to Vanguard's clean Light Enterprise Theme tokens.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   X,
   Search,
@@ -47,11 +47,26 @@ export function SupportingDocModal({ isOpen, onClose, onSave, initialUrl = '' }:
   const { t } = useLanguage();
   const [docUrl, setDocUrl] = useState(initialUrl);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-lg p-5 space-y-4">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg p-5 space-y-4"
+      >
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <ExternalLink className="w-4 h-4 text-primary" />
@@ -130,6 +145,15 @@ export function SearchAccountsModal({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showAll, setShowAll] = useState<boolean>(true);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const totalCount = accounts.length;
@@ -155,8 +179,14 @@ export function SearchAccountsModal({
     : [];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col p-5 space-y-4">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col p-5 space-y-4"
+      >
         {/* Top Header */}
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-3">
@@ -318,6 +348,15 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
   const [toDate, setToDate] = useState<string>('2026-12-31');
   const [query, setQuery] = useState<string>('');
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !account) return null;
 
   // Sample ledger transactions for preview
@@ -352,8 +391,14 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
   const netLBP = netUSD * LBP_RATE;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col p-5 space-y-4">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col p-5 space-y-4"
+      >
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
           <div>
@@ -605,9 +650,24 @@ export function AddAccountModal({
     onClose();
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-lg p-5 space-y-4">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg p-5 space-y-4"
+      >
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <Plus className="w-4 h-4 text-primary" />
@@ -791,9 +851,24 @@ export function AddSubClass4Modal({
     onClose();
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-lg p-5 space-y-4">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg p-5 space-y-4"
+      >
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <Plus className="w-4 h-4 text-primary" />
@@ -925,9 +1000,24 @@ export function AddSubClass3Modal({ isOpen, onClose, onSave }: AddSubClass3Modal
     onClose();
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-lg p-5 space-y-4">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg p-5 space-y-4"
+      >
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <Plus className="w-4 h-4 text-primary" />
@@ -1016,11 +1106,26 @@ export function NewPaymentTermModal({ isOpen, onClose, onSave }: NewPaymentTermM
   const [description, setDescription] = useState('');
   const [days, setDays] = useState(30);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-sm p-5 space-y-4">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-sm p-5 space-y-4"
+      >
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h4 className="font-bold text-sm text-foreground">{t('new_payment_term', 'New Payment Term')}</h4>
           <button

@@ -33,6 +33,15 @@ export function AccountingPrintableVoucherModal({
 }: AccountingPrintableVoucherModalProps) {
   const { t } = useLanguage();
 
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !voucher) return null;
 
   const isPayment = voucher.type === 'PV';
@@ -43,10 +52,16 @@ export function AccountingPrintableVoucherModal({
   const lbpAmount = Math.round(voucher.amount * effectiveRate);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
-      <div className="bg-white text-slate-900 border border-slate-300 rounded-xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] bg-slate-900/45 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fadeIn"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white text-slate-900 border border-slate-200 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden"
+      >
         {/* Top Control Bar */}
-        <div className="px-5 py-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between print:hidden">
+        <div className="px-6 py-3.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between print:hidden">
           <div className="flex items-center gap-2">
             <span className="font-bold text-xs uppercase text-slate-700 tracking-wider">
               {docTitle} &mdash; {voucher.voucherNumber}
@@ -56,7 +71,7 @@ export function AccountingPrintableVoucherModal({
             <button
               type="button"
               onClick={() => window.print()}
-              className="h-8 px-4 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+              className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>{t('print', 'Print')}</span>

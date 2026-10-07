@@ -92,8 +92,14 @@ export default function PosGlobalReportModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 animate-in fade-in select-none">
-      <div className="bg-[#141822] border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[92vh] text-slate-100 overflow-hidden shadow-2xl flex flex-col font-sans">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 animate-in fade-in select-none"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[#141822] border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[92vh] text-slate-100 overflow-hidden shadow-2xl flex flex-col font-sans"
+      >
         {/* Header Bar */}
         <div className="px-6 py-4 bg-[#1b2230] border-b border-slate-700 flex items-center justify-between">
           <div className="flex items-center gap-3">

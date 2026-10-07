@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Check, ChevronDown, Video, Pencil, Plus, CheckSquare, Save } from 'lucide-react';
 
 interface ChecklistModalProps {
@@ -28,6 +28,24 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
   // Sub-modal for New Checklist item state
   const [showNewModal, setShowNewModal] = useState<boolean>(false);
   const [newDescription, setNewDescription] = useState<string>('');
+
+  // Global Escape key listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showNewModal) {
+          setShowNewModal(false);
+        } else if (showEditTitleModal) {
+          setShowEditTitleModal(false);
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, showNewModal, showEditTitleModal, onClose]);
 
   // Checklist options list
   const titleOptions = [
@@ -129,8 +147,14 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl max-h-[90vh] shadow-2xl font-sans dir-ltr text-left overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150 relative">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white border border-slate-200 rounded-2xl w-full max-w-4xl max-h-[90vh] shadow-2xl font-sans dir-ltr text-left overflow-hidden flex flex-col relative"
+      >
         
         {/* 1. HEADER & TITLE AREA */}
         <div className="border-b border-slate-200 px-6 py-4 bg-slate-50/50 flex items-center justify-between">
@@ -376,25 +400,32 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
 
       {/* 5. "EDIT CHECKLIST" SUB-MODAL OVERLAY (NO ROUTING) */}
       {showEditTitleModal && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-60 flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl font-sans dir-ltr text-left overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
+        <div
+          onClick={() => setShowEditTitleModal(false)}
+          className="fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-[10000] flex items-center justify-center p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl font-sans dir-ltr text-left overflow-hidden flex flex-col"
+          >
             
             {/* SUB-MODAL HEADER */}
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 bg-slate-50">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-white">
               <div>
                 <h4 className="font-extrabold text-slate-900 text-base">Edit Checklist</h4>
                 <p className="text-slate-500 font-semibold text-xs mt-0.5">{activeChecklistTitle}</p>
               </div>
               <button
+                type="button"
                 onClick={() => setShowEditTitleModal(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded-xl transition-colors"
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* SUB-MODAL BODY */}
-            <div className="p-6 space-y-3 text-xs">
+            <div className="p-6 space-y-3 text-xs bg-white">
               <label className="block text-slate-700 font-extrabold uppercase tracking-wider text-[11px]">
                 Checklist Description *
               </label>
@@ -403,13 +434,14 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
                 value={editingTitleValue}
                 onChange={(e) => setEditingTitleValue(e.target.value)}
                 placeholder="Enter checklist title..."
-                className="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500 shadow-2xs"
+                className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs"
               />
             </div>
 
             {/* SUB-MODAL FOOTER WITH SAVE BUTTON */}
-            <div className="border-t border-slate-200 p-4 bg-slate-50 flex items-center justify-end">
+            <div className="border-t border-slate-100 p-4 bg-slate-50/80 flex items-center justify-end">
               <button
+                type="button"
                 onClick={() => {
                   if (!editingTitleValue.trim()) {
                     alert("Checklist title cannot be empty.");
@@ -418,7 +450,7 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
                   setActiveChecklistTitle(editingTitleValue.trim());
                   setShowEditTitleModal(false);
                 }}
-                className="bg-slate-700 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-md transition-colors"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition-colors"
               >
                 <Save className="w-4 h-4" />
                 <span>Save</span>
@@ -431,25 +463,32 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
 
       {/* 6. "NEW CHECKLIST" SUB-MODAL OVERLAY (NO ROUTING) */}
       {showNewModal && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-60 flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl font-sans dir-ltr text-left overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
+        <div
+          onClick={() => setShowNewModal(false)}
+          className="fixed inset-0 bg-slate-900/45 backdrop-blur-sm z-[10000] flex items-center justify-center p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl font-sans dir-ltr text-left overflow-hidden flex flex-col"
+          >
             
             {/* SUB-MODAL HEADER */}
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 bg-slate-50">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-white">
               <div>
                 <h4 className="font-extrabold text-slate-900 text-base">New Checklist</h4>
                 <p className="text-slate-500 font-semibold text-xs mt-0.5">Add New Checklist</p>
               </div>
               <button
+                type="button"
                 onClick={() => setShowNewModal(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded-xl transition-colors"
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* SUB-MODAL BODY */}
-            <div className="p-6 space-y-3 text-xs">
+            <div className="p-6 space-y-3 text-xs bg-white">
               <label className="block text-slate-700 font-extrabold uppercase tracking-wider text-[11px]">
                 Checklist Description *
               </label>
@@ -458,15 +497,16 @@ export default function ChecklistModal({ isOpen, onClose, onWatchTutorial }: Che
                 value={newDescription}
                 onChange={(e) => setNewDescription(e.target.value)}
                 placeholder="Enter checklist item description..."
-                className="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500 shadow-2xs resize-none"
+                className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-2xs resize-none"
               />
             </div>
 
             {/* SUB-MODAL FOOTER WITH SAVE BUTTON */}
-            <div className="border-t border-slate-200 p-4 bg-slate-50 flex items-center justify-end">
+            <div className="border-t border-slate-100 p-4 bg-slate-50/80 flex items-center justify-end">
               <button
+                type="button"
                 onClick={handleSaveNewItem}
-                className="bg-slate-700 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-md transition-colors"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition-colors"
               >
                 <Save className="w-4 h-4" />
                 <span>Save</span>
