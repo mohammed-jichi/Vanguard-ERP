@@ -36,7 +36,7 @@ export default function PosCashierReportModal({
   const shiftData = {
     workstationId: 'W#: 1',
     shiftId: 'SH-20260917-01',
-    cashierName: currentUser?.name || 'Maya Khoury',
+    cashierName: currentUser?.name || 'Active Cashier',
     cashierRole: currentUser?.role || 'Cashier',
     shiftStartTime: '08:30:00 AM',
     shiftDuration: '4h 45m',

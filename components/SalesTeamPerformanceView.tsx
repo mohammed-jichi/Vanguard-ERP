@@ -153,7 +153,7 @@ export default function SalesTeamPerformanceView() {
     },
     {
       id: 'rep-4',
-      name: 'Karim Daher',
+      name: 'Hiba Aloulou',
       territory: 'Hospitality & HORECA Supply',
       branchId: '00001',
       newLeads: 19,
@@ -265,7 +265,7 @@ export default function SalesTeamPerformanceView() {
       type: 'followup',
       subject: 'Confirm Delivery Gate at Tyre Coastal Depot',
       client: 'Tyre Coastal Hospitality Co.',
-      rep: 'Karim Daher',
+      rep: 'Hiba Aloulou',
       due: 'Tomorrow, 1:15 PM',
       priority: 'normal'
     }

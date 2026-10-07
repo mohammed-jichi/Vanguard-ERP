@@ -385,7 +385,7 @@ const RAW_ALL_BRANCHES_CONSOLIDATED: any = {
     { user: 'Hiba Aloulou (Choueifat)', amount: 390000000, color: '#4c1d95', pct: 30.0 },
     { user: 'Ziad Al-Amin (Beirut Lead)', amount: 325000000, color: '#1e3a8a', pct: 25.0 },
     { user: 'Salim Kassir (Saida Lead)', amount: 299000000, color: '#0f766e', pct: 23.0 },
-    { user: 'Karim Daher (Tyre HORECA)', amount: 286000000, color: '#475569', pct: 22.0 },
+    { user: 'Hiba Aloulou (Tyre HORECA)', amount: 286000000, color: '#475569', pct: 22.0 },
   ],
   paymentSummaryData: [
     { method: 'CASH LBP', amount: 910000000, color: '#0f766e', pct: 70.0 },

@@ -277,46 +277,12 @@ function HRPageContent() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-1.5 px-2 font-mono font-bold text-blue-900">EMP-001</td>
-                      <td className="py-1.5 px-2 font-bold text-slate-900">Youssef Abboud</td>
-                      <td className="py-1.5 px-2 font-mono text-slate-600">LB81-0014-0000-1122-3344-01</td>
-                      <td className="py-1.5 px-2 text-center"><span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold text-[9.5px]">ACH DIRECT</span></td>
-                      <td className="py-1.5 px-2 text-right font-mono text-slate-800">$1,450.00</td>
-                      <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-800">$1,450.00</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-1.5 px-2 font-mono font-bold text-blue-900">EMP-002</td>
-                      <td className="py-1.5 px-2 font-bold text-slate-900">Laila Harb</td>
-                      <td className="py-1.5 px-2 font-mono text-slate-600">LB81-0014-0000-5566-7788-02</td>
-                      <td className="py-1.5 px-2 text-center"><span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold text-[9.5px]">ACH DIRECT</span></td>
-                      <td className="py-1.5 px-2 text-right font-mono text-slate-800">$1,800.00</td>
-                      <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-800">$1,800.00</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-1.5 px-2 font-mono font-bold text-blue-900">EMP-003</td>
-                      <td className="py-1.5 px-2 font-bold text-slate-900">Nabil Sleiman</td>
-                      <td className="py-1.5 px-2 font-mono text-slate-600">LB81-0014-0000-9900-1122-03</td>
-                      <td className="py-1.5 px-2 text-center"><span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold text-[9.5px]">ACH DIRECT</span></td>
-                      <td className="py-1.5 px-2 text-right font-mono text-slate-800">$1,200.00</td>
-                      <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-800">$1,200.00</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-1.5 px-2 font-mono font-bold text-blue-900">EMP-004</td>
-                      <td className="py-1.5 px-2 font-bold text-slate-900">Ziad Kassis</td>
-                      <td className="py-1.5 px-2 font-mono text-slate-600">LB81-0014-0000-3344-5566-04</td>
-                      <td className="py-1.5 px-2 text-center"><span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold text-[9.5px]">ACH DIRECT</span></td>
-                      <td className="py-1.5 px-2 text-right font-mono text-slate-800">$1,350.00</td>
-                      <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-800">$1,350.00</td>
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-500 font-sans">
+                        {t('no_payroll_records', 'No payroll transfer records found for the selected criteria.')}
+                      </td>
                     </tr>
                   </tbody>
-                  <tfoot>
-                    <tr className="border-t-2 border-slate-900 font-bold bg-slate-50 text-[11px]">
-                      <td colSpan={4} className="py-2 px-2 font-sans text-center">{t('total_electronic_payroll_disbursed', 'Total Electronic Payroll Disbursed:')}</td>
-                      <td className="py-2 px-2 text-right font-mono font-bold text-slate-900">$5,800.00</td>
-                      <td className="py-2 px-2 text-right font-mono font-bold text-emerald-800">$5,800.00</td>
-                    </tr>
-                  </tfoot>
                 </table>
               </UnifiedPrintableReportSheet>
             )}

@@ -160,7 +160,10 @@ export const UniversalReportTableResolver: React.FC<UniversalReportTableResolver
             if (isNowrap) return <span className="nowrap-cell">{rendered}</span>;
             return rendered;
           }
-          return formatCellValue(row[col.key], row, col.formatType, activeCurrency);
+          return formatCellValue(row[col.key], row, col.formatType, activeCurrency, {
+            key: col.key,
+            headerLabel: col.headerLabel,
+          });
         },
       };
     });

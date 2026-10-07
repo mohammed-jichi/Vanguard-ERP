@@ -35,20 +35,8 @@ export const SalesByCustomerByItemsTemplate: React.FC<SalesByCustomerByItemsTemp
     ? 'REP_SALES_008'
     : 'REP_S_00186';
 
-  const defaultItems = [
-    { rank: 1, customer: 'Al-Baraka Supermarket S.A.R.L', itemCode: 'OIL-001', itemName: 'Extra Virgin Olive Oil 17.5L Standard Product', qty: 25, unitPrice: 110.00, totalValue: 2750.00, cost: 85.00, date: '01-Aug-2026' },
-    { rank: 2, customer: 'Al-Baraka Supermarket S.A.R.L', itemCode: 'OIL-002', itemName: 'Extra Virgin Olive Oil 1L Standard Product Standard Product', qty: 120, unitPrice: 8.50, totalValue: 1020.00, cost: 6.20, date: '02-Aug-2026' },
-    { rank: 3, customer: 'Karem Assaf Grocery', itemCode: 'OIL-001', itemName: 'Extra Virgin Olive Oil 17.5L Standard Product', qty: 15, unitPrice: 110.00, totalValue: 1650.00, cost: 85.00, date: '03-Aug-2026' },
-    { rank: 4, customer: 'Karem Assaf Grocery', itemCode: 'OIL-004', itemName: 'Molasses Pomegranate Molasses Local 500 ml', qty: 60, unitPrice: 6.00, totalValue: 360.00, cost: 4.10, date: '04-Aug-2026' },
-    { rank: 5, customer: 'Ahmad Al-Hajj Wholesale', itemCode: 'OIL-001', itemName: 'Extra Virgin Olive Oil 17.5L Standard Product', qty: 40, unitPrice: 110.00, totalValue: 4400.00, cost: 85.00, date: '05-Aug-2026' },
-    { rank: 6, customer: 'Ahmad Al-Hajj Wholesale', itemCode: 'OIL-003', itemName: 'Standard Product Local Olive Oil Kg', qty: 30, unitPrice: 18.00, totalValue: 540.00, cost: 13.50, date: '06-Aug-2026' },
-  ];
-
-  const notSoldItems = [
-    { itemCode: 'SP-109', itemName: 'Local Zaatar Standard 500g', category: 'Herbal Preserves', lastSold: '14-Jun-2026', stockOnHand: 140, unitCost: '$3.20' },
-    { itemCode: 'SP-204', itemName: 'Standard Product Local 250 ml', category: 'Distilled Water', lastSold: '22-May-2026', stockOnHand: 85, unitCost: '$2.80' },
-    { itemCode: 'SP-311', itemName: 'Jam Fig Walnut 400g', category: 'Confectionery', lastSold: '02-Jul-2026', stockOnHand: 60, unitCost: '$4.10' },
-  ];
+  const defaultItems: any[] = [];
+  const notSoldItems: any[] = [];
 
   const displayedItems = isTopSold ? defaultItems.slice(0, topN) : defaultItems;
 

@@ -215,67 +215,8 @@ export const CHANNEL_MAPPINGS: Record<string, string> = {
   'training': 'Training',
 };
 
-export const SALESMAN_MAPPINGS: Record<string, string> = {
-  // Ahmad Al-Hajj (Senior Rep)
-  'rep_ahmad': 'Ahmad Al-Hajj',
-  'emp_ahmad': 'Ahmad Al-Hajj',
-  'ahmad': 'Ahmad Al-Hajj',
-  'ahmad al-hajj': 'Ahmad Al-Hajj',
-  'ahmad_al_hajj': 'Ahmad Al-Hajj',
-  'ahmad.hajj': 'Ahmad Al-Hajj',
-  'ahmad al hajj': 'Ahmad Al-Hajj',
-  'ahmad al-hajj (senior rep)': 'Ahmad Al-Hajj',
-  'rep_001': 'Ahmad Al-Hajj',
-  'emp_001': 'Ahmad Al-Hajj',
+export const SALESMAN_MAPPINGS: Record<string, string> = {};
 
-  // Maya Khoury (Corporate Accounts)
-  'rep_maya': 'Maya Khoury',
-  'emp_maya': 'Maya Khoury',
-  'maya': 'Maya Khoury',
-  'maya khoury': 'Maya Khoury',
-  'maya_khoury': 'Maya Khoury',
-  'maya.khoury': 'Maya Khoury',
-  'maya khoury (corporate accounts)': 'Maya Khoury',
-  'rep_002': 'Maya Khoury',
-  'emp_002': 'Maya Khoury',
-
-  // Jad Tannous (Regional Wholesale)
-  'rep_jad': 'Jad Tannous',
-  'emp_jad': 'Jad Tannous',
-  'jad': 'Jad Tannous',
-  'jad tannous': 'Jad Tannous',
-  'jad_tannous': 'Jad Tannous',
-  'jad.tannous': 'Jad Tannous',
-  'jad tannous (regional wholesale)': 'Jad Tannous',
-  'rep_003': 'Jad Tannous',
-  'emp_003': 'Jad Tannous',
-
-  // Rania Eid (Commercial Supervisor)
-  'rep_rania': 'Rania Eid',
-  'emp_rania': 'Rania Eid',
-  'rania': 'Rania Eid',
-  'rania eid': 'Rania Eid',
-  'rania_eid': 'Rania Eid',
-  'rania.eid': 'Rania Eid',
-  'rania eid (commercial supervisor)': 'Rania Eid',
-  'rep_004': 'Rania Eid',
-  'emp_004': 'Rania Eid',
-
-  // Ziad Chehab (Key Account Manager)
-  'rep_ziad': 'Ziad Chehab',
-  'emp_ziad': 'Ziad Chehab',
-  'ziad': 'Ziad Chehab',
-  'ziad chehab': 'Ziad Chehab',
-  'ziad_chehab': 'Ziad Chehab',
-  'ziad.chehab': 'Ziad Chehab',
-  'ziad chehab (key account manager)': 'Ziad Chehab',
-  'rep_005': 'Ziad Chehab',
-  'emp_005': 'Ziad Chehab',
-};
-
-/**
- * Normalizes a filter value using slug dictionaries and standard string casing.
- */
 export function normalizeFilterToken(value?: any): string {
   if (value === null || value === undefined) return '';
   const str = String(value).trim().toLowerCase();

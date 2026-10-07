@@ -53,86 +53,8 @@ export default function PosOlderSalesModal({
   const [notification, setNotification] = useState<string | null>(null);
 
   // Mock historical transactions
-  const historicalInvoices: HistoricalInvoice[] = useMemo(
-    () => [
-      {
-        id: '1',
-        invoiceNo: 'INV-2026-0848',
-        timestamp: '15:42:18',
-        customerName: 'General Retail Cash Walk-in',
-        tenderMethod: 'Cash USD',
-        cashierName: 'Maya Khoury',
-        itemsCount: 3,
-        totalUsd: 122.0,
-        totalLbp: 122.0 * POS_EXCHANGE_RATE,
-        items: [
-          { name: '17.5L Extra Virgin Olive Oil Tin', qty: 1, priceUsd: 110.0, totalUsd: 110.0 },
-          { name: 'Pure Pomegranate Molasses 500ml', qty: 2, priceUsd: 6.0, totalUsd: 12.0 },
-        ],
-      },
-      {
-        id: '2',
-        invoiceNo: 'INV-2026-0847',
-        timestamp: '15:15:04',
-        customerName: 'Al-Bustan Supermarket Co.',
-        tenderMethod: 'Credit on Account',
-        cashierName: 'Maya Khoury',
-        itemsCount: 5,
-        totalUsd: 450.0,
-        totalLbp: 450.0 * POS_EXCHANGE_RATE,
-        items: [
-          { name: '17.5L Extra Virgin Olive Oil Tin', qty: 4, priceUsd: 110.0, totalUsd: 440.0 },
-          { name: 'Cold-Pressed Glass Bottle 750ml', qty: 1, priceUsd: 10.0, totalUsd: 10.0 },
-        ],
-      },
-      {
-        id: '3',
-        invoiceNo: 'INV-2026-0846',
-        timestamp: '14:50:22',
-        customerName: 'Karim Haddad',
-        tenderMethod: 'Credit Card USD',
-        cashierName: 'Ahmad Zein',
-        itemsCount: 2,
-        totalUsd: 26.5,
-        totalLbp: 26.5 * POS_EXCHANGE_RATE,
-        items: [
-          { name: 'Cold-Pressed Glass Bottle 750ml', qty: 2, priceUsd: 10.0, totalUsd: 20.0 },
-          { name: 'Pure Apple Cider Vinegar 500ml', qty: 1, priceUsd: 6.5, totalUsd: 6.5 },
-        ],
-      },
-      {
-        id: '4',
-        invoiceNo: 'INV-2026-0845',
-        timestamp: '14:18:50',
-        customerName: 'Samir Mansour (Wholesale)',
-        tenderMethod: 'Cash LBP',
-        cashierName: 'Maya Khoury',
-        itemsCount: 10,
-        totalUsd: 1100.0,
-        totalLbp: 98450000,
-        items: [
-          { name: '17.5L Extra Virgin Olive Oil Tin', qty: 10, priceUsd: 110.0, totalUsd: 1100.0 },
-        ],
-      },
-      {
-        id: '5',
-        invoiceNo: 'INV-2026-0844',
-        timestamp: '13:55:10',
-        customerName: 'General Retail Cash Walk-in',
-        tenderMethod: 'Cash USD',
-        cashierName: 'Hadi (Admin)',
-        itemsCount: 1,
-        totalUsd: 14.0,
-        totalLbp: 14.0 * POS_EXCHANGE_RATE,
-        items: [
-          { name: 'Natural Laurel Olive Soap Bar (6-pack)', qty: 1, priceUsd: 14.0, totalUsd: 14.0 },
-        ],
-      },
-    ],
-    []
-  );
+  const historicalInvoices: HistoricalInvoice[] = [];
 
-  // Filter logic
   const filteredInvoices = useMemo(() => {
     return historicalInvoices.filter((inv) => {
       const matchInv = inv.invoiceNo.toLowerCase().includes(invoiceQuery.trim().toLowerCase());

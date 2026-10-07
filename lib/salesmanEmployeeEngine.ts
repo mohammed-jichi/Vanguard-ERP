@@ -19,64 +19,7 @@ export interface SalesmanEmployee {
   branchId?: number;
 }
 
-export const CANONICAL_SALESMEN_EMPLOYEES: SalesmanEmployee[] = [
-  {
-    id: 'EMP_AHMAD',
-    name: 'Ahmad Al-Hajj',
-    code: 'REP_001',
-    role: 'Senior Sales Representative / Cashier',
-    department: 'Sales & POS',
-    branchId: 1,
-  },
-  {
-    id: 'EMP_MAYA',
-    name: 'Maya Khoury',
-    code: 'REP_002',
-    role: 'Corporate Accounts Manager / Cashier',
-    department: 'Commercial Accounts',
-    branchId: 1,
-  },
-  {
-    id: 'EMP_JAD',
-    name: 'Jad Tannous',
-    code: 'REP_003',
-    role: 'Regional Wholesale Supervisor / Cashier',
-    department: 'Wholesale & Distribution',
-    branchId: 2,
-  },
-  {
-    id: 'EMP_RANIA',
-    name: 'Rania Eid',
-    code: 'REP_004',
-    role: 'Commercial Supervisor / Cashier',
-    department: 'Commercial Retail',
-    branchId: 1,
-  },
-  {
-    id: 'EMP_ZIAD',
-    name: 'Ziad Chehab',
-    code: 'REP_005',
-    role: 'Key Account Manager / Cashier',
-    department: 'Export & Key Accounts',
-    branchId: 1,
-  },
-  {
-    id: 'EMP_NOUR',
-    name: 'Nour Saliba',
-    code: 'EMP_006',
-    role: 'Front-desk Cashier & Dispatcher',
-    department: 'Front Desk / POS',
-    branchId: 1,
-  },
-  {
-    id: 'EMP_WALID',
-    name: 'Walid Sleiman',
-    code: 'EMP_007',
-    role: 'Logistics Coordinator & Cashier',
-    department: 'Warehouse & Logistics',
-    branchId: 2,
-  },
-];
+export const CANONICAL_SALESMEN_EMPLOYEES: SalesmanEmployee[] = [];
 
 /**
  * Returns options for Employee / Cashier filter dropdowns.

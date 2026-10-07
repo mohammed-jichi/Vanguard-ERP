@@ -42,59 +42,7 @@ interface TrackingOrder {
   driverLocation?: { lat: number; lng: number; lastUpdate: string };
 }
 
-const SAMPLE_TRACKING_ORDERS: TrackingOrder[] = [
-  {
-    id: 'ORD-SO-9921',
-    customerName: 'Fadi Khalil',
-    customerPhone: '+961 3 889900',
-    customerAddress: 'Beirut - Hamra, Sadat St.',
-    offerDetails: '17.5L Extra Virgin Olive Oil Tin + 2 Pomegranate Molasses',
-    amountUsd: 125.0,
-    scheduledEta: 'Today at 3:30 PM',
-    status: 'IN_TRANSIT',
-    driverName: 'Samir Kassem (Choueifat Fleet)',
-    driverPhone: '+961 70 112233',
-    repCommission: 6.25,
-    driverLocation: { lat: 33.8886, lng: 35.4955, lastUpdate: '2 mins ago' },
-  },
-  {
-    id: 'ORD-SO-9922',
-    customerName: 'George Haddad',
-    customerPhone: '+961 71 445566',
-    customerAddress: 'Jounieh - Haret Sakhr',
-    offerDetails: 'Pantry Bundle: 3 Pomegranate Molasses + Mixed Pickles',
-    amountUsd: 45.0,
-    scheduledEta: 'Today at 5:00 PM',
-    status: 'DELIVERED',
-    driverName: 'Ali Reda',
-    driverPhone: '+961 3 556677',
-    repCommission: 2.25,
-  },
-  {
-    id: 'ORD-SO-9924',
-    customerName: 'Karim Saab',
-    customerPhone: '+961 70 223344',
-    customerAddress: 'Choueifat - Municipality Road',
-    offerDetails: '5L Olive Oil Gallon + Organic Olive Soap',
-    amountUsd: 65.0,
-    scheduledEta: 'Tomorrow Morning',
-    status: 'PENDING',
-    statusReason: 'Customer requested rescheduling to tomorrow (out of town)',
-    repCommission: 3.25,
-  },
-  {
-    id: 'ORD-SO-9923',
-    customerName: 'Rana El-Masri',
-    customerPhone: '+961 76 998877',
-    customerAddress: 'Sidon - Commercial District',
-    offerDetails: '2x 17.5L Extra Virgin Olive Oil Tin',
-    amountUsd: 220.0,
-    scheduledEta: 'Cancelled',
-    status: 'CANCELLED',
-    statusReason: 'Customer cancelled order - purchased from retail store',
-    repCommission: 0.0,
-  },
-];
+const SAMPLE_TRACKING_ORDERS: TrackingOrder[] = [];
 
 export default function SocialRepStatisticsAndTracking() {
   const { t } = useLanguage();

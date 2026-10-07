@@ -99,7 +99,10 @@ export function getReportSchema(
   if (keyLower.includes('delivery order') || keyUpper === 'REP_S_00207') {
     return REPORT_SCHEMAS['REP_S_00207'] || null;
   }
-  if (keyLower.includes('tax summary') || keyUpper === 'REP_S_00210') {
+  if (keyUpper === 'REP_S_00211' || (keyLower.includes('tax summary') && keyLower.includes('comparative')) || keyLower.includes('tax summary comparative')) {
+    return REPORT_SCHEMAS['REP_S_00211'] || null;
+  }
+  if (keyUpper === 'REP_S_00210' || keyLower.includes('tax summary')) {
     return REPORT_SCHEMAS['REP_S_00210'] || null;
   }
   if (keyLower.includes('profit') && keyLower.includes('invoice') || keyUpper === 'REP_S_00230') {
@@ -609,7 +612,7 @@ export const SCHEMA_DELIVERY_ORDERS: ReportSchemaDefinition = {
 registerReportSchema(SCHEMA_DELIVERY_ORDERS);
 
 // ----------------------------------------------------------------------------
-// H. FINANCIAL: TAX SUMMARY (REP_S_00210 / REP_S_00211)
+// H. FINANCIAL: TAX SUMMARY (REP_S_00210)
 // ----------------------------------------------------------------------------
 export const SCHEMA_TAX_SUMMARY: ReportSchemaDefinition = {
   id: 'REP_S_00210',
@@ -621,9 +624,33 @@ export const SCHEMA_TAX_SUMMARY: ReportSchemaDefinition = {
     { key: 'taxCategory', headerLabel: 'Tax Classification', width: '22%', align: 'left', formatType: 'text' },
     { key: 'fiscalCode', headerLabel: 'MOF Code', width: '12%', align: 'left', formatType: 'code', isMonospace: true },
     { key: 'taxRate', headerLabel: 'Rate', width: '10%', align: 'center', formatType: 'percentage', isMonospace: true },
-    { key: 'taxableBaseUsd', headerLabel: 'Taxable Base ($)', width: '18%', align: 'right', formatType: 'currency', isMonospace: true },
-    { key: 'taxableBaseLbp', headerLabel: 'Taxable Base (LBP)', width: '20%', align: 'right', formatType: 'currency', isMonospace: true },
-    { key: 'taxCollectedUsd', headerLabel: 'VAT Collected ($)', width: '18%', align: 'right', formatType: 'currency', isMonospace: true },
+    {
+      key: 'taxableBaseUsd',
+      headerLabel: 'Taxable Base ($)',
+      width: '18%',
+      align: 'right',
+      formatType: 'currency',
+      isMonospace: true,
+      render: (val: any) => formatCurrencyAmount(val, 'USD', true),
+    },
+    {
+      key: 'taxableBaseLbp',
+      headerLabel: 'Taxable Base (LBP)',
+      width: '20%',
+      align: 'right',
+      formatType: 'currency',
+      isMonospace: true,
+      render: (val: any) => formatCurrencyAmount(val, 'LBP', true),
+    },
+    {
+      key: 'taxCollectedUsd',
+      headerLabel: 'VAT Collected ($)',
+      width: '18%',
+      align: 'right',
+      formatType: 'currency',
+      isMonospace: true,
+      render: (val: any) => formatCurrencyAmount(val, 'USD', true),
+    },
   ],
   kpiSummary: [
     {
@@ -653,13 +680,106 @@ export const SCHEMA_TAX_SUMMARY: ReportSchemaDefinition = {
       },
     },
   ],
-  sampleRowsGenerator: (filters = {}) => [
-    { id: 'TAX-01', taxCategory: 'Standard Rate Products (Processed Oils & Packaged)', fiscalCode: 'VAT-11', taxRate: 11.0, taxableBaseUsd: 28400.00, taxableBaseLbp: 2541800000.0, taxCollectedUsd: 3124.00, branch: 'All Branches' },
-    { id: 'TAX-02', taxCategory: 'Exempt Agricultural Goods (Raw Olives & Fresh Produce)', fiscalCode: 'VAT-EX', taxRate: 0.0, taxableBaseUsd: 6200.00, taxableBaseLbp: 554900000.0, taxCollectedUsd: 0.00, branch: 'All Branches' },
-    { id: 'TAX-03', taxCategory: 'Export Sales (Zero Rated International Dispatch)', fiscalCode: 'VAT-ZERO', taxRate: 0.0, taxableBaseUsd: 14500.00, taxableBaseLbp: 1297750000.0, taxCollectedUsd: 0.00, branch: 'All Branches' },
-  ],
+  sampleRowsGenerator: () => [],
 };
 registerReportSchema(SCHEMA_TAX_SUMMARY);
+
+// ----------------------------------------------------------------------------
+// H2. FINANCIAL: TAX SUMMARY COMPARATIVE STATEMENT (REP_S_00211)
+// ----------------------------------------------------------------------------
+export const SCHEMA_TAX_SUMMARY_COMPARATIVE: ReportSchemaDefinition = {
+  id: 'REP_S_00211',
+  reportKey: 'Tax Summary Comparative',
+  title: 'Tax Summary Comparative Statement',
+  domain: 'accounting',
+  description: 'Official Ministry of Finance Lebanese VAT multi-period comparison statement with variance auditing across standard, reduced, and exempt sales turnovers.',
+  columns: [
+    { key: 'taxCategory', headerLabel: 'Tax Classification', width: '20%', align: 'left', formatType: 'text' },
+    { key: 'fiscalCode', headerLabel: 'MOF Code', width: '10%', align: 'left', formatType: 'code', isMonospace: true },
+    { key: 'taxRate', headerLabel: 'Rate', width: '8%', align: 'center', formatType: 'percentage', isMonospace: true },
+    {
+      key: 'currentTaxableBaseUsd',
+      headerLabel: 'Current Base ($)',
+      width: '13%',
+      align: 'right',
+      formatType: 'currency',
+      isMonospace: true,
+      render: (val: any) => formatCurrencyAmount(val, 'USD', true),
+    },
+    {
+      key: 'currentTaxableBaseLbp',
+      headerLabel: 'Current Base (LBP)',
+      width: '15%',
+      align: 'right',
+      formatType: 'currency',
+      isMonospace: true,
+      render: (val: any) => formatCurrencyAmount(val, 'LBP', true),
+    },
+    {
+      key: 'currentVatUsd',
+      headerLabel: 'Current VAT ($)',
+      width: '11%',
+      align: 'right',
+      formatType: 'currency',
+      isMonospace: true,
+      render: (val: any) => formatCurrencyAmount(val, 'USD', true),
+    },
+    {
+      key: 'priorTaxableBaseUsd',
+      headerLabel: 'Prior Base ($)',
+      width: '11%',
+      align: 'right',
+      formatType: 'currency',
+      isMonospace: true,
+      render: (val: any) => formatCurrencyAmount(val, 'USD', true),
+    },
+    {
+      key: 'priorVatUsd',
+      headerLabel: 'Prior VAT ($)',
+      width: '10%',
+      align: 'right',
+      formatType: 'currency',
+      isMonospace: true,
+      render: (val: any) => formatCurrencyAmount(val, 'USD', true),
+    },
+    { key: 'varianceUsd', headerLabel: 'Variance ($)', width: '10%', align: 'right', formatType: 'delta', isMonospace: true },
+    { key: 'variancePct', headerLabel: 'Variance %', width: '8%', align: 'right', formatType: 'percentage', isMonospace: true },
+  ],
+  kpiSummary: [
+    {
+      label: 'Current Period VAT (USD)',
+      type: 'sum',
+      calculate: (rows, currency = 'USD') => {
+        const sum = rows.reduce((acc, r) => acc + (Number(r.currentVatUsd) || 0), 0);
+        return { value: formatCurrencyAmount(sum, currency, true), subtext: 'Current fiscal liability' };
+      },
+    },
+    {
+      label: 'Prior Period VAT (USD)',
+      type: 'sum',
+      calculate: (rows, currency = 'USD') => {
+        const sum = rows.reduce((acc, r) => acc + (Number(r.priorVatUsd) || 0), 0);
+        return { value: formatCurrencyAmount(sum, currency, true), subtext: 'Comparative baseline liability' };
+      },
+    },
+    {
+      label: 'Net Variance (USD)',
+      type: 'custom',
+      calculate: (rows, currency = 'USD') => {
+        const current = rows.reduce((acc, r) => acc + (Number(r.currentVatUsd) || 0), 0);
+        const prior = rows.reduce((acc, r) => acc + (Number(r.priorVatUsd) || 0), 0);
+        const diff = current - prior;
+        const isPos = diff >= 0;
+        return {
+          value: `${isPos ? '+' : ''}${formatCurrencyAmount(diff, currency, true)}`,
+          subtext: `${prior !== 0 ? ((diff / prior) * 100).toFixed(1) : '0.0'}% Period over Period change`,
+        };
+      },
+    },
+  ],
+  sampleRowsGenerator: () => [],
+};
+registerReportSchema(SCHEMA_TAX_SUMMARY_COMPARATIVE);
 
 // ----------------------------------------------------------------------------
 // I. PROFITABILITY: PROFIT BY INVOICES SUMMARY (REP_S_00230)

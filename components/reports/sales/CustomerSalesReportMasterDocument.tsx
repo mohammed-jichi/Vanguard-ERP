@@ -18,74 +18,13 @@ export interface CustomerSalesReportMasterDocumentProps {
 // MOCK DATASETS TAILORED FOR CUSTOMER SALES & LOGISTICS
 // ============================================================================
 
-const TOP_CUSTOMERS_DATA = [
-  { rank: '1', code: 'CUST-001', name: 'Al-Baraka Supermarket S.A.R.L', category: 'Key Account', invoices: 48, avgTicket: '$412.50', totalLbp: '1,772,100,000.00', totalUsd: '$19,800.00' },
-  { rank: '2', code: 'CUST-003', name: 'Cedars Gourmet Retailers (Verdun)', category: 'Wholesale Depot', invoices: 36, avgTicket: '$385.00', totalLbp: '1,240,575,000.00', totalUsd: '$13,860.00' },
-  { rank: '3', code: 'CUST-004', name: 'Beirut Olive House Wholesale', category: 'Wholesale Depot', invoices: 28, avgTicket: '$440.00', totalLbp: '1,102,640,000.00', totalUsd: '$12,320.00' },
-  { rank: '4', code: 'CUST-005', name: 'Tripoli Food Hub & Market', category: 'Commercial Horeca', invoices: 22, avgTicket: '$390.00', totalLbp: '767,910,000.00', totalUsd: '$8,580.00' },
-  { rank: '5', code: 'CUST-002', name: 'Al-Nour Food Establishment', category: 'Wholesale Store', invoices: 19, avgTicket: '$320.00', totalLbp: '544,160,000.00', totalUsd: '$6,080.00' },
-  { rank: '6', code: 'CUST-008', name: 'Sidon Central Co-Op', category: 'Key Account', invoices: 16, avgTicket: '$360.00', totalLbp: '515,520,000.00', totalUsd: '$5,760.00' },
-  { rank: '7', code: 'CUST-012', name: 'Byblos Table Delicacies', category: 'Retail Outlet', invoices: 14, avgTicket: '$280.00', totalLbp: '350,840,000.00', totalUsd: '$3,920.00' },
-  { rank: '8', code: 'CUST-015', name: 'Chouf Mountain Pantry', category: 'Retail Outlet', invoices: 12, avgTicket: '$265.00', totalLbp: '284,610,000.00', totalUsd: '$3,180.00' },
-];
+const TOP_CUSTOMERS_DATA: any[] = [];
+const SALES_BY_CUSTOMERS_DATA: any[] = [];
+const CUSTOMER_IN_DETAIL_DATA: any[] = [];
+const SALES_BY_ZONE_DATA: any[] = [];
+const DELIVERY_SALES_SUMMARY_DATA: any[] = [];
+const DRIVERS_HISTORY_DATA: any[] = [];
 
-const SALES_BY_CUSTOMERS_DATA = [
-  { code: 'CUST-001', name: 'Al-Baraka Supermarket S.A.R.L', tier: 'Tier A (Key Enterprise)', terms: 'Net 30 Days', creditLimit: '$25,000.00', arBalance: '$4,200.00', totalLbp: '1,772,100,000.00', totalUsd: '$19,800.00' },
-  { code: 'CUST-002', name: 'Al-Nour Food Establishment', tier: 'Tier C (Wholesale)', terms: 'Net 15 Days', creditLimit: '$10,000.00', arBalance: '$1,450.00', totalLbp: '544,160,000.00', totalUsd: '$6,080.00' },
-  { code: 'CUST-003', name: 'Cedars Gourmet Retailers', tier: 'Tier A (Key Enterprise)', terms: 'Net 30 Days', creditLimit: '$20,000.00', arBalance: '$3,820.00', totalLbp: '1,240,575,000.00', totalUsd: '$13,860.00' },
-  { code: 'CUST-004', name: 'Beirut Olive House Wholesale', tier: 'Tier B (Commercial)', terms: 'Credit / On-Account', creditLimit: '$18,000.00', arBalance: '$5,110.00', totalLbp: '1,102,640,000.00', totalUsd: '$12,320.00' },
-  { code: 'CUST-005', name: 'Tripoli Food Hub & Market', tier: 'Tier B (Commercial)', terms: 'Cash On Delivery (COD)', creditLimit: '$5,000.00', arBalance: '$0.00', totalLbp: '767,910,000.00', totalUsd: '$8,580.00' },
-  { code: 'CUST-009', name: 'Ziad Al-Rifai Trading Co.', tier: 'Tier C (Wholesale)', terms: 'Net 60 Days', creditLimit: '$15,000.00', arBalance: '$12,450.00', totalLbp: '248,400,000.00', totalUsd: '$2,775.42' },
-];
-
-const CUSTOMER_IN_DETAIL_DATA = [
-  { invoiceNo: '102971', date: '04-Aug-2026', branch: 'Main Branch', items: '24x Extra Virgin Olive Oil 1000ml (EVOO)', payment: 'CREDIT', subtotal: '$265.50', returns: '$0.00', totalUsd: '$265.50' },
-  { invoiceNo: '103044', date: '09-Aug-2026', branch: 'Main Branch', items: '10x Bulk Olive Oil Commercial Tin 17.5L', payment: 'CREDIT', subtotal: '$1,005.60', returns: '$0.00', totalUsd: '$1,005.60' },
-  { invoiceNo: '103112', date: '14-Aug-2026', branch: 'Main Branch', items: '40x Jar Stuffed Vine Leaves 500g', payment: 'CREDIT', subtotal: '$156.42', returns: '-$15.60 (Damaged)', totalUsd: '$140.82' },
-  { invoiceNo: '103180', date: '21-Aug-2026', branch: 'Choueifat Plant', items: '15x Oak Charcoal 4kg Bags + 10x Molasses', payment: 'CREDIT', subtotal: '$124.80', returns: '$0.00', totalUsd: '$124.80' },
-  { invoiceNo: '103255', date: '28-Aug-2026', branch: 'Main Branch', items: '12x Glass Bottle Olive Oil 500ml', payment: 'CASH', subtotal: '$78.00', returns: '$0.00', totalUsd: '$78.00' },
-];
-
-const SALES_BY_ZONE_DATA = [
-  { zone: 'Beirut Metro (Ras Beirut, Hamra, Verdun)', route: 'Coastal Highway Corridor', accounts: 44, deliveries: 182, units: 1420, revenueLbp: '1,894,000,000.00', totalUsd: '$21,162.00' },
-  { zone: 'Greater Beirut (Ashrafieh, Sin El Fil)', route: 'Coastal Highway Corridor', accounts: 38, deliveries: 154, units: 1180, revenueLbp: '1,565,300,000.00', totalUsd: '$17,489.38' },
-  { zone: 'Mount Lebanon & Metn', route: 'Mountain Radial Route', accounts: 29, deliveries: 118, units: 910, revenueLbp: '1,210,000,000.00', totalUsd: '$13,519.55' },
-  { zone: 'Chouf & Aley Hills', route: 'Mountain Radial Route', accounts: 21, deliveries: 84, units: 640, revenueLbp: '782,500,000.00', totalUsd: '$8,743.02' },
-  { zone: 'South Lebanon (Sidon, Tyre Hub)', route: 'Inland Commercial Trunk', accounts: 35, deliveries: 146, units: 1250, revenueLbp: '1,420,000,000.00', totalUsd: '$15,865.92' },
-  { zone: 'North Lebanon (Tripoli, Koura)', route: 'Inland Commercial Trunk', accounts: 26, deliveries: 96, units: 820, revenueLbp: '990,000,000.00', totalUsd: '$11,061.45' },
-  { zone: 'Bekaa Valley Hub (Zahle, Chtaura)', route: 'Express Direct Dispatch', accounts: 18, deliveries: 68, units: 580, revenueLbp: '695,000,000.00', totalUsd: '$7,765.36' },
-];
-
-const DELIVERY_SALES_SUMMARY_DATA = [
-  { dispatchId: 'DSP-2026-0811', dateTime: '11-Aug-2026 10:15 AM', customer: 'Al-Baraka Supermarket S.A.R.L', zone: 'Beirut Metro', courier: 'Ali Al-Husseini (Van 01)', status: 'DELIVERED', tender: 'COD', totalUsd: '$840.00' },
-  { dispatchId: 'DSP-2026-0814', dateTime: '14-Aug-2026 11:30 AM', customer: 'Cedars Gourmet Retailers', zone: 'Beirut Metro', courier: 'Charbel Mattar (Van 02)', status: 'DELIVERED', tender: 'PREPAID', totalUsd: '$1,260.00' },
-  { dispatchId: 'DSP-2026-0818', dateTime: '18-Aug-2026 02:45 PM', customer: 'Tripoli Food Hub', zone: 'North Lebanon', courier: 'Supersonic Fleet Courier', status: 'DELIVERED', tender: 'CARD', totalUsd: '$980.00' },
-  { dispatchId: 'DSP-2026-0822', dateTime: '22-Aug-2026 09:00 AM', customer: 'Chouf Mountain Pantry', zone: 'Chouf & Aley', courier: 'Fadi Saade (Van 03)', status: 'DISPATCHED', tender: 'COD', totalUsd: '$450.00' },
-  { dispatchId: 'DSP-2026-0825', dateTime: '25-Aug-2026 04:20 PM', customer: 'Sidon Central Co-Op', zone: 'South Lebanon', courier: 'Ali Al-Husseini (Van 01)', status: 'DELIVERED', tender: 'CREDIT', totalUsd: '$1,120.00' },
-  { dispatchId: 'DSP-2026-0827', dateTime: '27-Aug-2026 01:10 PM', customer: 'Retail Walk-in Deliveries', zone: 'Greater Beirut', courier: 'Tarek Ziyad (Moto Express)', status: 'DELIVERED', tender: 'COD', totalUsd: '$235.00' },
-];
-
-const DRIVERS_HISTORY_DATA = [
-  { batchNo: 'BATCH-2026-0811', dateTime: '11-Aug-2026 08:30 AM', driver: 'Ali Al-Husseini', vehicle: 'Regional Van 01', drops: 14, cashLbp: '124,500,000.00', status: 'Delivered & Cash Collected', audit: 'Reconciled & Cleared' },
-  { batchNo: 'BATCH-2026-0814', dateTime: '14-Aug-2026 09:00 AM', driver: 'Charbel Mattar', vehicle: 'Regional Van 02', drops: 12, cashLbp: '88,200,000.00', status: 'Delivered & Card Paid', audit: 'Reconciled & Cleared' },
-  { batchNo: 'BATCH-2026-0818', dateTime: '18-Aug-2026 08:00 AM', driver: 'Supersonic Courier', vehicle: 'Express Truck 04', drops: 18, cashLbp: '142,800,000.00', status: 'Delivered & Cash Collected', audit: 'Reconciled & Cleared' },
-  { batchNo: 'BATCH-2026-0822', dateTime: '22-Aug-2026 10:15 AM', driver: 'Fadi Saade', vehicle: 'Regional Van 03', drops: 9, cashLbp: '45,600,000.00', status: 'Partial Return (Client Refusal)', audit: 'Pending Manager Sign-off' },
-  { batchNo: 'BATCH-2026-0825', dateTime: '25-Aug-2026 08:45 AM', driver: 'Ali Al-Husseini', vehicle: 'Regional Van 01', drops: 16, cashLbp: '112,000,000.00', status: 'Delivered & Cash Collected', audit: 'Reconciled & Cleared' },
-  { batchNo: 'BATCH-2026-0827', dateTime: '27-Aug-2026 01:30 PM', driver: 'Tarek Ziyad', vehicle: 'Moto Express 01', drops: 8, cashLbp: '32,150,000.00', status: 'Delivered & Cash Collected', audit: 'Reconciled & Cleared' },
-];
-
-/**
- * ============================================================================
- * CUSTOMER SALES MASTER REPORT DOCUMENT
- * Implements Vanguard ERP MasterReportDocument Accounting Standard across:
- * 1. Top N Customers by Amount (REP_S_00280)
- * 2. Sales by Customers (REP_S_00285)
- * 3. Customer in Detail (REP_S_00281)
- * 4. Sales by Zone (REP_S_00282)
- * 5. Delivery Sales Summary (REP_S_00283)
- * 6. Driver's History (REP_S_00284)
- * ============================================================================
- */
 export const CustomerSalesReportMasterDocument: React.FC<CustomerSalesReportMasterDocumentProps> = ({
   reportKey,
   reportTitle,

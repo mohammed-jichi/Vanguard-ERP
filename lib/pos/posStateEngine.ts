@@ -21,32 +21,7 @@ export interface PosUser {
   workstation: string;
 }
 
-export const POS_USERS: PosUser[] = [
-  {
-    id: '101',
-    name: 'Maya Khoury',
-    pin: '1234',
-    role: 'Cashier',
-    branch: 'Southern Olive and Oil Products - Main',
-    workstation: 'W#: 1',
-  },
-  {
-    id: '102',
-    name: 'Hadi Sleiman',
-    pin: '0000',
-    role: 'Admin',
-    branch: 'Southern Olive and Oil Products - Main',
-    workstation: 'W#: 1',
-  },
-  {
-    id: '103',
-    name: 'Ahmad Al-Hajj',
-    pin: '1111',
-    role: 'Cashier',
-    branch: 'Southern Olive and Oil Products - Main',
-    workstation: 'W#: 2',
-  },
-];
+export const POS_USERS: PosUser[] = [];
 
 export interface PosCartItem {
   id: string;

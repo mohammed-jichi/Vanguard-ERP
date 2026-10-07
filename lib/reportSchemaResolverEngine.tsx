@@ -490,7 +490,8 @@ export function formatCellValue(
   value: any,
   row: any,
   formatType?: ColumnFormatType,
-  activeCurrency: string = 'USD'
+  activeCurrency: string = 'USD',
+  columnMeta?: { key?: string; headerLabel?: string }
 ): React.ReactNode {
   if (value === undefined || value === null) {
     return <span className="text-slate-400 font-mono">-</span>;
@@ -500,9 +501,23 @@ export function formatCellValue(
     case 'currency': {
       const num = Number(value);
       if (isNaN(num)) return <span className="nowrap-cell">{String(value)}</span>;
+
+      // Determine explicit target currency from column metadata, row, or active filter
+      let targetCurrency = activeCurrency;
+      const keyLower = String(columnMeta?.key || '').toLowerCase();
+      const labelLower = String(columnMeta?.headerLabel || '').toLowerCase();
+
+      if (keyLower.includes('lbp') || labelLower.includes('(lbp)') || labelLower.includes('l.l.') || labelLower.includes('lbp')) {
+        targetCurrency = 'LBP';
+      } else if (keyLower.includes('usd') || labelLower.includes('($)') || labelLower.includes('usd')) {
+        targetCurrency = 'USD';
+      } else if (row?.currency) {
+        targetCurrency = row.currency;
+      }
+
       return (
         <span className="font-mono tabular-nums font-bold text-slate-900 numeric-cell nowrap-cell">
-          {formatCurrencyAmount(num, activeCurrency, true)}
+          {formatCurrencyAmount(num, targetCurrency, true)}
         </span>
       );
     }
