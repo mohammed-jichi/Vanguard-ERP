@@ -743,37 +743,37 @@ export default function NewEmployeeModal({
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm transition-opacity"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800"
+        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-white border border-slate-200 shadow-2xl rounded-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Header - Fixed / flex-shrink-0 */}
-        <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50/90 dark:bg-gray-900/90">
+        <div className="flex-shrink-0 px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                   {(initialData || employee || initialEmployee) ? `Edit Employee: ${formData.firstName} ${formData.lastName}` : 'New Employee (HR Personnel Engine)'}
                 </h2>
                 {(initialData || employee || initialEmployee) && (
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                     formData.status === 'Active'
-                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400'
-                      : 'bg-slate-100 text-slate-700 dark:bg-gray-800 dark:text-gray-300'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      : 'bg-slate-100 text-slate-600 border border-slate-200'
                   }`}>
                     {formData.status || 'Active'}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 dark:text-gray-400 font-medium">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Module 6 Personnel Master Record, Biometric Clock Binding & POS Credentials
               </p>
             </div>
@@ -783,7 +783,7 @@ export default function NewEmployeeModal({
             <button
               type="button"
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-xl hover:bg-slate-200/60 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg p-2 transition cursor-pointer"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
@@ -792,14 +792,14 @@ export default function NewEmployeeModal({
         </div>
 
         {/* Tab Switcher Header - Fixed / flex-shrink-0 */}
-        <div className="flex-shrink-0 flex items-center justify-between px-6 pt-3 border-b border-gray-200 dark:border-gray-800 bg-slate-50/50 dark:bg-gray-900/50">
+        <div className="flex-shrink-0 flex items-center justify-between px-6 pt-3 border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setActiveTab('personal')}
               className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'personal'
                   ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
-                  : 'border-transparent text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <User className="w-4 h-4" />
@@ -810,7 +810,7 @@ export default function NewEmployeeModal({
               onClick={() => setActiveTab('work_location')}
               className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'work_location'
                   ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
-                  : 'border-transparent text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <MapPin className="w-4 h-4" />
@@ -822,7 +822,7 @@ export default function NewEmployeeModal({
                 onClick={() => setActiveTab('schedule')}
                 className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'schedule'
                     ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
-                    : 'border-transparent text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
+                    : 'border-transparent text-slate-600 hover:text-slate-900'
                   }`}
               >
                 <Clock className="w-4 h-4" />
@@ -833,7 +833,7 @@ export default function NewEmployeeModal({
 
           {/* Active Switch Toggle at Top */}
           <div className="flex items-center gap-2 pb-2">
-            <span className="text-xs font-bold text-slate-700 dark:text-gray-300">{t('status', 'Status')}:</span>
+            <span className="text-xs font-bold text-slate-700">{t('status', 'Status')}:</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -841,8 +841,8 @@ export default function NewEmployeeModal({
                 onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.checked ? 'Active' : 'Inactive' }))}
                 className="sr-only peer"
               />
-              <div className="w-9 h-5 bg-slate-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-              <span className={`ml-2 text-xs font-bold ${formData.status === 'Active' ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-gray-400'}`}>
+              <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+              <span className={`ml-2 text-xs font-bold ${formData.status === 'Active' ? 'text-emerald-700' : 'text-slate-500'}`}>
                 {formData.status === 'Active' ? t('hr.status_active', 'Active') : t('hr.status_inactive', 'Inactive')}
               </span>
             </label>
@@ -861,8 +861,8 @@ export default function NewEmployeeModal({
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* 2 Cols: Employee Info */}
                 <div className="lg:col-span-2 space-y-4">
-                  <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
-                    <User className="w-3.5 h-3.5" />
+                  <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-slate-500" />
                     <span>{t('hr.employee_information', 'Employee Information')}</span>
                   </div>
 
@@ -1066,8 +1066,8 @@ export default function NewEmployeeModal({
 
                 {/* 1 Col: Profile Picture & Job Offer Uploads */}
                 <div className="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-                  <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
-                    <Upload className="w-3.5 h-3.5" />
+                  <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Upload className="w-3.5 h-3.5 text-slate-500" />
                     <span>{t('hr.uploads_and_documents', 'Uploads & Documents')}</span>
                   </div>
 
@@ -1143,9 +1143,9 @@ export default function NewEmployeeModal({
               </div>
 
               {/* Row 2: Work Information */}
-              <div className="border-t border-slate-200 pt-4 space-y-3">
-                <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
-                  <Briefcase className="w-3.5 h-3.5" />
+              <div className="border-t border-slate-100 pt-4 space-y-3">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5 text-slate-500" />
                   <span>{t('hr.work_information', 'Work Information')}</span>
                 </div>
 
@@ -1566,9 +1566,9 @@ export default function NewEmployeeModal({
               )}
 
               {/* Row 3: Address & Identification with Lebanese Cities Directory */}
-              <div className="border-t border-slate-200 pt-4 space-y-3">
-                <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
-                  <MapPin className="w-3.5 h-3.5" />
+              <div className="border-t border-slate-100 pt-4 space-y-3">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
                   <span>{t('hr.address_and_identification', 'Address & Identification')}</span>
                 </div>
 
@@ -1702,7 +1702,7 @@ export default function NewEmployeeModal({
                       <Shield className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                         {t('hr_rep.rbac_matrix_heading')}
                       </h4>
                       <p className="text-[11px] text-slate-500 font-medium">
@@ -1785,9 +1785,9 @@ export default function NewEmployeeModal({
           {activeTab === 'work_location' && (
             <div className="space-y-6">
               <div className="border border-slate-200 bg-slate-50/70 rounded-2xl p-4 space-y-4">
-                <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center justify-between">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
                   <span>{t('hr.available_in_brands_branches', 'Available in Brands / Branches')}</span>
-                  <span className="text-[11px] font-bold text-primary font-mono">1300 Choueifat Complex</span>
+                  <span className="text-[11px] font-bold text-slate-600 font-mono">1300 Choueifat Complex</span>
                 </div>
 
                 {/* Brand Dropdown */}
@@ -1913,21 +1913,21 @@ export default function NewEmployeeModal({
           </div>
 
           {/* Modal Footer - Fixed / Pinned */}
-          <div className="flex-shrink-0 px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-gray-900">
-            <div className="text-[11px] text-slate-500 dark:text-gray-400 font-semibold">
+          <div className="flex-shrink-0 px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/80">
+            <div className="text-[11px] text-slate-500 font-semibold">
               Fields marked with an asterisk (*) are strictly required by the Vanguard HR engine.
             </div>
             <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                className="text-slate-700 hover:bg-slate-200/70 border border-slate-200 rounded-lg px-4 py-2 font-medium transition cursor-pointer text-xs"
               >
                 {t('hr.cancel', 'Cancel')}
               </button>
               <button
                 type="submit"
-                className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-primary dark:hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm rounded-lg px-5 py-2 font-medium transition cursor-pointer flex items-center gap-2 text-xs"
               >
                 <Save className="w-4 h-4" />
                 <span>{t('hr.save_employee', 'Save')}</span>
@@ -1941,24 +1941,26 @@ export default function NewEmployeeModal({
         {/* ================================================================= */}
         {isPosConfigOpen && (
           <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm transition-opacity"
             onClick={() => setIsPosConfigOpen(false)}
             role="dialog"
             aria-modal="true"
           >
             <div
-              className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800"
+              className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-white border border-slate-200 shadow-2xl rounded-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header - Fixed/Pinned */}
-              <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50/90 dark:bg-gray-900/90">
+              <div className="flex-shrink-0 px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
                 <div className="flex items-center gap-2.5">
-                  <Laptop className="w-5 h-5 text-primary" />
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center">
+                    <Laptop className="w-4 h-4" />
+                  </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900">
                       POS & Backoffice Credentials: {formData.firstName || 'Operator'} {formData.lastName}
                     </h3>
-                    <p className="text-[11px] text-slate-500 dark:text-gray-400">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       Terminal interface localization, workstation authority, and hardware peripherals
                     </p>
                   </div>
@@ -1966,7 +1968,7 @@ export default function NewEmployeeModal({
                 <button
                   type="button"
                   onClick={() => setIsPosConfigOpen(false)}
-                  className="text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200 p-1.5 rounded-lg hover:bg-slate-200/60 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                  className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg p-2 transition cursor-pointer"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5" />
@@ -2171,9 +2173,9 @@ export default function NewEmployeeModal({
                 </div>
 
                 {/* Hardware Ports & Peripherals */}
-                <div className="border-t border-slate-200 pt-3 space-y-3">
-                  <div className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5 text-primary">
-                    <Printer className="w-3.5 h-3.5" />
+                <div className="border-t border-slate-100 pt-3 space-y-3">
+                  <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Printer className="w-3.5 h-3.5 text-slate-500" />
                     <span>{t('hr.hardware_peripherals', 'Hardware & Peripherals')}</span>
                   </div>
 
@@ -2258,13 +2260,13 @@ export default function NewEmployeeModal({
               </div>
 
               {/* POS Footer - Fixed/Pinned */}
-              <div className="flex-shrink-0 px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between bg-slate-50/80 dark:bg-gray-900/80">
+              <div className="flex-shrink-0 px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/80">
                 <button
                   type="button"
                   onClick={() => {
                     showPosToast('POS configuration broadcasted to all branches.');
                   }}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors cursor-pointer shadow-2xs"
+                  className="text-slate-700 hover:bg-slate-200/70 border border-slate-200 rounded-lg px-4 py-2 font-medium transition cursor-pointer text-xs bg-white shadow-xs"
                 >
                   Save for all Branches
                 </button>
@@ -2272,7 +2274,7 @@ export default function NewEmployeeModal({
                   <button
                     type="button"
                     onClick={() => setIsPosConfigOpen(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                    className="text-slate-700 hover:bg-slate-200/70 border border-slate-200 rounded-lg px-4 py-2 font-medium transition cursor-pointer text-xs"
                   >
                     Cancel
                   </button>
@@ -2281,7 +2283,7 @@ export default function NewEmployeeModal({
                     onClick={() => {
                       setIsPosConfigOpen(false);
                     }}
-                    className="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                    className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm rounded-lg px-5 py-2 font-medium transition cursor-pointer text-xs"
                   >
                     Save
                   </button>
@@ -2296,7 +2298,7 @@ export default function NewEmployeeModal({
         {/* ================================================================= */}
         {isApplyAllPromptOpen && (
           <div
-            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm transition-opacity"
             onClick={() => {
               setIsApplyAllPromptOpen(false);
               setApplyAllKey('');
@@ -2305,16 +2307,16 @@ export default function NewEmployeeModal({
             aria-modal="true"
           >
             <div
-              className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 shadow-2xl max-w-sm w-full space-y-4 animate-zoomIn"
+              className="relative bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl max-w-sm w-full space-y-4 animate-zoomIn"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
                   <Key className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">Broadcast POS Settings</h4>
-                  <p className="text-xs text-slate-600 dark:text-gray-400 mt-0.5">
+                  <h4 className="text-sm font-bold text-slate-900">Broadcast POS Settings</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Enter key to perform this action ?
                   </p>
                 </div>
@@ -2326,17 +2328,17 @@ export default function NewEmployeeModal({
                 value={applyAllKey}
                 onChange={(e) => setApplyAllKey(e.target.value)}
                 placeholder="Enter security key..."
-                className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl"
+                className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-hidden"
               />
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-gray-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => {
                     setIsApplyAllPromptOpen(false);
                     setApplyAllKey('');
                   }}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                  className="text-slate-700 hover:bg-slate-200/70 border border-slate-200 rounded-lg px-3.5 py-1.5 text-xs font-medium transition cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -2347,7 +2349,7 @@ export default function NewEmployeeModal({
                     setApplyAllKey('');
                     showPosToast('POS configuration successfully broadcast to all employees.');
                   }}
-                  className="px-4 py-1.5 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 transition-colors cursor-pointer shadow-xs"
+                  className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm rounded-lg px-4 py-1.5 text-xs font-medium transition cursor-pointer"
                 >
                   OK
                 </button>
