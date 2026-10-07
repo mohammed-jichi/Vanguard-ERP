@@ -34,6 +34,7 @@ import {
   isCustomDatePreset,
 } from '@/lib/dateRangeEngine';
 import { useLanguage } from '@/lib/LanguageContext';
+import DynamicReportView from './DynamicReportView';
 
 // ============================================================================
 // 1. DESIGN SYSTEM TYPES & INTERFACES (AUTHENTIC OMEGA ARCHITECTURE)
@@ -1111,10 +1112,21 @@ export default function ReportPageLayout({
             )}
 
             {/* Report Preview Container & Document Sheet Canvas */}
-            {table ? table : (
-              <ReportTableWrapper title={activeReport}>
+            {table ? (
+              <React.Fragment key={activeReport}>
+                {table}
+              </React.Fragment>
+            ) : children ? (
+              <ReportTableWrapper key={activeReport} title={activeReport}>
                 {children}
               </ReportTableWrapper>
+            ) : (
+              <DynamicReportView
+                key={activeReport}
+                reportId={activeReport}
+                reportTitle={activeReport}
+                hideToolbar={false}
+              />
             )}
           </main>
         </div>

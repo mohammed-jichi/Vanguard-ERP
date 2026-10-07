@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import MasterReportDocument from '@/components/reports/MasterReportDocument';
 import { ReportMetadata, ReportColumn, GrandTotal } from '@/types/reports';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -14,14 +14,6 @@ export interface TimeAndAttendanceMasterDocumentProps {
   branch?: string;
   filterValues?: Record<string, any>;
 }
-
-// ============================================================================
-// MOCK DATASETS FOR TIME & ATTENDANCE
-// ============================================================================
-
-const EMPLOYEE_ATTENDANCE_DATA: any[] = [];
-const TIME_AND_ATTENDANCE_PUNCH_DATA: any[] = [];
-const LABOR_COST_DATA: any[] = [];
 
 export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDocumentProps> = ({
   reportKey,
@@ -39,6 +31,32 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
 
   const resolvedCode = code || (isLaborCost ? 'REP_S_00303' : isPunchLedger ? 'REP_S_00302' : 'REP_S_00301');
   const resolvedTitle = reportTitle || (isLaborCost ? 'Labor Cost & Revenue Allocation' : isPunchLedger ? 'Time and Attendance Master Punch Ledger' : 'Employee Attendance & Shift Roster');
+
+  const [liveRows, setLiveRows] = useState<any[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const endpoint = isLaborCost
+      ? '/api/hr/employees?type=labor_cost'
+      : isPunchLedger
+      ? '/api/hr/attendance?type=punches'
+      : '/api/hr/attendance';
+
+    fetch(endpoint)
+      .then((res) => res.json())
+      .then((json) => {
+        if (!isMounted) return;
+        const rows = Array.isArray(json) ? json : (json?.data || json?.records || []);
+        setLiveRows(Array.isArray(rows) ? rows : []);
+      })
+      .catch(() => {
+        if (isMounted) setLiveRows([]);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isLaborCost, isPunchLedger]);
 
   const filterSummary = useMemo(() => {
     if (!filterValues) return undefined;
@@ -75,16 +93,17 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
       { key: 'totalCost', label: t('col_total_labor', 'Total Labor ($)'), width: '16%', align: 'right', isMonospace: true },
     ];
 
-    const grandTotal: GrandTotal = {
-      label: t('lbl_consolidated_labor', 'Consolidated Labor Expenditure (27 Active Personnel):'),
-      value: '$19,950.00',
-    };
+    const totalExpenditure = liveRows.reduce((acc, r) => acc + (Number(r.totalCost) || 0), 0);
+    const grandTotal: GrandTotal | undefined = liveRows.length > 0 ? {
+      label: t('lbl_consolidated_labor', `Consolidated Labor Expenditure (${liveRows.length} Personnel):`),
+      value: `$${totalExpenditure.toFixed(2)}`,
+    } : undefined;
 
     return (
       <MasterReportDocument
         meta={meta}
         columns={columns}
-        flatRows={LABOR_COST_DATA}
+        flatRows={liveRows}
         grandTotal={grandTotal}
       />
     );
@@ -101,16 +120,16 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
       { key: 'event', label: t('col_punch_direction', 'Direction'), width: '14%', align: 'center', isMonospace: true },
     ];
 
-    const grandTotal: GrandTotal = {
+    const grandTotal: GrandTotal | undefined = liveRows.length > 0 ? {
       label: t('lbl_total_punches_audited', 'Total Biometric Punches Audited:'),
-      value: '6 Recorded Punches (100% Integrity)',
-    };
+      value: `${liveRows.length} Recorded Punches (100% Integrity)`,
+    } : undefined;
 
     return (
       <MasterReportDocument
         meta={meta}
         columns={columns}
-        flatRows={TIME_AND_ATTENDANCE_PUNCH_DATA}
+        flatRows={liveRows}
         grandTotal={grandTotal}
       />
     );
@@ -126,16 +145,16 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     { key: 'clockOut', label: t('col_clock_out', 'Clock Out'), width: '12%', align: 'center', isMonospace: true },
   ];
 
-  const grandTotal: GrandTotal = {
-    label: t('lbl_total_shift_staff', 'Total Active Shift Staff (7 Checked In):'),
-    value: '58.7 Total Hours (5.7h Overtime)',
-  };
+  const grandTotal: GrandTotal | undefined = liveRows.length > 0 ? {
+    label: t('lbl_total_shift_staff', `Total Active Shift Staff (${liveRows.length} Records):`),
+    value: `${liveRows.length} Active Records`,
+  } : undefined;
 
   return (
     <MasterReportDocument
       meta={meta}
       columns={columns}
-      flatRows={EMPLOYEE_ATTENDANCE_DATA}
+      flatRows={liveRows}
       grandTotal={grandTotal}
     />
   );

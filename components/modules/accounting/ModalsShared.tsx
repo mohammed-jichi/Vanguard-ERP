@@ -359,34 +359,31 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
 
   if (!isOpen || !account) return null;
 
-  // Sample ledger transactions for preview
-  const sampleTransactions = [
-    {
-      id: 'tx-1',
-      date: '2026-09-01',
-      dateOfJv: '2026-09-01',
-      reference: 'OB-2026-01',
-      debit: account.account_type === 'ASSET' || account.account_type === 'EXPENSE' ? account.balance_first_cur * 0.8 : 0,
-      credit: account.account_type === 'LIABILITY' || account.account_type === 'REVENUE' || account.account_type === 'EQUITY' ? account.balance_first_cur * 0.8 : 0,
-      remark: 'Fiscal Period Opening Balance',
-      createdBy: 'Super Admin',
-      department: 'Finance'
-    },
-    {
-      id: 'tx-2',
-      date: '2026-09-15',
-      dateOfJv: '2026-09-15',
-      reference: 'JV-2026-1984',
-      debit: account.account_type === 'ASSET' ? account.balance_first_cur * 0.2 : 0,
-      credit: account.account_type === 'LIABILITY' ? account.balance_first_cur * 0.2 : 0,
-      remark: 'Settlement batch allocation',
-      createdBy: 'Finance Controller',
-      department: 'Treasury'
-    }
-  ];
+  // Live ledger transactions for account statement
+  const [transactions, setTransactions] = useState<any[]>([]);
 
-  const totalDebit = sampleTransactions.reduce((acc, t) => acc + t.debit, 0);
-  const totalCredit = sampleTransactions.reduce((acc, t) => acc + t.credit, 0);
+  useEffect(() => {
+    if (!account?.id) return;
+    let isMounted = true;
+    fetch(`/api/accounting/ledger?accountId=${encodeURIComponent(account.id)}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (isMounted && json?.data && Array.isArray(json.data)) {
+          setTransactions(json.data);
+        } else if (isMounted) {
+          setTransactions([]);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setTransactions([]);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [account?.id]);
+
+  const totalDebit = transactions.reduce((acc, t) => acc + (Number(t.debit) || 0), 0);
+  const totalCredit = transactions.reduce((acc, t) => acc + (Number(t.credit) || 0), 0);
   const netUSD = Math.abs(totalDebit - totalCredit);
   const netLBP = netUSD * LBP_RATE;
 
@@ -513,22 +510,30 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {sampleTransactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-muted/40 transition-colors">
-                  <td className="p-2.5 font-mono text-muted-foreground">{tx.date}</td>
-                  <td className="p-2.5 font-mono text-muted-foreground">{tx.dateOfJv}</td>
-                  <td className="p-2.5 font-mono font-bold text-primary">{tx.reference}</td>
-                  <td className="p-2.5 font-mono font-semibold text-emerald-700 text-right">
-                    {tx.debit > 0 ? `$${tx.debit.toFixed(2)}` : '-'}
+              {transactions.length > 0 ? (
+                transactions.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-muted/40 transition-colors">
+                    <td className="p-2.5 font-mono text-muted-foreground">{tx.date}</td>
+                    <td className="p-2.5 font-mono text-muted-foreground">{tx.dateOfJv || tx.date}</td>
+                    <td className="p-2.5 font-mono font-bold text-primary">{tx.reference || tx.voucher_no || tx.id}</td>
+                    <td className="p-2.5 font-mono font-semibold text-emerald-700 text-right">
+                      {Number(tx.debit) > 0 ? `$${Number(tx.debit).toFixed(2)}` : '-'}
+                    </td>
+                    <td className="p-2.5 font-mono font-semibold text-destructive text-right">
+                      {Number(tx.credit) > 0 ? `$${Number(tx.credit).toFixed(2)}` : '-'}
+                    </td>
+                    <td className="p-2.5 text-foreground max-w-xs truncate">{tx.remark || tx.description || '-'}</td>
+                    <td className="p-2.5 text-muted-foreground">{tx.createdBy || tx.created_by || 'System'}</td>
+                    <td className="p-2.5 text-muted-foreground">{tx.department || '-'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="p-8 text-center text-muted-foreground">
+                    {t('no_transactions', 'No ledger transactions recorded for this account.')}
                   </td>
-                  <td className="p-2.5 font-mono font-semibold text-destructive text-right">
-                    {tx.credit > 0 ? `$${tx.credit.toFixed(2)}` : '-'}
-                  </td>
-                  <td className="p-2.5 text-foreground max-w-xs truncate">{tx.remark}</td>
-                  <td className="p-2.5 text-muted-foreground">{tx.createdBy}</td>
-                  <td className="p-2.5 text-muted-foreground">{tx.department}</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

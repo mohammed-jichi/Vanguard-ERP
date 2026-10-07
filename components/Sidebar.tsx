@@ -1684,6 +1684,17 @@ export default function Sidebar({
                 <span>{t('pm_directory', 'Directory & Ledgers')}</span>
               </Link>
               <Link
+                href="/pressing-mill/reports"
+                className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
+                  pathname === '/pressing-mill/reports'
+                    ? 'bg-slate-100 text-teal-800 font-bold'
+                    : 'hover:text-slate-900 hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>{t('pm_reports', 'Mill Reports & Yield Audits')}</span>
+              </Link>
+              <Link
                 href="/pressing-mill/setup"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/setup'

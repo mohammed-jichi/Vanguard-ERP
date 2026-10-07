@@ -393,9 +393,7 @@ export default function MasterReportViewPage() {
 
           {/* Dynamic Switcher across Sales Control Specific Templates */}
           {!isSharedReport(selectedReport) && (selectedReport.startsWith('Transactions by') ||
-            selectedReport.includes('Duplicate Invoices') ||
-            selectedReport.includes('Cashier Shift') ||
-            selectedReport.includes('Void and Refund')) && (
+            selectedReport.includes('Duplicate Invoices')) && (
             <TransactionsByDateMasterDocument
               dynamicPeriodText={`Period: ${fromDate} to ${toDate}`}
               executionDate="06-Sep-2026"
@@ -646,6 +644,7 @@ export default function MasterReportViewPage() {
             !selectedReport.toLowerCase().includes('meter') &&
             activeMeta.code !== 'REP_S_00189' && (
               <UniversalReportTableResolver
+                key={activeMeta.code || selectedReport}
                 reportName={selectedReport}
                 reportCode={activeMeta.code}
                 moduleContext="sales"

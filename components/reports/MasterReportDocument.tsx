@@ -206,10 +206,10 @@ export function MasterReportDocument<T = any>({
                 >
                   <div className="flex flex-col items-center justify-center gap-1.5">
                     <span className="text-xs font-semibold text-slate-700">
-                      {t('No matching records found for the applied filter criteria.', 'No matching records found for the applied filter criteria.')}
+                      {t('no_live_records', 'No live records found for the selected period')}
                     </span>
                     <span className="text-[11px] text-slate-400 font-normal">
-                      {t('Try adjusting or clearing your active filter parameters.', 'Try adjusting or clearing your active filter parameters.')}
+                      {t('no_live_records_subtext', 'Try adjusting your date range or clearing active filter parameters.')}
                     </span>
                   </div>
                 </td>

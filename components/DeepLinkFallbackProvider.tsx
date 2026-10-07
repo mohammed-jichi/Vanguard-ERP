@@ -166,6 +166,23 @@ export function DeepLinkFallbackProvider({ children }: { children: React.ReactNo
     }, 7000);
   }, [dismissNotification]);
 
+  // System-wide Local Storage Purge of obsolete mock keys on initialization
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    try {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('vanguard_mock_') || key.startsWith('cached_mock_') || key.includes('_mock_'))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+    } catch (e) {
+      console.warn('[LocalStoragePurge] Non-fatal error clearing mock keys:', e);
+    }
+  }, []);
+
   return (
     <DeepLinkFallbackContext.Provider value={{ notifications, notifyFallback, dismissNotification }}>
       <Suspense fallback={null}>
