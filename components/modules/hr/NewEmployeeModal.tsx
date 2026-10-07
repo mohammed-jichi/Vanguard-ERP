@@ -2029,7 +2029,7 @@ export default function NewEmployeeModal({
               </button>
               <button
                 type="submit"
-                className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm rounded-lg px-5 py-2 font-medium transition cursor-pointer flex items-center gap-2 text-xs"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm rounded-lg px-5 py-2 font-medium transition cursor-pointer flex items-center gap-2 text-xs"
               >
                 <Save className="w-4 h-4" />
                 <span>{t('hr.save_employee', 'Save')}</span>

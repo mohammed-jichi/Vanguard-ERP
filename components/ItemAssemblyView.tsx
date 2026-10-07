@@ -2469,7 +2469,7 @@ export default function ItemAssemblyView() {
 // SUB-MODAL 1: PREVIEW SINGLE PRODUCTIONS MODAL
 // ============================================================================
 function PreviewSingleProductionsModal({
-isOpen,
+  isOpen,
   onClose,
   records,
   onOpenRecord,
@@ -2487,6 +2487,15 @@ isOpen,
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'POSTED' | 'DRAFT'>('ALL');
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const filtered = records.filter((r) => {
@@ -2502,17 +2511,31 @@ isOpen,
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
-      <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden animate-scale-in font-sans">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-scale-in font-sans"
+      >
         {/* Modal Header */}
-        <div className="bg-primary text-white px-5 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Search className="w-4 h-4 text-blue-200" />
-            <h2 className="text-sm font-bold tracking-wide">
-              Preview Item Assembly Records (Live Omega Data)
-            </h2>
+        <div className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center">
+              <Search className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                Preview Item Assembly Records
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">Live Omega Data</p>
+            </div>
           </div>
-          <button onClick={onClose} className="text-white hover:opacity-75 cursor-pointer">
+          <button
+            onClick={onClose}
+            className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -2668,7 +2691,7 @@ isOpen,
 // SUB-MODAL 2: PREVIEW MULTIPLE PRODUCTIONS MODAL
 // ============================================================================
 function PreviewMultipleProductionsModal({
-isOpen,
+  isOpen,
   onClose,
   records,
   onOpenRecord,
@@ -2681,19 +2704,43 @@ isOpen,
   onDeleteRecord: (id: number) => void;
 }) {
   const { t } = useLanguage();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
-      <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-4xl max-h-[80vh] flex flex-col overflow-hidden animate-scale-in font-sans">
-        <div className="bg-primary text-white px-5 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Search className="w-4 h-4 text-blue-200" />
-            <h2 className="text-sm font-bold tracking-wide">
-              Preview Multiple Item Assembly (Omega Live Data)
-            </h2>
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-scale-in font-sans"
+      >
+        <div className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center">
+              <Search className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                Preview Multiple Item Assembly
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">Omega Live Data</p>
+            </div>
           </div>
-          <button onClick={onClose} className="text-white hover:opacity-75 cursor-pointer">
+          <button
+            onClick={onClose}
+            className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -2769,7 +2816,7 @@ isOpen,
 // SUB-MODAL 3: ADD LOCATION MODAL
 // ============================================================================
 function AddLocationModal({
-isOpen,
+  isOpen,
   onClose,
   onAddLocation
 }: {
@@ -2780,45 +2827,66 @@ isOpen,
   const { t } = useLanguage();
   const [locationName, setLocationName] = useState('');
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
-      <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-md overflow-hidden animate-scale-in font-sans">
-        <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
-          <h2 className="text-sm font-bold">{t('add_location', 'Add Location')}</h2>
-          <button onClick={onClose} className="text-white hover:opacity-75">
-            <X className="w-4 h-4" />
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-scale-in font-sans"
+      >
+        <div className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-base font-bold text-slate-900">{t('add_location', 'Add Location')}</h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-5 space-y-4">
+        <div className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
               {t('location_description', 'Location Description*')}
             </label>
             <input
               type="text"
+              autoFocus
               placeholder={t('eg_packing_room_cold_store_2', 'e.g. Packing Room / Cold Store 2')}
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
-              className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
             />
           </div>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
             <button
+              type="button"
               onClick={onClose}
-              className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded"
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200/70 text-slate-700 text-xs font-medium rounded-lg transition-colors cursor-pointer"
             >
               {t('cancel', 'Cancel')}
             </button>
             <button
+              type="button"
               onClick={() => {
                 if (locationName.trim()) {
                   onAddLocation(locationName.trim());
                 }
               }}
               disabled={!locationName.trim()}
-              className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded disabled:opacity-50"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
             >
               {t('save_location', 'Save Location')}
             </button>
@@ -2833,7 +2901,7 @@ isOpen,
 // SUB-MODAL 4: IMPORT CSV MODAL
 // ============================================================================
 function ImportCsvModal({
-isOpen,
+  isOpen,
   onClose,
   onImport
 }: {
@@ -2843,6 +2911,15 @@ isOpen,
 }) {
   const { t } = useLanguage();
   const [csvText, setCsvText] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -2872,46 +2949,58 @@ isOpen,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-2xs p-4">
-      <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-lg overflow-hidden animate-scale-in font-sans">
-        <div className="bg-primary text-white px-5 py-3 flex items-center justify-between">
-          <h2 className="text-sm font-bold">{t('import_csv_multiple_item_assembly', 'Import CSV - Multiple Item Assembly')}</h2>
-          <button onClick={onClose} className="text-white hover:opacity-75">
-            <X className="w-4 h-4" />
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden animate-scale-in font-sans"
+      >
+        <div className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-base font-bold text-slate-900">{t('import_csv_multiple_item_assembly', 'Import CSV - Multiple Item Assembly')}</h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-5 space-y-4 text-xs">
+        <div className="p-6 space-y-4 text-xs">
           <p className="text-slate-600">
-            Paste CSV data below or click &quot;Import Sample Data&quot;. Required columns: <code>{t('codedescriptionqtyunit', 'Code,Description,Qty,Unit')}</code>
+            Paste CSV data below or click &quot;Import Sample Data&quot;. Required columns: <code className="font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">{t('codedescriptionqtyunit', 'Code,Description,Qty,Unit')}</code>
           </p>
           <textarea
             rows={5}
             placeholder="Code,Description,Qty,Unit&#10;ART300G*12,صندوق زعتر أحمر حلبي 300غ*12,25,BOX&#10;OST600GJAR,زعتر بلدي جنوبي 600غ,40,JAR"
             value={csvText}
             onChange={(e) => setCsvText(e.target.value)}
-            className="w-full border border-slate-300 rounded p-2.5 font-mono text-xs focus:ring-1 focus:ring-blue-500"
+            className="w-full border border-slate-200 rounded-xl p-3 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
-          <div className="flex justify-between items-center pt-2">
+          <div className="flex justify-between items-center pt-2 border-t border-slate-100">
             <button
+              type="button"
               onClick={() => {
                 setCsvText(
                   'Code,Description,Qty,Unit\nART300G*12,صندوق زعتر أحمر حلبي 300غ*12,25,BOX\nOST600GJAR,زعتر بلدي جنوبي 600غ,40,JAR\nEVOO-1L-CAN,زيت زيتون بكر ممتاز تنكة 1 ليتر,20,CAN'
                 );
               }}
-              className="text-blue-600 hover:underline font-semibold"
+              className="text-emerald-600 hover:text-emerald-700 hover:underline font-semibold cursor-pointer"
             >
               {t('load_sample_template', 'Load Sample Template')}
             </button>
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200/70 text-slate-700 font-medium rounded-lg transition-colors cursor-pointer"
               >
                 {t('cancel', 'Cancel')}
               </button>
               <button
+                type="button"
                 onClick={handleParseCsv}
-                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors shadow-xs cursor-pointer"
               >
                 {t('import_items', 'Import Items')}
               </button>

@@ -136,6 +136,22 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
     return () => window.removeEventListener('vanguard_hr_employees_updated', handleHREvent);
   }, [orgId]);
 
+  // Global Escape key listener for open modals
+  useEffect(() => {
+    if (!isModalOpen && !isSecurityQuestionConfirmOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (isSecurityQuestionConfirmOpen) {
+          setIsSecurityQuestionConfirmOpen(false);
+        } else if (isModalOpen) {
+          setIsModalOpen(false);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen, isSecurityQuestionConfirmOpen]);
+
   // Open Modal for Add New User
   const handleOpenAddUser = () => {
     setEditingUserId(null);
@@ -673,13 +689,14 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
       {/* 2. ADD USER / EDIT USER MODAL                                        */}
       {/* ==================================================================== */}
       {isModalOpen && !isNewEmployeeModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+          onClick={() => setIsModalOpen(false)}
+        >
           <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
-            onClick={() => setIsModalOpen(false)}
-          />
-
-          <div className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col z-10 animate-zoomIn overflow-hidden">
+            onClick={(e) => e.stopPropagation()}
+            className="relative bg-white border border-slate-200 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col z-10 animate-zoomIn overflow-hidden"
+          >
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/90">
               <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
@@ -1062,12 +1079,14 @@ export default function UsersManagementConsole({ initialTenantId }: UsersManagem
 
       {/* Confirmation Modal for Reset Security Question */}
       {isSecurityQuestionConfirmOpen && (
-        <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/45 backdrop-blur-sm"
+          onClick={() => setIsSecurityQuestionConfirmOpen(false)}
+        >
           <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
-            onClick={() => setIsSecurityQuestionConfirmOpen(false)}
-          />
-          <div className="relative bg-white rounded-2xl border border-slate-200 p-5 shadow-2xl max-w-sm w-full z-10 space-y-4 animate-zoomIn">
+            onClick={(e) => e.stopPropagation()}
+            className="relative bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl max-w-sm w-full z-10 space-y-4 animate-zoomIn"
+          >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
                 <HelpCircle className="w-5 h-5" />

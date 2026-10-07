@@ -84,6 +84,16 @@ export default function GoogleSignInPopup({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Global Escape key listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   // Handle Next / Sign In
@@ -105,9 +115,13 @@ export default function GoogleSignInPopup({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 animate-in fade-in duration-150">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 animate-in fade-in duration-150"
+    >
       {/* Chrome Window Container */}
       <div
+        onClick={(e) => e.stopPropagation()}
         className={`bg-[#202124] border border-[#3c4043] rounded-lg shadow-2xl flex flex-col overflow-hidden transition-all duration-200 ${
           isMaximized ? 'w-full h-full max-w-none rounded-none' : 'w-full max-w-[480px] min-h-[640px]'
         }`}

@@ -75,6 +75,24 @@ export default function EventVenueModal({
   const regions: OmegaRegionItem[] = lebanonGeoData.regions || [];
   const subregions: OmegaSubRegionItem[] = lebanonGeoData.subregions || [];
 
+  // Global Escape key listener
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (selectCityModalOpen) {
+          setSelectCityModalOpen(false);
+        } else if (selectStateModalOpen) {
+          setSelectStateModalOpen(false);
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, selectCityModalOpen, selectStateModalOpen, onClose]);
+
   // Reset or Populate form on open
   useEffect(() => {
     if (!isOpen) return;

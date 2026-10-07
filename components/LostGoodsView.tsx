@@ -1558,6 +1558,15 @@ function PreviewLostGoodsModal({
   const [allDatesChecked, setAllDatesChecked] = useState(true);
   const [selectedSers, setSelectedSers] = useState<Record<number, boolean>>({});
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const filtered = vouchers.filter((v) => {
@@ -1590,21 +1599,27 @@ function PreviewLostGoodsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 backdrop-blur-xs animate-in fade-in">
-      <div className="bg-white w-full max-w-4xl rounded-lg shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/45 p-4 sm:p-6 backdrop-blur-sm animate-in fade-in"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]"
+      >
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-slate-200 bg-background flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-100 bg-white flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-800">
+            <h3 className="text-base font-bold text-slate-900">
               {t('preview_lost_goods_inventory_items', 'Preview Lost Goods Inventory Items')}
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 mt-0.5">
               {t('preview_lost_goods_inventory_item', 'Preview Lost Goods Inventory Item records from Omega ERP database')}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 text-slate-400 hover:text-slate-600 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors"
+            className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -1809,20 +1824,38 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
   const { t } = useLanguage();
   const [locationName, setLocationName] = useState('');
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-      <div className="bg-white w-full max-w-sm rounded-lg shadow-xl overflow-hidden border border-slate-200">
-        <div className="px-4 py-3 bg-background border-b border-slate-200 flex items-center justify-between">
-          <h4 className="text-xs font-bold text-slate-800">{t('add_inventory_location', 'Add Inventory Location')}</h4>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/45 p-4 sm:p-6 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-slate-200"
+      >
+        <div className="px-5 py-4 bg-white border-b border-slate-100 flex items-center justify-between">
+          <h4 className="text-sm font-bold text-slate-900">{t('add_inventory_location', 'Add Inventory Location')}</h4>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
-        <div className="p-4 space-y-3">
+        <div className="p-5 space-y-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
               {t('location_description', 'Location Description')}
             </label>
             <input
@@ -1831,15 +1864,15 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
               placeholder={t('eg_refrigerated_room_2', 'e.g. Refrigerated Room 2')}
-              className="w-full h-8 px-3 text-xs border border-slate-300 rounded focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-full h-9 px-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
         </div>
-        <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+        <div className="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="h-8 px-3 text-xs text-slate-600 hover:bg-slate-200 rounded font-medium"
+            className="h-8 px-3 text-xs text-slate-600 hover:bg-slate-200/70 rounded-lg font-medium transition-colors"
           >
             {t('cancel', 'Cancel')}
           </button>
@@ -1847,7 +1880,7 @@ function AddLocationModal({ isOpen, onClose, onAdd }: AddLocationModalProps) {
             type="button"
             disabled={!locationName.trim()}
             onClick={() => onAdd(locationName.trim())}
-            className="h-8 px-4 text-xs bg-primary hover:bg-[#1a252f] disabled:opacity-50 text-white rounded font-medium"
+            className="h-8 px-4 text-xs bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors shadow-xs"
           >
             {t('save_location', 'Save Location')}
           </button>
@@ -1871,20 +1904,38 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
   const { t } = useLanguage();
   const [reasonName, setReasonName] = useState('');
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-      <div className="bg-white w-full max-w-sm rounded-lg shadow-xl overflow-hidden border border-slate-200">
-        <div className="px-4 py-3 bg-background border-b border-slate-200 flex items-center justify-between">
-          <h4 className="text-xs font-bold text-slate-800">{t('add_lost_goods_reason', 'Add Lost Goods Reason')}</h4>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/45 p-4 sm:p-6 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-slate-200"
+      >
+        <div className="px-5 py-4 bg-white border-b border-slate-100 flex items-center justify-between">
+          <h4 className="text-sm font-bold text-slate-900">{t('add_lost_goods_reason', 'Add Lost Goods Reason')}</h4>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
-        <div className="p-4 space-y-3">
+        <div className="p-5 space-y-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
               {t('reason_description', 'Reason Description')}
             </label>
             <input
@@ -1893,15 +1944,15 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
               value={reasonName}
               onChange={(e) => setReasonName(e.target.value)}
               placeholder={t('eg_temperature_spoilage', 'e.g. Temperature Spoilage')}
-              className="w-full h-8 px-3 text-xs border border-slate-300 rounded focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-full h-9 px-3 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
         </div>
-        <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+        <div className="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="h-8 px-3 text-xs text-slate-600 hover:bg-slate-200 rounded font-medium"
+            className="h-8 px-3 text-xs text-slate-600 hover:bg-slate-200/70 rounded-lg font-medium transition-colors"
           >
             {t('cancel', 'Cancel')}
           </button>
@@ -1909,7 +1960,7 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
             type="button"
             disabled={!reasonName.trim()}
             onClick={() => onAdd(reasonName.trim())}
-            className="h-8 px-4 text-xs bg-primary hover:bg-[#1a252f] disabled:opacity-50 text-white rounded font-medium"
+            className="h-8 px-4 text-xs bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors shadow-xs"
           >
             {t('save_reason', 'Save Reason')}
           </button>
@@ -1934,6 +1985,15 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
   const [fileName, setFileName] = useState('');
   const [csvContent, setCsvContent] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -2006,11 +2066,20 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-      <div className="bg-white w-full max-w-md rounded-lg shadow-xl overflow-hidden border border-slate-200">
-        <div className="px-5 py-3.5 bg-background border-b border-slate-200 flex items-center justify-between">
-          <h4 className="text-sm font-bold text-slate-800">{t('import_wastage', 'Import Wastage')}</h4>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/45 p-4 sm:p-6 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-slate-200"
+      >
+        <div className="px-5 py-4 bg-white border-b border-slate-100 flex items-center justify-between">
+          <h4 className="text-sm font-bold text-slate-900">{t('import_wastage', 'Import Wastage')}</h4>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -2048,11 +2117,11 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
           </p>
         </div>
 
-        <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+        <div className="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="h-8 px-4 text-xs text-slate-600 hover:bg-slate-200 rounded font-medium"
+            className="h-8 px-4 text-xs text-slate-600 hover:bg-slate-200/70 rounded-lg font-medium transition-colors cursor-pointer"
           >
             {t('cancel', 'Cancel')}
           </button>
@@ -2060,7 +2129,7 @@ function ImportCsvModal({ isOpen, onClose, onImport }: ImportCsvModalProps) {
             type="button"
             disabled={!csvContent || isProcessing}
             onClick={handleParseAndUpload}
-            className="h-8 px-4 text-xs bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white rounded font-medium flex items-center gap-1.5"
+            className="h-8 px-4 text-xs bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg font-medium flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
           >
             <Check className="w-3.5 h-3.5" />
             <span>{isProcessing ? 'Importing...' : 'Upload & Import'}</span>
@@ -2101,27 +2170,43 @@ function PrintVoucherModal({
   totalSum
 }: PrintVoucherModalProps) {
   const { t } = useLanguage();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-      <div className="bg-white w-full max-w-3xl rounded-lg shadow-2xl overflow-hidden border border-slate-300 flex flex-col max-h-[92vh]">
-        <div className="px-5 py-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between print:hidden">
-          <h4 className="text-xs font-bold text-slate-800 flex items-center gap-2">
-            <Printer className="w-4 h-4 text-slate-600" />
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/45 p-4 sm:p-6 backdrop-blur-sm"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]"
+      >
+        <div className="px-6 py-4 bg-white border-b border-slate-100 flex items-center justify-between print:hidden">
+          <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <Printer className="w-4 h-4 text-emerald-600" />
             <span>Print Preview - Lost Goods Voucher #{voucherNumber}</span>
           </h4>
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="h-7 px-3 bg-primary hover:bg-[#1a252f] text-white text-xs font-medium rounded flex items-center gap-1"
+              className="h-8 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>{t('print_now', 'Print Now')}</span>
             </button>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 p-1"
+              className="w-8 h-8 text-slate-400 hover:text-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
