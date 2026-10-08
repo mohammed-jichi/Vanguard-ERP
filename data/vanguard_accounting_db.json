@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-08T08:51:15.511Z",
+  "last_updated": "2026-10-08T09:02:04.601Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,22 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-944faf9",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (944faf9) - Harmonize dynamic report views, engine endpoints, and print sheets",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "944faf9557693782e2d7437b44135faeca8e41cf",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-08T08:51:34.000Z"
+    },
     {
       "id": "act-rel-4fa99e4",
       "company_id": 1300,
@@ -6228,6 +6244,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-944faf9",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Harmonize dynamic report views, engine endpoints, and print sheets",
+      "message": "feat(reports): harmonize dynamic report views, engine endpoints, and print sheets",
+      "timestamp": "2026-10-08T08:51:34.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "944faf9557693782e2d7437b44135faeca8e41cf",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-4fa99e4",
       "type": "SYSTEM_RELEASE",
