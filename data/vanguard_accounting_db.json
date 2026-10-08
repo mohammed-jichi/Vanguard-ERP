@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-08T12:33:53.230Z",
+  "last_updated": "2026-10-08T12:50:42.305Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-821e18f",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (821e18f) - Wire secondary Reports Builder button, purge top duplicate, and differentiate leave report",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "821e18fb05d1beead6ec5d78bc8134d729545a6e",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "HR & Payroll",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-08T12:34:20.000Z"
+    },
     {
       "id": "act-rel-fbc8e29",
       "company_id": 1300,
@@ -6294,6 +6311,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-821e18f",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Wire secondary Reports Builder button, purge top duplicate, and differentiate leave report",
+      "message": "fix(hr-reports): wire secondary Reports Builder button, purge top duplicate, and differentiate leave report",
+      "timestamp": "2026-10-08T12:34:20.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "821e18fb05d1beead6ec5d78bc8134d729545a6e",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-fbc8e29",
       "type": "SYSTEM_RELEASE",

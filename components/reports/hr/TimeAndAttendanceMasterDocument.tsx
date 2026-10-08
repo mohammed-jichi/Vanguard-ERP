@@ -310,6 +310,11 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     totalPages: 1,
   };
 
+  const emptyStateProps = {
+    emptyStateTitle: t('no_biometric_punches', 'No biometric or punch events recorded for the selected date range and terminal filters.'),
+    emptyStateSubtitle: t('zkteco_sync_notice', 'Terminal live stream will populate automatically once ZKTeco sync daemon is active.')
+  };
+
   const loadingNotice = isLoading ? (
     <div className="text-[11px] font-semibold text-slate-500 animate-pulse px-1 pb-2 print:hidden">
       {t('loading_report_sheet', 'Loading report sheet...')}
@@ -360,7 +365,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     return (
       <>
         {loadingNotice}
-        <MasterReportDocument
+        <MasterReportDocument {...emptyStateProps}
           meta={meta}
           columns={columns}
           flatRows={laborRows}
@@ -389,7 +394,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     return (
       <>
         {loadingNotice}
-        <MasterReportDocument
+        <MasterReportDocument {...emptyStateProps}
           meta={meta}
           columns={columns}
           flatRows={liveRows}
@@ -428,7 +433,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     return (
       <>
         {loadingNotice}
-        <MasterReportDocument
+        <MasterReportDocument {...emptyStateProps}
           meta={meta}
           columns={columns}
           flatRows={blomRows}
@@ -472,7 +477,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     return (
       <>
         {loadingNotice}
-        <MasterReportDocument
+        <MasterReportDocument {...emptyStateProps}
           meta={meta}
           columns={columns}
           flatRows={cashRows}
@@ -502,7 +507,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     return (
       <>
         {loadingNotice}
-        <MasterReportDocument
+        <MasterReportDocument {...emptyStateProps}
           meta={meta}
           columns={columns}
           flatRows={liveRows}
@@ -543,7 +548,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     return (
       <>
         {loadingNotice}
-        <MasterReportDocument
+        <MasterReportDocument {...emptyStateProps}
           meta={leaveMeta}
           columns={columns}
           flatRows={liveRows}
@@ -578,7 +583,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     return (
       <>
         {loadingNotice}
-        <MasterReportDocument
+        <MasterReportDocument {...emptyStateProps}
           meta={meta}
           columns={columns}
           flatRows={exceptionRows}
@@ -614,7 +619,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     return (
       <>
         {loadingNotice}
-        <MasterReportDocument
+        <MasterReportDocument {...emptyStateProps}
           meta={meta}
           columns={columns}
           flatRows={reconRows}
@@ -642,7 +647,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
   return (
     <>
       {loadingNotice}
-      <MasterReportDocument
+      <MasterReportDocument {...emptyStateProps}
         meta={meta}
         columns={columns}
         flatRows={liveRows}

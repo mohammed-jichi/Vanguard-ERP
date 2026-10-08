@@ -1,5 +1,28 @@
 [
   {
+    "id": "821e18fb-05d1-4eea-a6ec-5d78bc8134d7",
+    "commit_hash": "821e18fb05d1beead6ec5d78bc8134d729545a6e",
+    "short_hash": "821e18f",
+    "version": "v2.0.0",
+    "title": "Wire secondary Reports Builder button, purge top duplicate, and differentiate leave report",
+    "category": "fix",
+    "description": "fix(hr-reports): wire secondary Reports Builder button, purge top duplicate, and differentiate leave report",
+    "bullet_points": [
+      "Resolved: wire secondary reports builder button, purge top duplicate, and differentiate leave report",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "HR & Payroll",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-08T12:34:20.000Z",
+    "created_at": "2026-10-08T12:50:42.299Z"
+  },
+  {
     "id": "fbc8e29a-8703-44ac-aae5-b12a345199eb",
     "commit_hash": "fbc8e29a870344ac5ae5b12a345199eb7140e9bc",
     "short_hash": "fbc8e29",

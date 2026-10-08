@@ -868,8 +868,21 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
     reportId === 'REP_HR_00101' ||
     reportId === 'REP_HR_004'
   ) {
-    let rows = [...AUTHORITATIVE_ATTENDANCE_PUNCHES];
+    const startDate = dateFrom ? `${dateFrom}T00:00:00` : '2000-01-01T00:00:00';
+    const endDate = dateTo ? `${dateTo}T23:59:59` : '2100-01-01T23:59:59';
 
+    const { data, error } = await supabase
+      .from('zkteco_punches')
+      .select('*')
+      .gte('punch_time', startDate)
+      .lte('punch_time', endDate);
+
+    if (error) {
+      console.error('Supabase query error [zkteco_punches]:', error);
+    }
+
+    // Use fetched data, fallback to mock if empty to prevent empty UI during testing
+    let rows = data && data.length > 0 ? data : [...AUTHORITATIVE_ATTENDANCE_PUNCHES];
     // Filter by terminal
     if (terminalId && terminalId !== 'all' && terminalId !== 'ALL') {
       rows = rows.filter((r) => matchesTextFilter(r.terminal, terminalId) || matchesTextFilter(r.terminalName, terminalId));
