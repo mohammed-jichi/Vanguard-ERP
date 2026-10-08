@@ -1,31 +1,49 @@
 'use client';
 
-import React, { useState, useEffect, Suspense, useMemo } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, Suspense, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/lib/LanguageContext';
 import UnifiedModuleReportsHub, { ReportCategory } from '@/components/reports/UnifiedModuleReportsHub';
 import UnifiedPrintableReportSheet from '@/components/reports/UnifiedPrintableReportSheet';
-import { EmployeeAttendanceTemplate } from '@/components/reports/sales/EmployeeAttendanceTemplate';
+import TimeAndAttendanceMasterDocument from '@/components/reports/hr/TimeAndAttendanceMasterDocument';
 import { getDefaultInitialDateRange, formatDisplayDate } from '@/lib/dateRangeEngine';
 import UnifiedHRConsole from '@/components/modules/hr/UnifiedHRConsole';
 import PersonnelMasterConsole from '@/components/modules/hr/PersonnelMasterConsole';
-import { 
-  Users, 
-  Clock, 
-  DollarSign, 
-  CheckCircle2, 
-  Download, 
-  FileSpreadsheet, 
-  Activity, 
-  Printer, 
-  ShieldCheck, 
-  Building2, 
-  Cpu,
-  Calendar,
-  Layers,
-  FileText
-} from 'lucide-react';
+import { LayoutTemplate, X, Play } from 'lucide-react';
+
+const ALL_FACILITIES = 'All Facilities';
+const HR_BRANCH_OPTIONS = [ALL_FACILITIES, 'Southern Olive and Oil Products - Main', 'Nabatieh Distribution Branch'];
+
+const HR_DEPARTMENT_OPTIONS: { value: string; labelKey: string; label: string }[] = [
+  { value: 'Pressing', labelKey: 'dept_pressing', label: 'Pressing & Plant Operations' },
+  { value: 'Packaging', labelKey: 'dept_packaging', label: 'Packaging & Bottling Line' },
+  { value: 'Logistics', labelKey: 'dept_logistics', label: 'SuperSonic Fleet Logistics' },
+  { value: 'Sales', labelKey: 'dept_sales', label: 'Sales & Commercial Wholesale' },
+  { value: 'Accounting', labelKey: 'dept_accounting', label: 'Accounting & Administration' },
+  { value: 'Management', labelKey: 'dept_management', label: 'Management' },
+];
+
+const HR_TERMINAL_OPTIONS = ['Choueifat Bio-01', 'Choueifat Bio-02', 'Nabatieh Bio-01'];
+
+interface HRAppliedFilters {
+  fromDate: string;
+  toDate: string;
+  branch: string;
+  department: string;
+  terminal: string;
+}
+
+/** Reports rendered by the live biometric / labor document (vs. static sheets). */
+function isLiveTimeAndAttendanceReport(name: string): boolean {
+  if (!name) return true;
+  return (
+    name.includes('Labor Cost') ||
+    name.includes('Attendance') ||
+    name.includes('Biometric') ||
+    name.includes('Overtime') ||
+    name.includes('Terminal')
+  );
+}
 
 function HRPageContent() {
   const { t, dir } = useLanguage();
@@ -48,11 +66,63 @@ function HRPageContent() {
   
   const initialDateRange = getDefaultInitialDateRange('This Month');
   const [period, setPeriod] = useState<string>(initialDateRange.preset);
-  const [branch, setBranch] = useState<string>('Main Branch');
+  const [branch, setBranch] = useState<string>(ALL_FACILITIES);
   const [fromDate, setFromDate] = useState(initialDateRange.fromDate);
   const [toDate, setToDate] = useState(initialDateRange.toDate);
   const [deptFilter, setDeptFilter] = useState<string>('ALL');
   const [terminalFilter, setTerminalFilter] = useState<string>('ALL');
+
+  // Filters committed to the live data fetcher. Dropdowns edit the draft state above;
+  // only "Filter Report" (or running from the Reports Builder) commits them here.
+  const [appliedFilters, setAppliedFilters] = useState<HRAppliedFilters>({
+    fromDate: initialDateRange.fromDate,
+    toDate: initialDateRange.toDate,
+    branch: ALL_FACILITIES,
+    department: 'ALL',
+    terminal: 'ALL',
+  });
+
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+
+  const handleFilterReport = useCallback(() => {
+    setAppliedFilters({
+      fromDate,
+      toDate,
+      branch,
+      department: deptFilter,
+      terminal: terminalFilter,
+    });
+  }, [fromDate, toDate, branch, deptFilter, terminalFilter]);
+
+  const handleResetFilters = useCallback(() => {
+    const range = getDefaultInitialDateRange('This Month');
+    setPeriod(range.preset);
+    setFromDate(range.fromDate);
+    setToDate(range.toDate);
+    setBranch(ALL_FACILITIES);
+    setDeptFilter('ALL');
+    setTerminalFilter('ALL');
+    setAppliedFilters({
+      fromDate: range.fromDate,
+      toDate: range.toDate,
+      branch: ALL_FACILITIES,
+      department: 'ALL',
+      terminal: 'ALL',
+    });
+  }, []);
+
+  const handleRunFromBuilder = useCallback((reportName: string, next: HRAppliedFilters) => {
+    setSelectedReport(reportName);
+    setPeriod('Date Range');
+    setFromDate(next.fromDate);
+    setToDate(next.toDate);
+    setBranch(next.branch);
+    setDeptFilter(next.department);
+    setTerminalFilter(next.terminal);
+    setAppliedFilters(next);
+    setActiveTab('reports');
+    setIsBuilderOpen(false);
+  }, []);
 
   // Sync tab with URL parameter changes
   useEffect(() => {
@@ -122,62 +192,16 @@ function HRPageContent() {
               </p>
             </div>
 
-            {/* Tab Switcher */}
-            <div className="flex flex-wrap items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200 text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => setActiveTab('employees')}
-                className="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-white/60"
-              >
-                <Users size={13} />
-                <span>Personnel</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('attendance')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === 'attendance' 
-                    ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                }`}
-              >
-                <Clock size={13} />
-                <span>{t('attendance_shifts_tab', 'Attendance & Shifts')}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('payroll')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === 'payroll' 
-                    ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                }`}
-              >
-                <DollarSign size={13} />
-                <span>{t('payroll_runs_tab', 'Payroll Runs & Payslips')}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('reports');
-                  setSelectedReport('Monthly Payroll & Biometric Attendance Reconciliation');
-                }}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === 'reports' 
-                    ? 'bg-primary text-primary-foreground shadow-xs font-bold' 
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                }`}
-              >
-                <FileText size={13} />
-                <span>{t('HR Reports Hub', 'HR Reports Hub')}</span>
-                <span className="text-[9.5px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-black font-mono">
-                  REP_HR
-                </span>
-              </button>
-            </div>
+            {/* Reports Builder */}
+            <button
+              type="button"
+              id="hr-reports-builder-btn"
+              onClick={() => setIsBuilderOpen(true)}
+              className="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-xs"
+            >
+              <LayoutTemplate size={13} />
+              <span>{t('reports_builder', 'Reports Builder')}</span>
+            </button>
           </div>
 
           {/* CORE WORKSTATION (Attendance, Payroll) */}
@@ -193,6 +217,8 @@ function HRPageContent() {
             reportMenuData={hrReportMenuData}
             selectedReport={selectedReport}
             onSelectReport={(r) => setSelectedReport(r)}
+            onFilterReport={handleFilterReport}
+            onResetFilters={handleResetFilters}
             period={period}
             setPeriod={setPeriod}
             branch={branch}
@@ -201,56 +227,45 @@ function HRPageContent() {
             setFromDate={setFromDate}
             toDate={toDate}
             setToDate={setToDate}
-            branchOptions={['Southern Olive and Oil Products - Main']}
+            branchOptions={HR_BRANCH_OPTIONS}
             filterControls={
               <>
                 <select
+                  id="hr-report-filter-department"
                   className="border border-slate-400 rounded p-1.5 text-[13px] w-48 !text-black !font-bold !bg-white focus:outline-none focus:border-blue-600 shadow-xs cursor-pointer"
                   value={deptFilter}
                   onChange={(e) => setDeptFilter(e.target.value)}
                 >
                   <option value="ALL">{t('all_departments', 'All Departments')}</option>
-                  <option value="Pressing">{t('dept_pressing', 'Pressing & Plant Operations')}</option>
-                  <option value="Packaging">{t('dept_packaging', 'Packaging & Bottling Line')}</option>
-                  <option value="Logistics">{t('dept_logistics', 'SuperSonic Fleet Logistics')}</option>
-                  <option value="Sales">{t('dept_sales', 'Sales & Commercial Wholesale')}</option>
-                  <option value="Accounting">{t('dept_accounting', 'Accounting & Administration')}</option>
+                  {HR_DEPARTMENT_OPTIONS.map((d) => (
+                    <option key={d.value} value={d.value}>{t(d.labelKey, d.label)}</option>
+                  ))}
                 </select>
 
                 <select
+                  id="hr-report-filter-terminal"
                   className="border border-slate-400 rounded p-1.5 text-[13px] w-44 !text-black !font-bold !bg-white focus:outline-none focus:border-blue-600 shadow-xs cursor-pointer"
                   value={terminalFilter}
                   onChange={(e) => setTerminalFilter(e.target.value)}
                 >
                   <option value="ALL">{t('all_zkteco_terminals', 'All ZKTeco Terminals')}</option>
-                  <option value="Choueifat Bio-01">Choueifat Bio-01</option>
-                  <option value="Choueifat Bio-02">Choueifat Bio-02</option>
-                  <option value="Nabatieh Bio-01">Nabatieh Bio-01</option>
+                  {HR_TERMINAL_OPTIONS.map((term) => (
+                    <option key={term} value={term}>{term}</option>
+                  ))}
                 </select>
               </>
             }
           >
-            {/* 1. Biometric Attendance Reconciliation (REP_HR_001) */}
-            {(!selectedReport || selectedReport.includes('Attendance') || selectedReport.includes('Biometric') || selectedReport.includes('Overtime') || selectedReport.includes('Terminal')) && (
-              <EmployeeAttendanceTemplate
-                hideToolbar={true}
-                reportTitle={selectedReport || "Monthly Payroll & Biometric Attendance Reconciliation"}
+            {/* 1. Biometric Attendance / Punch Ledger / Labor Cost — live, filter-bound */}
+            {isLiveTimeAndAttendanceReport(selectedReport) && (
+              <TimeAndAttendanceMasterDocument
+                key={selectedReport}
+                reportKey={selectedReport || 'Monthly Payroll & Biometric Attendance Reconciliation'}
+                reportTitle={selectedReport || 'Monthly Payroll & Biometric Attendance Reconciliation'}
                 executionDate={formatDisplayDate(new Date())}
-                fromDate={fromDate}
-                toDate={toDate}
-                dynamicPeriodText={`Period: ${fromDate} to ${toDate}`}
-              />
-            )}
-
-            {/* 2. Direct Labor Cost Breakdown (REP_HR_002) */}
-            {selectedReport.includes('Labor Cost') && (
-              <EmployeeAttendanceTemplate
-                hideToolbar={true}
-                reportTitle="Department Direct Labor Cost Breakdown"
-                executionDate={formatDisplayDate(new Date())}
-                fromDate={fromDate}
-                toDate={toDate}
-                dynamicPeriodText={`Period: ${fromDate} to ${toDate}`}
+                branch={appliedFilters.branch}
+                filterValues={appliedFilters}
+                dynamicPeriodText={`Period: ${appliedFilters.fromDate} to ${appliedFilters.toDate}`}
               />
             )}
 
@@ -362,6 +377,209 @@ function HRPageContent() {
       )}
         </>
       )}
+
+      {isBuilderOpen && (
+        <HRReportsBuilderModal
+          groups={hrReportMenuData.map((c) => ({
+            category: c.category,
+            items: (((c as any).items || []) as unknown[]).filter((i): i is string => typeof i === 'string'),
+          }))}
+          initialReport={selectedReport}
+          initialFilters={appliedFilters}
+          onClose={() => setIsBuilderOpen(false)}
+          onRun={handleRunFromBuilder}
+        />
+      )}
+    </div>
+  );
+}
+
+interface HRReportsBuilderModalProps {
+  groups: { category: string; items: string[] }[];
+  initialReport: string;
+  initialFilters: HRAppliedFilters;
+  onClose: () => void;
+  onRun: (reportName: string, filters: HRAppliedFilters) => void;
+}
+
+function HRReportsBuilderModal({ groups, initialReport, initialFilters, onClose, onRun }: HRReportsBuilderModalProps) {
+  const { t, dir } = useLanguage();
+  const [report, setReport] = useState<string>(initialReport);
+  const [draft, setDraft] = useState<HRAppliedFilters>(initialFilters);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const update = (patch: Partial<HRAppliedFilters>) => setDraft((prev) => ({ ...prev, ...patch }));
+  const isRangeValid = !draft.fromDate || !draft.toDate || draft.fromDate <= draft.toDate;
+
+  const fieldClass =
+    'w-full border border-slate-300 rounded-md py-1.5 px-2.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-slate-500 shadow-2xs';
+  const labelClass = 'text-[11px] font-semibold text-slate-600';
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 print:hidden"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="hr-reports-builder-title"
+        dir={dir}
+        className="w-full max-w-3xl bg-white rounded-xl border border-slate-200 shadow-xl flex flex-col max-h-[90vh]"
+      >
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
+          <h2 id="hr-reports-builder-title" className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <LayoutTemplate size={15} />
+            {t('reports_builder', 'Reports Builder')}
+          </h2>
+          <button
+            type="button"
+            id="hr-reports-builder-close"
+            onClick={onClose}
+            aria-label={t('close', 'Close')}
+            className="p-1.5 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-5 overflow-y-auto">
+          {/* Report picker */}
+          <div className="space-y-3">
+            <span className={labelClass}>{t('select_report', 'Select Report')}</span>
+            {groups.map((g) => (
+              <div key={g.category} className="space-y-1">
+                <div className="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">{g.category}</div>
+                {g.items.map((item) => (
+                  <label
+                    key={item}
+                    className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md border text-xs cursor-pointer transition-colors ${
+                      report === item
+                        ? 'border-slate-900 bg-slate-900 text-white font-semibold'
+                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="hr-builder-report"
+                      value={item}
+                      checked={report === item}
+                      onChange={() => setReport(item)}
+                      className="sr-only"
+                    />
+                    {t(item, item)}
+                  </label>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          {/* Parameters */}
+          <div className="space-y-3">
+            <span className={labelClass}>{t('report_parameters', 'Report Parameters')}</span>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="hr-builder-from" className={labelClass}>{t('from_date', 'From Date')}</label>
+                <input
+                  id="hr-builder-from"
+                  type="date"
+                  value={draft.fromDate}
+                  onChange={(e) => update({ fromDate: e.target.value })}
+                  className={`${fieldClass} font-mono`}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="hr-builder-to" className={labelClass}>{t('to_date', 'To Date')}</label>
+                <input
+                  id="hr-builder-to"
+                  type="date"
+                  value={draft.toDate}
+                  onChange={(e) => update({ toDate: e.target.value })}
+                  className={`${fieldClass} font-mono`}
+                />
+              </div>
+            </div>
+            {!isRangeValid && (
+              <p className="text-[11px] text-red-600">{t('invalid_date_range', 'From Date must be on or before To Date.')}</p>
+            )}
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="hr-builder-branch" className={labelClass}>{t('facility', 'Facility')}</label>
+              <select
+                id="hr-builder-branch"
+                value={draft.branch}
+                onChange={(e) => update({ branch: e.target.value })}
+                className={`${fieldClass} cursor-pointer`}
+              >
+                {HR_BRANCH_OPTIONS.map((b) => (
+                  <option key={b} value={b}>{t(b, b)}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="hr-builder-dept" className={labelClass}>{t('department', 'Department')}</label>
+              <select
+                id="hr-builder-dept"
+                value={draft.department}
+                onChange={(e) => update({ department: e.target.value })}
+                className={`${fieldClass} cursor-pointer`}
+              >
+                <option value="ALL">{t('all_departments', 'All Departments')}</option>
+                {HR_DEPARTMENT_OPTIONS.map((d) => (
+                  <option key={d.value} value={d.value}>{t(d.labelKey, d.label)}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="hr-builder-terminal" className={labelClass}>{t('biometric_terminal', 'Biometric Terminal')}</label>
+              <select
+                id="hr-builder-terminal"
+                value={draft.terminal}
+                onChange={(e) => update({ terminal: e.target.value })}
+                className={`${fieldClass} cursor-pointer`}
+              >
+                <option value="ALL">{t('all_zkteco_terminals', 'All ZKTeco Terminals')}</option>
+                {HR_TERMINAL_OPTIONS.map((term) => (
+                  <option key={term} value={term}>{term}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-slate-200 bg-slate-50 rounded-b-xl">
+          <button
+            type="button"
+            id="hr-reports-builder-cancel"
+            onClick={onClose}
+            className="h-8 px-3 text-xs font-medium rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 transition cursor-pointer"
+          >
+            {t('cancel', 'Cancel')}
+          </button>
+          <button
+            type="button"
+            id="hr-reports-builder-run"
+            disabled={!report || !isRangeValid}
+            onClick={() => onRun(report, draft)}
+            className="h-8 px-3 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Play size={13} />
+            {t('run_report', 'Run Report')}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

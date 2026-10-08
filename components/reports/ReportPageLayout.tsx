@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Printer,
@@ -231,7 +231,15 @@ export interface ReportPageLayoutProps {
   header?: React.ReactNode;
   filters?: React.ReactNode;
   metrics?: React.ReactNode; // Strictly omitted from display per Omega specification
-  table?: React.ReactNode;
+  /**
+   * Report canvas. Pass a render function to receive the filter values committed
+   * via "Filter Report" so the live data fetcher queries with the exact parameters.
+   */
+  table?: React.ReactNode | ((appliedFilters: Record<string, any>, activeReport: string) => React.ReactNode);
+  /** Fired with the committed filter values when "Filter Report" is clicked. */
+  onApplyFilters?: (values: Record<string, any>) => void;
+  /** Fired when "Reset Filters" is clicked. */
+  onResetFilters?: () => void;
   className?: string;
   // Optional 2-column left corridor customization
   moduleTitle?: string;
@@ -447,10 +455,10 @@ export function ExportButtons({
       <button
         type="button"
         onClick={handlePrint}
-        className="h-8 px-3 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-white shadow-none transition inline-flex items-center gap-1.5 cursor-pointer"
+        className="h-8 px-3 text-xs font-medium rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer"
         title={t('print_report', 'Print Report')}
       >
-        <Printer className="w-3.5 h-3.5 text-slate-200" />
+        <Printer className="w-3.5 h-3.5 text-white/90" />
         <span>{t('print_report', 'Print')}</span>
       </button>
 
@@ -661,7 +669,7 @@ export function ReportFilters({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="flex-1 lg:flex-initial w-full h-8 px-3 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-white shadow-none transition inline-flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+            className="flex-1 lg:flex-initial w-full h-8 px-3 text-xs font-medium rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition inline-flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
           >
             <Filter className="w-3.5 h-3.5 shrink-0" />
             <span>{t('filter_report', 'Filter Report')}</span>
@@ -1022,6 +1030,8 @@ export default function ReportPageLayout({
   selectedReport: externalSelectedReport,
   onSelectReport,
   sidebar,
+  onApplyFilters,
+  onResetFilters,
 }: ReportPageLayoutProps) {
   const { t } = useLanguage();
   const [paperSize, setPaperSize] = useState<PaperSize>('A4');
@@ -1048,10 +1058,34 @@ export default function ReportPageLayout({
   );
 
   const activeReport = externalSelectedReport !== undefined ? externalSelectedReport : internalSelectedReport;
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, any>>({});
 
   const handleSelect = (name: string) => {
     setInternalSelectedReport(name);
+    setAppliedFilters({});
     if (onSelectReport) onSelectReport(name);
+  };
+
+  // Reset committed filters whenever the active report changes (including externally
+  // controlled selection) so a new report never inherits another report's parameters.
+  useEffect(() => {
+    setAppliedFilters({});
+  }, [activeReport]);
+
+  const handleApplyFilters = (vals: Record<string, any>) => {
+    // Expose canonical aliases so downstream fetchers receive consistent keys.
+    const normalized: Record<string, any> = {
+      ...vals,
+      department: vals.department ?? vals.departmentCostCenter ?? vals.dept,
+      terminal: vals.terminal ?? vals.biometricTerminal,
+    };
+    setAppliedFilters(normalized);
+    onApplyFilters?.(normalized);
+  };
+
+  const handleResetFilters = () => {
+    setAppliedFilters({});
+    onResetFilters?.();
   };
 
   return (
@@ -1106,15 +1140,18 @@ export default function ReportPageLayout({
               filters
             ) : (
               <DynamicReportFilterRenderer
+                key={activeReport}
                 activeReportKey={activeReport}
                 module={moduleKey as any}
+                onApplyFilters={handleApplyFilters}
+                onResetFilters={handleResetFilters}
               />
             )}
 
             {/* Report Preview Container & Document Sheet Canvas */}
             {table ? (
               <React.Fragment key={activeReport}>
-                {table}
+                {typeof table === 'function' ? table(appliedFilters, activeReport) : table}
               </React.Fragment>
             ) : children ? (
               <ReportTableWrapper key={activeReport} title={activeReport}>
@@ -1122,9 +1159,14 @@ export default function ReportPageLayout({
               </ReportTableWrapper>
             ) : (
               <DynamicReportView
-                key={activeReport}
+                key={`${activeReport}-${JSON.stringify(appliedFilters)}`}
                 reportId={activeReport}
                 reportTitle={activeReport}
+                filterValues={appliedFilters}
+                fromDate={appliedFilters.fromDate}
+                toDate={appliedFilters.toDate}
+                branch={appliedFilters.branch}
+                currency={appliedFilters.currency}
                 hideToolbar={false}
               />
             )}
