@@ -463,6 +463,35 @@ const AUTHORITATIVE_CASH_WAGES = [
   },
 ];
 
+const MAIN_FACILITY = 'Southern Olive and Oil Products - Main';
+const NABATIEH_FACILITY = 'Nabatieh Distribution Branch';
+
+/** Department headcount & shift allocation roster (42 active staff). */
+const AUTHORITATIVE_STAFFING_ROSTER = [
+  { department: 'Management', position: 'General Manager', assignedShift: 'General Shift (08:00 - 17:00)', activeHeadcount: 2, supervisor: 'Mohammed Jichi', facility: MAIN_FACILITY },
+  { department: 'Accounting', position: 'Accountant', assignedShift: 'General Shift (08:00 - 17:00)', activeHeadcount: 3, supervisor: 'Hussein Jichi', facility: MAIN_FACILITY },
+  { department: 'Sales', position: 'Wholesale Sales Representative', assignedShift: 'General Shift (08:00 - 17:00)', activeHeadcount: 5, supervisor: 'Hiba Aloulou', facility: MAIN_FACILITY },
+  { department: 'Pressing', position: 'Mill Operator', assignedShift: 'Early Shift (06:30 - 15:30)', activeHeadcount: 8, supervisor: 'Fadi Khoury', facility: MAIN_FACILITY },
+  { department: 'Pressing', position: 'Seasonal Harvest Crew', assignedShift: 'Early Shift (06:30 - 15:30)', activeHeadcount: 6, supervisor: 'Fadi Khoury', facility: MAIN_FACILITY },
+  { department: 'Packaging', position: 'Bottling Line Operator', assignedShift: 'Day Shift (07:00 - 16:00)', activeHeadcount: 10, supervisor: 'Samir Haddad', facility: NABATIEH_FACILITY },
+  { department: 'Logistics', position: 'Fleet Driver', assignedShift: 'Day Shift (07:00 - 16:00)', activeHeadcount: 8, supervisor: 'Rami Zein', facility: NABATIEH_FACILITY },
+];
+
+/** Leave, absence & sick-day requests for the September 2026 period. */
+const AUTHORITATIVE_LEAVE_RECORDS = [
+  { empId: '653', name: 'Rami Zein', department: 'Logistics', leaveType: 'Emergency Leave', startDate: '2026-09-02', endDate: '2026-09-02', totalDays: 1, approvalStatus: 'APPROVED', facility: NABATIEH_FACILITY },
+  { empId: '650', name: 'Fadi Khoury', department: 'Pressing', leaveType: 'Sick Leave', startDate: '2026-09-08', endDate: '2026-09-09', totalDays: 2, approvalStatus: 'APPROVED', facility: MAIN_FACILITY },
+  { empId: 'C-703', name: 'Youssef Hamdan', department: 'Pressing', leaveType: 'Sick Leave', startDate: '2026-09-10', endDate: '2026-09-10', totalDays: 1, approvalStatus: 'REJECTED', facility: MAIN_FACILITY },
+  { empId: '652', name: 'Samir Haddad', department: 'Packaging', leaveType: 'Annual Leave', startDate: '2026-09-14', endDate: '2026-09-18', totalDays: 5, approvalStatus: 'APPROVED', facility: NABATIEH_FACILITY },
+  { empId: '649', name: 'Hiba Aloulou', department: 'Sales', leaveType: 'Annual Leave', startDate: '2026-09-21', endDate: '2026-09-23', totalDays: 3, approvalStatus: 'PENDING', facility: MAIN_FACILITY },
+  { empId: '651', name: 'Ahmad Mroueh', department: 'Pressing', leaveType: 'Sick Leave', startDate: '2026-09-25', endDate: '2026-09-26', totalDays: 2, approvalStatus: 'APPROVED', facility: MAIN_FACILITY },
+  { empId: '644', name: 'Hussein Jichi', department: 'Accounting', leaveType: 'Unpaid Leave', startDate: '2026-09-29', endDate: '2026-09-30', totalDays: 2, approvalStatus: 'PENDING', facility: MAIN_FACILITY },
+];
+
+/** Standard contracted hours per month used to derive hourly rate / OT hours. */
+const STANDARD_MONTHLY_HOURS = 176;
+const OVERTIME_MULTIPLIER = 1.5;
+
 const AUTHORITATIVE_MILL_INTAKE = [
   {
     id: 'WB-2026-081',
@@ -738,6 +767,92 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
   const repIdClean = clean(reportId);
   const registeredDef = getReportDefinition(reportId);
 
+  // 0a. Department Headcount & Allocation Roster
+  // (must precede the HR timeclock domain, which also matches 'headcount')
+  // --------------------------------------------------------------------------
+  if (
+    repIdClean.includes('headcount') ||
+    repIdClean.includes('allocation roster') ||
+    repIdClean.includes('department staffing') ||
+    reportId === 'REP_HR_004'
+  ) {
+    let rows = [...AUTHORITATIVE_STAFFING_ROSTER];
+
+    if (departmentId && departmentId !== 'all' && departmentId !== 'ALL') {
+      rows = rows.filter((r) => matchesTextFilter(r.department, departmentId));
+    }
+    if (facilityId && facilityId !== 'all' && facilityId !== 'ALL') {
+      rows = rows.filter((r) => matchesTextFilter(r.facility, facilityId));
+    }
+
+    const columns: ReportColumnConfig[] = [
+      { key: 'department', label: 'Department', align: 'left', format: 'text' },
+      { key: 'position', label: 'Position', align: 'left', format: 'text' },
+      { key: 'assignedShift', label: 'Assigned Shift', align: 'left', format: 'text' },
+      { key: 'activeHeadcount', label: 'Active Headcount', align: 'center', format: 'number' },
+      { key: 'supervisor', label: 'Supervisor', align: 'left', format: 'text' },
+      { key: 'facility', label: 'Branch / Facility', align: 'left', format: 'text' },
+    ];
+
+    const totalHeadcount = rows.reduce((acc, r) => acc + (Number(r.activeHeadcount) || 0), 0);
+
+    return {
+      reportId,
+      columns,
+      rows,
+      summaryTotals: { totalHeadcount, allocationCount: rows.length },
+      totalRecords: rows.length,
+    };
+  }
+
+  // 0b. Leave, Absences & Sick Days Statement
+  // --------------------------------------------------------------------------
+  if (
+    repIdClean.includes('leave') ||
+    repIdClean.includes('absences') ||
+    repIdClean.includes('sick days') ||
+    reportId === 'REP_HR_006'
+  ) {
+    let rows = [...AUTHORITATIVE_LEAVE_RECORDS];
+
+    if (departmentId && departmentId !== 'all' && departmentId !== 'ALL') {
+      rows = rows.filter((r) => matchesTextFilter(r.department, departmentId));
+    }
+    if (facilityId && facilityId !== 'all' && facilityId !== 'ALL') {
+      rows = rows.filter((r) => matchesTextFilter(r.facility, facilityId));
+    }
+    if (dateFrom && dateTo) {
+      // Include any leave that overlaps the selected period.
+      rows = rows.filter((r) => r.startDate <= dateTo && r.endDate >= dateFrom);
+    }
+    if (status && status !== 'all' && status !== 'ALL') {
+      rows = rows.filter((r) => clean(r.approvalStatus) === clean(status));
+    }
+
+    const columns: ReportColumnConfig[] = [
+      { key: 'empId', label: 'Emp ID', align: 'left', format: 'text' },
+      { key: 'name', label: 'Employee Name', align: 'left', format: 'text' },
+      { key: 'department', label: 'Department', align: 'left', format: 'text' },
+      { key: 'leaveType', label: 'Leave Type', align: 'left', format: 'text' },
+      { key: 'startDate', label: 'Start Date', align: 'center', format: 'date' },
+      { key: 'endDate', label: 'End Date', align: 'center', format: 'date' },
+      { key: 'totalDays', label: 'Total Days', align: 'center', format: 'number' },
+      { key: 'approvalStatus', label: 'Approval Status', align: 'center', format: 'badge' },
+    ];
+
+    const approvedDays = rows
+      .filter((r) => r.approvalStatus === 'APPROVED')
+      .reduce((acc, r) => acc + (Number(r.totalDays) || 0), 0);
+
+    return {
+      reportId,
+      columns,
+      rows,
+      summaryTotals: { totalRequests: rows.length, approvedDays },
+      totalRecords: rows.length,
+    };
+  }
+
   // 1. HR & Timeclock Domain
   // --------------------------------------------------------------------------
   if (
@@ -837,11 +952,12 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
     }
 
     const columns: ReportColumnConfig[] = [
-      { key: 'empCode', label: 'Emp Code', align: 'left', format: 'text' },
+      { key: 'empCode', label: 'Emp ID', align: 'left', format: 'text' },
       { key: 'name', label: 'Employee Name', align: 'left', format: 'text' },
-      { key: 'blomIban', label: 'BLOM IBAN', align: 'left', format: 'text' },
-      { key: 'netTransferred', label: 'Net USD', align: 'right', format: 'currency' },
-      { key: 'transferRef', label: 'Transfer Reference', align: 'left', format: 'text' },
+      { key: 'blomIban', label: 'IBAN', align: 'left', format: 'text' },
+      { key: 'transferMode', label: 'Transfer Mode', align: 'left', format: 'text' },
+      { key: 'grossSalary', label: 'Gross Salary ($)', align: 'right', format: 'currency' },
+      { key: 'netTransferred', label: 'Net Transferred ($)', align: 'right', format: 'currency' },
       { key: 'transferStatus', label: 'Status', align: 'center', format: 'badge' },
     ];
 
@@ -883,10 +999,10 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
       { key: 'empId', label: 'Emp ID', align: 'left', format: 'text' },
       { key: 'name', label: 'Employee Name', align: 'left', format: 'text' },
       { key: 'department', label: 'Department', align: 'left', format: 'text' },
-      { key: 'basicPay', label: 'Basic Pay', align: 'right', format: 'currency' },
-      { key: 'cashOvertime', label: 'Cash Overtime', align: 'right', format: 'currency' },
-      { key: 'advancesDeducted', label: 'Advances Deducted', align: 'right', format: 'currency' },
-      { key: 'netCashPaid', label: 'Net Cash Paid ($)', align: 'right', format: 'currency' },
+      { key: 'basicPay', label: 'Basic Cash ($)', align: 'right', format: 'currency' },
+      { key: 'cashOvertime', label: 'Overtime ($)', align: 'right', format: 'currency' },
+      { key: 'advancesDeducted', label: 'Advances ($)', align: 'right', format: 'currency' },
+      { key: 'netCashPaid', label: 'Net Payable ($)', align: 'right', format: 'currency' },
       { key: 'voucherNo', label: 'Signature / Voucher #', align: 'left', format: 'text' },
     ];
 
@@ -917,7 +1033,17 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
     reportId === 'REP_HR_002' ||
     reportId === 'REP_HR_003'
   ) {
-    let rows = [...AUTHORITATIVE_PAYROLL_DATA];
+    // Enrich with contracted regular hours and OT hours derived from OT pay
+    // (OT hours = OT pay / (hourly rate x 1.5), hourly rate = base / 176).
+    let rows = AUTHORITATIVE_PAYROLL_DATA.map((r) => {
+      const base = Number(r.baseSalary) || 0;
+      const otPay = Number(r.overtimePay) || 0;
+      const hourlyRate = base / STANDARD_MONTHLY_HOURS;
+      const overtimeHours = hourlyRate > 0
+        ? Math.round((otPay / (hourlyRate * OVERTIME_MULTIPLIER)) * 10) / 10
+        : 0;
+      return { ...r, regularHours: STANDARD_MONTHLY_HOURS, overtimeHours };
+    });
 
     if (departmentId && departmentId !== 'all' && departmentId !== 'ALL') {
       rows = rows.filter((r) => matchesTextFilter(r.department, departmentId));

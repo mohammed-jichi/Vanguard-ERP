@@ -16,7 +16,7 @@ export interface TimeAndAttendanceMasterDocumentProps {
   filterValues?: Record<string, any>;
 }
 
-type HRReportView = 'labor' | 'blom' | 'cash' | 'punch' | 'exceptions' | 'reconciliation' | 'roster';
+type HRReportView = 'labor' | 'blom' | 'cash' | 'staffing' | 'leave' | 'punch' | 'exceptions' | 'reconciliation' | 'roster';
 
 /** Values that mean "no restriction" for a dropdown filter. */
 function isAllValue(val?: string | null): boolean {
@@ -36,6 +36,8 @@ export function resolveHRReportView(reportKey: string): HRReportView {
   if (key.includes('labor')) return 'labor';
   if (key.includes('blom') || key.includes('electronic salary') || key.includes('salary transfer')) return 'blom';
   if (key.includes('cash wages') || key.includes('disbursal') || key.includes('receipt register')) return 'cash';
+  if (key.includes('headcount') || key.includes('allocation roster') || key.includes('department staffing')) return 'staffing';
+  if (key.includes('leave') || key.includes('absences') || key.includes('sick days')) return 'leave';
   if (
     key.includes('punch') ||
     key.includes('terminal') ||
@@ -58,6 +60,8 @@ const VIEW_DEFAULTS: Record<HRReportView, { code: string; queryId: string; title
   labor: { code: 'REP_S_00303', queryId: 'REP_S_00303', title: 'Labor Cost & Revenue Allocation' },
   blom: { code: 'REP_HR_003', queryId: 'REP_HR_003', title: 'BLOM Bank Electronic Salary Transfer Audit' },
   cash: { code: 'REP_HR_005', queryId: 'REP_HR_005', title: 'CASH WAGES DISBURSAL & RECEIPT REGISTER' },
+  staffing: { code: 'REP_HR_004', queryId: 'REP_HR_004', title: 'Department Headcount & Allocation Roster' },
+  leave: { code: 'REP_HR_006', queryId: 'REP_HR_006', title: 'Leave, Absences & Sick Days Statement' },
   punch: { code: 'REP_S_00302', queryId: 'REP_S_00302', title: 'Time and Attendance Master Punch Ledger' },
   exceptions: { code: 'REP_HR_00102', queryId: 'REP_S_00301', title: 'Overtime, Lateness & Shift Exceptions Log' },
   reconciliation: { code: 'REP_HR_00101', queryId: 'REP_S_00301', title: 'Monthly Payroll & Biometric Attendance Reconciliation' },
@@ -312,39 +316,45 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
     </div>
   ) : null;
 
-  // 1. Labor Cost View (aggregated per department / cost center)
+  // 1. Department Direct Labor Cost Breakdown (summary per department)
   if (view === 'labor') {
     const columns: ReportColumn<any>[] = [
-      { key: 'costCenter', label: t('col_cost_center', 'Cost Center'), width: '14%', align: 'left', isMonospace: true },
-      { key: 'name', label: t('col_dept_operation_unit', 'Department / Operation Unit'), width: '30%', align: 'left' },
-      { key: 'headcount', label: t('col_staff_count', 'Staff Count'), width: '12%', align: 'center', isMonospace: true },
-      { key: 'baseSalary', label: t('col_regular_wages', 'Regular Wages ($)'), width: '14%', align: 'right', isMonospace: true },
-      { key: 'overtime', label: t('col_overtime_pay', 'Overtime Pay ($)'), width: '14%', align: 'right', isMonospace: true },
-      { key: 'totalCost', label: t('col_total_labor', 'Total Labor ($)'), width: '16%', align: 'right', isMonospace: true },
+      { key: 'department', label: t('col_department', 'Department'), width: '24%', align: 'left' },
+      { key: 'headcount', label: t('col_headcount', 'Headcount'), width: '12%', align: 'center', isMonospace: true },
+      { key: 'regularHoursDisplay', label: t('col_total_regular_hours', 'Total Regular Hours'), width: '16%', align: 'right', isMonospace: true },
+      { key: 'overtimeHoursDisplay', label: t('col_total_ot_hours', 'Total OT Hours'), width: '14%', align: 'right', isMonospace: true },
+      { key: 'grossCostDisplay', label: t('col_total_gross_cost', 'Total Gross Cost ($)'), width: '18%', align: 'right', isMonospace: true },
+      { key: 'avgCostPerHourDisplay', label: t('col_avg_cost_hr', 'Avg Cost/Hr'), width: '16%', align: 'right', isMonospace: true },
     ];
 
-    const byDept = new Map<string, { costCenter: string; name: string; headcount: number; baseSalary: number; overtime: number; totalCost: number }>();
+    const byDept = new Map<string, { department: string; headcount: number; regularHours: number; overtimeHours: number; grossCost: number }>();
     for (const r of liveRows) {
       const deptName = r.department || r.dept || 'Unassigned';
-      const bucket = byDept.get(deptName) || { costCenter: r.costCenter || '—', name: deptName, headcount: 0, baseSalary: 0, overtime: 0, totalCost: 0 };
-      bucket.headcount += Number(r.headcount) || 1;
-      bucket.baseSalary += Number(r.baseSalary) || 0;
-      bucket.overtime += Number(r.overtime ?? r.overtimePay) || 0;
-      bucket.totalCost += Number(r.totalCost ?? r.grossSalary) || 0;
+      const bucket = byDept.get(deptName) || { department: deptName, headcount: 0, regularHours: 0, overtimeHours: 0, grossCost: 0 };
+      bucket.headcount += 1;
+      bucket.regularHours += Number(r.regularHours) || 0;
+      bucket.overtimeHours += Number(r.overtimeHours) || 0;
+      bucket.grossCost += Number(r.grossSalary) || 0;
       byDept.set(deptName, bucket);
     }
-    const laborRows = Array.from(byDept.values()).map((b) => ({
-      ...b,
-      baseSalary: b.baseSalary.toFixed(2),
-      overtime: b.overtime.toFixed(2),
-      totalCost: b.totalCost.toFixed(2),
-    }));
+    const buckets = Array.from(byDept.values()).sort((a, b) => b.grossCost - a.grossCost);
+    const laborRows = buckets.map((b) => {
+      const hours = b.regularHours + b.overtimeHours;
+      return {
+        ...b,
+        regularHoursDisplay: b.regularHours.toFixed(1),
+        overtimeHoursDisplay: b.overtimeHours.toFixed(1),
+        grossCostDisplay: b.grossCost.toFixed(2),
+        avgCostPerHourDisplay: hours > 0 ? `$${(b.grossCost / hours).toFixed(2)}` : '—',
+      };
+    });
 
-    const totalExpenditure = Array.from(byDept.values()).reduce((acc, r) => acc + r.totalCost, 0);
-    const totalHeadcount = Array.from(byDept.values()).reduce((acc, r) => acc + r.headcount, 0);
+    const totalGross = buckets.reduce((acc, r) => acc + r.grossCost, 0);
+    const totalHours = buckets.reduce((acc, r) => acc + r.regularHours + r.overtimeHours, 0);
+    const totalHeadcount = buckets.reduce((acc, r) => acc + r.headcount, 0);
     const grandTotal: GrandTotal | undefined = laborRows.length > 0 ? {
-      label: t('lbl_consolidated_labor', `Consolidated Labor Expenditure (${totalHeadcount} Personnel):`),
-      value: `$${totalExpenditure.toFixed(2)}`,
+      label: t('lbl_consolidated_labor', `Consolidated Direct Labor (${totalHeadcount} Personnel, ${totalHours.toFixed(1)} Hrs):`),
+      value: `$${totalGross.toFixed(2)}${totalHours > 0 ? ` | $${(totalGross / totalHours).toFixed(2)}/Hr` : ''}`,
     } : undefined;
 
     return (
@@ -393,22 +403,26 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
   if (view === 'blom') {
     const blomRows = liveRows.map((r) => ({
       ...r,
-      netUsdDisplay: (Number(r.netTransferred ?? r.netPayableUsd) || 0).toFixed(2),
+      empIdDisplay: r.empId || r.empCode,
+      grossDisplay: (Number(r.grossSalary) || 0).toFixed(2),
+      netTransferredDisplay: (Number(r.netTransferred ?? r.netPayableUsd) || 0).toFixed(2),
       transferStatus: r.transferStatus || r.disbursementStatus || '—',
     }));
     const columns: ReportColumn<any>[] = [
-      { key: 'empCode', label: t('col_emp_code', 'Emp Code'), width: '10%', align: 'left', isMonospace: true },
-      { key: 'name', label: t('col_employee_name', 'Employee Name'), width: '20%', align: 'left' },
-      { key: 'blomIban', label: t('col_blom_iban', 'BLOM IBAN'), width: '26%', align: 'left', isMonospace: true },
-      { key: 'netUsdDisplay', label: t('col_net_usd', 'Net USD ($)'), width: '12%', align: 'right', isMonospace: true },
-      { key: 'transferRef', label: t('col_transfer_reference', 'Transfer Reference'), width: '20%', align: 'left', isMonospace: true },
-      { key: 'transferStatus', label: t('col_status', 'Status'), width: '12%', align: 'center', isMonospace: true },
+      { key: 'empIdDisplay', label: t('col_emp_id', 'Emp ID'), width: '8%', align: 'left', isMonospace: true },
+      { key: 'name', label: t('col_employee_name', 'Employee Name'), width: '17%', align: 'left' },
+      { key: 'blomIban', label: t('col_iban', 'IBAN'), width: '25%', align: 'left', isMonospace: true },
+      { key: 'transferMode', label: t('col_transfer_mode', 'Transfer Mode'), width: '15%', align: 'left' },
+      { key: 'grossDisplay', label: t('col_gross_salary', 'Gross Salary ($)'), width: '12%', align: 'right', isMonospace: true },
+      { key: 'netTransferredDisplay', label: t('col_net_transferred', 'Net Transferred ($)'), width: '12%', align: 'right', isMonospace: true },
+      { key: 'transferStatus', label: t('col_status', 'Status'), width: '11%', align: 'center', isMonospace: true },
     ];
 
+    const totalGross = blomRows.reduce((acc, r) => acc + (Number(r.grossSalary) || 0), 0);
     const totalNet = blomRows.reduce((acc, r) => acc + (Number(r.netTransferred ?? r.netPayableUsd) || 0), 0);
     const grandTotal: GrandTotal | undefined = blomRows.length > 0 ? {
       label: t('lbl_total_blom_transfers', `Total BLOM Electronic Transfers (${blomRows.length} Employees):`),
-      value: `$${totalNet.toFixed(2)}`,
+      value: `Gross $${totalGross.toFixed(2)} | Net $${totalNet.toFixed(2)}`,
     } : undefined;
 
     return (
@@ -438,11 +452,11 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
       { key: 'empId', label: t('col_emp_id', 'Emp ID'), width: '8%', align: 'left', isMonospace: true },
       { key: 'name', label: t('col_employee_name', 'Employee Name'), width: '16%', align: 'left' },
       { key: 'department', label: t('col_department', 'Department'), width: '11%', align: 'left' },
-      { key: 'basicPayDisplay', label: t('col_basic_pay', 'Basic Pay'), width: '10%', align: 'right', isMonospace: true },
-      { key: 'cashOvertimeDisplay', label: t('col_cash_overtime', 'Cash Overtime'), width: '10%', align: 'right', isMonospace: true },
-      { key: 'advancesDisplay', label: t('col_advances_deducted', 'Advances Deducted'), width: '11%', align: 'right', isMonospace: true },
-      { key: 'netCashDisplay', label: t('col_net_cash_paid', 'Net Cash Paid ($)'), width: '11%', align: 'right', isMonospace: true },
-      { key: 'signatureVoucher', label: t('col_signature_voucher', 'Signature / Voucher #'), width: '23%', align: 'left', isMonospace: true },
+      { key: 'basicPayDisplay', label: t('col_basic_cash', 'Basic Cash ($)'), width: '10%', align: 'right', isMonospace: true },
+      { key: 'cashOvertimeDisplay', label: t('col_overtime_usd', 'Overtime ($)'), width: '10%', align: 'right', isMonospace: true },
+      { key: 'advancesDisplay', label: t('col_advances_usd', 'Advances ($)'), width: '10%', align: 'right', isMonospace: true },
+      { key: 'netCashDisplay', label: t('col_net_payable', 'Net Payable ($)'), width: '11%', align: 'right', isMonospace: true },
+      { key: 'signatureVoucher', label: t('col_signature_voucher', 'Signature / Voucher #'), width: '24%', align: 'left', isMonospace: true },
     ];
 
     const totalNetCash = cashRows.reduce((acc, r) => acc + (Number(r.netCashPaid) || 0), 0);
@@ -462,6 +476,71 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
           meta={meta}
           columns={columns}
           flatRows={cashRows}
+          grandTotal={grandTotal}
+        />
+      </>
+    );
+  }
+
+  // 3c. Department Headcount & Allocation Roster
+  if (view === 'staffing') {
+    const columns: ReportColumn<any>[] = [
+      { key: 'department', label: t('col_department', 'Department'), width: '14%', align: 'left' },
+      { key: 'position', label: t('col_position', 'Position'), width: '20%', align: 'left' },
+      { key: 'assignedShift', label: t('col_assigned_shift', 'Assigned Shift'), width: '20%', align: 'left' },
+      { key: 'activeHeadcount', label: t('col_active_headcount', 'Active Headcount'), width: '11%', align: 'center', isMonospace: true },
+      { key: 'supervisor', label: t('col_supervisor', 'Supervisor'), width: '14%', align: 'left' },
+      { key: 'facility', label: t('col_branch_facility', 'Branch / Facility'), width: '21%', align: 'left' },
+    ];
+
+    const totalHeadcount = liveRows.reduce((acc, r) => acc + (Number(r.activeHeadcount) || 0), 0);
+    const grandTotal: GrandTotal | undefined = liveRows.length > 0 ? {
+      label: t('lbl_company_total_workforce', `Company Total Active Workforce (${liveRows.length} Allocations):`),
+      value: `${totalHeadcount} Staff`,
+    } : undefined;
+
+    return (
+      <>
+        {loadingNotice}
+        <MasterReportDocument
+          meta={meta}
+          columns={columns}
+          flatRows={liveRows}
+          grandTotal={grandTotal}
+        />
+      </>
+    );
+  }
+
+  // 3d. Leave, Absences & Sick Days Statement
+  if (view === 'leave') {
+    const columns: ReportColumn<any>[] = [
+      { key: 'empId', label: t('col_emp_id', 'Emp ID'), width: '8%', align: 'left', isMonospace: true },
+      { key: 'name', label: t('col_employee_name', 'Employee Name'), width: '17%', align: 'left' },
+      { key: 'department', label: t('col_department', 'Department'), width: '12%', align: 'left' },
+      { key: 'leaveType', label: t('col_leave_type', 'Leave Type'), width: '15%', align: 'left' },
+      { key: 'startDate', label: t('col_start_date', 'Start Date'), width: '11%', align: 'center', isMonospace: true },
+      { key: 'endDate', label: t('col_end_date', 'End Date'), width: '11%', align: 'center', isMonospace: true },
+      { key: 'totalDays', label: t('col_total_days', 'Total Days'), width: '9%', align: 'center', isMonospace: true },
+      { key: 'approvalStatus', label: t('col_approval_status', 'Approval Status'), width: '17%', align: 'center', isMonospace: true },
+    ];
+
+    const approvedDays = liveRows
+      .filter((r) => r.approvalStatus === 'APPROVED')
+      .reduce((acc, r) => acc + (Number(r.totalDays) || 0), 0);
+    const pendingCount = liveRows.filter((r) => r.approvalStatus === 'PENDING').length;
+    const grandTotal: GrandTotal | undefined = liveRows.length > 0 ? {
+      label: t('lbl_total_leave_requests', `Total Leave Requests (${liveRows.length}${pendingCount > 0 ? `, ${pendingCount} Pending` : ''}):`),
+      value: `${approvedDays} Approved Days`,
+    } : undefined;
+
+    return (
+      <>
+        {loadingNotice}
+        <MasterReportDocument
+          meta={meta}
+          columns={columns}
+          flatRows={liveRows}
           grandTotal={grandTotal}
         />
       </>
