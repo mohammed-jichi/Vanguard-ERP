@@ -44,6 +44,7 @@ export interface UnifiedModuleReportsHubProps {
   onFilterReport?: () => void;
   onResetFilters?: () => void;
   onReturnToHub?: () => void;
+  onOpenBuilder?: () => void;
   filterControls?: React.ReactNode;
   children: React.ReactNode;
   activeCurrency?: 'LBP' | 'USD';
@@ -67,6 +68,7 @@ export default function UnifiedModuleReportsHub({
   onFilterReport,
   onResetFilters,
   onReturnToHub,
+  onOpenBuilder,
   filterControls,
   children,
   activeCurrency = 'USD',
@@ -235,7 +237,7 @@ export default function UnifiedModuleReportsHub({
 
           <button
             type="button"
-            onClick={() => {}}
+            onClick={onOpenBuilder}
             className="px-3.5 py-2 rounded-lg text-xs font-medium flex items-center gap-1.5 bg-primary hover:bg-slate-800 text-primary-foreground transition-all cursor-pointer shadow-xs shrink-0"
           >
             <BarChart3 size={14} />

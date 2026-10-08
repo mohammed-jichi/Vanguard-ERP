@@ -46,7 +46,12 @@ function isLiveTimeAndAttendanceReport(name: string): boolean {
     name.includes('BLOM') ||
     name.includes('Electronic Salary') ||
     name.includes('Cash Wages') ||
-    name.includes('Disbursal')
+    name.includes('Disbursal') ||
+    name.includes('Headcount') ||
+    name.includes('Allocation Roster') ||
+    name.includes('Leave') ||
+    name.includes('Absences') ||
+    name.includes('Sick Days')
   );
 }
 
@@ -196,17 +201,6 @@ function HRPageContent() {
                 {t('hr_page_subtitle', 'Biometric ZKTeco punch terminals, shift tracking, and BLOM Bank automated payroll reconciliation')}
               </p>
             </div>
-
-            {/* Reports Builder */}
-            <button
-              type="button"
-              id="hr-reports-builder-btn"
-              onClick={() => setIsBuilderOpen(true)}
-              className="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-xs"
-            >
-              <LayoutTemplate size={13} />
-              <span>{t('reports_builder', 'Reports Builder')}</span>
-            </button>
           </div>
 
           {/* CORE WORKSTATION (Attendance, Payroll) */}
@@ -224,6 +218,7 @@ function HRPageContent() {
             onSelectReport={(r) => setSelectedReport(r)}
             onFilterReport={handleFilterReport}
             onResetFilters={handleResetFilters}
+            onOpenBuilder={() => setIsBuilderOpen(true)}
             period={period}
             setPeriod={setPeriod}
             branch={branch}
@@ -274,76 +269,7 @@ function HRPageContent() {
               />
             )}
 
-            {/* 4. Department Staffing & Allocation Roster */}
-            {(selectedReport.includes('Headcount') || selectedReport.includes('Roster') || selectedReport.includes('Leave') || selectedReport.includes('Absences')) && (
-              <UnifiedPrintableReportSheet
-                reportTitle={selectedReport}
-                reportCode="REP_HR_004"
-                executionDate="06-Sep-2026"
-                periodText="Staffing Allocation: Active Production Shift"
-                pageInfo="Page 1 of 1"
-                branchInfo="Branch: All Active Facilities"
-                hideToolbar={true}
-              >
-                <table className="w-full table-fixed text-left border-collapse text-[11px]">
-                  <thead>
-                    <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
-                      <th className="py-2 px-2 normal-case w-[28%] font-sans">{t('col_operational_dept', 'Operational Department')}</th>
-                      <th className="py-2 px-2 normal-case w-[18%] font-sans text-center">{t('col_total_headcount', 'Total Headcount')}</th>
-                      <th className="py-2 px-2 normal-case w-[18%] font-sans text-center">{t('col_active_on_shift', 'Active On Shift')}</th>
-                      <th className="py-2 px-2 normal-case w-[18%] font-sans text-center">{t('col_scheduled_leave', 'Scheduled Leave')}</th>
-                      <th className="py-2 px-2 normal-case w-[18%] font-sans text-right">{t('col_avg_dept_wage', 'Avg Dept Wage ($)')}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-2 px-2 font-bold text-slate-900">{t('dept_pressing', 'Pressing & Plant Operations')}</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold">14 Staff</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold text-emerald-800">13 Active</td>
-                      <td className="py-2 px-2 text-center font-mono text-slate-500">1 Leave</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-800">$6.20/hr</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-2 px-2 font-bold text-slate-900">{t('dept_packaging', 'Packaging & Bottling Line')}</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold">12 Staff</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold text-emerald-800">11 Active</td>
-                      <td className="py-2 px-2 text-center font-mono text-slate-500">1 Leave</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-800">$5.60/hr</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-2 px-2 font-bold text-slate-900">{t('dept_logistics', 'SuperSonic Fleet Logistics')}</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold">8 Staff</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold text-emerald-800">8 Active</td>
-                      <td className="py-2 px-2 text-center font-mono text-slate-500">0 Leave</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-800">$6.80/hr</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-2 px-2 font-bold text-slate-900">{t('dept_sales', 'Commercial Wholesale & CRM')}</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold">5 Staff</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold text-emerald-800">4 Active</td>
-                      <td className="py-2 px-2 text-center font-mono text-slate-500">1 Leave</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-800">$7.50/hr</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50">
-                      <td className="py-2 px-2 font-bold text-slate-900">{t('dept_accounting', 'Accounting & Administration')}</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold">3 Staff</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold text-emerald-800">2 Active</td>
-                      <td className="py-2 px-2 text-center font-mono text-slate-500">1 Leave</td>
-                      <td className="py-2 px-2 text-right font-mono text-slate-800">$8.20/hr</td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr className="border-t-2 border-slate-900 font-bold bg-slate-50 text-[11px]">
-                      <td className="py-2 px-2 font-sans text-left">{t('company_total_workforce', 'Company Total Workforce:')}</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold text-slate-900">42 Staff</td>
-                      <td className="py-2 px-2 text-center font-mono font-bold text-emerald-800">38 Active</td>
-                      <td className="py-2 px-2 text-center font-mono text-slate-600">4 Leave</td>
-                      <td className="py-2 px-2 text-right font-mono font-bold text-blue-900">$6.86/hr Blended</td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </UnifiedPrintableReportSheet>
-            )}
+
           </UnifiedModuleReportsHub>
         </div>
       )}
@@ -396,7 +322,7 @@ function HRReportsBuilderModal({ groups, initialReport, initialFilters, onClose,
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 print:hidden"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 print:hidden"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

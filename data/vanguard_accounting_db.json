@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-08T09:02:04.601Z",
+  "last_updated": "2026-10-08T12:33:53.230Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,56 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-fbc8e29",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (fbc8e29) - Complete data wiring and column templates for all 8 HR & Payroll reports",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "fbc8e29a870344ac5ae5b12a345199eb7140e9bc",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "HR & Payroll"
+        ]
+      },
+      "created_at": "2026-10-08T12:12:08.000Z"
+    },
+    {
+      "id": "act-rel-97acf10",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (97acf10) - Default active filter date to Sep-2026 and wire BLOM transfer & cash wages tables",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "97acf1082b315f57436fbbba37c2c4e3c3a62832",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "HR & Payroll",
+          "Core Shell & UI"
+        ]
+      },
+      "created_at": "2026-10-08T12:02:31.000Z"
+    },
+    {
+      "id": "act-rel-12d6f86",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (12d6f86) - Differentiate shift exceptions vs payroll reconciliation views and finalize report engine pipeline",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "12d6f862e6daa6383859db3732561c47a417c625",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "HR & Payroll",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-08T09:02:22.000Z"
+    },
     {
       "id": "act-rel-944faf9",
       "company_id": 1300,
@@ -6244,6 +6294,48 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-fbc8e29",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Complete data wiring and column templates for all 8 HR & Payroll reports",
+      "message": "feat(reports): complete data wiring and column templates for all 8 HR & Payroll reports",
+      "timestamp": "2026-10-08T12:12:08.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "fbc8e29a870344ac5ae5b12a345199eb7140e9bc",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-97acf10",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Default active filter date to Sep-2026 and wire BLOM transfer & cash wages tables",
+      "message": "fix(reports): default active filter date to Sep-2026 and wire BLOM transfer & cash wages tables",
+      "timestamp": "2026-10-08T12:02:31.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "97acf1082b315f57436fbbba37c2c4e3c3a62832",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-12d6f86",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Differentiate shift exceptions vs payroll reconciliation views and finalize report engine pipeline",
+      "message": "fix(reports): differentiate shift exceptions vs payroll reconciliation views and finalize report engine pipeline",
+      "timestamp": "2026-10-08T09:02:22.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "12d6f862e6daa6383859db3732561c47a417c625",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-944faf9",
       "type": "SYSTEM_RELEASE",

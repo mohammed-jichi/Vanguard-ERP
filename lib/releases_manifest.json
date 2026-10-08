@@ -1,5 +1,73 @@
 [
   {
+    "id": "fbc8e29a-8703-44ac-aae5-b12a345199eb",
+    "commit_hash": "fbc8e29a870344ac5ae5b12a345199eb7140e9bc",
+    "short_hash": "fbc8e29",
+    "version": "v2.0.0",
+    "title": "Complete data wiring and column templates for all 8 HR & Payroll reports",
+    "category": "feature",
+    "description": "feat(reports): complete data wiring and column templates for all 8 HR & Payroll reports",
+    "bullet_points": [
+      "Implemented complete data wiring and column templates for all 8 hr & payroll reports",
+      "Enhanced system stability and operator workflow in HR & Payroll",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "HR & Payroll"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-08T12:12:08.000Z",
+    "created_at": "2026-10-08T12:33:53.219Z"
+  },
+  {
+    "id": "97acf108-2b31-4f57-a36f-bbba37c2c4e3",
+    "commit_hash": "97acf1082b315f57436fbbba37c2c4e3c3a62832",
+    "short_hash": "97acf10",
+    "version": "v2.0.0",
+    "title": "Default active filter date to Sep-2026 and wire BLOM transfer & cash wages tables",
+    "category": "fix",
+    "description": "fix(reports): default active filter date to Sep-2026 and wire BLOM transfer & cash wages tables",
+    "bullet_points": [
+      "Resolved: default active filter date to sep-2026 and wire blom transfer & cash wages tables",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "HR & Payroll",
+      "Core Shell & UI"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-08T12:02:31.000Z",
+    "created_at": "2026-10-08T12:11:59.839Z"
+  },
+  {
+    "id": "12d6f862-e6da-4638-a859-db3732561c47",
+    "commit_hash": "12d6f862e6daa6383859db3732561c47a417c625",
+    "short_hash": "12d6f86",
+    "version": "v2.0.0",
+    "title": "Differentiate shift exceptions vs payroll reconciliation views and finalize report engine pipeline",
+    "category": "fix",
+    "description": "fix(reports): differentiate shift exceptions vs payroll reconciliation views and finalize report engine pipeline",
+    "bullet_points": [
+      "Resolved: differentiate shift exceptions vs payroll reconciliation views and finalize report engine pipeline",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "HR & Payroll",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-08T09:02:22.000Z",
+    "created_at": "2026-10-08T12:02:06.897Z"
+  },
+  {
     "id": "944faf95-5769-4782-a2d7-437b44135fae",
     "commit_hash": "944faf9557693782e2d7437b44135faeca8e41cf",
     "short_hash": "944faf9",

@@ -514,15 +514,21 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
 
   // 3d. Leave, Absences & Sick Days Statement
   if (view === 'leave') {
+    const leaveMeta = {
+      ...meta,
+      reportTitle: 'LEAVE, ABSENCES & SICK DAYS STATEMENT',
+      subtitle: 'Active Period Leave Ledger',
+    };
+
     const columns: ReportColumn<any>[] = [
-      { key: 'empId', label: t('col_emp_id', 'Emp ID'), width: '8%', align: 'left', isMonospace: true },
-      { key: 'name', label: t('col_employee_name', 'Employee Name'), width: '17%', align: 'left' },
-      { key: 'department', label: t('col_department', 'Department'), width: '12%', align: 'left' },
-      { key: 'leaveType', label: t('col_leave_type', 'Leave Type'), width: '15%', align: 'left' },
-      { key: 'startDate', label: t('col_start_date', 'Start Date'), width: '11%', align: 'center', isMonospace: true },
-      { key: 'endDate', label: t('col_end_date', 'End Date'), width: '11%', align: 'center', isMonospace: true },
-      { key: 'totalDays', label: t('col_total_days', 'Total Days'), width: '9%', align: 'center', isMonospace: true },
-      { key: 'approvalStatus', label: t('col_approval_status', 'Approval Status'), width: '17%', align: 'center', isMonospace: true },
+      { key: 'empId', label: t('col_emp_id', 'EMP ID'), width: '8%', align: 'left', isMonospace: true },
+      { key: 'name', label: t('col_employee_name', 'EMPLOYEE NAME'), width: '17%', align: 'left' },
+      { key: 'department', label: t('col_department', 'DEPARTMENT'), width: '12%', align: 'left' },
+      { key: 'leaveType', label: t('col_leave_type', 'LEAVE TYPE'), width: '15%', align: 'left' },
+      { key: 'startDate', label: t('col_start_date', 'START DATE'), width: '11%', align: 'center', isMonospace: true },
+      { key: 'endDate', label: t('col_end_date', 'END DATE'), width: '11%', align: 'center', isMonospace: true },
+      { key: 'totalDays', label: t('col_days_count', 'DAYS COUNT'), width: '9%', align: 'center', isMonospace: true },
+      { key: 'approvalStatus', label: t('col_status_approval', 'STATUS / APPROVAL'), width: '17%', align: 'center', isMonospace: true },
     ];
 
     const approvedDays = liveRows
@@ -538,7 +544,7 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
       <>
         {loadingNotice}
         <MasterReportDocument
-          meta={meta}
+          meta={leaveMeta}
           columns={columns}
           flatRows={liveRows}
           grandTotal={grandTotal}
