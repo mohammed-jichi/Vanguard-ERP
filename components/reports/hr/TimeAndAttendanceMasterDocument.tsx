@@ -16,7 +16,7 @@ export interface TimeAndAttendanceMasterDocumentProps {
   filterValues?: Record<string, any>;
 }
 
-type HRReportView = 'labor' | 'punch' | 'exceptions' | 'reconciliation' | 'roster';
+type HRReportView = 'labor' | 'blom' | 'cash' | 'punch' | 'exceptions' | 'reconciliation' | 'roster';
 
 /** Values that mean "no restriction" for a dropdown filter. */
 function isAllValue(val?: string | null): boolean {
@@ -34,6 +34,8 @@ function toQueryValue(val?: string | null): string {
 export function resolveHRReportView(reportKey: string): HRReportView {
   const key = (reportKey || '').toLowerCase();
   if (key.includes('labor')) return 'labor';
+  if (key.includes('blom') || key.includes('electronic salary') || key.includes('salary transfer')) return 'blom';
+  if (key.includes('cash wages') || key.includes('disbursal') || key.includes('receipt register')) return 'cash';
   if (
     key.includes('punch') ||
     key.includes('terminal') ||
@@ -54,6 +56,8 @@ export function resolveHRReportView(reportKey: string): HRReportView {
  */
 const VIEW_DEFAULTS: Record<HRReportView, { code: string; queryId: string; title: string }> = {
   labor: { code: 'REP_S_00303', queryId: 'REP_S_00303', title: 'Labor Cost & Revenue Allocation' },
+  blom: { code: 'REP_HR_003', queryId: 'REP_HR_003', title: 'BLOM Bank Electronic Salary Transfer Audit' },
+  cash: { code: 'REP_HR_005', queryId: 'REP_HR_005', title: 'CASH WAGES DISBURSAL & RECEIPT REGISTER' },
   punch: { code: 'REP_S_00302', queryId: 'REP_S_00302', title: 'Time and Attendance Master Punch Ledger' },
   exceptions: { code: 'REP_HR_00102', queryId: 'REP_S_00301', title: 'Overtime, Lateness & Shift Exceptions Log' },
   reconciliation: { code: 'REP_HR_00101', queryId: 'REP_S_00301', title: 'Monthly Payroll & Biometric Attendance Reconciliation' },
@@ -213,7 +217,8 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
   const view = resolveHRReportView(reportKey);
   const resolvedCode = code || VIEW_DEFAULTS[view].code;
   const queryId = VIEW_DEFAULTS[view].queryId;
-  const resolvedTitle = reportTitle || VIEW_DEFAULTS[view].title;
+  // The cash register always prints its formal sheet title, regardless of the menu label.
+  const resolvedTitle = view === 'cash' ? VIEW_DEFAULTS.cash.title : reportTitle || VIEW_DEFAULTS[view].title;
 
   // Stable identity for the filter object: callers frequently pass inline objects,
   // which would otherwise re-trigger the fetch effect on every render.
@@ -378,6 +383,85 @@ export const TimeAndAttendanceMasterDocument: React.FC<TimeAndAttendanceMasterDo
           meta={meta}
           columns={columns}
           flatRows={liveRows}
+          grandTotal={grandTotal}
+        />
+      </>
+    );
+  }
+
+  // 3a. BLOM Bank Electronic Salary Transfer Audit
+  if (view === 'blom') {
+    const blomRows = liveRows.map((r) => ({
+      ...r,
+      netUsdDisplay: (Number(r.netTransferred ?? r.netPayableUsd) || 0).toFixed(2),
+      transferStatus: r.transferStatus || r.disbursementStatus || '—',
+    }));
+    const columns: ReportColumn<any>[] = [
+      { key: 'empCode', label: t('col_emp_code', 'Emp Code'), width: '10%', align: 'left', isMonospace: true },
+      { key: 'name', label: t('col_employee_name', 'Employee Name'), width: '20%', align: 'left' },
+      { key: 'blomIban', label: t('col_blom_iban', 'BLOM IBAN'), width: '26%', align: 'left', isMonospace: true },
+      { key: 'netUsdDisplay', label: t('col_net_usd', 'Net USD ($)'), width: '12%', align: 'right', isMonospace: true },
+      { key: 'transferRef', label: t('col_transfer_reference', 'Transfer Reference'), width: '20%', align: 'left', isMonospace: true },
+      { key: 'transferStatus', label: t('col_status', 'Status'), width: '12%', align: 'center', isMonospace: true },
+    ];
+
+    const totalNet = blomRows.reduce((acc, r) => acc + (Number(r.netTransferred ?? r.netPayableUsd) || 0), 0);
+    const grandTotal: GrandTotal | undefined = blomRows.length > 0 ? {
+      label: t('lbl_total_blom_transfers', `Total BLOM Electronic Transfers (${blomRows.length} Employees):`),
+      value: `$${totalNet.toFixed(2)}`,
+    } : undefined;
+
+    return (
+      <>
+        {loadingNotice}
+        <MasterReportDocument
+          meta={meta}
+          columns={columns}
+          flatRows={blomRows}
+          grandTotal={grandTotal}
+        />
+      </>
+    );
+  }
+
+  // 3b. Cash Wages Disbursal & Receipt Register
+  if (view === 'cash') {
+    const cashRows = liveRows.map((r) => ({
+      ...r,
+      basicPayDisplay: (Number(r.basicPay) || 0).toFixed(2),
+      cashOvertimeDisplay: (Number(r.cashOvertime) || 0).toFixed(2),
+      advancesDisplay: Number(r.advancesDeducted) > 0 ? `(${Number(r.advancesDeducted).toFixed(2)})` : '0.00',
+      netCashDisplay: (Number(r.netCashPaid) || 0).toFixed(2),
+      signatureVoucher: `${r.voucherNo || '—'} / ${r.signatureStatus === 'SIGNED' ? 'Signed' : 'Pending Signature'}`,
+    }));
+    const columns: ReportColumn<any>[] = [
+      { key: 'empId', label: t('col_emp_id', 'Emp ID'), width: '8%', align: 'left', isMonospace: true },
+      { key: 'name', label: t('col_employee_name', 'Employee Name'), width: '16%', align: 'left' },
+      { key: 'department', label: t('col_department', 'Department'), width: '11%', align: 'left' },
+      { key: 'basicPayDisplay', label: t('col_basic_pay', 'Basic Pay'), width: '10%', align: 'right', isMonospace: true },
+      { key: 'cashOvertimeDisplay', label: t('col_cash_overtime', 'Cash Overtime'), width: '10%', align: 'right', isMonospace: true },
+      { key: 'advancesDisplay', label: t('col_advances_deducted', 'Advances Deducted'), width: '11%', align: 'right', isMonospace: true },
+      { key: 'netCashDisplay', label: t('col_net_cash_paid', 'Net Cash Paid ($)'), width: '11%', align: 'right', isMonospace: true },
+      { key: 'signatureVoucher', label: t('col_signature_voucher', 'Signature / Voucher #'), width: '23%', align: 'left', isMonospace: true },
+    ];
+
+    const totalNetCash = cashRows.reduce((acc, r) => acc + (Number(r.netCashPaid) || 0), 0);
+    const pendingSignatures = cashRows.filter((r) => r.signatureStatus !== 'SIGNED').length;
+    const grandTotal: GrandTotal | undefined = cashRows.length > 0 ? {
+      label: t(
+        'lbl_total_cash_wages',
+        `Total Cash Disbursed (${cashRows.length} Vouchers${pendingSignatures > 0 ? `, ${pendingSignatures} Pending Signature` : ''}):`
+      ),
+      value: `$${totalNetCash.toFixed(2)}`,
+    } : undefined;
+
+    return (
+      <>
+        {loadingNotice}
+        <MasterReportDocument
+          meta={meta}
+          columns={columns}
+          flatRows={cashRows}
           grandTotal={grandTotal}
         />
       </>

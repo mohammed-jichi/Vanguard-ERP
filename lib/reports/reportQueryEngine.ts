@@ -417,6 +417,52 @@ const AUTHORITATIVE_PAYROLL_DATA = [
   }
 ];
 
+/** Payroll transfer cycle date for the seeded September 2026 BLOM salary run. */
+const BLOM_TRANSFER_DATE = '2026-09-30';
+
+/**
+ * Seasonal / casual harvest-crew wages settled in cash against signed vouchers
+ * (September 2026 pressing season). Kept separate from BLOM bank-transfer payroll.
+ */
+const AUTHORITATIVE_CASH_WAGES = [
+  {
+    empId: 'C-701', empCode: 'C-701', name: 'Khaled Nasser', department: 'Pressing', costCenter: 'CC-MILL-01',
+    facility: 'Southern Olive and Oil Products - Main', payDate: '2026-09-30',
+    basicPay: 620.0, cashOvertime: 85.0, advancesDeducted: 100.0, netCashPaid: 605.0,
+    voucherNo: 'CV-2026-09-0701', signatureStatus: 'SIGNED',
+  },
+  {
+    empId: 'C-702', empCode: 'C-702', name: 'Mahmoud Saad', department: 'Pressing', costCenter: 'CC-MILL-01',
+    facility: 'Southern Olive and Oil Products - Main', payDate: '2026-09-30',
+    basicPay: 600.0, cashOvertime: 60.0, advancesDeducted: 0.0, netCashPaid: 660.0,
+    voucherNo: 'CV-2026-09-0702', signatureStatus: 'SIGNED',
+  },
+  {
+    empId: 'C-703', empCode: 'C-703', name: 'Youssef Hamdan', department: 'Pressing', costCenter: 'CC-MILL-01',
+    facility: 'Southern Olive and Oil Products - Main', payDate: '2026-09-30',
+    basicPay: 580.0, cashOvertime: 110.0, advancesDeducted: 150.0, netCashPaid: 540.0,
+    voucherNo: 'CV-2026-09-0703', signatureStatus: 'SIGNED',
+  },
+  {
+    empId: 'C-704', empCode: 'C-704', name: 'Ali Fawaz', department: 'Packaging', costCenter: 'CC-PKG-02',
+    facility: 'Nabatieh Distribution Branch', payDate: '2026-09-30',
+    basicPay: 550.0, cashOvertime: 40.0, advancesDeducted: 50.0, netCashPaid: 540.0,
+    voucherNo: 'CV-2026-09-0704', signatureStatus: 'SIGNED',
+  },
+  {
+    empId: 'C-705', empCode: 'C-705', name: 'Hassan Kanaan', department: 'Logistics', costCenter: 'CC-LOG-03',
+    facility: 'Nabatieh Distribution Branch', payDate: '2026-09-30',
+    basicPay: 575.0, cashOvertime: 95.0, advancesDeducted: 0.0, netCashPaid: 670.0,
+    voucherNo: 'CV-2026-09-0705', signatureStatus: 'PENDING SIGNATURE',
+  },
+  {
+    empId: 'C-706', empCode: 'C-706', name: 'Bilal Srour', department: 'Pressing', costCenter: 'CC-MILL-01',
+    facility: 'Southern Olive and Oil Products - Main', payDate: '2026-09-15',
+    basicPay: 300.0, cashOvertime: 45.0, advancesDeducted: 0.0, netCashPaid: 345.0,
+    voucherNo: 'CV-2026-09-0706', signatureStatus: 'SIGNED',
+  },
+];
+
 const AUTHORITATIVE_MILL_INTAKE = [
   {
     id: 'WB-2026-081',
@@ -758,6 +804,101 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
         totalPunches: rows.length,
         totalWorkedHours: Math.round(totalWorked * 10) / 10,
         totalOvertimeHours: Math.round(totalOvertime * 10) / 10,
+      },
+      totalRecords: rows.length,
+    };
+  }
+
+  // 2a. BLOM Bank Electronic Salary Transfer Audit
+  // --------------------------------------------------------------------------
+  if (
+    repIdClean.includes('blom') ||
+    repIdClean.includes('electronic salary') ||
+    repIdClean.includes('salary transfer') ||
+    reportId === 'REP_HR_003'
+  ) {
+    let rows = AUTHORITATIVE_PAYROLL_DATA
+      .filter((r) => clean(r.transferMode).includes('blom'))
+      .map((r) => ({
+        ...r,
+        transferDate: BLOM_TRANSFER_DATE,
+        transferRef: `BLOM-TRF-${BLOM_TRANSFER_DATE.replace(/-/g, '')}-${r.empCode}`,
+        transferStatus: r.disbursementStatus,
+      }));
+
+    if (departmentId && departmentId !== 'all' && departmentId !== 'ALL') {
+      rows = rows.filter((r) => matchesTextFilter(r.department, departmentId));
+    }
+    if (facilityId && facilityId !== 'all' && facilityId !== 'ALL') {
+      rows = rows.filter((r) => matchesTextFilter(r.facility, facilityId));
+    }
+    if (dateFrom && dateTo) {
+      rows = rows.filter((r) => r.transferDate >= dateFrom && r.transferDate <= dateTo);
+    }
+
+    const columns: ReportColumnConfig[] = [
+      { key: 'empCode', label: 'Emp Code', align: 'left', format: 'text' },
+      { key: 'name', label: 'Employee Name', align: 'left', format: 'text' },
+      { key: 'blomIban', label: 'BLOM IBAN', align: 'left', format: 'text' },
+      { key: 'netTransferred', label: 'Net USD', align: 'right', format: 'currency' },
+      { key: 'transferRef', label: 'Transfer Reference', align: 'left', format: 'text' },
+      { key: 'transferStatus', label: 'Status', align: 'center', format: 'badge' },
+    ];
+
+    const totalNet = rows.reduce((acc, r) => acc + (Number(r.netTransferred) || 0), 0);
+
+    return {
+      reportId,
+      columns,
+      rows,
+      summaryTotals: {
+        totalNetTransferredUsd: Math.round(totalNet * 100) / 100,
+        transferCount: rows.length,
+      },
+      totalRecords: rows.length,
+    };
+  }
+
+  // 2b. Cash Wages Disbursal & Receipt Register
+  // --------------------------------------------------------------------------
+  if (
+    repIdClean.includes('cash wages') ||
+    repIdClean.includes('disbursal') ||
+    repIdClean.includes('receipt register') ||
+    reportId === 'REP_HR_005'
+  ) {
+    let rows = [...AUTHORITATIVE_CASH_WAGES];
+
+    if (departmentId && departmentId !== 'all' && departmentId !== 'ALL') {
+      rows = rows.filter((r) => matchesTextFilter(r.department, departmentId));
+    }
+    if (facilityId && facilityId !== 'all' && facilityId !== 'ALL') {
+      rows = rows.filter((r) => matchesTextFilter(r.facility, facilityId));
+    }
+    if (dateFrom && dateTo) {
+      rows = rows.filter((r) => r.payDate >= dateFrom && r.payDate <= dateTo);
+    }
+
+    const columns: ReportColumnConfig[] = [
+      { key: 'empId', label: 'Emp ID', align: 'left', format: 'text' },
+      { key: 'name', label: 'Employee Name', align: 'left', format: 'text' },
+      { key: 'department', label: 'Department', align: 'left', format: 'text' },
+      { key: 'basicPay', label: 'Basic Pay', align: 'right', format: 'currency' },
+      { key: 'cashOvertime', label: 'Cash Overtime', align: 'right', format: 'currency' },
+      { key: 'advancesDeducted', label: 'Advances Deducted', align: 'right', format: 'currency' },
+      { key: 'netCashPaid', label: 'Net Cash Paid ($)', align: 'right', format: 'currency' },
+      { key: 'voucherNo', label: 'Signature / Voucher #', align: 'left', format: 'text' },
+    ];
+
+    const totalNetCash = rows.reduce((acc, r) => acc + (Number(r.netCashPaid) || 0), 0);
+
+    return {
+      reportId,
+      columns,
+      rows,
+      summaryTotals: {
+        totalNetCashUsd: Math.round(totalNetCash * 100) / 100,
+        voucherCount: rows.length,
       },
       totalRecords: rows.length,
     };

@@ -50,9 +50,9 @@ import {
   parseDateToIso,
 } from '@/lib/duplicateInvoicesQueryEngine';
 import {
-  getDefaultInitialDateRange,
   resolveDateRangeFromPreset,
 } from '@/lib/dateRangeEngine';
+import { getDefaultReportDateRange } from '@/lib/reports/reportDefaults';
 
 // Initial Sales Invoices populated with comprehensive mock dataset
 const INITIAL_SALES_INVOICES: MasterMockTransaction[] = DEFAULT_MOCK_TRANSACTIONS;
@@ -87,7 +87,7 @@ export default function MasterReportViewPage() {
   };
 
   // 2. Filter States
-  const initialDateRange = getDefaultInitialDateRange('This Month');
+  const initialDateRange = getDefaultReportDateRange('Custom');
   const [period, setPeriod] = useState<string>(initialDateRange.preset);
   const [fromDate, setFromDate] = useState<string>(initialDateRange.fromDate);
   const [toDate, setToDate] = useState<string>(initialDateRange.toDate);
@@ -367,7 +367,7 @@ export default function MasterReportViewPage() {
           }}
           onApplyFilters={(vals) => alert(`Filters applied for: ${activeMeta.name}`)}
           onResetFilters={() => {
-            const defRange = getDefaultInitialDateRange('This Month');
+            const defRange = getDefaultReportDateRange('Custom');
             setSearchQuery('');
             setBranch('ALL');
             setPaymentFilter('ALL');

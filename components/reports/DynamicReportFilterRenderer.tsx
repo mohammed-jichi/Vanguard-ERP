@@ -14,12 +14,12 @@ import {
 } from '@/config/reportRegistry';
 import {
   resolveDateRangeFromPreset,
-  getDefaultInitialDateRange,
   getStandardPeriodOptions,
   isCustomDatePreset,
   formatDisplayDate,
   parseISODate,
 } from '@/lib/dateRangeEngine';
+import { getDefaultReportDateRange } from '@/lib/reports/reportDefaults';
 
 // ============================================================================
 // PROPS INTERFACE
@@ -76,7 +76,7 @@ export default function DynamicReportFilterRenderer({
 
   // Helper to compute initial default values for the current config
   const getInitialValuesForConfig = (config: ReportConfig, mode?: string): Record<string, any> => {
-    const defaultRange = getDefaultInitialDateRange('This Month');
+    const defaultRange = getDefaultReportDateRange('Custom');
     const initial: Record<string, any> = {
       period: defaultRange.period,
       fromDate: defaultRange.fromDate,

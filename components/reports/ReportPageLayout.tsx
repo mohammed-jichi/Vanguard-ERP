@@ -35,6 +35,13 @@ import {
 } from '@/lib/dateRangeEngine';
 import { useLanguage } from '@/lib/LanguageContext';
 import DynamicReportView from './DynamicReportView';
+import { getDefaultReportDateRange } from '@/lib/reports/reportDefaults';
+
+/** Committed filter state a report opens with (Sep-2026 seed period). */
+const getInitialAppliedFilters = (): Record<string, any> => {
+  const range = getDefaultReportDateRange('Custom');
+  return { period: range.period, fromDate: range.fromDate, toDate: range.toDate };
+};
 
 // ============================================================================
 // 1. DESIGN SYSTEM TYPES & INTERFACES (AUTHENTIC OMEGA ARCHITECTURE)
@@ -533,11 +540,11 @@ export function ReportFilters({
   searchQuery = '',
   onSearchChange,
   searchPlaceholder = 'Search filter...',
-  period = 'Today',
+  period = getDefaultReportDateRange('Custom').period,
   onPeriodChange,
   periodOptions = getStandardPeriodOptions(),
-  fromDate = '',
-  toDate = '',
+  fromDate = getDefaultReportDateRange('Custom').fromDate,
+  toDate = getDefaultReportDateRange('Custom').toDate,
   onDateRangeChange,
   onApplyFilters,
   onResetFilters,
@@ -1058,18 +1065,18 @@ export default function ReportPageLayout({
   );
 
   const activeReport = externalSelectedReport !== undefined ? externalSelectedReport : internalSelectedReport;
-  const [appliedFilters, setAppliedFilters] = useState<Record<string, any>>({});
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, any>>(getInitialAppliedFilters);
 
   const handleSelect = (name: string) => {
     setInternalSelectedReport(name);
-    setAppliedFilters({});
+    setAppliedFilters(getInitialAppliedFilters());
     if (onSelectReport) onSelectReport(name);
   };
 
   // Reset committed filters whenever the active report changes (including externally
   // controlled selection) so a new report never inherits another report's parameters.
   useEffect(() => {
-    setAppliedFilters({});
+    setAppliedFilters(getInitialAppliedFilters());
   }, [activeReport]);
 
   const handleApplyFilters = (vals: Record<string, any>) => {
@@ -1084,7 +1091,7 @@ export default function ReportPageLayout({
   };
 
   const handleResetFilters = () => {
-    setAppliedFilters({});
+    setAppliedFilters(getInitialAppliedFilters());
     onResetFilters?.();
   };
 

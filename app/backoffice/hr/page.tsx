@@ -6,7 +6,8 @@ import { useLanguage } from '@/lib/LanguageContext';
 import UnifiedModuleReportsHub, { ReportCategory } from '@/components/reports/UnifiedModuleReportsHub';
 import UnifiedPrintableReportSheet from '@/components/reports/UnifiedPrintableReportSheet';
 import TimeAndAttendanceMasterDocument from '@/components/reports/hr/TimeAndAttendanceMasterDocument';
-import { getDefaultInitialDateRange, formatDisplayDate } from '@/lib/dateRangeEngine';
+import { formatDisplayDate } from '@/lib/dateRangeEngine';
+import { getDefaultReportDateRange } from '@/lib/reports/reportDefaults';
 import UnifiedHRConsole from '@/components/modules/hr/UnifiedHRConsole';
 import PersonnelMasterConsole from '@/components/modules/hr/PersonnelMasterConsole';
 import { LayoutTemplate, X, Play } from 'lucide-react';
@@ -33,7 +34,7 @@ interface HRAppliedFilters {
   terminal: string;
 }
 
-/** Reports rendered by the live biometric / labor document (vs. static sheets). */
+/** Reports rendered by the live, filter-bound HR document (vs. static sheets). */
 function isLiveTimeAndAttendanceReport(name: string): boolean {
   if (!name) return true;
   return (
@@ -41,7 +42,11 @@ function isLiveTimeAndAttendanceReport(name: string): boolean {
     name.includes('Attendance') ||
     name.includes('Biometric') ||
     name.includes('Overtime') ||
-    name.includes('Terminal')
+    name.includes('Terminal') ||
+    name.includes('BLOM') ||
+    name.includes('Electronic Salary') ||
+    name.includes('Cash Wages') ||
+    name.includes('Disbursal')
   );
 }
 
@@ -64,7 +69,7 @@ function HRPageContent() {
       : 'Monthly Payroll & Biometric Attendance Reconciliation'
   );
   
-  const initialDateRange = getDefaultInitialDateRange('This Month');
+  const initialDateRange = getDefaultReportDateRange('Date Range');
   const [period, setPeriod] = useState<string>(initialDateRange.preset);
   const [branch, setBranch] = useState<string>(ALL_FACILITIES);
   const [fromDate, setFromDate] = useState(initialDateRange.fromDate);
@@ -95,7 +100,7 @@ function HRPageContent() {
   }, [fromDate, toDate, branch, deptFilter, terminalFilter]);
 
   const handleResetFilters = useCallback(() => {
-    const range = getDefaultInitialDateRange('This Month');
+    const range = getDefaultReportDateRange('Date Range');
     setPeriod(range.preset);
     setFromDate(range.fromDate);
     setToDate(range.toDate);
@@ -256,7 +261,7 @@ function HRPageContent() {
               </>
             }
           >
-            {/* 1. Biometric Attendance / Punch Ledger / Labor Cost — live, filter-bound */}
+            {/* 1. Attendance / Punch Ledger / Labor Cost / BLOM Transfers / Cash Wages — live, filter-bound */}
             {isLiveTimeAndAttendanceReport(selectedReport) && (
               <TimeAndAttendanceMasterDocument
                 key={selectedReport}
@@ -267,39 +272,6 @@ function HRPageContent() {
                 filterValues={appliedFilters}
                 dynamicPeriodText={`Period: ${appliedFilters.fromDate} to ${appliedFilters.toDate}`}
               />
-            )}
-
-            {/* 3. BLOM Bank Electronic Salary Transfer Audit */}
-            {(selectedReport.includes('BLOM') || selectedReport.includes('Electronic Salary') || selectedReport.includes('Wages') || selectedReport.includes('Register')) && (
-              <UnifiedPrintableReportSheet
-                reportTitle={selectedReport}
-                reportCode="REP_HR_003"
-                executionDate={formatDisplayDate(new Date())}
-                periodText={`Payroll Transfer Cycle: ${fromDate} to ${toDate} (Direct BLOM Clearing)`}
-                pageInfo="Page 1 of 1"
-                branchInfo="Branch: Central Payroll & Executive Treasury"
-                hideToolbar={true}
-              >
-                <table className="w-full table-fixed text-left border-collapse text-[11px]">
-                  <thead>
-                    <tr className="border-b-2 border-slate-900 font-bold text-black leading-tight bg-slate-50">
-                      <th className="py-2 px-2 normal-case w-[14%] font-sans">{t('col_emp_id', 'Emp ID')}</th>
-                      <th className="py-2 px-2 normal-case w-[24%] font-sans">{t('col_employee_name', 'Employee Name')}</th>
-                      <th className="py-2 px-2 normal-case w-[22%] font-sans">{t('col_blom_iban', 'BLOM IBAN / Account')}</th>
-                      <th className="py-2 px-2 normal-case w-[14%] font-sans text-center">{t('col_transfer_mode', 'Transfer Mode')}</th>
-                      <th className="py-2 px-2 normal-case w-[13%] font-sans text-right">{t('col_gross_salary', 'Gross Salary ($)')}</th>
-                      <th className="py-2 px-2 normal-case w-[13%] font-sans text-right">{t('col_net_transferred', 'Net Transferred ($)')}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium text-[10.5px]">
-                    <tr>
-                      <td colSpan={6} className="py-8 text-center text-slate-500 font-sans">
-                        {t('no_payroll_records', 'No payroll transfer records found for the selected criteria.')}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </UnifiedPrintableReportSheet>
             )}
 
             {/* 4. Department Staffing & Allocation Roster */}
