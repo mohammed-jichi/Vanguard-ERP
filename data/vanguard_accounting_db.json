@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-08T12:50:42.305Z",
+  "last_updated": "2026-10-08T12:57:14.558Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-dc0a7ef",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (dc0a7ef) - Remove in-memory mock attendance data in favor of clean live-ready empty states",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "dc0a7ef06a98e865b2ce17e8dcc6ac0969f09d6b",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "HR & Payroll",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-08T12:51:09.000Z"
+    },
     {
       "id": "act-rel-821e18f",
       "company_id": 1300,
@@ -6311,6 +6328,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-dc0a7ef",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Remove in-memory mock attendance data in favor of clean live-ready empty states",
+      "message": "feat(reports): remove in-memory mock attendance data in favor of clean live-ready empty states",
+      "timestamp": "2026-10-08T12:51:09.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "dc0a7ef06a98e865b2ce17e8dcc6ac0969f09d6b",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-821e18f",
       "type": "SYSTEM_RELEASE",

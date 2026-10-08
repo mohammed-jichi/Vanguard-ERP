@@ -1,5 +1,28 @@
 [
   {
+    "id": "dc0a7ef0-6a98-4865-a2ce-17e8dcc6ac09",
+    "commit_hash": "dc0a7ef06a98e865b2ce17e8dcc6ac0969f09d6b",
+    "short_hash": "dc0a7ef",
+    "version": "v2.0.0",
+    "title": "Remove in-memory mock attendance data in favor of clean live-ready empty states",
+    "category": "feature",
+    "description": "feat(reports): remove in-memory mock attendance data in favor of clean live-ready empty states",
+    "bullet_points": [
+      "Implemented remove in-memory mock attendance data in favor of clean live-ready empty states",
+      "Enhanced system stability and operator workflow in HR & Payroll & Accounting & Finance",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "HR & Payroll",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-08T12:51:09.000Z",
+    "created_at": "2026-10-08T12:57:14.550Z"
+  },
+  {
     "id": "821e18fb-05d1-4eea-a6ec-5d78bc8134d7",
     "commit_hash": "821e18fb05d1beead6ec5d78bc8134d729545a6e",
     "short_hash": "821e18f",
