@@ -466,7 +466,7 @@ export default function UnifiedPrintableReportSheet({
               <button
                 type="button"
                 onClick={onExportCSV}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
                 title={t('Export CSV', 'Export CSV')}
               >
                 <Download size={13} />
@@ -488,7 +488,7 @@ export default function UnifiedPrintableReportSheet({
             <button
               type="button"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
+              className="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-xs"
               title={t('Print Report', 'Print Report')}
             >
               <Printer size={13} />

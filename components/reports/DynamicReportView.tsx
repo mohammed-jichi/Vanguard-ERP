@@ -12,6 +12,7 @@ import {
 import { ReportColumn, ReportMetadata, GrandTotal } from '@/types/reports';
 import { formatCurrencyAmount } from '@/lib/currencyEngine';
 import { Loader2 } from 'lucide-react';
+import { executeReportQuery, UniversalFilterPayload } from '@/lib/reports/reportQueryEngine';
 
 export interface DynamicReportViewProps {
   reportId: string;
@@ -70,41 +71,67 @@ export function DynamicReportView({
     setIsLoading(true);
     setFetchError(null);
 
-    const params = new URLSearchParams();
-    if (fromDate) params.set('fromDate', fromDate);
-    if (toDate) params.set('toDate', toDate);
-    if (branch && branch !== 'ALL') params.set('branch', branch);
-    if (currency) params.set('currency', currency);
+    async function loadReport() {
+      try {
+        const payload: UniversalFilterPayload = {
+          reportId: reportDef.id || reportId,
+          dateFrom: fromDate || '2026-09-01',
+          dateTo: toDate || '2026-09-30',
+          facilityId: branch !== 'ALL' ? branch : filterValues?.branch || 'all',
+          departmentId: filterValues?.department || filterValues?.departmentCostCenter || filterValues?.dept || 'all',
+          terminalId: filterValues?.terminal || filterValues?.biometricTerminal || 'all',
+          status: filterValues?.status,
+          currency: currency || 'USD',
+          customParams: filterValues,
+        };
 
-    Object.entries(filterValues).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== 'ALL' && v !== '') {
-        params.set(k, String(v));
-      }
-    });
+        const result = await executeReportQuery(payload);
+        if (isCancelled) return;
 
-    const separator = reportDef.endpoint.includes('?') ? '&' : '?';
-    const requestUrl = `${reportDef.endpoint}${separator}${params.toString()}`;
-
-    fetch(requestUrl)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        if (result && Array.isArray(result.rows) && result.rows.length > 0) {
+          setData(result.rows);
+          setIsLoading(false);
+          return;
         }
-        return res.json();
-      })
-      .then((json) => {
+
+        // Fallback to HTTP endpoint if engine returned 0 rows
+        const params = new URLSearchParams();
+        if (fromDate) params.set('fromDate', fromDate);
+        if (toDate) params.set('toDate', toDate);
+        if (branch && branch !== 'ALL') params.set('branch', branch);
+        if (currency) params.set('currency', currency);
+
+        Object.entries(filterValues).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== 'ALL' && v !== '') {
+            params.set(k, String(v));
+          }
+        });
+
+        const separator = reportDef.endpoint.includes('?') ? '&' : '?';
+        const requestUrl = `${reportDef.endpoint}${separator}${params.toString()}`;
+
+        const res = await fetch(requestUrl);
+        if (!res.ok) {
+          if (isCancelled) return;
+          setData(result.rows || []);
+          setIsLoading(false);
+          return;
+        }
+        const json = await res.json();
         if (isCancelled) return;
         const rows = Array.isArray(json) ? json : (json?.data || json?.records || json?.items || []);
-        setData(Array.isArray(rows) ? rows : []);
+        setData(Array.isArray(rows) && rows.length > 0 ? rows : (result.rows || []));
         setIsLoading(false);
-      })
-      .catch((err) => {
+      } catch (err: any) {
         if (isCancelled) return;
         console.warn(`[DynamicReportView] Failed loading live endpoint for ${reportDef.id}:`, err);
         setFetchError(err.message);
         setData([]);
         setIsLoading(false);
-      });
+      }
+    }
+
+    loadReport();
 
     return () => {
       isCancelled = true;

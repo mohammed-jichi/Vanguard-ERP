@@ -1,5 +1,53 @@
 [
   {
+    "id": "4fa99e4e-0d43-4a43-af70-5f724314568c",
+    "commit_hash": "4fa99e4e0d433a439f705f724314568ce4f4b74c",
+    "short_hash": "4fa99e4",
+    "version": "v2.0.0",
+    "title": "Bind Terminal/Department/Date filters to live query, remove duplicate HR ribbon, wire Reports Builder modal",
+    "category": "fix",
+    "description": "fix(hr-reports): bind Terminal/Department/Date filters to live query, remove duplicate HR ribbon, wire Reports Builder modal",
+    "bullet_points": [
+      "HR page: remove Personnel / Attendance & Shifts / Payroll Runs / HR Reports Hub ribbon; add Reports Builder button + modal",
+      "HR page: draft vs applied filters; Filter Report/Reset now wired; branch default fixed (was 'Main Branch', matched no facility)",
+      "TimeAndAttendanceMasterDocument: stable filter identity (no refetch loop), user branch overrides prop, 'All ...' normalised to 'all', terminal/event-stream -> punch ledger, labor aggregated per department",
+      "ReportPageLayout: table render-prop receives applied filters, onApplyFilters/onResetFilters, reset filters on report switch",
+      "reportQueryEngine: track file; add optional currency to UniversalFilterPayload"
+    ],
+    "affected_modules": [
+      "HR & Payroll",
+      "Core Shell & UI"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-08T08:45:57.000Z",
+    "created_at": "2026-10-08T08:51:15.503Z"
+  },
+  {
+    "id": "0c9966b4-eca0-4891-aba9-5799fbec869c",
+    "commit_hash": "0c9966b4eca028914ba95799fbec869c7123d566",
+    "short_hash": "0c9966b",
+    "version": "v2.0.0",
+    "title": "Resolve css @import error and ensure successful production build",
+    "category": "fix",
+    "description": "fix(build): resolve css @import error and ensure successful production build",
+    "bullet_points": [
+      "Resolved: resolve css @import error and ensure successful production build",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Core Shell & UI",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-07T23:26:38.000Z",
+    "created_at": "2026-10-08T08:44:56.937Z"
+  },
+  {
     "id": "8d0573f3-62de-4605-a92f-957092bf6c96",
     "commit_hash": "8d0573f362de5605592f957092bf6c9636ec7f90",
     "short_hash": "8d0573f",

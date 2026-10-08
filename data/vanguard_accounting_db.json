@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-07T23:25:35.218Z",
+  "last_updated": "2026-10-08T08:51:15.511Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,40 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-4fa99e4",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (4fa99e4) - Bind Terminal/Department/Date filters to live query, remove duplicate HR ribbon, wire Reports Builder modal",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "4fa99e4e0d433a439f705f724314568ce4f4b74c",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "HR & Payroll",
+          "Core Shell & UI"
+        ]
+      },
+      "created_at": "2026-10-08T08:45:57.000Z"
+    },
+    {
+      "id": "act-rel-0c9966b",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (0c9966b) - Resolve css @import error and ensure successful production build",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "0c9966b4eca028914ba95799fbec869c7123d566",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Core Shell & UI",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-07T23:26:38.000Z"
+    },
     {
       "id": "act-rel-8d0573f",
       "company_id": 1300,
@@ -6194,6 +6228,34 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-4fa99e4",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Bind Terminal/Department/Date filters to live query, remove duplicate HR ribbon, wire Reports Builder modal",
+      "message": "fix(hr-reports): bind Terminal/Department/Date filters to live query, remove duplicate HR ribbon, wire Reports Builder modal",
+      "timestamp": "2026-10-08T08:45:57.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "4fa99e4e0d433a439f705f724314568ce4f4b74c",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-0c9966b",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Resolve css @import error and ensure successful production build",
+      "message": "fix(build): resolve css @import error and ensure successful production build",
+      "timestamp": "2026-10-07T23:26:38.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "0c9966b4eca028914ba95799fbec869c7123d566",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-8d0573f",
       "type": "SYSTEM_RELEASE",

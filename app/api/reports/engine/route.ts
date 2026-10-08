@@ -260,3 +260,19 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { reportId, dateFrom, dateTo, facilityId, departmentId, terminalId, currency = 'USD', customParams = {} } = body;
+    const url = new URL(req.url);
+    url.searchParams.set('reportId', reportId || customParams.reportId || 'REP_S_00210');
+    if (facilityId) url.searchParams.set('branch', facilityId);
+    if (dateFrom) url.searchParams.set('fromDate', dateFrom);
+    if (dateTo) url.searchParams.set('toDate', dateTo);
+    if (currency) url.searchParams.set('currency', currency);
+    return GET(new NextRequest(url.toString(), { method: 'GET', headers: req.headers }));
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 });
+  }
+}

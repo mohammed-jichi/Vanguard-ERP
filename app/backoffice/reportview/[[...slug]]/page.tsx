@@ -573,7 +573,12 @@ export default function MasterReportViewPage() {
               dynamicPeriodText={`Attendance Window: ${fromDate} to ${toDate}`}
               executionDate="06-Sep-2026"
               branch={branch === 'ALL' ? 'Southern Olive and Oil Products - Main' : branch}
-              filterValues={salesFilterValues}
+              filterValues={{
+                ...salesFilterValues,
+                branch,
+                fromDate,
+                toDate,
+              }}
             />
           )}
 
