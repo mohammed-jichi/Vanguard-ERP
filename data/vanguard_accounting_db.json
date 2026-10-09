@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-09T12:27:30.518Z",
+  "last_updated": "2026-10-09T13:08:43.137Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,24 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-a83817d",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (a83817d) - Ignore non-http schemes in service worker cache and ensure safe error handling",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "a83817dfd7f367735b879cbd3770e09fc15efa15",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "HR & Payroll",
+          "Alerts & Notifications",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-09T12:27:56.000Z"
+    },
     {
       "id": "act-rel-6e60280",
       "company_id": 1300,
@@ -6427,6 +6445,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-a83817d",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Ignore non-http schemes in service worker cache and ensure safe error handling",
+      "message": "fix(pwa): ignore non-http schemes in service worker cache and ensure safe error handling",
+      "timestamp": "2026-10-09T12:27:56.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "a83817dfd7f367735b879cbd3770e09fc15efa15",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-6e60280",
       "type": "SYSTEM_RELEASE",

@@ -488,11 +488,13 @@ export default function AlertsAndNotificationsConsole() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
           {/* 1. Department Dropdown (16 options matching HR module) */}
           <div className="md:col-span-4 space-y-1">
-            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
+            <label htmlFor="department-filter" className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
               <Filter className="w-3 h-3 text-slate-400" />
               <span>{t('department', 'Department')}</span>
             </label>
             <select
+              id="department-filter"
+              name="departmentFilter"
               value={departmentFilter}
               onChange={(e) => setDepartmentFilter(e.target.value)}
               className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:outline-none transition-all cursor-pointer"
@@ -507,12 +509,14 @@ export default function AlertsAndNotificationsConsole() {
 
           {/* 2. Universal Real-Time Live Search Input */}
           <div className="md:col-span-5 space-y-1">
-            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
+            <label htmlFor="employee-search" className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
               <Search className="w-3 h-3 text-slate-400" />
               <span>{t('search_employees', 'Search Employees')}</span>
             </label>
             <div className="relative">
               <input
+                id="employee-search"
+                name="employeeSearch"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -525,11 +529,13 @@ export default function AlertsAndNotificationsConsole() {
 
           {/* 3. Status Dropdown (4 Enforced Statuses) */}
           <div className="md:col-span-3 space-y-1">
-            <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
+            <label htmlFor="status-filter" className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
               <Shield className="w-3 h-3 text-slate-400" />
               <span>{t('verification_approval_status', 'Verification / Approval Status')}</span>
             </label>
             <select
+              id="status-filter"
+              name="statusFilter"
               value={assignedStatusFilter}
               onChange={(e) => setAssignedStatusFilter(e.target.value)}
               className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:outline-none transition-all cursor-pointer"
@@ -628,8 +634,10 @@ export default function AlertsAndNotificationsConsole() {
                     <div className="flex flex-col items-center">
                       <span className="mb-1">{t('receive_alerts_by', 'Receive Alerts By')}</span>
                       <div className="flex items-center gap-3 text-[10px] normal-case text-slate-500 font-semibold">
-                        <label className="flex items-center gap-1 cursor-pointer">
+                        <label htmlFor="master-receive-email" className="flex items-center gap-1 cursor-pointer">
                           <input
+                            id="master-receive-email"
+                            name="masterReceiveEmail"
                             type="checkbox"
                             checked={isAllEmailChecked}
                             onChange={() => handleToggleAllChannel('email')}
@@ -638,8 +646,10 @@ export default function AlertsAndNotificationsConsole() {
                           <span>{t('email', 'Email')}</span>
                         </label>
                         <span className="text-slate-300">|</span>
-                        <label className="flex items-center gap-1 cursor-pointer">
+                        <label htmlFor="master-receive-whatsapp" className="flex items-center gap-1 cursor-pointer">
                           <input
+                            id="master-receive-whatsapp"
+                            name="masterReceiveWhatsapp"
                             type="checkbox"
                             checked={isAllWhatsAppChecked}
                             onChange={() => handleToggleAllChannel('whatsapp')}
@@ -702,10 +712,14 @@ export default function AlertsAndNotificationsConsole() {
                               type="button"
                               onClick={() => handleDispatchVerification(emp, 'email')}
                               disabled={isDispatchingEmail || !emp.email}
-                              className="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-[10.5px] shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+                              className={`px-2 py-1 rounded-lg font-bold text-[10.5px] shadow-2xs transition-all cursor-pointer disabled:opacity-50 ${
+                                recentDispatch?.employeeName === emp.name && recentDispatch?.target === 'email'
+                                  ? 'bg-green-500 hover:bg-green-600 text-white'
+                                  : 'bg-amber-500 hover:bg-amber-600 text-slate-950'
+                              }`}
                               title={t('dispatch_email_hint', 'Click to dispatch live verification email')}
                             >
-                              {isDispatchingEmail ? t('dispatching', 'Dispatching...') : t('resend_verification', 'Resend Verification')}
+                              {isDispatchingEmail ? t('sending', 'Sending...') : recentDispatch?.employeeName === emp.name && recentDispatch?.target === 'email' ? t('sent', 'Sent') : t('resend_verification', 'Resend Verification')}
                             </button>
                           )}
                         </td>
@@ -748,10 +762,14 @@ export default function AlertsAndNotificationsConsole() {
                               type="button"
                               onClick={() => handleDispatchVerification(emp, 'phone')}
                               disabled={isDispatchingPhone || !emp.phone}
-                              className="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-[10.5px] shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+                              className={`px-2 py-1 rounded-lg font-bold text-[10.5px] shadow-2xs transition-all cursor-pointer disabled:opacity-50 ${
+                                recentDispatch?.employeeName === emp.name && recentDispatch?.target === 'phone'
+                                  ? 'bg-green-500 hover:bg-green-600 text-white'
+                                  : 'bg-amber-500 hover:bg-amber-600 text-slate-950'
+                              }`}
                               title={t('dispatch_whatsapp_hint', 'Click to dispatch live WhatsApp verification')}
                             >
-                              {isDispatchingPhone ? t('dispatching', 'Dispatching...') : t('resend_verification', 'Resend Verification')}
+                              {isDispatchingPhone ? t('sending', 'Sending...') : recentDispatch?.employeeName === emp.name && recentDispatch?.target === 'phone' ? t('sent', 'Sent') : t('resend_verification', 'Resend Verification')}
                             </button>
                           )}
                         </td>
@@ -780,6 +798,7 @@ export default function AlertsAndNotificationsConsole() {
                           <div className="flex items-center justify-center gap-4">
                             {/* Email Checkbox */}
                             <label
+                              htmlFor={`email-alerts-${emp.id}`}
                               className={`flex items-center gap-1.5 ${
                                 !isEmailDualGated ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
                               }`}
@@ -790,6 +809,8 @@ export default function AlertsAndNotificationsConsole() {
                               }
                             >
                               <input
+                                id={`email-alerts-${emp.id}`}
+                                name={`emailAlerts_${emp.id}`}
                                 type="checkbox"
                                 checked={emp.receiveEmailAlerts}
                                 disabled={!isEmailDualGated}
@@ -801,6 +822,7 @@ export default function AlertsAndNotificationsConsole() {
 
                             {/* WhatsApp Checkbox */}
                             <label
+                              htmlFor={`whatsapp-alerts-${emp.id}`}
                               className={`flex items-center gap-1.5 ${
                                 !isPhoneDualGated ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
                               }`}
@@ -811,6 +833,8 @@ export default function AlertsAndNotificationsConsole() {
                               }
                             >
                               <input
+                                id={`whatsapp-alerts-${emp.id}`}
+                                name={`whatsappAlerts_${emp.id}`}
                                 type="checkbox"
                                 checked={emp.receiveWhatsAppAlerts}
                                 disabled={!isPhoneDualGated}
@@ -843,8 +867,10 @@ export default function AlertsAndNotificationsConsole() {
                   <th className="py-3 px-4 text-center">
                     <div className="flex flex-col items-center">
                       <span>{t('end_of_day_summary', 'End of Day Summary')}</span>
-                      <label className="flex items-center gap-1 text-[10px] normal-case text-slate-500 font-semibold cursor-pointer mt-1">
+                      <label htmlFor="master-end-of-day" className="flex items-center gap-1 text-[10px] normal-case text-slate-500 font-semibold cursor-pointer mt-1">
                         <input
+                          id="master-end-of-day"
+                          name="masterEndOfDay"
                           type="checkbox"
                           checked={isAllEndOfDayChecked}
                           onChange={() => handleToggleColumnMaster('endOfDay')}
@@ -857,8 +883,10 @@ export default function AlertsAndNotificationsConsole() {
                   <th className="py-3 px-4 text-center">
                     <div className="flex flex-col items-center">
                       <span>{t('item_expiry', 'Item Expiry')}</span>
-                      <label className="flex items-center gap-1 text-[10px] normal-case text-slate-500 font-semibold cursor-pointer mt-1">
+                      <label htmlFor="master-item-expiry" className="flex items-center gap-1 text-[10px] normal-case text-slate-500 font-semibold cursor-pointer mt-1">
                         <input
+                          id="master-item-expiry"
+                          name="masterItemExpiry"
                           type="checkbox"
                           checked={isAllItemExpiryChecked}
                           onChange={() => handleToggleColumnMaster('itemExpiry')}
@@ -871,8 +899,10 @@ export default function AlertsAndNotificationsConsole() {
                   <th className="py-3 px-4 text-center">
                     <div className="flex flex-col items-center">
                       <span>{t('low_in_stock', 'Low in stock')}</span>
-                      <label className="flex items-center gap-1 text-[10px] normal-case text-slate-500 font-semibold cursor-pointer mt-1">
+                      <label htmlFor="master-low-stock" className="flex items-center gap-1 text-[10px] normal-case text-slate-500 font-semibold cursor-pointer mt-1">
                         <input
+                          id="master-low-stock"
+                          name="masterLowStock"
                           type="checkbox"
                           checked={isAllLowStockChecked}
                           onChange={() => handleToggleColumnMaster('lowStock')}
@@ -907,6 +937,9 @@ export default function AlertsAndNotificationsConsole() {
                         {/* Master Select All per Employee */}
                         <td className="py-3 px-4 text-center">
                           <input
+                            id={`row-master-${emp.id}`}
+                            name={`rowMaster_${emp.id}`}
+                            aria-label={`Select all alerts for ${emp.name}`}
                             type="checkbox"
                             checked={isAllRowSelected}
                             onChange={() => handleToggleRowMaster(emp.id)}
@@ -926,6 +959,9 @@ export default function AlertsAndNotificationsConsole() {
                         {/* End of Day Summary Checkbox */}
                         <td className="py-3 px-4 text-center">
                           <input
+                            id={`end-of-day-${emp.id}`}
+                            name={`endOfDay_${emp.id}`}
+                            aria-label={`End of day alert for ${emp.name}`}
                             type="checkbox"
                             checked={emp.alertEndOfDay}
                             onChange={() => handleToggleCategory(emp.id, 'endOfDay')}
@@ -936,6 +972,9 @@ export default function AlertsAndNotificationsConsole() {
                         {/* Item Expiry Checkbox */}
                         <td className="py-3 px-4 text-center">
                           <input
+                            id={`item-expiry-${emp.id}`}
+                            name={`itemExpiry_${emp.id}`}
+                            aria-label={`Item expiry alert for ${emp.name}`}
                             type="checkbox"
                             checked={emp.alertItemExpiry}
                             onChange={() => handleToggleCategory(emp.id, 'itemExpiry')}
@@ -946,6 +985,9 @@ export default function AlertsAndNotificationsConsole() {
                         {/* Low in Stock Checkbox */}
                         <td className="py-3 px-4 text-center">
                           <input
+                            id={`low-stock-${emp.id}`}
+                            name={`lowStock_${emp.id}`}
+                            aria-label={`Low stock alert for ${emp.name}`}
                             type="checkbox"
                             checked={emp.alertLowStock}
                             onChange={() => handleToggleCategory(emp.id, 'lowStock')}

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabaseClient';
+import { generateVerificationToken } from '@/lib/notifications/verification';
+import { sendWhatsAppTemplate } from '@/lib/notifications/whatsapp';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -24,23 +26,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate secure verification token
-    const payload = {
-      empId: employeeId,
+    const token = generateVerificationToken({
+      employeeId,
       name: name || 'Employee',
-      target: target === 'phone' ? 'phone' : 'email',
+      channel: target === 'phone' ? 'whatsapp' : 'email',
       recipient,
       tenantId,
-      issuedAt: Date.now(),
-      exp: Date.now() + 86400000 * 7, // 7 days validity
-    };
-
-    const token = Buffer.from(JSON.stringify(payload)).toString('base64url');
+    });
 
     // Determine host URL
     const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || 'vanguard-erp-lb.vercel.app';
     const protocol = req.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
     const baseUrl = `${protocol}://${host}`;
-    const verificationUrl = `${baseUrl}/api/notifications/verify?token=${encodeURIComponent(token)}&type=${target === 'phone' ? 'phone' : 'email'}`;
+    const verificationUrl = `${baseUrl}/verify/alerts?token=${encodeURIComponent(token)}`;
 
     // WhatsApp Message Body Specification
     const whatsAppMessage = `Hello ${name || 'Employee'}, your address/phone has been added by Zeit w zaytoun ljanoub (Facility ID: #1300) to receive ERP notifications. Please verify by clicking the link below: ${verificationUrl}`;
@@ -96,41 +94,23 @@ export async function POST(req: NextRequest) {
         dispatchDetails.provider = 'native_outbox';
       }
     } else {
-      // Real WhatsApp Dispatch Engine
+      // Real WhatsApp Dispatch Engine using WhatsApp Cloud API
       const cleanPhone = recipient.replace(/[^0-9]/g, '');
       const whatsAppDirectLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsAppMessage)}`;
       dispatchDetails.whatsAppDirectLink = whatsAppDirectLink;
       dispatchDetails.whatsAppMessage = whatsAppMessage;
 
-      const twilioSid = process.env.TWILIO_ACCOUNT_SID;
-      const twilioAuth = process.env.TWILIO_AUTH_TOKEN;
-      const twilioPhone = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
-
-      if (twilioSid && twilioAuth) {
-        try {
-          const authHeader = 'Basic ' + Buffer.from(`${twilioSid}:${twilioAuth}`).toString('base64');
-          const twilioBody = new URLSearchParams();
-          twilioBody.append('From', twilioPhone.startsWith('whatsapp:') ? twilioPhone : `whatsapp:${twilioPhone}`);
-          twilioBody.append('To', `whatsapp:+${cleanPhone}`);
-          twilioBody.append('Body', whatsAppMessage);
-
-          const twilioRes = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
-            method: 'POST',
-            headers: {
-              Authorization: authHeader,
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: twilioBody.toString(),
-          });
-          const twilioJson = await twilioRes.json();
-          dispatchDetails.provider = 'twilio';
-          dispatchDetails.providerResponse = twilioJson;
-        } catch (waErr: any) {
-          console.error('[Dispatch Error] Twilio WhatsApp dispatch failed:', waErr.message);
-        }
-      } else {
-        console.log(`[Real WhatsApp Dispatch Queue] To: +${cleanPhone} | Msg: ${whatsAppMessage}`);
-        dispatchDetails.provider = 'whatsapp_native_gateway';
+      try {
+        const result = await sendWhatsAppTemplate(
+          recipient,
+          'vanguard_employee_verification',
+          [name || 'Employee', 'Zeit w zaytoun ljanoub', '1300'],
+          verificationUrl // buttonUrlParam (though template button might just use the token in real life, but for now we pass the full URL or parameter as requested)
+        );
+        dispatchDetails.provider = result.simulated ? 'simulated' : 'whatsapp_cloud';
+        dispatchDetails.providerResponse = result;
+      } catch (waErr: any) {
+        console.error('[Dispatch Error] WhatsApp Cloud dispatch failed:', waErr.message);
       }
     }
 
