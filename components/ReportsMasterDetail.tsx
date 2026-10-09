@@ -60,9 +60,9 @@ import { EmployeeAttendanceTemplate } from './reports/sales/EmployeeAttendanceTe
 import { CustomerSalesDetailTemplate } from './reports/sales/CustomerSalesDetailTemplate';
 import { SalesByCustomerByItemsTemplate } from './reports/sales/SalesByCustomerByItemsTemplate';
 
-import { FallbackNoSale } from './reports/legacy_pending/FallbackNoSale';
-import { FallbackMeterReport } from './reports/legacy_pending/FallbackMeterReport';
-import { InlineDuplicateInvoices } from './reports/legacy_pending/InlineDuplicateInvoices';
+import { FallbackNoSale } from './reports/fallbacks/FallbackNoSale';
+import { FallbackMeterReport } from './reports/fallbacks/FallbackMeterReport';
+import { InlineDuplicateInvoices } from './reports/fallbacks/InlineDuplicateInvoices';
 
 type ReportMenuItemFlat = {
   category: string;
