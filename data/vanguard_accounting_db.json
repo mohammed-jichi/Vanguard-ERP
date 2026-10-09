@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-09T11:38:57.650Z",
+  "last_updated": "2026-10-09T12:27:30.518Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,22 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-6e60280",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (6e60280) - Enforce local-first state binding, remove background polling in forms, fix idx keys",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "6e602809b02fe0392d7a6ada386271aebec752f7",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Alerts & Notifications"
+        ]
+      },
+      "created_at": "2026-10-09T12:05:18.000Z"
+    },
     {
       "id": "act-rel-5e22924",
       "company_id": 1300,
@@ -6411,6 +6427,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-6e60280",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Enforce local-first state binding, remove background polling in forms, fix idx keys",
+      "message": "fix(state): enforce local-first state binding, remove background polling in forms, fix idx keys",
+      "timestamp": "2026-10-09T12:05:18.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "6e602809b02fe0392d7a6ada386271aebec752f7",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-5e22924",
       "type": "SYSTEM_RELEASE",

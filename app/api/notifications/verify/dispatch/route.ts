@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
           dispatchDetails.provider = 'resend';
           dispatchDetails.providerResponse = resendJson;
         } catch (mailErr: any) {
-          console.warn('[Dispatch] Resend dispatch warning:', mailErr.message);
+          console.error('[Dispatch Error] Resend email dispatch failed:', mailErr.message);
         }
       } else {
         console.log(`[Real Email Dispatch Queue] To: ${recipient} | Subject: ${emailSubject} | Link: ${verificationUrl}`);
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
           dispatchDetails.provider = 'twilio';
           dispatchDetails.providerResponse = twilioJson;
         } catch (waErr: any) {
-          console.warn('[Dispatch] Twilio WhatsApp dispatch warning:', waErr.message);
+          console.error('[Dispatch Error] Twilio WhatsApp dispatch failed:', waErr.message);
         }
       } else {
         console.log(`[Real WhatsApp Dispatch Queue] To: +${cleanPhone} | Msg: ${whatsAppMessage}`);

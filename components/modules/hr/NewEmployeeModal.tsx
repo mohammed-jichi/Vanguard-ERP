@@ -823,6 +823,38 @@ export default function NewEmployeeModal({
       // Persist to Supabase and LocalStorage via HRPersonnelService (routes through /api/hr/sync-workstation)
       await HRPersonnelService.saveEmployee(newEmp);
 
+      // Trigger Notification Dispatch for New Employees
+      try {
+        if (newEmp.email) {
+          await fetch('/api/notifications/verify/dispatch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              employeeId: newEmp.id,
+              name: newEmp.fullName || newEmp.firstName,
+              target: 'email',
+              recipient: newEmp.email,
+              tenantId: '1300'
+            })
+          });
+        }
+        if (newEmp.phone && newEmp.phone !== '+961 70 000000') {
+          await fetch('/api/notifications/verify/dispatch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              employeeId: newEmp.id,
+              name: newEmp.fullName || newEmp.firstName,
+              target: 'phone',
+              recipient: newEmp.phone,
+              tenantId: '1300'
+            })
+          });
+        }
+      } catch (dispatchErr) {
+        console.error('[NewEmployeeModal] Failed to dispatch verification messages:', dispatchErr);
+      }
+
       // 3. Callback to parent view for immediate state refresh
       if (onEmployeeCreated) onEmployeeCreated(newEmp);
       if (onEmployeeUpdated) onEmployeeUpdated(newEmp);

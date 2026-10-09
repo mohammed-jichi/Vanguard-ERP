@@ -100,16 +100,26 @@ export async function GET(req: NextRequest) {
 
     const supabase = getSupabaseServerClient();
 
-    // 1. Fetch current tenant feature flags containing employee notification preferences
+    // 1. Fetch live employees from the database
+    const { data: dbEmployees, error: empErr } = await supabase
+      .from('employees')
+      .select('*')
+      .eq('active', true);
+
+    if (empErr) {
+      console.warn('[API /api/notifications/employees] DB Employees warning:', empErr);
+    }
+
+    // 2. Fetch current tenant feature flags containing employee notification preferences
     const { data: tenant, error: fetchErr } = await supabase
       .from('tenants')
       .select('feature_flags')
       .eq('id', tenantId)
       .maybeSingle();
 
-    let staffList = tenant?.feature_flags?.employee_notification_preferences;
+    let staffList = tenant?.feature_flags?.employee_notification_preferences || [];
 
-    // 2. Initialize in Supabase if not yet seeded or if dummy employees detected
+    // Initialize if empty or dummy
     const hasLegacyMock =
       !Array.isArray(staffList) ||
       staffList.length === 0 ||
@@ -118,25 +128,38 @@ export async function GET(req: NextRequest) {
 
     if (hasLegacyMock) {
       staffList = INITIAL_FACILITY_STAFF;
-      try {
-        const existingFlags = tenant?.feature_flags || {};
-        await supabase
-          .from('tenants')
-          .update({
-            feature_flags: {
-              ...existingFlags,
-              employee_notification_preferences: INITIAL_FACILITY_STAFF,
-            },
-          })
-          .eq('id', tenantId);
-      } catch (seedErr) {
-        console.warn('[API /api/notifications/employees] Auto-seed warning:', seedErr);
-      }
     }
 
-    // 3. Apply live query filtering
-    let results = [...staffList];
+    // 3. LEFT JOIN JS Merge: Ensure EVERY DB employee appears with default settings if missing
+    let results: any[] = [];
+    
+    if (dbEmployees && dbEmployees.length > 0) {
+      results = dbEmployees.map((dbEmp) => {
+        // Find existing preference or use defaults
+        const existingPref = staffList.find((p: any) => p.email === dbEmp.email || p.phone === dbEmp.phone || p.id === dbEmp.id);
+        
+        return {
+          id: dbEmp.id,
+          name: dbEmp.full_name || `${dbEmp.first_name || ''} ${dbEmp.last_name || ''}`.trim(),
+          department: dbEmp.department || 'Unassigned',
+          email: dbEmp.email || '',
+          emailVerified: existingPref ? existingPref.emailVerified : false,
+          emailApproved: existingPref ? existingPref.emailApproved : false,
+          phone: dbEmp.phone || '',
+          phoneVerified: existingPref ? existingPref.phoneVerified : false,
+          phoneApproved: existingPref ? existingPref.phoneApproved : false,
+          receiveEmailAlerts: existingPref ? existingPref.receiveEmailAlerts : false,
+          receiveWhatsAppAlerts: existingPref ? existingPref.receiveWhatsAppAlerts : false,
+          alertEndOfDay: existingPref ? existingPref.alertEndOfDay : false,
+          alertItemExpiry: existingPref ? existingPref.alertItemExpiry : false,
+          alertLowStock: existingPref ? existingPref.alertLowStock : false,
+        };
+      });
+    } else {
+      results = [...staffList]; // fallback if employees table is empty
+    }
 
+    // 4. Apply live query filtering
     if (department && department !== 'All Departments') {
       results = results.filter((emp: any) =>
         emp.department?.toLowerCase() === department.toLowerCase()

@@ -1,7 +1,7 @@
 'use client';
 import { useLanguage } from '@/lib/LanguageContext';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
   Pencil,
@@ -33,6 +33,8 @@ export default function ZoneSetupView() {
   const { t } = useLanguage();
   const { currentTenant } = useTenant();
   const [zones, setZones] = useState<OmegaCallCenterZone[]>(INITIAL_ZONES);
+
+  const isInitializedRef = useRef(false);
 
   // Mount hydration from Supabase
   useEffect(() => {

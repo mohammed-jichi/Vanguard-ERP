@@ -1,5 +1,27 @@
 [
   {
+    "id": "6e602809-b02f-4039-ad7a-6ada386271ae",
+    "commit_hash": "6e602809b02fe0392d7a6ada386271aebec752f7",
+    "short_hash": "6e60280",
+    "version": "v2.0.0",
+    "title": "Enforce local-first state binding, remove background polling in forms, fix idx keys",
+    "category": "fix",
+    "description": "fix(state): enforce local-first state binding, remove background polling in forms, fix idx keys",
+    "bullet_points": [
+      "Resolved: enforce local-first state binding, remove background polling in forms, fix idx keys",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Alerts & Notifications"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-09T12:05:18.000Z",
+    "created_at": "2026-10-09T12:27:30.510Z"
+  },
+  {
     "id": "5e22924a-53f2-499d-af10-6c6b3610e317",
     "commit_hash": "5e22924a53f2e99d4f106c6b3610e317a3ff9696",
     "short_hash": "5e22924",

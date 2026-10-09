@@ -72,10 +72,21 @@ self.addEventListener('fetch', (event) => {
     fetch(request)
       .then((response) => {
         if (response && response.status === 200 && request.method === 'GET') {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
-          });
+          // Strict URL scheme validation to prevent 'chrome-extension:' or 'data:' cache put errors
+          if (request.url.startsWith('http://') || request.url.startsWith('https://')) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              try {
+                cache.put(request, responseClone).catch((err) => {
+                  console.warn('[Service Worker] Async cache put warning:', err);
+                });
+              } catch (err) {
+                console.warn('[Service Worker] Sync cache put warning:', err);
+              }
+            }).catch((err) => {
+              console.warn('[Service Worker] Cache open warning:', err);
+            });
+          }
         }
         return response;
       })

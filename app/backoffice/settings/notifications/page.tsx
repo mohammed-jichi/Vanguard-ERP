@@ -705,7 +705,7 @@ export default function AlertsAndNotificationsConsole() {
                               className="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-[10.5px] shadow-2xs transition-all cursor-pointer disabled:opacity-50"
                               title={t('dispatch_email_hint', 'Click to dispatch live verification email')}
                             >
-                              {isDispatchingEmail ? t('dispatching', 'Dispatching...') : t('verify', 'Verify')}
+                              {isDispatchingEmail ? t('dispatching', 'Dispatching...') : t('resend_verification', 'Resend Verification')}
                             </button>
                           )}
                         </td>
@@ -751,7 +751,7 @@ export default function AlertsAndNotificationsConsole() {
                               className="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold text-[10.5px] shadow-2xs transition-all cursor-pointer disabled:opacity-50"
                               title={t('dispatch_whatsapp_hint', 'Click to dispatch live WhatsApp verification')}
                             >
-                              {isDispatchingPhone ? t('dispatching', 'Dispatching...') : t('verify', 'Verify')}
+                              {isDispatchingPhone ? t('dispatching', 'Dispatching...') : t('resend_verification', 'Resend Verification')}
                             </button>
                           )}
                         </td>
