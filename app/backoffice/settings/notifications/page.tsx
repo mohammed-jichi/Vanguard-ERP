@@ -174,13 +174,7 @@ export default function AlertsAndNotificationsConsole() {
     fetchLiveEmployees();
   }, [fetchLiveEmployees]);
 
-  // Background sync polling to detect approvals in real-time
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchLiveEmployees(true);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [fetchLiveEmployees]);
+  // Background sync polling removed to prevent unintentional auto-refetch/rollback loops during form interaction.
 
   // Real-World Dispatch Engine for Email & WhatsApp (No Mock Data)
   const handleDispatchVerification = async (emp: EmployeeAlertProfile, target: 'email' | 'phone') => {

@@ -7317,8 +7317,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       { label: "Today's & History", checked: false, hasButton: true, subReports: ['Transactions on Hold'] },
                       { label: 'Time & Attendance', checked: false, hasButton: true, subReports: ['Attendance List'] },
                       { label: 'Lists', checked: false, hasButton: true, subReports: ['System Lists'] }
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex flex-col border border-slate-200 rounded">
+                    ].map((item) => (
+                      <div key={item.label} className="flex flex-col border border-slate-200 rounded">
                         <div className="flex justify-between items-center p-3 bg-white rounded">
                           <label className="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" defaultChecked={item.checked} className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
@@ -7336,8 +7336,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                         {/* Accordion Dropdown for Sub-reports */}
                         {expandedCategory === item.label && item.subReports && (
                           <div className="flex flex-col gap-2 p-3 border-t border-slate-200 bg-slate-50">
-                            {item.subReports.map((report, rIdx) => (
-                              <label key={rIdx} className="flex items-center gap-3 cursor-pointer pl-7">
+                            {item.subReports.map((report) => (
+                              <label key={report} className="flex items-center gap-3 cursor-pointer pl-7">
                                 <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                                 <span className="text-[12px] text-slate-600">{report}</span>
                               </label>
