@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-08T12:57:14.558Z",
+  "last_updated": "2026-10-09T11:01:41.513Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,55 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-f54cc96",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (f54cc96) - Restore login emblem asset",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "f54cc9635ca7451be2f79ca5f5ea8876d8556590",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Core System Architecture"
+        ]
+      },
+      "created_at": "2026-10-09T10:53:57.000Z"
+    },
+    {
+      "id": "act-rel-d859f8d",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (d859f8d) - Remove unused legacy vanguard mockups and logo concepts",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "d859f8dcc1dd128ae57374bd934b7d7b272807e0",
+        "version": "v2.0.0",
+        "category": "maintenance",
+        "modules": [
+          "Core Shell & UI"
+        ]
+      },
+      "created_at": "2026-10-09T10:16:13.000Z"
+    },
+    {
+      "id": "act-rel-4f407ad",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (4f407ad) - Scaffold ergonomic handheld shell with hardware ribbon and thumb dock",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "4f407ad20f5a713b6b526c8b730e3c4e5763ce5b",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Core Shell & UI",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-08T12:57:37.000Z"
+    },
     {
       "id": "act-rel-dc0a7ef",
       "company_id": 1300,
@@ -6328,6 +6377,48 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-f54cc96",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Restore login emblem asset",
+      "message": "fix(auth): restore login emblem asset",
+      "timestamp": "2026-10-09T10:53:57.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "f54cc9635ca7451be2f79ca5f5ea8876d8556590",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-d859f8d",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Remove unused legacy vanguard mockups and logo concepts",
+      "message": "chore: remove unused legacy vanguard mockups and logo concepts",
+      "timestamp": "2026-10-09T10:16:13.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "d859f8dcc1dd128ae57374bd934b7d7b272807e0",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-4f407ad",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Scaffold ergonomic handheld shell with hardware ribbon and thumb dock",
+      "message": "feat(mobile): scaffold ergonomic handheld shell with hardware ribbon and thumb dock",
+      "timestamp": "2026-10-08T12:57:37.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "4f407ad20f5a713b6b526c8b730e3c4e5763ce5b",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-dc0a7ef",
       "type": "SYSTEM_RELEASE",

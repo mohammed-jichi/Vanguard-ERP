@@ -1,5 +1,71 @@
 [
   {
+    "id": "f54cc963-5ca7-451b-a2f7-9ca5f5ea8876",
+    "commit_hash": "f54cc9635ca7451be2f79ca5f5ea8876d8556590",
+    "short_hash": "f54cc96",
+    "version": "v2.0.0",
+    "title": "Restore login emblem asset",
+    "category": "fix",
+    "description": "fix(auth): restore login emblem asset",
+    "bullet_points": [
+      "Resolved: restore login emblem asset",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Core System Architecture"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-09T10:53:57.000Z",
+    "created_at": "2026-10-09T11:01:41.506Z"
+  },
+  {
+    "id": "d859f8dc-c1dd-428a-a573-74bd934b7d7b",
+    "commit_hash": "d859f8dcc1dd128ae57374bd934b7d7b272807e0",
+    "short_hash": "d859f8d",
+    "version": "v2.0.0",
+    "title": "Remove unused legacy vanguard mockups and logo concepts",
+    "category": "maintenance",
+    "description": "chore: remove unused legacy vanguard mockups and logo concepts",
+    "bullet_points": [
+      "Applied improvements to Core Shell & UI",
+      "Maintained backward compatibility with existing enterprise workflows"
+    ],
+    "affected_modules": [
+      "Core Shell & UI"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-09T10:16:13.000Z",
+    "created_at": "2026-10-09T10:24:16.844Z"
+  },
+  {
+    "id": "4f407ad2-0f5a-413b-ab52-6c8b730e3c4e",
+    "commit_hash": "4f407ad20f5a713b6b526c8b730e3c4e5763ce5b",
+    "short_hash": "4f407ad",
+    "version": "v2.0.0",
+    "title": "Scaffold ergonomic handheld shell with hardware ribbon and thumb dock",
+    "category": "feature",
+    "description": "feat(mobile): scaffold ergonomic handheld shell with hardware ribbon and thumb dock",
+    "bullet_points": [
+      "Implemented scaffold ergonomic handheld shell with hardware ribbon and thumb dock",
+      "Enhanced system stability and operator workflow in Core Shell & UI & Accounting & Finance",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Core Shell & UI",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-08T12:57:37.000Z",
+    "created_at": "2026-10-09T09:48:18.773Z"
+  },
+  {
     "id": "dc0a7ef0-6a98-4865-a2ce-17e8dcc6ac09",
     "commit_hash": "dc0a7ef06a98e865b2ce17e8dcc6ac0969f09d6b",
     "short_hash": "dc0a7ef",

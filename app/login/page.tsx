@@ -122,78 +122,51 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      let authSuccess = false;
-      let verifiedUserId = '';
-      let verifiedEmail = cleanEmail;
-      let sessionToken = '';
-
-      // 1. Attempt primary Supabase Auth login
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password: password,
-        });
-
-        if (!error && data?.user && data?.session) {
-          authSuccess = true;
-          verifiedUserId = data.user.id;
-          verifiedEmail = data.user.email || cleanEmail;
-          sessionToken = data.session.access_token;
+      // Step 1: Pre-Validate Company ID / Tenant Code
+      let isValidTenant = false;
+      const upperCompanyId = cleanCompanyId.toUpperCase();
+      if (['ADMIN', 'MASTER', 'VANGUARD'].includes(upperCompanyId)) {
+        isValidTenant = true;
+      } else {
+        const numericId = parseInt(cleanCompanyId, 10);
+        let query = supabase.from('tenants').select('status');
+        
+        if (!isNaN(numericId)) {
+          query = query.eq('company_id', numericId);
+        } else if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanCompanyId)) {
+          query = query.eq('id', cleanCompanyId);
+        } else {
+          query = query.ilike('slug', cleanCompanyId);
         }
-      } catch (sbErr) {
-        console.warn("Client Supabase auth attempt bypassed or failed:", sbErr);
-      }
-
-      // 2. If Supabase Auth failed or user password was updated in live ERP database, fallback to ERP Auth Engine
-      if (!authSuccess) {
-        const loginRes = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: cleanEmail,
-            password: password,
-            companyId: cleanCompanyId,
-          }),
-        });
-
-        const loginData = await loginRes.json();
-        if (!loginRes.ok || !loginData.success) {
-          setIsLoading(false);
-          showToast(loginData.error || t('invalid_credentials', 'Invalid email or password.'), 'error');
-          return;
-        }
-
-        verifiedUserId = loginData.user?.id || `u-${Date.now()}`;
-        verifiedEmail = loginData.user?.email || cleanEmail;
-        sessionToken = loginData.token || `vg-${Date.now()}`;
-
-        // Store session tokens in cookies
-        document.cookie = `sb-${verifiedUserId}-auth-token=${sessionToken}; path=/; SameSite=Lax`;
-        document.cookie = `sb-access-token=${sessionToken}; path=/; SameSite=Lax`;
-        document.cookie = `so_authenticated=true; path=/; SameSite=Lax`;
-
-        if (loginData.user) {
-          const uStr = JSON.stringify(loginData.user);
-          localStorage.setItem('vanguard_user', uStr);
-          sessionStorage.setItem('vanguard_user', uStr);
-          localStorage.setItem('so_authenticated_user', uStr);
-          sessionStorage.setItem('so_authenticated_user', uStr);
-          localStorage.setItem('vanguard_user_name', loginData.user.name);
-          sessionStorage.setItem('vanguard_user_name', loginData.user.name);
-          document.cookie = `vanguard_user_name=${encodeURIComponent(loginData.user.name)}; path=/; SameSite=Lax`;
-          try { window.dispatchEvent(new Event('vanguard_auth_change')); } catch (e) {}
-        }
-
-        const assignment = loginData.assignment;
-        if (assignment) {
-          persistTenantSession(assignment);
-          const params = new URLSearchParams(window.location.search);
-          const redirectUrl = params.get("redirect");
-          const target = getPostLoginDestination(assignment, redirectUrl);
-          window.location.href = target;
-          return;
+        
+        const { data: tenantData } = await query.maybeSingle();
+        
+        if (tenantData && (tenantData.status === 'active' || tenantData.status === 'ACTIVE')) {
+          isValidTenant = true;
         }
       }
+
+      if (!isValidTenant) {
+        setIsLoading(false);
+        showToast('Company ID not found / suspended', 'error');
+        return;
+      }
+
+      // Step 2: Strict Credential Check
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: password,
+      });
+
+      if (error || !data?.user || !data?.session) {
+        setIsLoading(false);
+        showToast('Invalid email or password', 'error');
+        return;
+      }
+
+      const verifiedUserId = data.user.id;
+      const verifiedEmail = data.user.email || cleanEmail;
+      const sessionToken = data.session.access_token;
 
       // Handle successful Supabase Auth path
       document.cookie = `sb-${verifiedUserId}-auth-token=${sessionToken}; path=/; SameSite=Lax`;
@@ -243,7 +216,7 @@ export default function LoginPage() {
     } catch (err: any) {
       console.error("Login processing error:", err);
       setIsLoading(false);
-      showToast(t('invalid_credentials', 'Invalid email or password.'), 'error');
+      showToast('Invalid email or password', 'error');
     }
   };
 
@@ -501,16 +474,16 @@ export default function LoginPage() {
           {toast.show && (
             <div
               role="alert"
-              className={`p-3.5 rounded-xl border flex items-center gap-3 text-sm animate-fadeIn transition-all ${
+              className={`flex items-center gap-3 animate-fadeIn transition-all ${
                 toast.type === 'error'
-                  ? 'bg-rose-50 border-rose-200 text-rose-800'
+                  ? 'bg-rose-50 text-rose-700 border border-rose-200 rounded-lg p-3 text-sm font-medium'
                   : toast.type === 'success'
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                  : 'bg-blue-50 border-blue-200 text-blue-800'
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg p-3 text-sm font-medium'
+                  : 'bg-blue-50 text-blue-700 border border-blue-200 rounded-lg p-3 text-sm font-medium'
               }`}
             >
               <AlertCircle className={`w-5 h-5 shrink-0 ${toast.type === 'error' ? 'text-rose-600' : 'text-blue-600'}`} />
-              <span className="flex-1 font-semibold">{toast.message}</span>
+              <span className="flex-1">{toast.message}</span>
               <button
                 type="button"
                 onClick={() => setToast({ show: false, message: '', type: 'info' })}
