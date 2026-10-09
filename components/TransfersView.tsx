@@ -607,6 +607,10 @@ export default function TransfersView() {
 
   // Save / Dispatch / Receive Lifecycle Actions (DRAFT -> IN_TRANSIT -> RECEIVED)
   const handleSaveTransfer = async (postImmediately: boolean) => {
+    if (localStorage.getItem('vanguard_is_read_only') === 'true') {
+      showToast('Action disabled in Read-Only grace mode');
+      return;
+    }
     const statusVal = postImmediately ? 'IN_TRANSIT' : 'DRAFT';
     const newRecord: SavedTransferRecord = {
       id: 'TRN-' + Date.now(),

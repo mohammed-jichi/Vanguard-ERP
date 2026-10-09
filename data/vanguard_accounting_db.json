@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-09T11:01:41.513Z",
+  "last_updated": "2026-10-09T11:25:04.866Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,22 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-fc3565e",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (fc3565e) - Add tenant lookup validation and enforce strict sign-in errors",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "fc3565eb69b4e47443bd7f7c3f680ab322c6e14a",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-09T11:02:02.000Z"
+    },
     {
       "id": "act-rel-f54cc96",
       "company_id": 1300,
@@ -6377,6 +6393,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-fc3565e",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Add tenant lookup validation and enforce strict sign-in errors",
+      "message": "feat(auth): add tenant lookup validation and enforce strict sign-in errors",
+      "timestamp": "2026-10-09T11:02:02.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "fc3565eb69b4e47443bd7f7c3f680ab322c6e14a",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-f54cc96",
       "type": "SYSTEM_RELEASE",

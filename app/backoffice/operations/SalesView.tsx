@@ -1235,6 +1235,10 @@ export default function AuthenticOmegaSalesWorkstation({
   };
 
   const handleSaveInvoice = (postImmediately = false) => {
+    if (localStorage.getItem('vanguard_is_read_only') === 'true') {
+      alert('Action disabled in Read-Only grace mode');
+      return;
+    }
     if (cartItems.length === 0) {
       alert('Cannot save an empty invoice. Please select at least one item from the catalog.');
       return;

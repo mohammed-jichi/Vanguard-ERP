@@ -240,9 +240,23 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
     });
   }, [activeScreen]);
 
+  // Check read-only state for frozen tenants
+  const [isReadOnly, setIsReadOnly] = useState<boolean>(false);
+  useEffect(() => {
+    setIsReadOnly(localStorage.getItem('vanguard_is_read_only') === 'true');
+  }, []);
+
   return (
     <div className="w-full flex flex-col font-sans dir-ltr select-none">
       
+      {/* GLOBAL READ-ONLY BANNER FOR FROZEN TENANTS */}
+      {isReadOnly && (
+        <div className="w-full bg-amber-400 text-amber-950 px-4 py-2 flex items-center justify-center gap-2 font-bold text-sm shadow-sm z-50 shrink-0">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>Account Frozen (15-Day Grace Period): Read-Only mode active. Settle outstanding fees to unlock creation and editing.</span>
+        </div>
+      )}
+
       {/* 1. TOP MAIN HEADER (DARK CHARCOAL/BLACK - VANGUARD BRANDED) */}
       <header className="w-full h-16 bg-[#181824] text-white border-b border-[#2b2b40] px-4 md:px-6 flex items-center justify-between shadow-md top-0 left-0 right-0 z-50 shrink-0 select-none">
         

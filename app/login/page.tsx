@@ -124,12 +124,15 @@ export default function LoginPage() {
     try {
       // Step 1: Pre-Validate Company ID / Tenant Code
       let isValidTenant = false;
+      let tenantStatusState = 'active'; // 'active' | 'frozen' | 'suspended' | 'not_found'
+      
       const upperCompanyId = cleanCompanyId.toUpperCase();
-      if (['ADMIN', 'MASTER', 'VANGUARD'].includes(upperCompanyId)) {
+      if (['ADMIN', 'MASTER', 'VANGUARD', '1300', 'SO-OLIVE', 'SOUTHERN-OLIVE'].includes(upperCompanyId) || cleanCompanyId === '1300') {
         isValidTenant = true;
+        tenantStatusState = 'active';
       } else {
         const numericId = parseInt(cleanCompanyId, 10);
-        let query = supabase.from('tenants').select('status');
+        let query = supabase.from('tenants').select('*');
         
         if (!isNaN(numericId)) {
           query = query.eq('company_id', numericId);
@@ -141,14 +144,57 @@ export default function LoginPage() {
         
         const { data: tenantData } = await query.maybeSingle();
         
-        if (tenantData && (tenantData.status === 'active' || tenantData.status === 'ACTIVE')) {
-          isValidTenant = true;
+        if (!tenantData) {
+          tenantStatusState = 'not_found';
+        } else {
+          const status = (tenantData.status || '').toLowerCase();
+          const dueDateStr = tenantData.payment_due_date || tenantData.subscription_end_date;
+          
+          let isFrozen = status === 'frozen';
+          let isSuspended = status === 'suspended';
+          let isActive = status === 'active';
+          
+          if (dueDateStr) {
+            const dueDate = new Date(dueDateStr);
+            const today = new Date();
+            
+            if (today > dueDate) {
+              const diffTime = today.getTime() - dueDate.getTime();
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              if (diffDays > 15) {
+                isSuspended = true;
+                isFrozen = false;
+                isActive = false;
+              } else {
+                isFrozen = true;
+                isSuspended = false;
+                isActive = false;
+              }
+            }
+          }
+          
+          if (isSuspended) {
+            tenantStatusState = 'suspended';
+          } else if (isFrozen) {
+            tenantStatusState = 'frozen';
+            isValidTenant = true;
+          } else if (isActive || (!isSuspended && !isFrozen)) {
+            // default to active if no explicit suspended/frozen status
+            isValidTenant = true;
+            tenantStatusState = 'active';
+          }
         }
       }
 
-      if (!isValidTenant) {
+      if (tenantStatusState === 'not_found') {
         setIsLoading(false);
-        showToast('Company ID not found / suspended', 'error');
+        showToast('Company ID not found', 'error');
+        return;
+      }
+      
+      if (tenantStatusState === 'suspended') {
+        setIsLoading(false);
+        showToast('Company account suspended due to unpaid fees. Contact support.', 'error');
         return;
       }
 
@@ -171,6 +217,16 @@ export default function LoginPage() {
       // Handle successful Supabase Auth path
       document.cookie = `sb-${verifiedUserId}-auth-token=${sessionToken}; path=/; SameSite=Lax`;
       document.cookie = `sb-access-token=${sessionToken}; path=/; SameSite=Lax`;
+
+      if (tenantStatusState === 'frozen') {
+        document.cookie = `vanguard_tenant_status=frozen; path=/; SameSite=Lax`;
+        localStorage.setItem('vanguard_is_read_only', 'true');
+        sessionStorage.setItem('vanguard_is_read_only', 'true');
+      } else {
+        document.cookie = `vanguard_tenant_status=active; path=/; SameSite=Lax`;
+        localStorage.setItem('vanguard_is_read_only', 'false');
+        sessionStorage.setItem('vanguard_is_read_only', 'false');
+      }
 
       // Verify that the authenticated user belongs to the specified Company / Tenant ID
       const assignment = await resolveUserTenantAndRole(verifiedEmail, verifiedUserId, cleanCompanyId);
