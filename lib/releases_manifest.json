@@ -1,5 +1,29 @@
 [
   {
+    "id": "5e22924a-53f2-499d-af10-6c6b3610e317",
+    "commit_hash": "5e22924a53f2e99d4f106c6b3610e317a3ff9696",
+    "short_hash": "5e22924",
+    "version": "v2.0.0",
+    "title": "Enable read-only access for frozen tenants and fix tenant 1300 sign-in",
+    "category": "feature",
+    "description": "feat(auth): enable read-only access for frozen tenants and fix tenant 1300 sign-in",
+    "bullet_points": [
+      "Implemented enable read-only access for frozen tenants and fix tenant 1300 sign-in",
+      "Enhanced system stability and operator workflow in Sales & POS & Core Shell & UI",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Sales & POS",
+      "Core Shell & UI",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-09T11:25:25.000Z",
+    "created_at": "2026-10-09T11:38:57.643Z"
+  },
+  {
     "id": "fc3565eb-69b4-4474-a3bd-7f7c3f680ab3",
     "commit_hash": "fc3565eb69b4e47443bd7f7c3f680ab322c6e14a",
     "short_hash": "fc3565e",

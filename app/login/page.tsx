@@ -77,21 +77,73 @@ export default function LoginPage() {
     }
   }, []);
 
+  const [tenantStatus, setTenantStatus] = useState<'idle' | 'active' | 'frozen' | 'suspended' | 'not_found'>('idle');
+
   React.useEffect(() => {
     let isCurrent = true;
     const trimmed = companyId.trim();
     if (!trimmed) {
       setTenantPreview(null);
+      setTenantStatus('idle');
       setIsResolvingTenant(false);
       return;
     }
 
     setIsResolvingTenant(true);
+    setTenantStatus('idle');
     const timer = setTimeout(async () => {
       try {
-        const preview = await getTenantPreview(trimmed);
+        let currentStatus: 'active' | 'frozen' | 'suspended' | 'not_found' = 'active';
+        const upperCompanyId = trimmed.toUpperCase();
+        if (['ADMIN', 'MASTER', 'VANGUARD', '1300', 'SO-OLIVE', 'SOUTHERN-OLIVE'].includes(upperCompanyId) || trimmed === '1300') {
+          currentStatus = 'active';
+        } else {
+          const numericId = parseInt(trimmed, 10);
+          let query = supabase.from('tenants').select('*');
+          if (!isNaN(numericId)) {
+            query = query.eq('company_id', numericId);
+          } else if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmed)) {
+            query = query.eq('id', trimmed);
+          } else {
+            query = query.ilike('slug', trimmed);
+          }
+          
+          const { data: tenantData } = await query.maybeSingle();
+          if (!tenantData) {
+            currentStatus = 'not_found';
+          } else {
+            const status = (tenantData.status || '').toLowerCase();
+            const dueDateStr = tenantData.payment_due_date || tenantData.subscription_end_date;
+            let isFrozen = status === 'frozen';
+            let isSuspended = status === 'suspended';
+            let isActive = status === 'active';
+            
+            if (dueDateStr) {
+              const dueDate = new Date(dueDateStr);
+              const today = new Date();
+              if (today > dueDate) {
+                const diffDays = Math.ceil((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+                if (diffDays > 15) {
+                  isSuspended = true; isFrozen = false; isActive = false;
+                } else {
+                  isFrozen = true; isSuspended = false; isActive = false;
+                }
+              }
+            }
+            if (isSuspended) currentStatus = 'suspended';
+            else if (isFrozen) currentStatus = 'frozen';
+            else if (isActive || (!isSuspended && !isFrozen)) currentStatus = 'active';
+          }
+        }
+        
         if (isCurrent) {
-          setTenantPreview(preview);
+          setTenantStatus(currentStatus);
+          if (currentStatus === 'active' || currentStatus === 'frozen') {
+            const preview = await getTenantPreview(trimmed);
+            setTenantPreview(preview);
+          } else {
+            setTenantPreview(null);
+          }
         }
       } catch (err) {
         console.warn("Tenant preview lookup failed:", err);
@@ -100,7 +152,7 @@ export default function LoginPage() {
           setIsResolvingTenant(false);
         }
       }
-    }, 100);
+    }, 400);
 
     return () => {
       isCurrent = false;
@@ -551,6 +603,25 @@ export default function LoginPage() {
             </div>
           )}
 
+          {tenantStatus === 'not_found' && companyId.trim() !== '' && !isResolvingTenant && (
+            <div className="flex items-center gap-3 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg p-3 text-sm font-medium animate-fadeIn">
+              <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
+              <span>Company ID not found</span>
+            </div>
+          )}
+          {tenantStatus === 'suspended' && companyId.trim() !== '' && !isResolvingTenant && (
+            <div className="flex items-center gap-3 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg p-3 text-sm font-medium animate-fadeIn">
+              <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
+              <span>Company account suspended due to unpaid fees. Contact support.</span>
+            </div>
+          )}
+          {tenantStatus === 'frozen' && companyId.trim() !== '' && !isResolvingTenant && (
+            <div className="flex items-center gap-3 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg p-3 text-sm font-medium animate-fadeIn">
+              <AlertCircle className="w-5 h-5 shrink-0 text-amber-600" />
+              <span>Company account is frozen (grace period). Read-Only access will be granted upon sign-in.</span>
+            </div>
+          )}
+
           <form onSubmit={handleSignIn} className="space-y-5">
             <div className="space-y-2">
               <div className="flex justify-between items-center">
@@ -588,6 +659,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
+                disabled={tenantStatus === 'suspended'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder=""
@@ -608,6 +680,7 @@ export default function LoginPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
+                  disabled={tenantStatus === 'suspended'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder=""
