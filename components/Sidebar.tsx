@@ -257,7 +257,7 @@ export default function Sidebar({
           </button>
 
           {/* HOME ICON (🏠) */}
-          <Link
+          <Link prefetch={false}
             href="/backoffice"
             onClick={() => handleNav('grid-dash')}
             title={t('enterprise_main_hub', 'Enterprise Main Hub')}
@@ -308,21 +308,21 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['sales'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/dashboard/sales" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/dashboard/sales" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <PieChart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('dashboard', 'Dashboard')}</span>
               </Link>
-              <Link href="/backoffice/reportview" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/backoffice/reportview" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('reports', 'Reports')}</span>
               </Link>
               {isModuleEnabled('v-store') && (
-                <Link href="/backoffice/online-orders" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <Link prefetch={false} href="/backoffice/online-orders" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                   <ShoppingBag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                   <span>{t('online_orders', 'Online Orders')}</span>
                 </Link>
               )}
-              <Link href="/backoffice/end-of-day" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/backoffice/end-of-day" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <CalendarCheck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('end_of_day', 'End of Day')}</span>
               </Link>
@@ -341,27 +341,27 @@ export default function Sidebar({
                 </button>
                 {expandedGroups['sc_setup'] && (
                   <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/screens" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                    <Link prefetch={false} href="/backoffice/screens" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                       <Monitor strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>{t('screens', 'Screens')}</span>
                     </Link>
-                    <Link href="/backoffice/payment-types" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                    <Link prefetch={false} href="/backoffice/payment-types" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                       <CreditCard strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>{t('payment_types', 'Payment Types')}</span>
                     </Link>
-                    <Link href="/backoffice/coupons" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                    <Link prefetch={false} href="/backoffice/coupons" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                       <Gift strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>{t('coupons_gift_cert', 'Coupons & Gift Certificates')}</span>
                     </Link>
-                    <Link href="/backoffice/discounts" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                    <Link prefetch={false} href="/backoffice/discounts" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                       <Percent strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>{t('discounts', 'Discounts')}</span>
                     </Link>
-                    <Link href="/backoffice/price-modes" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                    <Link prefetch={false} href="/backoffice/price-modes" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                       <Tag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>{t('price_modes', 'Price Modes')}</span>
                     </Link>
-                    <Link href="/backoffice/workstations-printers" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                    <Link prefetch={false} href="/backoffice/workstations-printers" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                       <SlidersHorizontal strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>{t('workstations_printers', 'Workstations & Printers')}</span>
                     </Link>
@@ -377,23 +377,23 @@ export default function Sidebar({
                       </button>
                       {expandedGroups['sc_moresetup'] && (
                         <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/void-reasons" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                          <Link prefetch={false} href="/backoffice/void-reasons" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                             <XCircle strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>{t('void_reasons', 'Void Reasons')}</span>
                           </Link>
-                          <Link href="/backoffice/vat-exemptions" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                          <Link prefetch={false} href="/backoffice/vat-exemptions" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                             <FileCheck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>{t('vat_exemptions', 'Vat Exemption Reason')}</span>
                           </Link>
-                          <Link href="/backoffice/invoice-messages" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                          <Link prefetch={false} href="/backoffice/invoice-messages" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                             <MessageCircle strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>{t('invoice_messages', 'Message On Invoice')}</span>
                           </Link>
-                          <Link href="/backoffice/zone-setup" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                          <Link prefetch={false} href="/backoffice/zone-setup" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                             <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>{t('zone_setup', 'Zone Setup')}</span>
                           </Link>
-                          <Link href="/backoffice/currency-setup" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                          <Link prefetch={false} href="/backoffice/currency-setup" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                             <Coins strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span>{t('currency_setup', 'Currency Setup')}</span>
                           </Link>
@@ -431,15 +431,15 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['op'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/operations-center?tab=materials" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+              <Link prefetch={false} href="/operations-center?tab=materials" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
                 <img src="/icons/inv_setup_invitems.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('materials_units', 'Materials & Units')}</span>
               </Link>
-              <Link href="/operations-center?tab=batches" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+              <Link prefetch={false} href="/operations-center?tab=batches" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
                 <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('batches', 'Batches')}</span>
               </Link>
-              <Link href="/operations-center?tab=quality" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+              <Link prefetch={false} href="/operations-center?tab=quality" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
                 <Wrench strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('quality_control', 'Quality Control')}</span>
               </Link>
@@ -471,15 +471,15 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['cust'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/customer-management?tab=accounts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+              <Link prefetch={false} href="/customer-management?tab=accounts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
                 <img src="/icons/backoffice_customer_rec.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('wholesale_accounts', 'Wholesale Accounts')}</span>
               </Link>
-              <Link href="/customer-management?tab=zones" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/customer-management?tab=zones" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('zones_territories', 'Zones & Territories')}</span>
               </Link>
-              <Link href="/customer-management?tab=categories" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/customer-management?tab=categories" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/backoffice_customer_category.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('customer_categories', 'Customer Categories')}</span>
               </Link>
@@ -511,19 +511,19 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['acc'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/accounting-finance?tab=accounts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+              <Link prefetch={false} href="/accounting-finance?tab=accounts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
                 <img src="/icons/accounting_setup_chartofaccounts.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('financial_accounts', 'Financial Accounts')}</span>
               </Link>
-              <Link href="/accounting-finance?tab=categories" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/accounting-finance?tab=categories" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/accounting_action_expense.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('expense_categories', 'Expense Categories')}</span>
               </Link>
-              <Link href="/accounting-finance?tab=expenses" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/accounting-finance?tab=expenses" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/accounting_acc_payable.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('expenses', 'Expenses')}</span>
               </Link>
-              <Link href="/accounting-finance?tab=transfers" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/accounting-finance?tab=transfers" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <TrendingUp strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('fund_transfers', 'Fund Transfers')}</span>
               </Link>
@@ -555,23 +555,23 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['hr'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/hr-payroll?tab=departments" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/hr-payroll?tab=departments" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/payroll-departments.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('departments', 'Departments')}</span>
               </Link>
-              <Link href="/hr-payroll?tab=roles" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/hr-payroll?tab=roles" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/payroll-designation.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('roles_designations', 'Roles & Designations')}</span>
               </Link>
-              <Link href="/hr-payroll?tab=employees" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/hr-payroll?tab=employees" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/payroll-employees.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('employees', 'Employees')}</span>
               </Link>
-              <Link href="/hr-payroll?tab=shifts" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/hr-payroll?tab=shifts" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('shifts_schedules', 'Shifts & Schedules')}</span>
               </Link>
-              <Link href="/hr-payroll?tab=deductions" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/hr-payroll?tab=deductions" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/payroll-salaries.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('deductions', 'Deductions')}</span>
               </Link>
@@ -607,19 +607,19 @@ export default function Sidebar({
 
           {isOpen && (expandedGroups['supersonic'] || expandedGroups['fleet']) && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/super-sonic?tab=fleet" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/super-sonic?tab=fleet" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('fleet_overview', 'Fleet Overview')}</span>
               </Link>
-              <Link href="/super-sonic?tab=drivers" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/super-sonic?tab=drivers" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <Users strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('drivers_directory', 'Drivers Directory')}</span>
               </Link>
-              <Link href="/super-sonic?tab=fuel" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/super-sonic?tab=fuel" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <Droplets strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('fuel_maintenance', 'Fuel & Maintenance')}</span>
               </Link>
-              <Link href="/super-sonic?tab=trips" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/super-sonic?tab=trips" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <Route strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('trip_logs', 'Trip Logs')}</span>
               </Link>
@@ -655,37 +655,37 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['social'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/connect" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-bold text-cyan-700">
+              <Link prefetch={false} href="/connect" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-bold text-cyan-700">
                 <Share2 strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('vconnect_hub', 'V-Connect Hub')}</span>
               </Link>
-              <Link href="/backoffice/social-crm" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/backoffice/social-crm" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <Activity strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('social_crm_dashboard', 'Social CRM Dashboard')}</span>
               </Link>
-              <Link href="/backoffice/social-crm?tab=cpl" className="w-full text-start p-1.5 hover:text-cyan-800 hover:bg-cyan-50/80 rounded transition-colors font-semibold text-cyan-900 flex items-center justify-between">
+              <Link prefetch={false} href="/backoffice/social-crm?tab=cpl" className="w-full text-start p-1.5 hover:text-cyan-800 hover:bg-cyan-50/80 rounded transition-colors font-semibold text-cyan-900 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Target strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                   <span>{t('lead_pipeline_acquisition', 'Lead Pipeline & Acquisition')}</span>
                 </span>
                 <span className="text-[9px] bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded font-bold">{t('leads', 'LEADS')}</span>
               </Link>
-              <Link href="/backoffice/social-crm?tab=reports" className="w-full text-start p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between">
+              <Link prefetch={false} href="/backoffice/social-crm?tab=reports" className="w-full text-start p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                   <span>{t('reports_hub', 'Reports Hub')}</span>
                 </div>
                 <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">{t('rep', 'REP')}</span>
               </Link>
-              <Link href="/backoffice/social-crm?tab=inbox" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/backoffice/social-crm?tab=inbox" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <MessageSquare strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('omnichannel_inbox', 'Omnichannel Inbox')}</span>
               </Link>
-              <Link href="/backoffice/social-crm?tab=campaigns" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/backoffice/social-crm?tab=campaigns" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <TrendingUp strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('campaign_analytics', 'Campaign Analytics')}</span>
               </Link>
-              <Link href="/backoffice/social-crm?tab=bots" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/backoffice/social-crm?tab=bots" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <Sparkles strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('automation_bots', 'Automation Bots')}</span>
               </Link>
@@ -739,7 +739,7 @@ export default function Sidebar({
 
           {isOpen && (expandedGroups['pressing-mill'] || expandedGroups['pressing']) && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/dashboard"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/dashboard' || pathname === '/pressing-mill'
@@ -750,7 +750,7 @@ export default function Sidebar({
                 <Activity strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('pm_dashboard', 'Dashboard')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/seasons"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/seasons'
@@ -761,7 +761,7 @@ export default function Sidebar({
                 <Calendar strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('pm_seasons', 'Season Management')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/intake"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/intake'
@@ -772,7 +772,7 @@ export default function Sidebar({
                 <Scale strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('pm_intake', 'Weighbridge & Intake')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/batches"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/batches'
@@ -783,7 +783,7 @@ export default function Sidebar({
                 <Factory strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('pm_batches', 'Pressing Lines & Batches')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/tanks"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/tanks'
@@ -794,7 +794,7 @@ export default function Sidebar({
                 <Droplets strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('pm_tanks', 'Tanks Matrix (1-50)')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/settlements"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/settlements'
@@ -805,7 +805,7 @@ export default function Sidebar({
                 <DollarSign strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('pm_settlements', 'Settlements & Milling Fees')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/dispatch"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/dispatch'
@@ -816,7 +816,7 @@ export default function Sidebar({
                 <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('pm_dispatch', 'Oil Handover & Dispatch')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/pos"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/pos'
@@ -827,7 +827,7 @@ export default function Sidebar({
                 <ShoppingCart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('pm_pos', 'Direct Counter Sales & POS')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/directory"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/directory'
@@ -838,7 +838,7 @@ export default function Sidebar({
                 <BookOpen strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('pm_directory', 'Directory & Ledgers')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/reports"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/reports'
@@ -849,7 +849,7 @@ export default function Sidebar({
                 <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('pm_reports', 'Mill Reports & Yield Audits')}</span>
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/pressing-mill/setup"
                 className={`flex items-center gap-2 p-1.5 rounded transition-colors ${
                   pathname === '/pressing-mill/setup'
@@ -900,7 +900,7 @@ export default function Sidebar({
             )}
           </button>
 
-          <Link
+          <Link prefetch={false}
             href="/backoffice/license"
             title={t('license_certificate', 'License Certificate')}
             className={`w-full flex items-center ${isOpen ? 'gap-2 px-2.5 py-2' : 'justify-center p-2'} rounded-lg bg-emerald-50/60 text-emerald-950 hover:bg-emerald-100/70 border border-emerald-300/60 transition-colors font-medium text-[12px] shadow-2xs`}

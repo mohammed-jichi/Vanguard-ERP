@@ -377,7 +377,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Link
+            <Link prefetch={false}
               href="/admin"
               className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1 rounded-lg text-xs font-black shadow transition-transform hover:scale-105 flex items-center gap-1.5 cursor-pointer"
             >
@@ -403,7 +403,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             </svg>
           </button>
 
-          <Link href="/backoffice" className="flex items-center gap-3 group cursor-pointer">
+          <Link prefetch={false} href="/backoffice" className="flex items-center gap-3 group cursor-pointer">
             <div className="w-[52px] h-[52px] rounded-full overflow-hidden border-2 border-primary shadow-md bg-black shrink-0 group-hover:scale-105 transition-all duration-300">
               <img
                 src="/vanguard-logo.jpg"
@@ -434,7 +434,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
         {/* Center: Designated Slots for Enterprise Brand Context & Active Facility Switcher */}
         <div className="flex-1 flex flex-wrap justify-center items-center gap-2.5 px-3">
           {/* Slot 1: Enterprise Brand Context */}
-          <Link
+          <Link prefetch={false}
             href="/admin"
             title={t('switch_workspace_admin', 'Switch Workspace / Admin Hub')}
             className="flex items-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 shadow-2xs hover:border-primary transition-all group shrink-0"
@@ -508,7 +508,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
 
           <div className="flex items-center gap-1.5 text-slate-600">
             {/* 1. Home */}
-            <Link
+            <Link prefetch={false}
               href="/backoffice"
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200"
               title={t('enterprise_main_hub', 'Enterprise Main Hub')}
@@ -519,7 +519,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
             </Link>
 
             {/* 2. OPERATIONAL INBOX */}
-            <Link
+            <Link prefetch={false}
               href="/backoffice/inbox"
               className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-colors border border-slate-200 relative"
               title={t('operations_inbox', 'Operations & Approvals Inbox')}
@@ -609,7 +609,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                   </div>
 
                   <div className="py-1">
-                    <Link
+                    <Link prefetch={false}
                       href={`/${orgId}/settings/organization`}
                       onClick={() => setUserDropdownOpen(false)}
                       className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
@@ -617,7 +617,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       <span className="text-sm">🏢</span> <span>{t('organization', 'Organization')}</span>
                     </Link>
 
-                    <Link
+                    <Link prefetch={false}
                       href={`/${orgId}/settings/notifications`}
                       onClick={() => setUserDropdownOpen(false)}
                       className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors cursor-pointer"
@@ -625,7 +625,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       <span className="text-sm">🔔</span> <span>{t('alerts_notifications_title', 'Alerts & Notifications')}</span>
                     </Link>
 
-                    <Link
+                    <Link prefetch={false}
                       href="/backoffice/account"
                       onClick={() => setUserDropdownOpen(false)}
                       className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
@@ -633,7 +633,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       <span className="text-sm">👤</span> <span>{t('my_account', 'My Account')}</span>
                     </Link>
 
-                    <Link
+                    <Link prefetch={false}
                       href={`/${orgId}/settings/roles`}
                       onClick={() => setUserDropdownOpen(false)}
                       className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
@@ -641,7 +641,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                       <span className="text-sm">🔑</span> <span>{t('roles', 'Roles & Permissions')}</span>
                     </Link>
 
-                    <Link
+                    <Link prefetch={false}
                       href={`/${orgId}/settings/users`}
                       onClick={() => setUserDropdownOpen(false)}
                       className="w-full text-start px-4 py-2 hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 hover:text-slate-900 font-medium transition-colors"
@@ -1023,7 +1023,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
                                   <span>🚀</span>
                                 </button>
                               ) : (
-                                <Link
+                                <Link prefetch={false}
                                   href={alt.actionLink}
                                   onClick={() => setQuickDrawerOpen(false)}
                                   className="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-800 text-[10.5px] font-bold rounded-lg border border-slate-300 shadow-2xs flex items-center gap-1 transition-colors"

@@ -572,7 +572,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   </p>
                 </div>
 
-                <Link
+                <Link prefetch={false}
                   href={`/${orgId}/settings/organization`}
                   onClick={() => setIsProfileOpen(false)}
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2"
@@ -603,7 +603,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   </div>
                   <span className="text-[9.5px] font-mono text-emerald-600 font-black">{t('live', 'LIVE')}</span>
                 </a>
-                <Link
+                <Link prefetch={false}
                   href="/backoffice/account"
                   onClick={() => setIsProfileOpen(false)}
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
@@ -611,7 +611,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <User className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>{t('my_account', 'My Account')}</span>
                 </Link>
-                <Link
+                <Link prefetch={false}
                   href={`/${orgId}/settings/roles`}
                   onClick={() => setIsProfileOpen(false)}
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"
@@ -619,7 +619,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                   <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                   <span>{t('roles', 'Roles & Permissions')}</span>
                 </Link>
-                <Link
+                <Link prefetch={false}
                   href={`/${orgId}/settings/users`}
                   onClick={() => setIsProfileOpen(false)}
                   className="w-full p-2 hover:bg-amber-50 hover:text-amber-900 rounded-xl flex items-center gap-2 text-slate-700"

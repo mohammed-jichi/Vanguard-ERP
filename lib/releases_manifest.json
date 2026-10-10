@@ -1,5 +1,28 @@
 [
   {
+    "id": "827f6fcd-1227-4156-a9ca-1c4573266d5d",
+    "commit_hash": "827f6fcd12278156b9ca1c4573266d5d670f6a5e",
+    "short_hash": "827f6fc",
+    "version": "v2.0.0",
+    "title": "Remove polling intervals and silent bail on 401 notifications",
+    "category": "fix",
+    "description": "fix(core): remove polling intervals and silent bail on 401 notifications",
+    "bullet_points": [
+      "Resolved: remove polling intervals and silent bail on 401 notifications",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Core Shell & UI",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-10T16:59:24.000Z",
+    "created_at": "2026-10-10T17:32:22.144Z"
+  },
+  {
     "id": "464829dc-d266-435f-a22b-fb5bae0d31aa",
     "commit_hash": "464829dcd266135fc22bfb5bae0d31aa4e8fd4a4",
     "short_hash": "464829d",
