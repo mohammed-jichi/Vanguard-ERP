@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-10T11:38:28.348Z",
+  "last_updated": "2026-10-10T11:43:39.827Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-1b7f593",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (1b7f593) - Build dynamic fleet and drivers management with fuel tracking and maintenance logs",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "1b7f5938691be33b24570bb81a8d27802f2347d9",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Fleet & Distribution",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-10T11:38:44.000Z"
+    },
     {
       "id": "act-rel-233b15f",
       "company_id": 1300,
@@ -6496,6 +6513,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-1b7f593",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Build dynamic fleet and drivers management with fuel tracking and maintenance logs",
+      "message": "feat(supersonic): build dynamic fleet and drivers management with fuel tracking and maintenance logs",
+      "timestamp": "2026-10-10T11:38:44.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "1b7f5938691be33b24570bb81a8d27802f2347d9",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-233b15f",
       "type": "SYSTEM_RELEASE",

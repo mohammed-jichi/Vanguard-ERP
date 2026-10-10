@@ -12,7 +12,7 @@
   .no-print,
   .action-toolbar,
   .filter-bar,
-  .print\\:hidden,
+  .print\:hidden,
   button:not(.allow-print),
   input[type="button"],
   input[type="submit"] {
