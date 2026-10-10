@@ -1,5 +1,70 @@
 [
   {
+    "id": "6145c3e5-f6f9-400b-a175-3c6cbdf37d88",
+    "commit_hash": "6145c3e5f6f9900b31753c6cbdf37d88149b2107",
+    "short_hash": "6145c3e",
+    "version": "v2.0.0",
+    "title": "Terminate 307 ping-pong redirect loop between workspace and dashboard",
+    "category": "fix",
+    "description": "fix(routing): terminate 307 ping-pong redirect loop between workspace and dashboard",
+    "bullet_points": [
+      "Resolved: terminate 307 ping-pong redirect loop between workspace and dashboard",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Core Shell & UI"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-10T15:53:16.000Z",
+    "created_at": "2026-10-10T16:30:55.091Z"
+  },
+  {
+    "id": "2a5db0bf-167a-4ccd-a82e-6649894356a2",
+    "commit_hash": "2a5db0bf167aeccdc82e6649894356a252820157",
+    "short_hash": "2a5db0b",
+    "version": "v2.0.0",
+    "title": "Resolve layout hydration mismatch, enforce dynamic report SSR, and stabilize dev server",
+    "category": "fix",
+    "description": "fix(core): resolve layout hydration mismatch, enforce dynamic report SSR, and stabilize dev server",
+    "bullet_points": [
+      "Resolved: resolve layout hydration mismatch, enforce dynamic report ssr, and stabilize dev server",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Core Shell & UI"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-10T15:33:48.000Z",
+    "created_at": "2026-10-10T15:52:48.385Z"
+  },
+  {
+    "id": "4d92e6df-d345-41ab-a46d-dd53796469ee",
+    "commit_hash": "4d92e6dfd34551abb46ddd53796469eefafbfb8b",
+    "short_hash": "4d92e6d",
+    "version": "v2.0.0",
+    "title": "Add force-dynamic to reports route layout",
+    "category": "maintenance",
+    "description": "chore(pressing-mill): add force-dynamic to reports route layout",
+    "bullet_points": [
+      "Applied improvements to Pressing Mill Automation",
+      "Maintained backward compatibility with existing enterprise workflows"
+    ],
+    "affected_modules": [
+      "Pressing Mill Automation"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-10T15:27:51.000Z",
+    "created_at": "2026-10-10T15:33:05.383Z"
+  },
+  {
     "id": "4b05384e-3f69-4c0b-a0eb-428883194957",
     "commit_hash": "4b05384e3f69bc0b10eb4288831949576cec5aac",
     "short_hash": "4b05384",

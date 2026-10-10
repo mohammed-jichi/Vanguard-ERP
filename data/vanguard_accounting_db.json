@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-10T15:14:17.782Z",
+  "last_updated": "2026-10-10T16:30:55.098Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,54 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-6145c3e",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (6145c3e) - Terminate 307 ping-pong redirect loop between workspace and dashboard",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "6145c3e5f6f9900b31753c6cbdf37d88149b2107",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Core Shell & UI"
+        ]
+      },
+      "created_at": "2026-10-10T15:53:16.000Z"
+    },
+    {
+      "id": "act-rel-2a5db0b",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (2a5db0b) - Resolve layout hydration mismatch, enforce dynamic report SSR, and stabilize dev server",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "2a5db0bf167aeccdc82e6649894356a252820157",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Core Shell & UI"
+        ]
+      },
+      "created_at": "2026-10-10T15:33:48.000Z"
+    },
+    {
+      "id": "act-rel-4d92e6d",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (4d92e6d) - Add force-dynamic to reports route layout",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "4d92e6dfd34551abb46ddd53796469eefafbfb8b",
+        "version": "v2.0.0",
+        "category": "maintenance",
+        "modules": [
+          "Pressing Mill Automation"
+        ]
+      },
+      "created_at": "2026-10-10T15:27:51.000Z"
+    },
     {
       "id": "act-rel-4b05384",
       "company_id": 1300,
@@ -6584,6 +6632,48 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-6145c3e",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Terminate 307 ping-pong redirect loop between workspace and dashboard",
+      "message": "fix(routing): terminate 307 ping-pong redirect loop between workspace and dashboard",
+      "timestamp": "2026-10-10T15:53:16.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "6145c3e5f6f9900b31753c6cbdf37d88149b2107",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-2a5db0b",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Resolve layout hydration mismatch, enforce dynamic report SSR, and stabilize dev server",
+      "message": "fix(core): resolve layout hydration mismatch, enforce dynamic report SSR, and stabilize dev server",
+      "timestamp": "2026-10-10T15:33:48.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "2a5db0bf167aeccdc82e6649894356a252820157",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-4d92e6d",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Add force-dynamic to reports route layout",
+      "message": "chore(pressing-mill): add force-dynamic to reports route layout",
+      "timestamp": "2026-10-10T15:27:51.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "4d92e6dfd34551abb46ddd53796469eefafbfb8b",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-4b05384",
       "type": "SYSTEM_RELEASE",

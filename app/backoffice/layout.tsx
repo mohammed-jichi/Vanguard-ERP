@@ -142,7 +142,10 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await fetch('/api/notifications');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1000);
+      const res = await fetch('/api/notifications', { signal: controller.signal });
+      clearTimeout(timeoutId);
       const data = await res.json();
       if (data.success) {
         setNotificationsData({
@@ -186,7 +189,10 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
   const fetchUpdates = useCallback(async () => {
     try {
       setLoadingUpdates(true);
-      const res = await fetch('/api/updates?limit=25');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1000);
+      const res = await fetch('/api/updates?limit=25', { signal: controller.signal });
+      clearTimeout(timeoutId);
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
         setLatestUpdates(data.data);
@@ -228,7 +234,10 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
   useEffect(() => {
     const pingKeepAlive = async () => {
       try {
-        await fetch('/api/cron/keep-alive');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1000);
+        await fetch('/api/cron/keep-alive', { signal: controller.signal });
+        clearTimeout(timeoutId);
       } catch (e) {
         // silent fail on keep-alive
       }
@@ -1208,27 +1217,13 @@ import SupabaseKeepAliveProvider from '@/components/SupabaseKeepAliveProvider';
 import { DeepLinkFallbackProvider } from '@/components/DeepLinkFallbackProvider';
 
 export default function MasterBackofficeLayout({ children }: { children: React.ReactNode }) {
-  const [forceLoaded, setForceLoaded] = useState(false);
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      console.warn('[Vanguard Loader] Forced UI unlock after timeout');
-      setForceLoaded(true);
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <TenantProvider>
       <SupabaseKeepAliveProvider>
         <DeepLinkFallbackProvider>
-          {forceLoaded ? (
+          <Suspense fallback={null}>
             <MasterBackofficeLayoutContent>{children}</MasterBackofficeLayoutContent>
-          ) : (
-            <Suspense fallback={<div className="flex flex-col w-full min-h-screen bg-background p-4 text-xs text-slate-500">Loading Vanguard Backoffice...</div>}>
-              <MasterBackofficeLayoutContent>{children}</MasterBackofficeLayoutContent>
-            </Suspense>
-          )}
+          </Suspense>
         </DeepLinkFallbackProvider>
       </SupabaseKeepAliveProvider>
     </TenantProvider>
