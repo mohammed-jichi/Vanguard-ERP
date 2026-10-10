@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-10T11:20:52.653Z",
+  "last_updated": "2026-10-10T11:34:53.907Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-af7bc39",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (af7bc39) - Build dynamic operation center with raw materials, batches, and quality tracking",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "af7bc390e081ea751597e1a57515e173ef402c9c",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Operations & Inventory",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-10T11:21:09.000Z"
+    },
     {
       "id": "act-rel-e8574e4",
       "company_id": 1300,
@@ -6462,6 +6479,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-af7bc39",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Build dynamic operation center with raw materials, batches, and quality tracking",
+      "message": "feat(operations): build dynamic operation center with raw materials, batches, and quality tracking",
+      "timestamp": "2026-10-10T11:21:09.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "af7bc390e081ea751597e1a57515e173ef402c9c",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-e8574e4",
       "type": "SYSTEM_RELEASE",
