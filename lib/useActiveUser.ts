@@ -116,11 +116,7 @@ export function useActiveUser() {
 
       // Query /api/auth/me to verify live profile against active session cookies
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1000); // 1s timeout
-        
-        const res = await fetch('/api/auth/me', { signal: controller.signal });
-        clearTimeout(timeoutId);
+        const res = await fetch('/api/auth/me', { signal: AbortSignal.timeout(1500) });
         
         if (res.ok) {
           const data = await res.json();
@@ -128,7 +124,8 @@ export function useActiveUser() {
             setProfile(data.user);
           }
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err?.name === 'AbortError') return;
         // Fallback gracefully to storage state
       }
     };

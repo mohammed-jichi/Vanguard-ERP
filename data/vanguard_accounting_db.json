@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-10T16:48:36.705Z",
+  "last_updated": "2026-10-10T16:59:07.092Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-464829d",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (464829d) - Kill background polling intervals and silence all idle network loops",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "464829dcd266135fc22bfb5bae0d31aa4e8fd4a4",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Core Shell & UI",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-10T16:48:53.000Z"
+    },
     {
       "id": "act-rel-66d0f61",
       "company_id": 1300,
@@ -6649,6 +6666,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-464829d",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Kill background polling intervals and silence all idle network loops",
+      "message": "fix(core): kill background polling intervals and silence all idle network loops",
+      "timestamp": "2026-10-10T16:48:53.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "464829dcd266135fc22bfb5bae0d31aa4e8fd4a4",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-66d0f61",
       "type": "SYSTEM_RELEASE",

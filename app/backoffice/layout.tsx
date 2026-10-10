@@ -142,10 +142,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1000);
-      const res = await fetch('/api/notifications', { signal: controller.signal });
-      clearTimeout(timeoutId);
+      const res = await fetch('/api/notifications', { signal: AbortSignal.timeout(1500) });
+      if (!res.ok) return; // Silent bail on 401/500, no retries!
       const data = await res.json();
       if (data.success) {
         setNotificationsData({
@@ -155,7 +153,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
           activities: data.activities || []
         });
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.name === 'AbortError') return;
       console.warn('Notice: Failed to fetch live notifications:', e);
     }
   }, []);
@@ -189,15 +188,14 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
   const fetchUpdates = useCallback(async () => {
     try {
       setLoadingUpdates(true);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1000);
-      const res = await fetch('/api/updates?limit=25', { signal: controller.signal });
-      clearTimeout(timeoutId);
+      const res = await fetch('/api/updates?limit=25', { signal: AbortSignal.timeout(1500) });
+      if (!res.ok) return; // Silent bail on 401/500
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
         setLatestUpdates(data.data);
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.name === 'AbortError') return;
       console.warn('Notice: Failed to fetch updates:', e);
     } finally {
       setLoadingUpdates(false);

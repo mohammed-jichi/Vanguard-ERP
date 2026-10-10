@@ -154,7 +154,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   const loadHeaderFeeds = React.useCallback(async (includeResolved: boolean = false) => {
     try {
       const url = `/api/notifications${includeResolved ? '?includeResolved=true' : ''}`;
-      const notifRes = await fetch(url);
+      const notifRes = await fetch(url, { signal: AbortSignal.timeout(1500) });
+      if (!notifRes.ok) return; // Silent bail
       const notifData = await notifRes.json();
       if (notifData.success) {
         setDynamicAlerts(notifData.alerts || []);
@@ -164,7 +165,8 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
         setHasUnread(Boolean(notifData.unreadInboxCount && notifData.unreadInboxCount > 0));
       }
 
-      const inboxRes = await fetch('/api/inbox');
+      const inboxRes = await fetch('/api/inbox', { signal: AbortSignal.timeout(1500) });
+      if (!inboxRes.ok) return; // Silent bail
       const inboxData = await inboxRes.json();
       if (inboxData.success && Array.isArray(inboxData.data)) {
         setInboxMessages(inboxData.data);
@@ -173,17 +175,20 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
       // Fetch dynamic platform updates & deployment logs
       try {
         setLoadingUpdates(true);
-        const upRes = await fetch('/api/updates?limit=25');
+        const upRes = await fetch('/api/updates?limit=25', { signal: AbortSignal.timeout(1500) });
+        if (!upRes.ok) return; // Silent bail
         const upData = await upRes.json();
         if (upData.success && Array.isArray(upData.data)) {
           setLatestUpdates(upData.data);
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err?.name === 'AbortError') return;
         console.warn('Notice: Header updates fetch:', err);
       } finally {
         setLoadingUpdates(false);
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.name === 'AbortError') return;
       console.warn('Notice: Header notification fetch:', e);
     }
   }, []);
