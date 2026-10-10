@@ -614,10 +614,10 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
               className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors shadow-2xs cursor-pointer"
             >
-              <div className="w-6 h-6 rounded-full bg-primary text-white font-bold flex items-center justify-center text-[11px] shadow-xs">
+              <div suppressHydrationWarning className="w-6 h-6 rounded-full bg-primary text-white font-bold flex items-center justify-center text-[11px] shadow-xs shrink-0">
                 {activeUser.avatarLetter || 'U'}
               </div>
-              <span className="text-xs font-semibold text-slate-900">{activeUser.name || 'Authorized User'}</span>
+              <span suppressHydrationWarning className="text-xs font-semibold text-slate-900">{activeUser.name || 'Authorized User'}</span>
               <span className="text-[11px] text-primary">▾</span>
             </button>
 
