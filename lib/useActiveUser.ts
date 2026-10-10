@@ -125,7 +125,7 @@ export function useActiveUser() {
           }
         }
       } catch (err: any) {
-        if (err?.name === 'AbortError') return;
+        if (err?.name === 'AbortError' || err?.name === 'TimeoutError') return;
         // Fallback gracefully to storage state
       }
     };

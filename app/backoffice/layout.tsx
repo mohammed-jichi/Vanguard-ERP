@@ -154,7 +154,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
         });
       }
     } catch (e: any) {
-      if (e?.name === 'AbortError') return;
+      if (e?.name === 'AbortError' || e?.name === 'TimeoutError') return;
       console.warn('Notice: Failed to fetch live notifications:', e);
     }
   }, []);
@@ -195,7 +195,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
         setLatestUpdates(data.data);
       }
     } catch (e: any) {
-      if (e?.name === 'AbortError') return;
+      if (e?.name === 'AbortError' || e?.name === 'TimeoutError') return;
       console.warn('Notice: Failed to fetch updates:', e);
     } finally {
       setLoadingUpdates(false);

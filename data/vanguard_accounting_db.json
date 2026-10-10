@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-10T17:32:22.151Z",
+  "last_updated": "2026-10-10T23:57:24.111Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,24 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-0d93faf",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (0d93faf) - Remove hanging root assets and scripts causing permanent tab spinner",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "0d93faf8e87f93c613aa5c1eedb84fe8da882ea0",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Core Shell & UI",
+          "Pressing Mill Automation",
+          "Sales & POS"
+        ]
+      },
+      "created_at": "2026-10-10T23:45:05.000Z"
+    },
     {
       "id": "act-rel-827f6fc",
       "company_id": 1300,
@@ -6683,6 +6701,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-0d93faf",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Remove hanging root assets and scripts causing permanent tab spinner",
+      "message": "fix(core): remove hanging root assets and scripts causing permanent tab spinner",
+      "timestamp": "2026-10-10T23:45:05.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "0d93faf8e87f93c613aa5c1eedb84fe8da882ea0",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-827f6fc",
       "type": "SYSTEM_RELEASE",

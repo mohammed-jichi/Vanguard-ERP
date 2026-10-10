@@ -182,13 +182,13 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
           setLatestUpdates(upData.data);
         }
       } catch (err: any) {
-        if (err?.name === 'AbortError') return;
+        if (err?.name === 'AbortError' || err?.name === 'TimeoutError') return;
         console.warn('Notice: Header updates fetch:', err);
       } finally {
         setLoadingUpdates(false);
       }
     } catch (e: any) {
-      if (e?.name === 'AbortError') return;
+      if (e?.name === 'AbortError' || e?.name === 'TimeoutError') return;
       console.warn('Notice: Header notification fetch:', e);
     }
   }, []);
