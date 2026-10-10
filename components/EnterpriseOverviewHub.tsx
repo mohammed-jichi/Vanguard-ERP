@@ -715,7 +715,7 @@ export default function EnterpriseOverviewHub() {
           <div>
             <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
               <Layers className="w-4 h-4 text-amber-600" />
-              <span>{isAr ? 'منظومة الوحدات المؤسسية (12 وحدة فعّالة)' : 'Enterprise Modules Portal (12 Active Modules)'}</span>
+              <span>{isAr ? `منظومة الوحدات المؤسسية (${modulesList.filter(m => isModuleActive(m.id)).length} وحدة فعّالة)` : `Enterprise Modules Portal (${modulesList.filter(m => isModuleActive(m.id)).length} Active Modules)`}</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               {isAr ? 'اختر الوحدة المطلوبة للوصول إلى لوحات التحكم والشاشات التشغيلية' : 'Select a primary module to access dedicated operations and analytics'}

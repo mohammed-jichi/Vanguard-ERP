@@ -116,7 +116,12 @@ export function useActiveUser() {
 
       // Query /api/auth/me to verify live profile against active session cookies
       try {
-        const res = await fetch('/api/auth/me');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout
+        
+        const res = await fetch('/api/auth/me', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.user && isMounted) {

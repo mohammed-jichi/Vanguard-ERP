@@ -1,5 +1,28 @@
 [
   {
+    "id": "69a40244-c88f-4190-a048-dad5ccbb31de",
+    "commit_hash": "69a40244c88f41907048dad5ccbb31de3c30f66a",
+    "short_hash": "69a4024",
+    "version": "v2.0.0",
+    "title": "Complete WhatsApp verification flow and automated alert template dispatcher",
+    "category": "feature",
+    "description": "feat(notifications): complete WhatsApp verification flow and automated alert template dispatcher",
+    "bullet_points": [
+      "Implemented complete whatsapp verification flow and automated alert template dispatcher",
+      "Enhanced system stability and operator workflow in Alerts & Notifications & Accounting & Finance",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Alerts & Notifications",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-10T13:54:02.000Z",
+    "created_at": "2026-10-10T14:22:59.500Z"
+  },
+  {
     "id": "c5741617-a73a-47ff-adfc-ce944f46adf6",
     "commit_hash": "c5741617a73ae7ff9dfcce944f46adf645e52484",
     "short_hash": "c574161",

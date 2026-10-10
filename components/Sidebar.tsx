@@ -11,6 +11,7 @@ import {
   Truck,
   Share2,
   Factory,
+  Box,
   Users,
   FileSpreadsheet,
   UserCheck,
@@ -421,7 +422,7 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0 flex items-center justify-center">
-                <Factory strokeWidth={1.5} className="w-4 h-4" />
+                <img src="/icons/inv_action_productions.png" className="w-4 h-4 object-contain" alt="" />
               </div>
               {isOpen && <span className="truncate font-semibold">{t('operations_center', '2. Operations Center')}</span>}
             </div>
@@ -430,256 +431,18 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['op'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/operations?section=dashboard" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded transition-colors font-semibold">
-                <PieChart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('dashboard', 'Dashboard')}</span>
+              <Link href="/operations-center?tab=materials" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+                <img src="/icons/inv_setup_invitems.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('materials_units', 'Materials & Units')}</span>
               </Link>
-              <Link href="/backoffice/operations?section=reports" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded transition-colors font-semibold">
-                <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('reports', 'Reports')}</span>
+              <Link href="/operations-center?tab=batches" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+                <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('batches', 'Batches')}</span>
               </Link>
-
-              {/* Actions */}
-              <div className="pt-0.5">
-                <button
-                  onClick={() => toggleGroup('op_actions')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <Sliders strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span>{t('actions', 'Actions')}</span>
-                  </div>
-                  <span className="text-[9px]">{expandedGroups['op_actions'] ? '▲' : '▼'}</span>
-                </button>
-                {expandedGroups['op_actions'] && (
-                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/operations?section=sales" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <ShoppingCart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('sales', 'Sales')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=quotations" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('quotations', 'Quotations')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=delivery_goods" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('delivery_goods', 'Delivery of Goods')}</span>
-                    </Link>
-                    {isModuleEnabled('purchasing') && (
-                      <>
-                        <Link href="/backoffice/operations?section=purchases" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                          <ShoppingBag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span>{t('purchases', 'Purchases')}</span>
-                        </Link>
-                        <Link href="/backoffice/operations?section=purchase_orders" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                          <ClipboardList strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span>{t('purchase_orders', 'Purchase Orders')}</span>
-                        </Link>
-                        <Link href="/backoffice/operations?section=reorder_guide" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                          <ListFilter strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span>{t('reorder_guide', 'Reorder Guide')}</span>
-                        </Link>
-                      </>
-                    )}
-                    <Link href="/backoffice/operations?section=transfers" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <ArrowRightLeft strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('transfers', 'Transfers')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=lost_goods" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <ShieldAlert strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('lost_goods', 'Lost Goods')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=item_assembly" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Boxes strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('item_assembly', 'Item Assembly')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=adjustments" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Sliders strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('adjustments', 'Adjustments')}</span>
-                    </Link>
-
-                    {/* Product Request */}
-                    <div className="pt-0.5">
-                      <button
-                        onClick={() => toggleGroup('op_prodreq')}
-                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <Package strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                          <span>{t('product_request', 'Product Request')}</span>
-                        </div>
-                        <span className="text-[9px]">{expandedGroups['op_prodreq'] ? '▲' : '▼'}</span>
-                      </button>
-                      {expandedGroups['op_prodreq'] && (
-                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/operations?section=product_request" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <Package strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('product_request', 'Product Request')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=manage_product_requests" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <ClipboardCheck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('manage_product_requests', 'Manage Product Requests')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=product_req_prep" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded font-bold text-teal-700">
-                            <PackageCheck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                            <span>{t('product_req_prep', 'Product Req. Preparation')}</span>
-                          </Link>
-                          {isModuleEnabled('purchasing') && (
-                            <Link href="/backoffice/operations?section=receiving_goods" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                              <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                              <span>{t('receiving_goods', 'Receiving of goods')}</span>
-                            </Link>
-                          )}
-                          <Link href="/backoffice/operations?section=product_req_reports" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('product_req_reports', 'Reports')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=request_reject_reasons" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <XCircle strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('request_reject_reasons', 'Request Reject Reasons')}</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Events */}
-                    <div className="pt-0.5">
-                      <button
-                        onClick={() => toggleGroup('op_events')}
-                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <Calendar strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                          <span>{t('events', 'Events')}</span>
-                        </div>
-                        <span className="text-[9px]">{expandedGroups['op_events'] ? '▲' : '▼'}</span>
-                      </button>
-                      {expandedGroups['op_events'] && (
-                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/operations?section=events" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <Calendar strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('events', 'Events')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=event_venues" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('event_venues', 'Event Venues')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=event_resources" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <Boxes strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('event_resources', 'Event Resources')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=event_types" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <Tag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('event_types', 'Event Types')}</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Setup */}
-              <div className="pt-0.5">
-                <button
-                  onClick={() => toggleGroup('op_setup')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <span>{t('setup', 'Setup')}</span>
-                  <span className="text-[9px]">{expandedGroups['op_setup'] ? '▲' : '▼'}</span>
-                </button>
-                {expandedGroups['op_setup'] && (
-                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/operations?section=quick_setup" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <Sliders strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('quick_setup', 'Quick Setup')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=products_services" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <Package strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('products_services', 'Products & Services')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=groups" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                      <span>{t('groups', 'Groups')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=divisions" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <Bookmark strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('divisions', 'Divisions')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=categories" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <Tag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('categories', 'Categories')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=units" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <Scale strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('units', 'Units')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=locations" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('locations', 'Locations')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=suppliers" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <Users strokeWidth={1.5} className="w-3.5 h-3.5 text-violet-500 shrink-0" />
-                      <span>{t('suppliers', 'Suppliers')}</span>
-                    </Link>
-                    <Link href="/backoffice/operations?section=departments" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                      <Building strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('departments', 'Departments')}</span>
-                    </Link>
-
-                    {/* More Sub-Accordion */}
-                    <div className="pt-1">
-                      <button
-                        onClick={() => toggleGroup('op_more')}
-                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                      >
-                        <span className="font-semibold text-slate-800">{t('more', 'More')}</span>
-                        <span className="text-[9px] text-primary">{expandedGroups['op_more'] ? '▲' : '▼'}</span>
-                      </button>
-                      {expandedGroups['op_more'] && (
-                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/operations?section=lost_goods_reason" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <Search strokeWidth={1.5} className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                            <span>{t('lost_goods_reason', 'Lost Goods Reason')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=sizes_groups" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <Maximize2 strokeWidth={1.5} className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                            <span>{t('sizes_groups', 'Sizes Groups')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=sizes" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <Maximize2 strokeWidth={1.5} className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                            <span>{t('sizes', 'Sizes')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=colors" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <Palette strokeWidth={1.5} className="w-3.5 h-3.5 text-pink-500 shrink-0" />
-                            <span>{t('colors', 'Colors')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=discounts" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <Percent strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                            <span>{t('discounts', 'Discounts')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=payment_types" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <CreditCard strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                            <span>{t('payment_types', 'Payment Types')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=currency_setup" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <Coins strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                            <span>{t('currency_setup', 'Currency Setup')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=inventory_brands" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <Award strokeWidth={1.5} className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-                            <span>{t('inventory_brands', 'Inventory Brands')}</span>
-                          </Link>
-                          <Link href="/backoffice/operations?section=delivery_providers" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
-                            <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                            <span>{t('delivery_providers', 'Delivery Providers')}</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <Link href="/operations-center?tab=quality" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+                <Wrench strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('quality_control', 'Quality Control')}</span>
+              </Link>
             </div>
           )}
         </div>
@@ -699,7 +462,7 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0 flex items-center justify-center">
-                <Users strokeWidth={1.5} className="w-4 h-4" />
+                <img src="/icons/backoffice_customer_group.png" className="w-4 h-4 object-contain" alt="" />
               </div>
               {isOpen && <span className="truncate font-semibold">{t('customers_crm', '3. Customers / CRM')}</span>}
             </div>
@@ -708,195 +471,18 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['cust'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              {/* Core Directory & Accounts */}
-              <Link href="/backoffice/customers" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
-                <Users strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('customers_directory', 'Customers')}</span>
+              <Link href="/customer-management?tab=accounts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+                <img src="/icons/backoffice_customer_rec.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('wholesale_accounts', 'Wholesale Accounts')}</span>
               </Link>
-              <Link href="/backoffice/customers?section=receipts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <Receipt strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('customer_receipts', 'Customer Receipt')}</span>
+              <Link href="/customer-management?tab=zones" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>{t('zones_territories', 'Zones & Territories')}</span>
               </Link>
-              <Link href="/backoffice/customers?section=aged" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <Clock strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('customer_aged_receivables', 'Customer Aged')}</span>
+              <Link href="/customer-management?tab=categories" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/backoffice_customer_category.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('customer_categories', 'Customer Categories')}</span>
               </Link>
-              <Link href="/customer-insights" className="w-full text-start p-1.5 hover:text-slate-900 bg-blue-50/60 hover:bg-blue-100 rounded transition-colors font-bold text-blue-700 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span>{t('customer_insights', 'Customer Insights')}</span>
-                </div>
-                <span className="text-[9px] bg-blue-200 text-blue-900 px-1.5 py-0.5 rounded font-black">{t('ai_crm', 'AI CRM')}</span>
-              </Link>
-              <Link href="/schedule" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <Calendar strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('tasks_appointments', 'Tasks and Appointments')}</span>
-              </Link>
-              <Link href="/contacts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <UserPlus strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('leads_contacts', 'Leads and Contacts')}</span>
-              </Link>
-              <Link href="/sales-manager-dashboard" target="_blank" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <Award strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('sales_team_performance', 'Sales Team Performance')}</span>
-              </Link>
-
-              {/* Loyalty Sub-menu */}
-              <div className="pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => toggleGroup('cm_loyalty')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <Award strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span>{t('loyalty_program', 'Loyalty Management')}</span>
-                  </div>
-                  <span className="text-[9px] text-slate-400">{expandedGroups['cm_loyalty'] ? '▲' : '▼'}</span>
-                </button>
-                {expandedGroups['cm_loyalty'] && (
-                  <div className="ms-2 ps-2 border-s border-amber-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/loyalty?section=dashboard" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <PieChart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('dashboard', 'Dashboard')}</span>
-                    </Link>
-                    <Link href="/backoffice/loyalty?section=reports" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('reports', 'Reports')}</span>
-                    </Link>
-                    <Link href="/backoffice/loyalty?section=members" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Users strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('members', 'Members')}</span>
-                    </Link>
-                    <Link href="/backoffice/loyalty?section=loyalty_levels" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Award strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('loyalty_levels', 'Loyalty Levels')}</span>
-                    </Link>
-                    <Link href="/backoffice/loyalty?section=loyalty_programs" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Gift strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('loyalty_programs', 'Loyalty Programs')}</span>
-                    </Link>
-                    <Link href="/backoffice/loyalty?section=send_messages" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Mail strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('send_messages', 'Send Messages')}</span>
-                    </Link>
-                    <Link href="/backoffice/loyalty?section=company_info" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded font-medium text-amber-800">
-                      <Building strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('company_info', 'Company Info')}</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* Feedback & Surveys Sub-menu */}
-              <div className="pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => toggleGroup('cm_feedback')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <MessageSquare strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span>{t('feedback_surveys', 'Feedback & Surveys')}</span>
-                  </div>
-                  <span className="text-[9px] text-slate-400">{expandedGroups['cm_feedback'] ? '▲' : '▼'}</span>
-                </button>
-                {expandedGroups['cm_feedback'] && (
-                  <div className="ms-2 ps-2 border-s border-blue-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/feedback?section=dashboard" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <PieChart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('dashboard', 'Dashboard')}</span>
-                    </Link>
-                    <Link href="/backoffice/feedback?section=manage_complaints" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <ShieldAlert strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('manage_complaints', 'Manage Complaints')}</span>
-                    </Link>
-                    <Link href="/backoffice/feedback?section=add_complaints" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <PlusCircle strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('add_complaints', 'Add Complaint')}</span>
-                    </Link>
-                    <Link href="/backoffice/feedback?section=manage_surveys" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('manage_surveys', 'Manage Surveys')}</span>
-                    </Link>
-                    <Link href="/backoffice/feedback?section=send_survey_emails" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Mail strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('send_survey_emails', 'Send Survey Emails')}</span>
-                    </Link>
-
-                    {/* Feedback Setup */}
-                    <div className="pt-0.5">
-                      <button
-                        type="button"
-                        onClick={() => toggleGroup('cm_fb_setup')}
-                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                      >
-                        <span>{t('feedback_setup', 'Feedback Setup')}</span>
-                        <span className="text-[9px] text-slate-400">{expandedGroups['cm_fb_setup'] ? '▲' : '▼'}</span>
-                      </button>
-                      {expandedGroups['cm_fb_setup'] && (
-                        <div className="ms-2 ps-2 border-s border-blue-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                          <Link href="/backoffice/feedback?section=complaint_sources" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <Search strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('complaint_resources', 'Complaint Resources')}</span>
-                          </Link>
-                          <Link href="/backoffice/feedback?section=complaint_categories" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <Tag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('complaint_categories', 'Complaint Categories')}</span>
-                          </Link>
-                          <Link href="/backoffice/feedback?section=complaint_action_types" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <SlidersHorizontal strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('complaint_action_types', 'Complaint Action Type')}</span>
-                          </Link>
-                          <Link href="/backoffice/feedback?section=customer_care" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <Headphones strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('customer_care', 'Customer Care')}</span>
-                          </Link>
-                          <Link href="/backoffice/feedback?section=surveys_setup" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                            <Settings strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>{t('survey_setup', 'Survey Setup')}</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Setup */}
-              <div className="pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => toggleGroup('cm_settings')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <Sliders strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span>{t('setup', 'Setup')}</span>
-                  </div>
-                  <span className="text-[9px]">{expandedGroups['cm_settings'] ? '▲' : '▼'}</span>
-                </button>
-                {expandedGroups['cm_settings'] && (
-                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/customers?section=groups" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('customers_groups', 'Customer Groups')}</span>
-                    </Link>
-                    <Link href="/backoffice/customers?section=categories" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Tag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('customers_categories', 'Customer Categories')}</span>
-                    </Link>
-                    <Link href="/backoffice/customers?section=tags" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Bookmark strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('customers_tags', 'Customer Tags')}</span>
-                    </Link>
-                    <Link href="/backoffice/customers?section=leads_settings" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded font-medium text-blue-700">
-                      <Settings strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('leads_settings', 'Leads Settings')}</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
             </div>
           )}
         </div>
@@ -916,7 +502,7 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0 flex items-center justify-center">
-                <FileSpreadsheet strokeWidth={1.5} className="w-4 h-4" />
+                <img src="/icons/accounting.png" className="w-4 h-4 object-contain" alt="" />
               </div>
               {isOpen && <span className="truncate font-semibold">{t('accounting_financials', '4. Accounting & Financials')}</span>}
             </div>
@@ -924,320 +510,23 @@ export default function Sidebar({
           </button>
 
           {isOpen && expandedGroups['acc'] && (
-            <div className="relative ms-2.5 ps-2.5 border-s-2 border-border/80 space-y-0.5 mt-1 text-xs">
-              <Link
-                href="/backoffice/accounting?section=dashboard"
-                className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <Home strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                <span>{t('dashboard', 'Dashboard')}</span>
+            <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
+              <Link href="/accounting-finance?tab=accounts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+                <img src="/icons/accounting_setup_chartofaccounts.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('financial_accounts', 'Financial Accounts')}</span>
               </Link>
-              <Link
-                href="/backoffice/accounting?section=reports"
-                className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              >
-                <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                <span>{t('reports', 'Reports')}</span>
+              <Link href="/accounting-finance?tab=categories" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/accounting_action_expense.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('expense_categories', 'Expense Categories')}</span>
               </Link>
-
-              {/* Actions */}
-              <div className="pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => toggleGroup('acc_actions')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <Sliders strokeWidth={1.5} className="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span>{t('actions', 'Actions')}</span>
-                  </div>
-                  <ChevronRight strokeWidth={1.5}
-                    className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${
-                      expandedGroups['acc_actions'] ? 'rotate-90 text-foreground' : ''
-                    }`}
-                  />
-                </button>
-                {expandedGroups['acc_actions'] && (
-                  <div className="relative ms-2.5 ps-2.5 border-s-2 border-border/80 space-y-0.5 mt-0.5 text-xs transition-all">
-                    <Link
-                      href="/accounting/journal-voucher"
-                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-                        pathname === '/accounting/journal-voucher'
-                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      <FileSpreadsheet strokeWidth={1.5} className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/journal-voucher' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>{t('journal_voucher', 'Journal Voucher')}</span>
-                    </Link>
-                    <Link
-                      href="/accounting/purchase"
-                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-                        pathname === '/accounting/purchase'
-                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      <ShoppingCart strokeWidth={1.5} className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/purchase' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>{t('purchase', 'Purchase')}</span>
-                    </Link>
-                    <Link
-                      href="/accounting/payment"
-                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-                        pathname === '/accounting/payment'
-                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      <CreditCard strokeWidth={1.5} className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/payment' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>{t('payments', 'Payments')}</span>
-                    </Link>
-                    <Link
-                      href="/accounting/receipt"
-                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-                        pathname === '/accounting/receipt'
-                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      <Receipt strokeWidth={1.5} className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/receipt' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>{t('receipts', 'Receipts')}</span>
-                    </Link>
-                    <Link
-                      href="/accounting/receivables"
-                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-                        pathname === '/accounting/receivables'
-                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      <TrendingUp strokeWidth={1.5} className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/receivables' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>{t('receivables', 'Accounts Receivables')}</span>
-                    </Link>
-                    <Link
-                      href="/accounting/payables"
-                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-                        pathname === '/accounting/payables'
-                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      <DollarSign strokeWidth={1.5} className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/payables' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>{t('payables', 'Accounts Payables')}</span>
-                    </Link>
-                    <Link
-                      href="/accounting/bank-reconciliation"
-                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-                        pathname === '/accounting/bank-reconciliation'
-                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      <Scale strokeWidth={1.5} className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/bank-reconciliation' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>{t('bank_reconciliation', 'Bank Reconciliation')}</span>
-                    </Link>
-                    <Link
-                      href="/accounting/vat-closing"
-                      className={`group flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors ${
-                        pathname === '/accounting/vat-closing'
-                          ? 'bg-primary/15 text-primary font-bold shadow-2xs'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                      }`}
-                    >
-                      <Clock strokeWidth={1.5} className={`w-3.5 h-3.5 shrink-0 transition-colors ${pathname === '/accounting/vat-closing' ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>{t('vat_closing', 'VAT Period Closing')}</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* Setup (Parent Root) */}
-              <div className="pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => toggleGroup('acc_setup')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <Settings strokeWidth={1.5} className="w-3.5 h-3.5 text-primary shrink-0 transition-transform group-hover:rotate-45 duration-300" />
-                    <span>{t('setup', 'Setup')}</span>
-                  </div>
-                  <ChevronRight strokeWidth={1.5}
-                    className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${
-                      expandedGroups['acc_setup'] ? 'rotate-90 text-foreground' : ''
-                    }`}
-                  />
-                </button>
-
-                {expandedGroups['acc_setup'] && (
-                  <div className="relative ms-2.5 ps-2.5 border-s-2 border-border/80 space-y-0.5 mt-0.5 text-xs transition-all">
-                    {/* 1. Accounts (direct route) */}
-                    <Link
-                      href="/backoffice/accounting?section=accounts"
-                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                    >
-                      <BookOpen strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                      <span>{t('accounts', 'Accounts')}</span>
-                    </Link>
-
-                    {/* 2. Account Auxiliaries (Collapsible Nested Sub-menu) */}
-                    <div className="pt-0.5">
-                      <button
-                        type="button"
-                        onClick={() => toggleGroup('acc_aux')}
-                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2">
-                          <FolderTree strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                          <span>{t('account_auxiliaries', 'Account Auxiliaries')}</span>
-                        </div>
-                        <ChevronRight strokeWidth={1.5}
-                          className={`w-3 h-3 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${
-                            expandedGroups['acc_aux'] ? 'rotate-90 text-foreground' : ''
-                          }`}
-                        />
-                      </button>
-
-                      {expandedGroups['acc_aux'] && (
-                        <div className="relative ms-2.5 ps-2.5 border-s-2 border-border/60 space-y-0.5 mt-0.5 transition-all">
-                          {/* Accounts Classes */}
-                          <Link
-                            href="/backoffice/accounting?section=aux_classes"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('aux_classes', 'Accounts Classes')}</span>
-                          </Link>
-                          {/* Account Header 1 */}
-                          <Link
-                            href="/backoffice/accounting?section=aux_header1"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <ListFilter strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('aux_header1', 'Account Header 1')}</span>
-                          </Link>
-                          {/* Account Header 2 */}
-                          <Link
-                            href="/backoffice/accounting?section=aux_header2"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <ListFilter strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('aux_header2', 'Account Header 2')}</span>
-                          </Link>
-                          {/* Account Header 3 */}
-                          <Link
-                            href="/backoffice/accounting?section=aux_header3"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <ListFilter strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('aux_header3', 'Account Header 3')}</span>
-                          </Link>
-                          {/* Account Group */}
-                          <Link
-                            href="/backoffice/accounting?section=aux_group"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <Boxes strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('aux_group', 'Account Group')}</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 3. Jv Description (direct route) */}
-                    <Link
-                      href="/backoffice/accounting?section=aux_jv_desc"
-                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                    >
-                      <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                      <span>{t('jv_description', 'Jv Description')}</span>
-                    </Link>
-
-                    {/* 4. Jv Types (direct route) */}
-                    <Link
-                      href="/backoffice/accounting?section=aux_jv_types"
-                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                    >
-                      <Bookmark strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                      <span>{t('jv_types', 'Jv Types')}</span>
-                    </Link>
-
-                    {/* 5. Currency (direct route) */}
-                    <Link
-                      href="/backoffice/accounting?section=aux_currency"
-                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                    >
-                      <Coins strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                      <span>{t('currency', 'Currency')}</span>
-                    </Link>
-
-                    {/* 6. Currency Rates (direct route) */}
-                    <Link
-                      href="/backoffice/accounting?section=aux_currency_rates"
-                      className="group flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                    >
-                      <TrendingUp strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                      <span>{t('currency_rates', 'Currency Rates')}</span>
-                    </Link>
-
-                    {/* 7. Departments (Collapsible Nested Sub-menu) */}
-                    <div className="pt-0.5">
-                      <button
-                        type="button"
-                        onClick={() => toggleGroup('acc_dept')}
-                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Building2 strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                          <span>{t('departments', 'Departments')}</span>
-                        </div>
-                        <ChevronRight strokeWidth={1.5}
-                          className={`w-3 h-3 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${
-                            expandedGroups['acc_dept'] ? 'rotate-90 text-foreground' : ''
-                          }`}
-                        />
-                      </button>
-
-                      {expandedGroups['acc_dept'] && (
-                        <div className="relative ms-2.5 ps-2.5 border-s-2 border-border/60 space-y-0.5 mt-0.5 transition-all">
-                          {/* Department Groups */}
-                          <Link
-                            href="/backoffice/accounting?section=dept_groups"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <FolderTree strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('dept_groups', 'Department Groups')}</span>
-                          </Link>
-                          {/* Department */}
-                          <Link
-                            href="/backoffice/accounting?section=department"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <Building strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('department', 'Department')}</span>
-                          </Link>
-                          {/* Cash Flow Report Setup */}
-                          <Link
-                            href="/backoffice/accounting?section=cash_flow_setup"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <SlidersHorizontal strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('cash_flow_setup', 'Cash Flow Report Setup')}</span>
-                          </Link>
-                          {/* Sub Department */}
-                          <Link
-                            href="/backoffice/accounting?section=sub_dept"
-                            className="group flex items-center gap-2 px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            <Split strokeWidth={1.5} className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                            <span>{t('sub_department', 'Sub Department')}</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <Link href="/accounting-finance?tab=expenses" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/accounting_acc_payable.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('expenses', 'Expenses')}</span>
+              </Link>
+              <Link href="/accounting-finance?tab=transfers" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <TrendingUp strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>{t('fund_transfers', 'Fund Transfers')}</span>
+              </Link>
             </div>
           )}
         </div>
@@ -1257,7 +546,7 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0 flex items-center justify-center">
-                <UserCheck strokeWidth={1.5} className="w-4 h-4" />
+                <img src="/icons/payroll-main.png" className="w-4 h-4 object-contain" alt="" />
               </div>
               {isOpen && <span className="truncate font-semibold">{t('human_resources', '5. Human Resources')}</span>}
             </div>
@@ -1266,124 +555,26 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['hr'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/hr/employees" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <Users strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('personnel_directory', 'Personnel Directory')}</span>
+              <Link href="/hr-payroll?tab=departments" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-departments.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('departments', 'Departments')}</span>
               </Link>
-              <Link href="/accounting/payroll/employee-schedules" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-amber-50/70 rounded font-bold text-slate-900 border-s-2 border-primary">
-                <CalendarDays strokeWidth={1.5} className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span className="truncate">{t('employee_schedules_day_off', 'Employee Schedules & Day Off')}</span>
-                <span className="ms-auto text-[9px] px-1 py-0.2 bg-emerald-100 text-emerald-800 rounded font-mono font-bold">2026</span>
+              <Link href="/hr-payroll?tab=roles" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-designation.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('roles_designations', 'Roles & Designations')}</span>
               </Link>
-              <Link href="/backoffice/hr/payroll" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <DollarSign strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('payroll_runs', 'Payroll Runs')}</span>
+              <Link href="/hr-payroll?tab=employees" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-employees.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('employees', 'Employees')}</span>
               </Link>
-              <Link href="/backoffice/hr/attendance" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <Clock strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('biometric_attendance', 'Biometric Attendance')}</span>
+              <Link href="/hr-payroll?tab=shifts" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('shifts_schedules', 'Shifts & Schedules')}</span>
               </Link>
-              <Link href="/backoffice/hr?tab=reports" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('hr_reports_hub', 'HR Reports Hub')}</span>
+              <Link href="/hr-payroll?tab=deductions" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-salaries.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('deductions', 'Deductions')}</span>
               </Link>
-
-              {/* Organization Setup */}
-              <div className="pt-0.5">
-                <button
-                  onClick={() => toggleGroup('hr_orgsetup')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <span>{t('organization_setup', 'Organization Setup')}</span>
-                  <span className="text-[9px]">{expandedGroups['hr_orgsetup'] ? '▲' : '▼'}</span>
-                </button>
-                {expandedGroups['hr_orgsetup'] && (
-                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/hr?section=internal_departments" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Building strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('internal_departments', 'Internal Departments')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=designations" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Award strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('designations', 'Designations')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=pos_employee_roles" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <UserCog strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('pos_employee_roles', 'POS Employee Roles')}</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* Time & Attendance */}
-              <div className="pt-0.5">
-                <button
-                  onClick={() => toggleGroup('hr_attendance')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <span>{t('time_attendance', 'Time & Attendance')}</span>
-                  <span className="text-[9px]">{expandedGroups['hr_attendance'] ? '▲' : '▼'}</span>
-                </button>
-                {expandedGroups['hr_attendance'] && (
-                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/accounting/payroll/employee-schedules" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded font-bold text-amber-700">
-                      <CalendarDays strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('schedules_shift_manager', 'Schedules & Shift Manager (2026)')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=time_off_requests" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <CalendarCheck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('time_off_requests', 'Time Off Requests')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=schedule_templates" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('schedule_templates', 'Schedule Templates')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=time_off_reasons" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('time_off_reasons', 'Time Off Reasons')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=attendance_summary" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('attendance_summary', 'Attendance Summary')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=attendance_log" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Clock strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('attendance_log', 'Attendance Log')}</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* Payroll */}
-              <div className="pt-0.5">
-                <button
-                  onClick={() => toggleGroup('hr_payroll')}
-                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
-                >
-                  <span>{t('payroll', 'Payroll')}</span>
-                  <span className="text-[9px]">{expandedGroups['hr_payroll'] ? '▲' : '▼'}</span>
-                </button>
-                {expandedGroups['hr_payroll'] && (
-                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
-                    <Link href="/backoffice/hr?section=payroll_dashboard" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <PieChart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <span>{t('payroll_dashboard', 'Payroll Dashboard')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=salary_processing" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <DollarSign strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('salary_processing', 'Salary Processing')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=payment_settings" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <CreditCard strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('payment_settings', 'Payment Settings')}</span>
-                    </Link>
-                    <Link href="/backoffice/hr?section=earnings_deductions" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
-                      <Percent strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{t('earnings_deductions', 'Earnings & Deductions')}</span>
-                    </Link>
-                  </div>
-                )}
-              </div>
             </div>
           )}
         </div>
@@ -1402,7 +593,7 @@ export default function Sidebar({
           >
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 shrink-0 flex items-center justify-center">
-                <Truck strokeWidth={1.5} className="w-4 h-4" />
+                <img src="/icons/deliveringgoods.png" className="w-4 h-4 object-contain" alt="" />
               </div>
               {isOpen && (
                 <span className="truncate flex items-center gap-1 font-semibold">
@@ -1416,58 +607,22 @@ export default function Sidebar({
 
           {isOpen && (expandedGroups['supersonic'] || expandedGroups['fleet']) && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link href="/backoffice/fleet" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <PieChart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('fleet_dashboard', 'Fleet Dashboard')}</span>
+              <Link href="/super-sonic?tab=fleet" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('fleet_overview', 'Fleet Overview')}</span>
               </Link>
-              <Link href="/backoffice/fleet?tab=reports" className="w-full text-start p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded transition-colors font-medium text-emerald-700 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileSpreadsheet strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span>{t('fleet_reports', 'Fleet Reports')}</span>
-                </div>
-                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-bold">{t('rep', 'REP')}</span>
-              </Link>
-              <Link href="/backoffice/fleet?tab=dispatch" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <Route strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('active_dispatches', 'Active Dispatches')}</span>
-              </Link>
-              <Link href="/backoffice/fleet?tab=vendors" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link href="/super-sonic?tab=drivers" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
                 <Users strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('driver_management', 'Driver Management')}</span>
+                <span>{t('drivers_directory', 'Drivers Directory')}</span>
               </Link>
-              <Link href="/backoffice/fleet?tab=path-cards" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('route_optimization', 'Route Optimization')}</span>
+              <Link href="/super-sonic?tab=fuel" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <Droplets strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>{t('fuel_maintenance', 'Fuel & Maintenance')}</span>
               </Link>
-              <Link href="/backoffice/fleet?tab=vehicles" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <Wrench strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('vehicle_maintenance', 'Vehicle Maintenance')}</span>
+              <Link href="/super-sonic?tab=trips" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+                <Route strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>{t('trip_logs', 'Trip Logs')}</span>
               </Link>
-              <Link href="/backoffice/fleet?tab=accounting" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
-                <DollarSign strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{t('driver_settlements', 'Driver Settlements')}</span>
-              </Link>
-              <Link href="/vtrack" className="w-full text-start p-1.5 text-blue-700 bg-blue-50/70 hover:bg-blue-100 rounded flex items-center justify-between font-bold transition-colors mt-1">
-                <span className="flex items-center gap-1.5"><Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" /> {t('vtrack_geographics', 'V-Track Geographics')}</span>
-                <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded font-black">{t('active', 'ACTIVE')}</span>
-              </Link>
-
-              {/* Standalone V-Driver Portal & Download Trigger */}
-              <div className="pt-1 mt-1 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setDownloadAppModal('v-driver')}
-                  className="w-full text-start p-1.5 bg-blue-50/80 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg flex items-center justify-between font-bold transition-all shadow-2xs group cursor-pointer"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <Smartphone strokeWidth={1.5} className="w-3.5 h-3.5 text-blue-700 shrink-0" />
-                    <span>{t('launch_vdriver_app', 'V-Driver App / PWA')}</span>
-                  </span>
-                  <span className="text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-black flex items-center gap-0.5">
-                    <Download strokeWidth={1.5} className="w-2.5 h-2.5" /> PWA
-                  </span>
-                </button>
-              </div>
             </div>
           )}
         </div>

@@ -2064,7 +2064,7 @@ export default function SuperAdminWorkspaceManager() {
                   <th className="py-2.5 px-3">Company ID</th>
                   <th className="py-2.5 px-3">Tenant & Legal Entity</th>
                   <th className="py-2.5 px-3">Brand Name (En / Ar)</th>
-                  <th className="py-2.5 px-3">Active Modules (12)</th>
+                  <th className="py-2.5 px-3">Active Modules</th>
                   <th className="py-2.5 px-3">Contract Value</th>
                   <th className="py-2.5 px-3">Account Status</th>
                   <th className="py-2.5 px-3 text-right">Quick Actions</th>
