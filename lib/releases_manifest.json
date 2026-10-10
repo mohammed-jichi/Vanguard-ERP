@@ -1,5 +1,27 @@
 [
   {
+    "id": "66d0f613-1d45-46b4-a4c5-d4f3d13f75e7",
+    "commit_hash": "66d0f6131d4536b484c5d4f3d13f75e7d4f502dc",
+    "short_hash": "66d0f61",
+    "version": "v2.0.0",
+    "title": "Eliminate blocking layout loaders and enforce immediate shell rendering",
+    "category": "performance",
+    "description": "perf(core): eliminate blocking layout loaders and enforce immediate shell rendering",
+    "bullet_points": [
+      "Applied improvements to Core Shell & UI, Accounting & Finance",
+      "Maintained backward compatibility with existing enterprise workflows"
+    ],
+    "affected_modules": [
+      "Core Shell & UI",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-10T16:31:15.000Z",
+    "created_at": "2026-10-10T16:48:36.698Z"
+  },
+  {
     "id": "6145c3e5-f6f9-400b-a175-3c6cbdf37d88",
     "commit_hash": "6145c3e5f6f9900b31753c6cbdf37d88149b2107",
     "short_hash": "6145c3e",

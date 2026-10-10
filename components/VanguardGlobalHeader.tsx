@@ -204,13 +204,15 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
   };
 
   useEffect(() => {
+    // Initial fetch only, no background polling
     loadHeaderFeeds(includeResolvedAlerts);
-    const timer = setInterval(() => loadHeaderFeeds(includeResolvedAlerts), 15000);
+    
+    // Local event subscription (no background polling)
     const unsubscribe = subscribeToAccountingSync(() => {
       loadHeaderFeeds(includeResolvedAlerts);
     });
+    
     return () => {
-      clearInterval(timer);
       unsubscribe();
     };
   }, [loadHeaderFeeds, includeResolvedAlerts]);

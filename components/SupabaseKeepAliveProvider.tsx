@@ -29,10 +29,7 @@ export function SupabaseKeepAliveProvider({ children }: { children: React.ReactN
       triggerPing();
     }
 
-    // Ping every 5 minutes (300,000 ms)
-    const interval = setInterval(triggerPing, 5 * 60 * 1000);
-
-    return () => clearInterval(interval);
+    // Ping every 5 minutes removed per user request: "KILL ALL INTERVALS & BACKGROUND POLLING"
   }, []);
 
   return <>{children}</>;

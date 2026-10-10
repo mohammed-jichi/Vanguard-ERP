@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-10T16:30:55.098Z",
+  "last_updated": "2026-10-10T16:48:36.705Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-66d0f61",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (66d0f61) - Eliminate blocking layout loaders and enforce immediate shell rendering",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "66d0f6131d4536b484c5d4f3d13f75e7d4f502dc",
+        "version": "v2.0.0",
+        "category": "performance",
+        "modules": [
+          "Core Shell & UI",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-10T16:31:15.000Z"
+    },
     {
       "id": "act-rel-6145c3e",
       "company_id": 1300,
@@ -6632,6 +6649,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-66d0f61",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Eliminate blocking layout loaders and enforce immediate shell rendering",
+      "message": "perf(core): eliminate blocking layout loaders and enforce immediate shell rendering",
+      "timestamp": "2026-10-10T16:31:15.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "66d0f6131d4536b484c5d4f3d13f75e7d4f502dc",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-6145c3e",
       "type": "SYSTEM_RELEASE",

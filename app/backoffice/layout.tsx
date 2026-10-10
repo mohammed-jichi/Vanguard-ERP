@@ -205,6 +205,7 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
   }, []);
 
   useEffect(() => {
+    // Initial fetch only, no continuous background polling
     fetchNotifications();
     fetchUpdates();
 
@@ -216,36 +217,16 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
       }
     }
 
-    const interval = setInterval(() => {
-      fetchNotifications();
-      fetchUpdates();
-    }, 15000);
+    // Local event subscription for accounting sync ONLY (does not poll the server)
     const unsubscribe = subscribeToAccountingSync(() => {
       fetchNotifications();
       fetchUpdates();
     });
+    
     return () => {
-      clearInterval(interval);
       unsubscribe();
     };
   }, [fetchNotifications, fetchUpdates]);
-
-  // Keep-alive heartbeat: ping database every 10 minutes to prevent Supabase inactivity pause
-  useEffect(() => {
-    const pingKeepAlive = async () => {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1000);
-        await fetch('/api/cron/keep-alive', { signal: controller.signal });
-        clearTimeout(timeoutId);
-      } catch (e) {
-        // silent fail on keep-alive
-      }
-    };
-    pingKeepAlive();
-    const keepAliveTimer = setInterval(pingKeepAlive, 10 * 60 * 1000);
-    return () => clearInterval(keepAliveTimer);
-  }, []);
 
   const { isSuperAdmin, currentUser } = useTenant();
 
