@@ -11,13 +11,13 @@
   "categories": ["business", "productivity", "manufacturing"],
   "icons": [
     {
-      "src": "/vanguard-emblem.jpg",
+      "src": "/vanguard.jpg",
       "sizes": "192x192 512x512",
       "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "/vanguard-logo.jpg",
+      "src": "/vanguard.jpg",
       "sizes": "512x512",
       "type": "image/jpeg"
     }
