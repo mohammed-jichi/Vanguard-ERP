@@ -1,5 +1,5 @@
 import { getSupabaseServerClient } from '@/lib/supabaseClient';
-import { verifyToken } from '@/lib/notifications/verification';
+import { verifyAlertToken } from '@/lib/notifications/verification';
 import { CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -24,9 +24,9 @@ export default async function VerifyAlertsPage({
     );
   }
 
-  const payload = verifyToken(token);
+  const { payload, valid } = verifyAlertToken(token);
 
-  if (!payload) {
+  if (!valid || !payload) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900 font-sans p-6">
         <div className="bg-white p-10 rounded-3xl border border-slate-200 text-center max-w-md w-full shadow-xl">

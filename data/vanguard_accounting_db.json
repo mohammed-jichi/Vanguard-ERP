@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-10T11:48:25.046Z",
+  "last_updated": "2026-10-10T13:53:44.596Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-c574161",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (c574161) - Implement dynamic human resources and payroll processing with attendance and salary advances",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "c5741617a73ae7ff9dfcce944f46adf645e52484",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "HR & Payroll",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-10T11:48:43.000Z"
+    },
     {
       "id": "act-rel-859ec8c",
       "company_id": 1300,
@@ -6529,6 +6546,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-c574161",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Implement dynamic human resources and payroll processing with attendance and salary advances",
+      "message": "feat(hr): implement dynamic human resources and payroll processing with attendance and salary advances",
+      "timestamp": "2026-10-10T11:48:43.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "c5741617a73ae7ff9dfcce944f46adf645e52484",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-859ec8c",
       "type": "SYSTEM_RELEASE",

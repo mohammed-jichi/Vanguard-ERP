@@ -1,48 +1,25 @@
-export interface WhatsAppTemplateConfig {
-  name: string;
-  language: string;
-}
-
-export const TEMPLATES = {
-  vanguard_employee_verification: {
-    name: 'vanguard_employee_verification',
-    language: 'en_US',
-  },
-  vanguard_low_stock_alert: {
-    name: 'vanguard_low_stock_alert',
-    language: 'en_US',
-  },
-  vanguard_daily_summary: {
-    name: 'vanguard_daily_summary',
-    language: 'en_US',
-  },
-};
-
 export async function sendWhatsAppTemplate(
   toPhone: string,
   templateName: string,
-  bodyVariables: string[],
+  variables: string[],
   buttonUrlParam?: string
 ) {
-  const token = process.env.META_WHATSAPP_TOKEN;
-  const phoneNumberId = process.env.META_WHATSAPP_PHONE_ID;
+  const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
+  const WHATSAPP_SYSTEM_TOKEN = process.env.WHATSAPP_SYSTEM_TOKEN;
 
-  if (!token || !phoneNumberId) {
-    console.warn('[WhatsApp Dispatcher] Missing META_WHATSAPP_TOKEN or META_WHATSAPP_PHONE_ID. Simulating dispatch.');
-    console.log(`[Simulated WhatsApp] To: ${toPhone} | Template: ${templateName} | Vars: ${bodyVariables} | Button: ${buttonUrlParam}`);
-    return { success: true, simulated: true };
+  if (!WHATSAPP_PHONE_NUMBER_ID || !WHATSAPP_SYSTEM_TOKEN) {
+    console.log(`[SIMULATED WHATSAPP] To: ${toPhone} | Template: ${templateName}`);
+    return { simulated: true, toPhone, templateName, variables };
   }
 
-  const cleanPhone = toPhone.replace(/[^0-9]/g, '');
+  const url = `https://graph.facebook.com/v20.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`;
 
-  const templateConfig = (Object.values(TEMPLATES).find(t => t.name === templateName)) || { name: templateName, language: 'en_US' };
-
-  const components: any[] = [];
-
-  if (bodyVariables && bodyVariables.length > 0) {
+  let components: any[] = [];
+  
+  if (variables.length > 0) {
     components.push({
       type: 'body',
-      parameters: bodyVariables.map((text) => ({ type: 'text', text })),
+      parameters: variables.map(v => ({ type: 'text', text: v }))
     });
   }
 
@@ -54,43 +31,46 @@ export async function sendWhatsAppTemplate(
       parameters: [
         {
           type: 'text',
-          text: buttonUrlParam,
-        },
-      ],
+          text: buttonUrlParam
+        }
+      ]
     });
   }
 
-  const body = {
+  const payload = {
     messaging_product: 'whatsapp',
-    to: cleanPhone,
+    to: toPhone.replace(/[^0-9]/g, ''),
     type: 'template',
     template: {
-      name: templateConfig.name,
+      name: templateName,
       language: {
-        code: templateConfig.language,
+        code: 'en_US'
       },
-      components: components.length > 0 ? components : undefined,
-    },
+      components: components.length > 0 ? components : undefined
+    }
   };
 
-  try {
-    const res = await fetch(`https://graph.facebook.com/v17.0/${phoneNumberId}/messages`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${WHATSAPP_SYSTEM_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
 
-    const json = await res.json();
-    if (!res.ok) {
-      throw new Error(json.error?.message || 'WhatsApp Cloud API Error');
-    }
-
-    return { success: true, data: json };
-  } catch (error: any) {
-    console.error('[WhatsApp Dispatcher Error]', error.message);
-    throw error;
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error?.message || 'Failed to send WhatsApp template');
   }
+
+  return data;
+}
+
+export async function sendLowStockAlert(toPhone: string) {
+  return sendWhatsAppTemplate(toPhone, 'vanguard_low_stock', [], ''); 
+}
+
+export async function sendDailySummary(toPhone: string) {
+  return sendWhatsAppTemplate(toPhone, 'vanguard_daily_summary', [], '');
 }

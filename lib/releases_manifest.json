@@ -1,5 +1,28 @@
 [
   {
+    "id": "c5741617-a73a-47ff-adfc-ce944f46adf6",
+    "commit_hash": "c5741617a73ae7ff9dfcce944f46adf645e52484",
+    "short_hash": "c574161",
+    "version": "v2.0.0",
+    "title": "Implement dynamic human resources and payroll processing with attendance and salary advances",
+    "category": "feature",
+    "description": "feat(hr): implement dynamic human resources and payroll processing with attendance and salary advances",
+    "bullet_points": [
+      "Implemented implement dynamic human resources and payroll processing with attendance and salary advances",
+      "Enhanced system stability and operator workflow in HR & Payroll & Accounting & Finance",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "HR & Payroll",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-10T11:48:43.000Z",
+    "created_at": "2026-10-10T13:53:44.588Z"
+  },
+  {
     "id": "859ec8ca-dfe5-467b-a276-6fa9a8cbb8e7",
     "commit_hash": "859ec8cadfe5667b92766fa9a8cbb8e7b230872d",
     "short_hash": "859ec8c",
