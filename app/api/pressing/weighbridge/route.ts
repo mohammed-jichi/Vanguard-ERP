@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
-    if (error && error.code !== 'PGRST116' && !error.message?.includes('does not exist')) {
+    if (error && error.code !== 'PGRST116' && !error.message?.includes('does not exist') && !error.message?.includes('Could not find the table')) {
       return NextResponse.json(
         { error: error.message, details: error.details },
         { status: 500 }
