@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-10T11:34:53.907Z",
+  "last_updated": "2026-10-10T11:38:28.348Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-233b15f",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (233b15f) - Build dynamic customer management and wholesale accounts with credit tracking",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "233b15f982ce47205591e8baa6e14fc5d2ce1e83",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Customer Relations (CRM)",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-10T11:35:07.000Z"
+    },
     {
       "id": "act-rel-af7bc39",
       "company_id": 1300,
@@ -6479,6 +6496,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-233b15f",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Build dynamic customer management and wholesale accounts with credit tracking",
+      "message": "feat(customers): build dynamic customer management and wholesale accounts with credit tracking",
+      "timestamp": "2026-10-10T11:35:07.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "233b15f982ce47205591e8baa6e14fc5d2ce1e83",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-af7bc39",
       "type": "SYSTEM_RELEASE",
