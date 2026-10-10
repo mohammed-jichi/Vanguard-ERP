@@ -1,5 +1,28 @@
 [
   {
+    "id": "e8574e47-3384-4c90-a412-129d0ee18a25",
+    "commit_hash": "e8574e473384cc90c412129d0ee18a25da53da2d",
+    "short_hash": "e8574e4",
+    "version": "v2.0.0",
+    "title": "Implement automated WhatsApp verification and report button dispatches",
+    "category": "feature",
+    "description": "feat(notifications): implement automated WhatsApp verification and report button dispatches",
+    "bullet_points": [
+      "Implemented implement automated whatsapp verification and report button dispatches",
+      "Enhanced system stability and operator workflow in Alerts & Notifications & Accounting & Finance",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Alerts & Notifications",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-09T13:08:59.000Z",
+    "created_at": "2026-10-10T11:20:52.647Z"
+  },
+  {
     "id": "a83817df-d7f3-4773-ab87-9cbd3770e09f",
     "commit_hash": "a83817dfd7f367735b879cbd3770e09fc15efa15",
     "short_hash": "a83817d",
