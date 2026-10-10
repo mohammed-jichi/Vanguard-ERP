@@ -67,25 +67,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
     }
   }, [searchParams, currentTenant, registeredCompanies, switchTenant]);
 
-  // Mandatory Login Entry Gate: Strictly redirect unauthenticated users to /login
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const hasAuthToken = document.cookie.split(';').some((c) => {
-        const [n, v] = c.trim().split('=');
-        if (!v) return false;
-        return (
-          (n.startsWith('sb-') && (n.endsWith('-auth-token') || n.includes('token') || n.includes('auth'))) ||
-          n === 'sb-access-token' ||
-          n === 'sb-refresh-token' ||
-          n === 'supabase-auth-token'
-        );
-      });
-      if (!hasAuthToken) {
-        const currentPath = window.location.pathname + window.location.search;
-        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-      }
-    }
-  }, []);
+  // Auth state is strictly enforced by middleware (proxy.ts). 
+  // Client-side HttpOnly cookie checks cause infinite redirect loops and are removed.
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
