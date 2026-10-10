@@ -1225,13 +1225,27 @@ import SupabaseKeepAliveProvider from '@/components/SupabaseKeepAliveProvider';
 import { DeepLinkFallbackProvider } from '@/components/DeepLinkFallbackProvider';
 
 export default function MasterBackofficeLayout({ children }: { children: React.ReactNode }) {
+  const [forceLoaded, setForceLoaded] = useState(false);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.warn('[Vanguard Loader] Forced UI unlock after timeout');
+      setForceLoaded(true);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <TenantProvider>
       <SupabaseKeepAliveProvider>
         <DeepLinkFallbackProvider>
-          <Suspense fallback={<div className="flex flex-col w-full min-h-screen bg-background p-4 text-xs text-slate-500">Loading Vanguard Backoffice...</div>}>
+          {forceLoaded ? (
             <MasterBackofficeLayoutContent>{children}</MasterBackofficeLayoutContent>
-          </Suspense>
+          ) : (
+            <Suspense fallback={<div className="flex flex-col w-full min-h-screen bg-background p-4 text-xs text-slate-500">Loading Vanguard Backoffice...</div>}>
+              <MasterBackofficeLayoutContent>{children}</MasterBackofficeLayoutContent>
+            </Suspense>
+          )}
         </DeepLinkFallbackProvider>
       </SupabaseKeepAliveProvider>
     </TenantProvider>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabaseClient';
-import { generateVerificationToken } from '@/lib/notifications/verification';
+import { generateAlertToken } from '@/lib/notifications/verification';
 import { sendWhatsAppTemplate } from '@/lib/notifications/whatsapp';
 
 const CORS_HEADERS = {
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate secure verification token
-    const token = generateVerificationToken({
+    const token = generateAlertToken({
       employeeId,
       name: name || 'Employee',
       channel: target === 'phone' ? 'whatsapp' : 'email',

@@ -1,20 +1,48 @@
 import jwt from 'jsonwebtoken';
 
-const SECRET_KEY = process.env.JWT_SECRET || 'vanguard-erp-secret-key-fallback';
+const JWT_SECRET = process.env.JWT_SECRET || 'vanguard-erp-notification-secret-2026';
 
-export function generateVerificationToken(payload: any): string {
-  return jwt.sign(payload, SECRET_KEY, { expiresIn: '7d' });
+export interface AlertTokenPayload {
+  employeeId: string;
+  tenantId: string;
+  phone?: string;
+  name?: string;
+  channel?: string;
+  recipient?: string;
 }
 
-export function generateAlertToken(payload: { employeeId: string; tenantId: string; phone: string }): string {
-  return jwt.sign(payload, SECRET_KEY, { expiresIn: '7d' });
-}
-
-export function verifyAlertToken(token: string): { valid: boolean; payload?: any } {
+/**
+ * Generates a signed token for WhatsApp Business verification.
+ * Expires in 7 days to give employees ample time to verify their channels.
+ */
+export function generateAlertToken(payload: AlertTokenPayload): string {
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    return { valid: true, payload: decoded };
-  } catch (err) {
-    return { valid: false };
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+  } catch (error) {
+    console.error('[Verification] Error generating alert token:', error);
+    throw new Error('Failed to generate verification token');
+  }
+}
+
+/**
+ * Verifies and decodes a WhatsApp Business alert verification token.
+ */
+export function verifyAlertToken(token: string): { valid: boolean; payload?: AlertTokenPayload; error?: string } {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+    return {
+      valid: true,
+      payload: {
+        employeeId: decoded.employeeId,
+        tenantId: decoded.tenantId,
+        phone: decoded.phone
+      }
+    };
+  } catch (error: any) {
+    console.error('[Verification] Token verification failed:', error.message);
+    return {
+      valid: false,
+      error: error.message
+    };
   }
 }

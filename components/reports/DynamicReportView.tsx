@@ -136,7 +136,8 @@ export function DynamicReportView({
     return () => {
       isCancelled = true;
     };
-  }, [reportDef.id, reportDef.endpoint, fromDate, toDate, branch, currency, filterValues]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reportDef.id, reportDef.endpoint, fromDate, toDate, branch, currency, JSON.stringify(filterValues)]);
 
   // 4. Map columns to MasterReportDocument format
   const columns: ReportColumn<any>[] = useMemo(() => {
