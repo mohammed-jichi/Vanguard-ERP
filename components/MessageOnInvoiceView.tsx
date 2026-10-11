@@ -341,7 +341,7 @@ export default function MessageOnInvoiceView() {
         </h1>
         <ul className="flex items-center gap-1.5 text-xs text-slate-500">
           <li>
-            <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
+            <Link prefetch={false} href="/backoffice" className="hover:text-blue-600 transition-colors">
               Home
             </Link>
           </li>

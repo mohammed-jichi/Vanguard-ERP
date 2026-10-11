@@ -388,7 +388,7 @@ export default function EnterpriseOverviewHub() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
-            <Link
+            <Link prefetch={false}
               href="/backoffice/inbox"
               className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-slate-300 relative cursor-pointer"
             >
@@ -401,7 +401,7 @@ export default function EnterpriseOverviewHub() {
               )}
             </Link>
 
-            <Link
+            <Link prefetch={false}
               href="/dashboard/sales"
               className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 cursor-pointer"
             >
@@ -409,7 +409,7 @@ export default function EnterpriseOverviewHub() {
               <span>{isAr ? 'نقطة البيع (POS)' : 'Open POS & Sales'}</span>
             </Link>
 
-            <Link
+            <Link prefetch={false}
               href="/admin"
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-amber-400 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
@@ -449,7 +449,7 @@ export default function EnterpriseOverviewHub() {
         </div>
 
         {/* Dual-Signoff & Pending Approvals */}
-        <Link 
+        <Link prefetch={false} 
           href="/backoffice/inbox" 
           className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs hover:border-amber-400 transition-colors cursor-pointer group"
         >
@@ -481,7 +481,7 @@ export default function EnterpriseOverviewHub() {
         </Link>
 
         {/* SuperSonic Fleet Status */}
-        <Link 
+        <Link prefetch={false} 
           href="/backoffice/fleet" 
           className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs hover:border-blue-400 transition-colors cursor-pointer group"
         >
@@ -507,7 +507,7 @@ export default function EnterpriseOverviewHub() {
         </Link>
 
         {/* Olive Pressing & Storage */}
-        <Link 
+        <Link prefetch={false} 
           href="/backoffice/operations" 
           className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs hover:border-purple-400 transition-colors cursor-pointer group"
         >
@@ -548,7 +548,7 @@ export default function EnterpriseOverviewHub() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
-          <Link
+          <Link prefetch={false}
             href="/backoffice/accounting?action=new-jv"
             className="p-3 bg-white border border-slate-200 hover:border-indigo-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
           >
@@ -560,7 +560,7 @@ export default function EnterpriseOverviewHub() {
             </span>
           </Link>
 
-          <Link
+          <Link prefetch={false}
             href="/dashboard/sales"
             className="p-3 bg-white border border-slate-200 hover:border-emerald-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
           >
@@ -572,7 +572,7 @@ export default function EnterpriseOverviewHub() {
             </span>
           </Link>
 
-          <Link
+          <Link prefetch={false}
             href="/backoffice/fleet"
             className="p-3 bg-white border border-slate-200 hover:border-amber-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
           >
@@ -584,7 +584,7 @@ export default function EnterpriseOverviewHub() {
             </span>
           </Link>
 
-          <Link
+          <Link prefetch={false}
             href="/backoffice/inbox"
             className="p-3 bg-white border border-slate-200 hover:border-red-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
           >
@@ -596,7 +596,7 @@ export default function EnterpriseOverviewHub() {
             </span>
           </Link>
 
-          <Link
+          <Link prefetch={false}
             href="/backoffice/customers"
             className="p-3 bg-white border border-slate-200 hover:border-blue-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
           >
@@ -608,7 +608,7 @@ export default function EnterpriseOverviewHub() {
             </span>
           </Link>
 
-          <Link
+          <Link prefetch={false}
             href="/backoffice/reportview"
             className="p-3 bg-white border border-slate-200 hover:border-teal-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
           >
@@ -786,7 +786,7 @@ export default function EnterpriseOverviewHub() {
                   {/* Sub-links quick access */}
                   <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-1.5 text-[11px]">
                     {module.subLinks.map((sub, i) => (
-                      <Link
+                      <Link prefetch={false}
                         key={i}
                         href={sub.href}
                         className="truncate text-slate-600 hover:text-amber-700 hover:bg-amber-50/60 px-1.5 py-1 rounded transition-colors"
@@ -803,7 +803,7 @@ export default function EnterpriseOverviewHub() {
                     {isAr ? 'مفعّل في باقتك' : 'Licensed & Active'}
                   </span>
 
-                  <Link
+                  <Link prefetch={false}
                     href={module.primaryRoute}
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 hover:text-amber-700 group cursor-pointer"
                   >
@@ -825,7 +825,7 @@ export default function EnterpriseOverviewHub() {
               <Clock className="w-4 h-4 text-slate-500" />
               <span>{isAr ? 'سجل العمليات والتدقيق الأخير' : 'Recent Enterprise Operations & Audit Feed'}</span>
             </h3>
-            <Link
+            <Link prefetch={false}
               href="/backoffice/inbox"
               className="text-xs font-bold text-amber-700 hover:underline"
             >

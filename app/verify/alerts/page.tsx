@@ -112,7 +112,7 @@ export default async function VerifyAlertsPage({ searchParams }: { searchParams:
             </li>
           </ul>
 
-          <Link href="/login" className="block w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 transition-all hover:-translate-y-0.5">
+          <Link prefetch={false} href="/login" className="block w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 transition-all hover:-translate-y-0.5">
             Return to Portal
           </Link>
         </div>

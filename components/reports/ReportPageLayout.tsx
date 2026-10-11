@@ -302,7 +302,7 @@ export function ReportHeader({
                 <React.Fragment key={idx}>
                   {idx > 0 && <span className="text-slate-400">/</span>}
                   {crumb.href ? (
-                    <Link
+                    <Link prefetch={false}
                       href={crumb.href}
                       className="hover:text-slate-800 transition-colors"
                     >

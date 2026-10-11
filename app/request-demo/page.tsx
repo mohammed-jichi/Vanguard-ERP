@@ -10,7 +10,7 @@ export default function RequestDemoPage() {
         اللوجو المركزي - مع رابط للعودة لصفحة الدخول 
       */}
             <div className="hidden lg:flex absolute top-[28%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 items-center justify-center shrink-0">
-                <Link
+                <Link prefetch={false}
                     href="/login"
                     title="Back to Login"
                     className="relative flex items-center justify-center group cursor-pointer shrink-0"

@@ -252,7 +252,7 @@ export default function ModuleNotLicensedScreen({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
               {enabledModules.map((mod) => (
-                <Link
+                <Link prefetch={false}
                   key={mod.key}
                   href={mod.route}
                   className="group flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-primary hover:shadow-md transition-all text-xs"
@@ -276,7 +276,7 @@ export default function ModuleNotLicensedScreen({
 
           {/* ACTIONS: UPGRADE & RETURN BUTTONS */}
           <div className="pt-6 border-t border-slate-200 flex flex-wrap items-center justify-center gap-3">
-            <Link
+            <Link prefetch={false}
               href="/admin"
               className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
             >
@@ -284,7 +284,7 @@ export default function ModuleNotLicensedScreen({
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
 
-            <Link
+            <Link prefetch={false}
               href="/backoffice"
               className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
             >

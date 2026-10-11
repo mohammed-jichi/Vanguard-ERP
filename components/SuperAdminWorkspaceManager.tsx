@@ -2550,7 +2550,7 @@ export default function SuperAdminWorkspaceManager() {
               <span>Refresh</span>
             </button>
 
-            <Link
+            <Link prefetch={false}
               href="/admin/activity"
               className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform hover:scale-105"
             >

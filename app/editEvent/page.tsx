@@ -252,11 +252,11 @@ Event Name: ${found.event_name}`
           <div>
             <h1 className="text-xl font-bold text-slate-800 leading-tight">Edit Events</h1>
             <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 font-normal">
-              <Link href="/backoffice/operations?section=dashboard" className="text-[#007bff] hover:underline">
+              <Link prefetch={false} href="/backoffice/operations?section=dashboard" className="text-[#007bff] hover:underline">
                 Home
               </Link>
               <span className="text-slate-400">/</span>
-              <Link href="/backoffice/operations?section=events" className="text-[#007bff] hover:underline">
+              <Link prefetch={false} href="/backoffice/operations?section=events" className="text-[#007bff] hover:underline">
                 Events
               </Link>
               <span className="text-slate-400">/</span>

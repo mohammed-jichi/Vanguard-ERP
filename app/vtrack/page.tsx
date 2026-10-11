@@ -161,7 +161,7 @@ export default function VTrackDashboardPage() {
 
               {/* Link back to Vanguard POS / Dashboard */}
               <div className="flex items-center gap-2">
-                <Link
+                <Link prefetch={false}
                   href="/backoffice"
                   className="text-xs text-blue-700 hover:text-blue-900 font-bold hover:underline flex items-center gap-1"
                 >
@@ -198,7 +198,7 @@ export default function VTrackDashboardPage() {
                 <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg border border-emerald-500/30 font-bold">
                   Enterprise Unlimited
                 </span>
-                <Link
+                <Link prefetch={false}
                   href="/backoffice/license"
                   className="px-2.5 py-1 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 rounded-lg border border-amber-500/40 font-bold transition"
                 >

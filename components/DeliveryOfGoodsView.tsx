@@ -274,7 +274,7 @@ export default function DeliveryOfGoodsView() {
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-slate-800">Delivery of Goods</h1>
             <div className="flex items-center gap-2">
-              <Link
+              <Link prefetch={false}
                 href="/backoffice/operations?section=quotations"
                 className="text-xs text-slate-600 hover:text-slate-900 border border-slate-300 rounded px-2.5 py-1 bg-white flex items-center gap-1 shadow-2xs font-medium"
               >

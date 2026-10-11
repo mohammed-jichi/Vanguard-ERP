@@ -12,7 +12,7 @@ export default function SalesManagerDashboardPage() {
       <div className="bg-white border-b border-slate-200 px-4 lg:px-8 py-3.5 shadow-2xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 max-w-[1520px] mx-auto">
           <div className="flex items-center gap-2 text-xs">
-            <Link
+            <Link prefetch={false}
               href="/backoffice/operations/dashboard"
               className="font-semibold text-slate-500 hover:text-blue-600 transition flex items-center gap-1"
             >

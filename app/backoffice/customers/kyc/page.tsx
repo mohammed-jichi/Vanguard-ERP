@@ -17,7 +17,7 @@ export default function EnterpriseKYCPage() {
         <h2 className="text-sm font-bold text-slate-800">{t('enterprise_kyc_module', 'Enterprise KYC Onboarding Module')}</h2>
         <p className="text-xs text-slate-500 mt-1">{t('upload_verify_commercial_reg', 'Upload and verify Lebanese Commercial Register & Signatory IDs')}</p>
         <div className="pt-2">
-          <Link href="/backoffice/customers?section=customers" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
+          <Link prefetch={false} href="/backoffice/customers?section=customers" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
             {t('manage_customer_kyc', 'Manage Customer KYC')}
           </Link>
         </div>

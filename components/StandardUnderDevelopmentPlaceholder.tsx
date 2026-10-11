@@ -186,7 +186,7 @@ function UnderDevelopmentPlaceholderContent({
           </button>
 
           {showHomeButton && (
-            <Link
+            <Link prefetch={false}
               href={backUrl}
               className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02] cursor-pointer"
             >

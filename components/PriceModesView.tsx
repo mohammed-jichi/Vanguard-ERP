@@ -161,7 +161,7 @@ export default function PriceModesView() {
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">{t('modes', 'Modes')}</h1>
           <nav className="flex items-center gap-2 text-xs font-medium text-slate-500 mt-1">
-            <Link href="/backoffice" className="hover:text-blue-600 transition-colors">
+            <Link prefetch={false} href="/backoffice" className="hover:text-blue-600 transition-colors">
               {t('home', 'Home')}
             </Link>
             <span>/</span>

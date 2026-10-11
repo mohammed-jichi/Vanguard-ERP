@@ -415,7 +415,7 @@ export default function ContactsView() {
         </div>
 
         <div className="flex items-center gap-3 text-zinc-300">
-          <Link href="/" title={t('home', 'Home')} className="hover:text-white p-1">
+          <Link prefetch={false} href="/" title={t('home', 'Home')} className="hover:text-white p-1">
             <Home className="w-3.5 h-3.5" />
           </Link>
           <button type="button" title={t('messages', 'Messages')} className="hover:text-white p-1">
@@ -447,7 +447,7 @@ export default function ContactsView() {
           <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('navigation_menu', 'Navigation Menu')}>
             <span className="text-base font-bold">≡</span>
           </button>
-          <Link href="/" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title={t('home', 'Home')}>
+          <Link prefetch={false} href="/" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title={t('home', 'Home')}>
             <Home className="w-4 h-4" />
           </Link>
           <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('cart_orders', 'Cart / Orders')}>
@@ -456,13 +456,13 @@ export default function ContactsView() {
           <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('forms', 'Forms')}>
             <span className="text-xs font-bold text-slate-600">📋</span>
           </button>
-          <Link href="/contacts" className="p-2 bg-blue-50 text-blue-600 rounded" title={t('contacts_crm', 'Contacts / CRM')}>
+          <Link prefetch={false} href="/contacts" className="p-2 bg-blue-50 text-blue-600 rounded" title={t('contacts_crm', 'Contacts / CRM')}>
             <User className="w-4 h-4" />
           </Link>
-          <Link href="/quotations" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('quotations_workstation', 'Quotations Workstation')}>
+          <Link prefetch={false} href="/quotations" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('quotations_workstation', 'Quotations Workstation')}>
             <span className="text-xs font-bold text-slate-600">📄</span>
           </Link>
-          <Link href="/my-sales" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('my_sales_dashboard', 'My Sales Dashboard')}>
+          <Link prefetch={false} href="/my-sales" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('my_sales_dashboard', 'My Sales Dashboard')}>
             <TrendingUp className="w-4 h-4 text-emerald-600" />
           </Link>
         </aside>
@@ -481,7 +481,7 @@ export default function ContactsView() {
           <div className="mb-4">
             <h1 className="text-xl font-bold text-primary">{t('contacts', 'Contacts')}</h1>
             <div className="text-[11px] text-slate-500 mt-0.5">
-              <Link href="/" className="text-blue-600 hover:underline">{t('home', 'Home')}</Link>
+              <Link prefetch={false} href="/" className="text-blue-600 hover:underline">{t('home', 'Home')}</Link>
               <span className="mx-1 text-slate-400">/</span>
               <span>{t('contacts', 'Contacts')}</span>
             </div>
@@ -513,7 +513,7 @@ export default function ContactsView() {
               {/* Action Buttons: My Sales + New */}
               <div className="flex items-center gap-2">
                 {/* My Sales Button (Audio 2: "تكبس My Sales بتروح على My Sales Dashboard") */}
-                <Link
+                <Link prefetch={false}
                   href="/my-sales"
                   className="bg-primary hover:bg-primary text-white text-xs font-semibold px-3.5 py-1.5 rounded flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                   title={t('go_to_sales_rep_dashboard', 'Go to Sales Rep Dashboard')}

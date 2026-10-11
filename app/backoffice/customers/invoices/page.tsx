@@ -17,7 +17,7 @@ export default function CustomerInvoicesPage() {
         <h2 className="text-sm font-bold text-slate-800">{t('ar_aging_invoices_ledger', 'AR Aging & Invoices Ledger')}</h2>
         <p className="text-xs text-slate-500 mt-1">{t('realtime_credit_invoices_tracking', 'Real-time credit invoices tracking across Lebanon')}</p>
         <div className="pt-2">
-          <Link href="/backoffice/customers?section=aged" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
+          <Link prefetch={false} href="/backoffice/customers?section=aged" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
             {t('open_aging_analysis', 'Open Aging Analysis')}
           </Link>
         </div>

@@ -248,7 +248,7 @@ export default function PosCommandModal({
           </button>
 
           {/* 6. Back Office Navigation (Ctrl+F8) */}
-          <Link
+          <Link prefetch={false}
             href="/backoffice"
             className={`${cmdCardClass} bg-[#151922] hover:bg-slate-800 border-slate-700 hover:border-slate-500`}
           >

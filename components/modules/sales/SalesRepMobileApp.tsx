@@ -368,7 +368,7 @@ export default function SalesRepMobileApp() {
             </button>
           )}
 
-          <Link
+          <Link prefetch={false}
             href="/backoffice/social-crm"
             className="px-2.5 py-1 bg-muted hover:bg-muted/80 text-foreground rounded-lg text-xs font-bold border border-border"
           >

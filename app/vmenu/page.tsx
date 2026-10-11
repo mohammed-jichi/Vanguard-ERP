@@ -433,7 +433,7 @@ function VMenuContent() {
             </div>
 
             <div className="pt-2 flex flex-col gap-2">
-              <Link
+              <Link prefetch={false}
                 href="/vtrack"
                 target="_blank"
                 className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-xs"

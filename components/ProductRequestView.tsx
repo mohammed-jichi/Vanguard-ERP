@@ -1586,7 +1586,7 @@ export default function ProductRequestView() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Link
+                <Link prefetch={false}
                   href="/backoffice/operations?section=product_req_prep"
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 rounded-md text-xs font-semibold border border-slate-300 shadow-xs transition"
                   title={t('open_full_page_workstation', 'Open full page workstation')}

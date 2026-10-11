@@ -393,7 +393,7 @@ export default function MillSettingsView() {
                     </option>
                   ))}
                 </select>
-                <Link
+                <Link prefetch={false}
                   href="/pressing-mill/seasons"
                   className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold text-[11px] whitespace-nowrap transition cursor-pointer"
                 >

@@ -978,7 +978,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-4">
         {/* Breadcrumb matching Omega */}
         <div className="text-xs text-muted-foreground mb-1">
-          <Link href="/backoffice" className="text-primary hover:underline">
+          <Link prefetch={false} href="/backoffice" className="text-primary hover:underline">
             Home
           </Link>
           <span className="mx-1">/</span>

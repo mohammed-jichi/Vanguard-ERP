@@ -874,7 +874,7 @@ export default function UnifiedCustomerManagementConsole() {
             </p>
           </div>
           <div className="pt-2">
-            <Link
+            <Link prefetch={false}
               href="/backoffice/social-crm?tab=cpl"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all"
             >

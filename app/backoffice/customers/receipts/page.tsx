@@ -17,7 +17,7 @@ export default function CustomerReceiptsPage() {
         <h2 className="text-sm font-bold text-slate-800">{t('collections_receipts_log', 'Collections & Receipts Log')}</h2>
         <p className="text-xs text-slate-500 mt-1">{t('multichannel_payments_reconciliation', 'Multi-channel customer payments and voucher reconciliation')}</p>
         <div className="pt-2">
-          <Link href="/backoffice/customers?section=receipts" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
+          <Link prefetch={false} href="/backoffice/customers?section=receipts" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
             {t('open_receipts_vouchers', 'Open Receipts & Vouchers')}
           </Link>
         </div>

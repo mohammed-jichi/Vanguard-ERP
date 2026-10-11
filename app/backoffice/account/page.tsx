@@ -460,7 +460,7 @@ export default function MyAccountPage() {
 
       {/* Breadcrumb Navigation: Home / Account */}
       <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold">
-        <Link href={`/${orgId}/dashboard`} className="hover:text-primary transition-colors">
+        <Link prefetch={false} href={`/${orgId}/dashboard`} className="hover:text-primary transition-colors">
           {t('home', 'Home')}
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
@@ -1543,7 +1543,7 @@ export default function MyAccountPage() {
                       {t('vmenu_group', 'V-Menu (Digital Ordering & QR)')}
                     </span>
                   </label>
-                  <Link
+                  <Link prefetch={false}
                     href="/vmenu"
                     target="_blank"
                     className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline px-2 py-0.5 rounded-md bg-white border border-slate-200 shadow-2xs"
@@ -1620,7 +1620,7 @@ export default function MyAccountPage() {
                       {t('vtrack_group', 'V-Track')}
                     </span>
                   </label>
-                  <Link
+                  <Link prefetch={false}
                     href="/vtrack"
                     target="_blank"
                     className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 hover:text-emerald-800 hover:underline px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 shadow-2xs"

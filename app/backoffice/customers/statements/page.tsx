@@ -17,7 +17,7 @@ export default function CustomerStatementsPage() {
         <h2 className="text-sm font-bold text-slate-800">{t('customer_soa_engine', 'Customer SOA Engine')}</h2>
         <p className="text-xs text-slate-500 mt-1">{t('export_a4_soa_debits_credits', 'Export A4 statement of accounts with invoice debits and payment credits')}</p>
         <div className="pt-2">
-          <Link href="/backoffice/customers?section=customers" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
+          <Link prefetch={false} href="/backoffice/customers?section=customers" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
             {t('open_customer_soa_tool', 'Open Customer SOA Tool')}
           </Link>
         </div>

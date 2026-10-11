@@ -412,7 +412,7 @@ export default function RolesSettingsPage() {
       <div>
         <h1 className="text-2xl font-black text-slate-900 tracking-tight">Roles & Permissions</h1>
         <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1">
-          <Link href={`/backoffice?orgId=${orgId}`} className="hover:text-primary transition-colors">
+          <Link prefetch={false} href={`/backoffice?orgId=${orgId}`} className="hover:text-primary transition-colors">
             Home
           </Link>
           <span>/</span>

@@ -378,7 +378,7 @@ export default function WeighbridgeIntakeView() {
               </p>
             </div>
           </div>
-          <Link
+          <Link prefetch={false}
             href="/pressing-mill/seasons"
             className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950 underline shrink-0"
           >

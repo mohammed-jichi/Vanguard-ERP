@@ -2210,7 +2210,7 @@ export default function CommercialOilOperationsApp() {
             </button>
 
             {/* Exit */}
-            <Link
+            <Link prefetch={false}
               href="/backoffice"
               className="px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-slate-200 flex items-center gap-1"
             >

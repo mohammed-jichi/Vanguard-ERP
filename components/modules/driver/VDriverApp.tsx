@@ -938,7 +938,7 @@ export default function VDriverApp() {
             </button>
           )}
 
-          <Link
+          <Link prefetch={false}
             href="/backoffice/fleet"
             className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold border border-slate-700"
           >

@@ -41,7 +41,7 @@ export default function PressingMillNavigationTabs() {
         const Icon = tab.icon;
 
         return (
-          <Link
+          <Link prefetch={false}
             key={tab.id}
             href={tab.path}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-medium transition-all whitespace-nowrap ${

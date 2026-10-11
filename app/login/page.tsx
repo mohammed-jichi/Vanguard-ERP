@@ -449,23 +449,23 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <Link href="/solutions" target="_blank" className="block text-xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors drop-shadow-md">
+              <Link prefetch={false} href="/solutions" target="_blank" className="block text-xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors drop-shadow-md">
                 Business Solutions
               </Link>
-              <Link href="/sectors" target="_blank" className="block text-[#d4b055] font-semibold tracking-widest uppercase text-sm hover:text-white transition-colors">
+              <Link prefetch={false} href="/sectors" target="_blank" className="block text-[#d4b055] font-semibold tracking-widest uppercase text-sm hover:text-white transition-colors">
                 Restaurants • Hotels • Retail
               </Link>
             </div>
           </div>
 
           <div className="pt-6 border-t border-[#123b70]/50">
-            <Link href="/platforms" target="_blank" className="block text-xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors mb-6 drop-shadow-md">
+            <Link prefetch={false} href="/platforms" target="_blank" className="block text-xl font-bold text-slate-100 hover:text-[#d4b055] transition-colors mb-6 drop-shadow-md">
               Enterprise Platforms
             </Link>
 
             <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-left">
               {platforms.map((item) => (
-                <Link
+                <Link prefetch={false}
                   key={item.name}
                   href={item.path}
                   target="_blank"
@@ -674,7 +674,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Password</label>
-                <Link href="/forgot-password" target="_blank" className="text-sm font-bold text-[#ab8320] hover:text-[#d4b055] transition-colors">Forgot password?</Link>
+                <Link prefetch={false} href="/forgot-password" target="_blank" className="text-sm font-bold text-[#ab8320] hover:text-[#d4b055] transition-colors">Forgot password?</Link>
               </div>
               <div className="relative">
                 <input
@@ -941,7 +941,7 @@ export default function LoginPage() {
                   </button>
 
                   <div className="pt-2 text-center">
-                    <Link
+                    <Link prefetch={false}
                       href="/request-demo"
                       className="text-[11px] text-slate-400 hover:text-slate-600 font-medium underline transition-colors"
                     >

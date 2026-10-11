@@ -744,7 +744,7 @@ export default function PurchasesView() {
             <div>
               <h1 className="text-xl font-bold text-slate-800">{t('purchases', 'Purchases')}</h1>
               <div className="text-xs text-blue-600 flex items-center gap-1 mt-0.5 font-medium">
-                <Link href="/" className="hover:underline">{t('home', 'Home')}</Link>
+                <Link prefetch={false} href="/" className="hover:underline">{t('home', 'Home')}</Link>
                 <span>/</span>
                 <span className="text-slate-600">{t('purchases', 'Purchases')}</span>
               </div>

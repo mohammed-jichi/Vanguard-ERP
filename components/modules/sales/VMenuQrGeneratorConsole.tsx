@@ -141,7 +141,7 @@ export default function VMenuQrGeneratorConsole() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link
+          <Link prefetch={false}
             href="/vmenu"
             target="_blank"
             className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl flex items-center gap-1.5 border border-slate-700 transition"
@@ -149,7 +149,7 @@ export default function VMenuQrGeneratorConsole() {
             <span>Preview Public V-Menu</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
-          <Link
+          <Link prefetch={false}
             href="/vtrack"
             target="_blank"
             className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition"
@@ -308,7 +308,7 @@ export default function VMenuQrGeneratorConsole() {
                 <Copy className="w-3.5 h-3.5" />
                 <span>Copy Link</span>
               </button>
-              <Link
+              <Link prefetch={false}
                 href={tableVMenuUrl}
                 target="_blank"
                 className="flex-1 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-xs"
@@ -485,7 +485,7 @@ export default function VMenuQrGeneratorConsole() {
                   <Copy className="w-3.5 h-3.5" />
                   <span>Copy Rep Link</span>
                 </button>
-                <Link
+                <Link prefetch={false}
                   href={repVMenuUrl}
                   target="_blank"
                   className="flex-1 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-xs"
@@ -703,7 +703,7 @@ export default function VMenuQrGeneratorConsole() {
                   V-Menu Recent Orders & Fleet Queue
                 </h3>
               </div>
-              <Link
+              <Link prefetch={false}
                 href="/vtrack"
                 target="_blank"
                 className="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1"

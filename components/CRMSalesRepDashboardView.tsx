@@ -148,7 +148,7 @@ export default function CRMSalesRepDashboardView() {
         </div>
 
         <div className="flex items-center gap-3 text-zinc-300">
-          <Link href="/" title="Home" className="hover:text-white p-1">
+          <Link prefetch={false} href="/" title="Home" className="hover:text-white p-1">
             <Home className="w-3.5 h-3.5" />
           </Link>
           <button type="button" title="Messages" className="hover:text-white p-1">
@@ -180,7 +180,7 @@ export default function CRMSalesRepDashboardView() {
           <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Navigation Menu">
             <span className="text-base font-bold">≡</span>
           </button>
-          <Link href="/" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title="Home">
+          <Link prefetch={false} href="/" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title="Home">
             <Home className="w-4 h-4" />
           </Link>
           <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Cart / Orders">
@@ -189,13 +189,13 @@ export default function CRMSalesRepDashboardView() {
           <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Forms">
             <span className="text-xs font-bold text-slate-600">📋</span>
           </button>
-          <Link href="/contacts" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title="Contacts / CRM">
+          <Link prefetch={false} href="/contacts" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title="Contacts / CRM">
             <User className="w-4 h-4" />
           </Link>
-          <Link href="/quotations" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Quotations Workstation">
+          <Link prefetch={false} href="/quotations" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title="Quotations Workstation">
             <span className="text-xs font-bold text-slate-600">📄</span>
           </Link>
-          <Link href="/my-sales" className="p-2 bg-blue-50 text-blue-600 rounded" title="My Sales Dashboard">
+          <Link prefetch={false} href="/my-sales" className="p-2 bg-blue-50 text-blue-600 rounded" title="My Sales Dashboard">
             <TrendingUp className="w-4 h-4 text-blue-600" />
           </Link>
         </aside>
@@ -204,7 +204,7 @@ export default function CRMSalesRepDashboardView() {
         <main className="flex-1 p-5 overflow-y-auto max-w-7xl mx-auto w-full">
           {/* Back button link to Contacts */}
           <div className="mb-3">
-            <Link
+            <Link prefetch={false}
               href="/contacts"
               className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600 transition-colors"
             >

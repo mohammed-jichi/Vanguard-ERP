@@ -389,7 +389,7 @@ export default function AlertsAndNotificationsConsole() {
 
       {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold">
-        <Link href={`/${orgId}/dashboard`} className="hover:text-primary transition-colors">
+        <Link prefetch={false} href={`/${orgId}/dashboard`} className="hover:text-primary transition-colors">
           {t('workspace', 'Workspace')}
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400" />

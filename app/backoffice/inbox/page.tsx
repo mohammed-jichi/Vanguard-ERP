@@ -259,7 +259,7 @@ function OperationalInboxContent() {
           <span className="text-xs font-mono text-muted-foreground bg-muted px-2.5 py-0.5 rounded-full border border-border">
             Pending Approvals: <strong className="text-amber-700">{messages.filter(m => m.category === 'APPROVAL' && m.status === 'PENDING').length}</strong>
           </span>
-          <Link
+          <Link prefetch={false}
             href="/backoffice"
             className="px-2.5 py-0.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-bold rounded-lg border border-border transition-colors"
           >
@@ -526,7 +526,7 @@ function OperationalInboxContent() {
                   )}
 
                   {activeMessage.linked_voucher_id && (
-                    <Link
+                    <Link prefetch={false}
                       href="/backoffice/accounting?tab=module1"
                       className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground font-semibold rounded-lg text-xs border border-border"
                     >
@@ -535,7 +535,7 @@ function OperationalInboxContent() {
                   )}
 
                   {activeMessage.linked_expense_id && (
-                    <Link
+                    <Link prefetch={false}
                       href="/backoffice/accounting?tab=module2"
                       className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground font-semibold rounded-lg text-xs border border-border"
                     >
@@ -544,7 +544,7 @@ function OperationalInboxContent() {
                   )}
 
                   {activeMessage.category === 'REPORT' && (
-                    <Link
+                    <Link prefetch={false}
                       href="/backoffice/reportview"
                       className="px-3 py-1.5 bg-primary text-primary-foreground font-bold rounded-lg text-xs"
                     >

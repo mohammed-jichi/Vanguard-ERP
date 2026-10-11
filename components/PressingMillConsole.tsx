@@ -70,7 +70,7 @@ export default function PressingMillPage() {
             {t('pressing_mill_desc', 'Industrial Weighbridge, Cold Extraction Lines & Stainless Tank Farm')}
           </span>
         </div>
-        <Link
+        <Link prefetch={false}
           href="/pressing-mill/dashboard"
           className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-semibold transition shadow-xs"
         >

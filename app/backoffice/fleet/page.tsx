@@ -433,7 +433,7 @@ function SuperSonicFleetPageContent() {
           <span className="px-3 py-1 bg-muted text-primary font-bold rounded-lg border border-border/30">
             00001 - Southern Olive Oil Products S.A.R.L
           </span>
-          <Link href="/backoffice" className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300">
+          <Link prefetch={false} href="/backoffice" className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300">
             🔄 Return to Main Hub
           </Link>
         </div>
@@ -457,7 +457,7 @@ function SuperSonicFleetPageContent() {
         ].map((tab) => {
           const isActive = activeTab === tab.id;
           return (
-            <Link
+            <Link prefetch={false}
               key={tab.id}
               href={`/backoffice/fleet?tab=${tab.id}`}
               className={`px-3 py-2 rounded-xl whitespace-nowrap transition-all border ${

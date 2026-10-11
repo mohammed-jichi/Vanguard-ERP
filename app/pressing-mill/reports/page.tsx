@@ -77,7 +77,7 @@ export default function PressingMillReportsPage() {
 
         {/* Back Link */}
         <div className="flex items-center gap-2">
-          <Link
+          <Link prefetch={false}
             href="/pressing-mill/dashboard"
             className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
           >

@@ -382,11 +382,11 @@ export default function EmployeeSchedulesPage() {
             <span>Employee Schedule Manager</span>
           </h1>
           <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1">
-            <Link href="/backoffice" className="hover:text-primary transition-colors">
+            <Link prefetch={false} href="/backoffice" className="hover:text-primary transition-colors">
               Home
             </Link>
             <span>/</span>
-            <Link href="/accounting" className="hover:text-primary transition-colors">
+            <Link prefetch={false} href="/accounting" className="hover:text-primary transition-colors">
               Accounting & Payroll
             </Link>
             <span>/</span>

@@ -17,7 +17,7 @@ export default function CustomersDirectoryPage() {
         <h2 className="text-sm font-bold text-slate-800">{t('master_directory_active', 'Master Directory Active')}</h2>
         <p className="text-xs text-slate-500 mt-1">{t('unified_accounts_lebanon', '104,850 unified accounts across Lebanon')}</p>
         <div className="pt-2">
-          <Link href="/backoffice/customers?section=customers" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
+          <Link prefetch={false} href="/backoffice/customers?section=customers" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
             {t('open_customer_console', 'Open Customer Console')}
           </Link>
         </div>

@@ -934,7 +934,7 @@ function OperationsDashboardContent() {
           <div className="inventory-dashboard-title-row">
             <h1 className="page-title">{t('operation_overview', 'Operation Overview')}</h1>
             <div className="flex items-center gap-1.5 lg:hidden">
-              <Link
+              <Link prefetch={false}
                 href="/dashboard/sales"
                 target="_blank"
                 className="w-8 h-8 rounded bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center text-xs"
@@ -1127,7 +1127,7 @@ function OperationsDashboardContent() {
             </button>
 
             {/* Inventory Report Button */}
-            <Link
+            <Link prefetch={false}
               href="/backoffice/operations?section=reports"
               className="btn inventory-action-icon-btn"
               title={t('inventory_reports', 'Inventory Reports')}
@@ -1136,7 +1136,7 @@ function OperationsDashboardContent() {
             </Link>
 
             {/* Sales Report Button */}
-            <Link
+            <Link prefetch={false}
               href="/backoffice/reportview"
               className="btn inventory-action-icon-btn"
               title={t('sales_reports', 'Sales Reports')}
@@ -1145,7 +1145,7 @@ function OperationsDashboardContent() {
             </Link>
 
             {/* POS Touch Terminal Button */}
-            <Link
+            <Link prefetch={false}
               href="/pos"
               target="_blank"
               className="btn inventory-action-icon-btn bg-emerald-700 hover:bg-emerald-800"

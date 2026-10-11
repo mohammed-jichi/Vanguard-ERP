@@ -664,7 +664,7 @@ export default function ScreensView() {
                 Screens
               </h1>
               <nav className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 font-medium">
-                <Link href="/backoffice" className="text-blue-600 hover:underline">
+                <Link prefetch={false} href="/backoffice" className="text-blue-600 hover:underline">
                   Home
                 </Link>
                 <span>/</span>
@@ -907,7 +907,7 @@ export default function ScreensView() {
                 Screen Setup Designer
               </h1>
               <nav className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 font-medium">
-                <Link href="/backoffice" className="text-blue-600 hover:underline">
+                <Link prefetch={false} href="/backoffice" className="text-blue-600 hover:underline">
                   Home
                 </Link>
                 <span>/</span>

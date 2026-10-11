@@ -809,7 +809,7 @@ export default function POSTouchTerminalPage() {
               <span>{isSyncing ? 'Synchronizing...' : 'Synchronize Data'}</span>
             </button>
 
-            <Link
+            <Link prefetch={false}
               href="/backoffice"
               className="px-3 py-1.5 rounded-lg bg-[#1a1f2c] hover:bg-slate-800 text-slate-300 font-bold border border-slate-700"
             >

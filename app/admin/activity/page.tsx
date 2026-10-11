@@ -155,7 +155,7 @@ function ActivityConsoleContent() {
           </div>
           <div>
             <div className="flex items-center gap-2 text-xs font-bold text-slate-500 mb-1">
-              <Link href="/admin" className="hover:text-amber-600 transition-colors flex items-center gap-1">
+              <Link prefetch={false} href="/admin" className="hover:text-amber-600 transition-colors flex items-center gap-1">
                 <span>Master Admin Console (/admin)</span>
               </Link>
               <span>/</span>
@@ -180,7 +180,7 @@ function ActivityConsoleContent() {
             <span>Refresh</span>
           </button>
 
-          <Link
+          <Link prefetch={false}
             href="/admin"
             className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition-transform hover:scale-105"
           >

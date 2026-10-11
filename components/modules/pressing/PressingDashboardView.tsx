@@ -63,14 +63,14 @@ export default function PressingDashboardView() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link
+          <Link prefetch={false}
             href="/pressing-mill/seasons"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold rounded transition"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span>{t('season_lifecycle', 'Season Lifecycle')}</span>
           </Link>
-          <Link
+          <Link prefetch={false}
             href="/pressing-mill/intake"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold rounded shadow-xs transition"
           >
@@ -148,7 +148,7 @@ export default function PressingDashboardView() {
             <Layers className="w-4 h-4 text-emerald-600" />
             <h2 className="text-sm font-bold text-slate-900">{t('dynamic_lines_telemetry', 'Dynamic Continuous Pressing Lines Telemetry')}</h2>
           </div>
-          <Link
+          <Link prefetch={false}
             href="/pressing-mill/batches"
             className="text-xs text-sky-700 hover:text-sky-900 font-semibold flex items-center gap-1"
           >
@@ -220,7 +220,7 @@ export default function PressingDashboardView() {
             <h2 className="text-sm font-bold text-slate-900">{t('recent_weighbridge_tickets', 'Recent Weighbridge Scale Tickets')}</h2>
           </div>
           <div className="flex items-center gap-2">
-            <Link
+            <Link prefetch={false}
               href="/pressing-mill/intake"
               className="flex items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded shadow-xs"
             >

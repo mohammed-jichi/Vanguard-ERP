@@ -310,7 +310,7 @@ export default function PressingBatchesView() {
               </p>
             </div>
           </div>
-          <Link
+          <Link prefetch={false}
             href="/pressing-mill/seasons"
             className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950 underline shrink-0"
           >
@@ -330,7 +330,7 @@ export default function PressingBatchesView() {
           </span>
         }
         headerActions={
-          <Link
+          <Link prefetch={false}
             href="/pressing-mill/setup"
             className="h-8 px-3 text-xs font-medium rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 transition inline-flex items-center gap-1.5 cursor-pointer"
           >

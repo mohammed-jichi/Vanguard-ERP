@@ -150,11 +150,11 @@ export default function EndOfDayPage() {
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t('End of Day', 'End of Day')}</h1>
             <ul className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
               <li>
-                <Link href="/backoffice" className="hover:text-blue-600 transition">{t('Home', 'Home')}</Link>
+                <Link prefetch={false} href="/backoffice" className="hover:text-blue-600 transition">{t('Home', 'Home')}</Link>
               </li>
               <li>/</li>
               <li>
-                <Link href="/dashboard/sales" className="hover:text-blue-600 transition">{t('Sales', 'Sales')}</Link>
+                <Link prefetch={false} href="/dashboard/sales" className="hover:text-blue-600 transition">{t('Sales', 'Sales')}</Link>
               </li>
               <li>/</li>
               <li className="text-slate-800 font-semibold">{t('End of Day', 'End of Day')}</li>
@@ -172,7 +172,7 @@ export default function EndOfDayPage() {
               <span>{t('Branches Status Matrix', 'Branches Status Matrix')}</span>
             </button>
 
-            <Link
+            <Link prefetch={false}
               href="/dashboard/sales"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm transition"
             >

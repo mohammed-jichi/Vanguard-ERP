@@ -17,7 +17,7 @@ export default function ARInvoicesPage() {
         <h2 className="text-sm font-bold text-slate-800">{t('ar_invoicing_ledger', 'AR Invoicing Ledger')}</h2>
         <p className="text-xs text-slate-500 mt-1">{t('realtime_ar_tracking_reports', 'Real-time accounts receivable tracking and aging reports')}</p>
         <div className="pt-2">
-          <Link href="/backoffice/customers?section=aged" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
+          <Link prefetch={false} href="/backoffice/customers?section=aged" className="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-lg shadow-xs inline-block">
             {t('view_aged_debtors', 'View Aged Debtors')}
           </Link>
         </div>

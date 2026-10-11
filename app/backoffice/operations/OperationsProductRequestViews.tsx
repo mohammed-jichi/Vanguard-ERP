@@ -791,7 +791,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
                             </button>
                           )}
                           {pr.status === 'APPROVED' && (
-                            <Link
+                            <Link prefetch={false}
                               href="/backoffice/operations?section=product_req_prep"
                               title="Product Req. Preparation Workstation"
                               className="p-1.5 rounded-lg bg-teal-900/30 hover:bg-teal-800/50 text-teal-400 border border-teal-500/30 transition"

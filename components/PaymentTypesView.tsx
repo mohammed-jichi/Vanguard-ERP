@@ -455,7 +455,7 @@ export default function PaymentTypesView() {
               </h1>
               <ul className="breadcrumb flex items-center gap-2 text-xs text-slate-500 mt-1">
                 <li>
-                  <Link href="/backoffice" className="text-blue-600 hover:underline">
+                  <Link prefetch={false} href="/backoffice" className="text-blue-600 hover:underline">
                     {t('home', 'Home')}
                   </Link>
                 </li>
