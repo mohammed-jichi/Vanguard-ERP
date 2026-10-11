@@ -10,8 +10,8 @@ export const metadata: Metadata = {
     title: 'Vanguard POS',
   },
   icons: {
-    icon: '/vanguard-emblem.jpg',
-    apple: '/vanguard-emblem.jpg',
+    icon: '/vanguard.jpg',
+    apple: '/vanguard.jpg',
   },
 };
 

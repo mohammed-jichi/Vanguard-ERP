@@ -11,8 +11,7 @@ const STATIC_ASSETS = [
   '/supersonic/driver',
   '/manifest-driver.json',
   '/manifest-sales.json',
-  '/vanguard-emblem.jpg',
-  '/vanguard-logo.jpg'
+  '/vanguard.jpg'
 ];
 
 self.addEventListener('install', (event) => {

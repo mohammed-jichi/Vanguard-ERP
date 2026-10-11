@@ -263,6 +263,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - Static asset extensions (.svg, .png, .jpg, .jpeg, .gif, .webp, .ico, .css, .js, .map, .json, etc.)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|json|woff|woff2|ttf|eot)).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|json|woff|woff2|ttf|eot)$).*)',
   ],
 };

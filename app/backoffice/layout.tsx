@@ -406,16 +406,8 @@ function MasterBackofficeLayoutContent({ children }: { children: React.ReactNode
           <Link prefetch={false} href="/backoffice" className="flex items-center gap-3 group cursor-pointer">
             <div className="w-[52px] h-[52px] rounded-full overflow-hidden border-2 border-primary shadow-md bg-black shrink-0 group-hover:scale-105 transition-all duration-300">
               <img
-                src="/vanguard-logo.jpg"
+                src="/vanguard.jpg"
                 alt="Vanguard ERP Circular Emblem"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.src.includes('Vanguard (Login Page and Header).jpg')) {
-                    target.src = '/Vanguard (Login Page and Header).jpg';
-                  } else if (!target.src.includes('vanguard-emblem.jpg')) {
-                    target.src = '/vanguard-emblem.jpg';
-                  }
-                }}
                 className="w-full h-full object-cover scale-105"
               />
             </div>
