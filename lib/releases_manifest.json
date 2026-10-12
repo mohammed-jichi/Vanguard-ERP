@@ -1,5 +1,26 @@
 [
   {
+    "id": "d2c94e61-cda3-478f-a097-aa8edfba4e2f",
+    "commit_hash": "d2c94e61cda3478f1097aa8edfba4e2f13e8d6c6",
+    "short_hash": "d2c94e6",
+    "version": "v2.0.0",
+    "title": "Add playwright config and update ignore list",
+    "category": "maintenance",
+    "description": "chore: add playwright config and update ignore list",
+    "bullet_points": [
+      "Applied improvements to Accounting & Finance",
+      "Maintained backward compatibility with existing enterprise workflows"
+    ],
+    "affected_modules": [
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-12T13:18:10.000Z",
+    "created_at": "2026-10-12T14:04:48.779Z"
+  },
+  {
     "id": "4973e1b1-3d40-4873-a605-3d5ce709ca7a",
     "commit_hash": "4973e1b13d402873a6053d5ce709ca7aac7f310c",
     "short_hash": "4973e1b",

@@ -301,6 +301,8 @@ export interface ProductRequestRecord {
   approvedDate: string;
   deliveryDate: string;
   remark: string;
+  createdAt?: string;
+  createdBy?: string;
 }
 
 export interface ManageProductRequestRecord {
@@ -319,6 +321,8 @@ export interface ManageProductRequestRecord {
   location: string;
   deliveryDate: string;
   remark: string;
+  createdAt?: string;
+  createdBy?: string;
 }
 
 export interface ProductReqPrepRecord {
@@ -346,7 +350,10 @@ export interface ReceivingGoodsRecord {
   itemsSummary: string;
   confirmed: boolean;
   receivedBy: string;
+  receivedAt?: string;
   remark: string;
+  createdAt?: string;
+  createdBy?: string;
 }
 
 export interface RejectReasonRecord {

@@ -44,6 +44,10 @@ export interface ProductRequestHeader {
   ITEMS_COUNT: number;
   TOTAL_QTY: number;
   items: ProductRequestLineItem[];
+  createdAt?: string;
+  createdBy?: string;
+  receivedAt?: string;
+  receivedBy?: string;
 }
 
 export interface RejectReasonRecord {

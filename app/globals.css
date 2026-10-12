@@ -117,6 +117,46 @@
     display: none !important;
   }
 
+  /* 1. Hide the entire application body and background */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* 2. Make the printable invoice container and its children visible */
+  #vanguard-printable-invoice,
+  #vanguard-printable-invoice *,
+  .vanguard-printable,
+  .vanguard-printable * {
+    visibility: visible !important;
+  }
+
+  /* 3. Extract the invoice from the fixed modal positioning so it flows naturally onto paper */
+  #vanguard-printable-invoice,
+  .vanguard-printable {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    z-index: 9999999 !important;
+  }
+
+  /* 4. Completely suppress black backdrops, modal footers, and action buttons */
+  header,
+  nav,
+  aside,
+  button,
+  .no-print,
+  [data-radix-portal] > div:first-child,
+  .fixed.inset-0.bg-black\/50,
+  [role="dialog"] > div:last-child {
+    display: none !important;
+  }
+
   /* ========================================================================== */
   /* DEDICATED PRINT MOUNT PORTAL & ISOLATED VOUCHER PRINTING                   */
   /* ========================================================================== */

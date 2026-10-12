@@ -16,6 +16,7 @@ export interface CustomerRecord {
 }
 
 export const CANONICAL_CUSTOMERS: CustomerRecord[] = [
+  { id: 'Walk-in Cash Customer', name: 'Walk-in Cash Customer', group: 'RETAIL' },
   { id: 'CUST-001', name: 'Beirut Gourmet Market', group: 'RETAIL' },
   { id: 'CUST-002', name: 'Cedar Valley Wholesalers', group: 'WHOLESALE' },
   { id: 'CUST-003', name: 'Mount Lebanon Olive Traders', group: 'WHOLESALE' },

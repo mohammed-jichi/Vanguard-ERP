@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-12T13:04:57.778Z",
+  "last_updated": "2026-10-12T14:04:48.785Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,22 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-d2c94e6",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (d2c94e6) - Add playwright config and update ignore list",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "d2c94e61cda3478f1097aa8edfba4e2f13e8d6c6",
+        "version": "v2.0.0",
+        "category": "maintenance",
+        "modules": [
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-12T13:18:10.000Z"
+    },
     {
       "id": "act-rel-4973e1b",
       "company_id": 1300,
@@ -6891,6 +6907,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-d2c94e6",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Add playwright config and update ignore list",
+      "message": "chore: add playwright config and update ignore list",
+      "timestamp": "2026-10-12T13:18:10.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "d2c94e61cda3478f1097aa8edfba4e2f13e8d6c6",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-4973e1b",
       "type": "SYSTEM_RELEASE",

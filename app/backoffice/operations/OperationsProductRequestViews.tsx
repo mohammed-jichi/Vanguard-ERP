@@ -57,6 +57,7 @@ import {
   RejectReasonRecord,
   INITIAL_PRODUCTS
 } from './operationsData';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 interface OperationsProductRequestViewsProps {
   section:
@@ -139,14 +140,26 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
     }, 350);
   };
 
+  const profile = useActiveUser();
+
+  const getTodayFormatted = () => {
+    const d = new Date();
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-');
+  };
+
+  const getFutureFormatted = (days: number) => {
+    const d = new Date(Date.now() + 86400000 * days);
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-');
+  };
+
   // Forms
   const [newPRForm, setNewPRForm] = useState({
     prNo: `PR-2026-${Math.floor(700 + Math.random() * 200)}`,
-    date: new Date().toISOString().split('T')[0],
-    deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+    date: getTodayFormatted(),
+    deliveryDate: getFutureFormatted(2),
     requestedByBranch: 'Choueifat POS Store Front & Showroom',
     destinationBranch: 'Beirut Central Distribution Depot',
-    requestedBy: 'Fadi Haddad (Store Mgr)',
+    requestedBy: profile?.name || 'Fadi Haddad (Store Mgr)',
     location: 'Choueifat POS Store Front & Showroom',
     itemCode: 'EVOO-B-750ML',
     description: 'Extra Virgin Olive Oil (Cold Pressed) 750ml Dark Glass Bottle',
@@ -227,7 +240,9 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
       status: 'PENDING',
       approvedBy: 'Pending Review',
       approvedDate: '-',
-      remark: newPRForm.remark
+      remark: newPRForm.remark,
+      createdAt: new Date().toISOString(),
+      createdBy: profile?.name || 'Vanguard Operator'
     };
 
     setProductRequests([newRecord, ...productRequests]);
@@ -247,7 +262,9 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
       status: 'PENDING_REVIEW',
       location: newRecord.destinationBranch,
       deliveryDate: newRecord.deliveryDate,
-      remark: newRecord.remark
+      remark: newRecord.remark,
+      createdAt: new Date().toISOString(),
+      createdBy: profile?.name || 'Vanguard Operator'
     };
     setManageRequests([newMPR, ...manageRequests]);
 
@@ -386,7 +403,8 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
           ? {
               ...r,
               confirmed: true,
-              receivedBy: 'Fadi Haddad (Store Mgr)',
+              receivedBy: profile?.name || 'Fadi Haddad (Store Mgr)',
+              receivedAt: new Date().toISOString(),
               remark: confirmReceiveForm.receiverNotes
             }
           : r

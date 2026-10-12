@@ -158,7 +158,9 @@ export class ProductRequestService {
       CONVERTED: 0,
       ITEMS_COUNT: items.length,
       TOTAL_QTY: totalQty,
-      items
+      items,
+      createdAt: new Date().toISOString(),
+      createdBy: (payload as any).REQUESTEDBY || 'Vanguard Operator'
     };
 
     productRequests.unshift(newPr);
@@ -633,6 +635,8 @@ export class ProductRequestService {
 
     pr.STATUS = 'Confirmed';
     pr.CONVERTED = -1;
+    pr.receivedAt = new Date().toISOString();
+    pr.receivedBy = 'Vanguard Operator';
     pr.items.forEach(it => {
       if (!it.QTYREC && it.QTYAPP) {
         it.QTYREC = it.QTYAPP;

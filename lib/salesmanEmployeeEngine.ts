@@ -19,7 +19,9 @@ export interface SalesmanEmployee {
   branchId?: number;
 }
 
-export const CANONICAL_SALESMEN_EMPLOYEES: SalesmanEmployee[] = [];
+export const CANONICAL_SALESMEN_EMPLOYEES: SalesmanEmployee[] = [
+  { id: 'Direct Counter', name: 'Direct Counter', code: 'REP_DIRECT', role: 'Sales / Cashier' }
+];
 
 /**
  * Returns options for Employee / Cashier filter dropdowns.
