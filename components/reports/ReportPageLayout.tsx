@@ -444,19 +444,7 @@ export function ExportButtons({
         <ZoomOut className="w-3.5 h-3.5" />
       </button>
 
-      {/* Orientation Toggle Button */}
-      <button
-        type="button"
-        onClick={() => {
-          const next = orientation === 'landscape' ? 'portrait' : 'landscape';
-          onOrientationChange?.(next);
-        }}
-        className="h-8 px-3 text-xs font-medium rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 transition inline-flex items-center gap-1.5 cursor-pointer"
-        title={t('toggle_orientation', `Orientation: ${orientation === 'landscape' ? 'Landscape' : 'Portrait'}`)}
-      >
-        <RotateCcw className="w-3.5 h-3.5" />
-        <span className="capitalize">{orientation === 'landscape' ? t('landscape', 'Landscape') : t('portrait', 'Portrait')}</span>
-      </button>
+
 
       {/* Print Button */}
       <button
@@ -1141,7 +1129,22 @@ export default function ReportPageLayout({
             {/* Filter Box */}
             {activeReport && (
               filters ? (
-                filters
+                React.isValidElement(filters)
+                  ? React.cloneElement(filters as React.ReactElement<any>, {
+                      onApplyFilters: (vals: Record<string, any>) => {
+                        handleApplyFilters(vals);
+                        if ((filters as React.ReactElement<any>).props.onApplyFilters) {
+                          (filters as React.ReactElement<any>).props.onApplyFilters(vals);
+                        }
+                      },
+                      onResetFilters: () => {
+                        handleResetFilters();
+                        if ((filters as React.ReactElement<any>).props.onResetFilters) {
+                          (filters as React.ReactElement<any>).props.onResetFilters();
+                        }
+                      }
+                    })
+                  : filters
               ) : (
                 <DynamicReportFilterRenderer
                   key={activeReport}

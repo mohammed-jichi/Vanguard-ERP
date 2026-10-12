@@ -307,7 +307,7 @@ function AccountingReportsContent() {
             if (newVals.searchQuery !== undefined) setSearchQuery(newVals.searchQuery);
             setAccFilterValues(newVals);
           }}
-          onApplyFilters={(vals) => alert(`Filters applied for: ${activeMeta.name}`)}
+          onApplyFilters={() => {}}
           onResetFilters={() => {
             setSearchQuery('');
             setPeriod('This Quarter');

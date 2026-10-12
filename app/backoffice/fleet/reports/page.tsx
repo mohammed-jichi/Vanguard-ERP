@@ -545,7 +545,7 @@ export default function SupersonicFleetReportsPage() {
             if (newVals.searchQuery !== undefined) setSearchQuery(newVals.searchQuery);
             setFleetFilterValues(newVals);
           }}
-          onApplyFilters={(vals) => alert(`Filters applied for: ${activeReportObj.label}`)}
+          onApplyFilters={() => {}}
           onResetFilters={() => {
             const defRange = getDefaultInitialDateRange('This Month');
             setSearchQuery('');

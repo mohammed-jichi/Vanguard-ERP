@@ -318,7 +318,7 @@ export default function SocialCrmReportsHub() {
             if (newVals.searchQuery !== undefined) setSearchQuery(newVals.searchQuery);
             setSocialFilterValues(newVals);
           }}
-          onApplyFilters={(vals) => alert(`Filters applied for: ${activeReportObj.label}`)}
+          onApplyFilters={() => {}}
           onResetFilters={() => {
             const defRange = getDefaultInitialDateRange('This Month');
             setSearchQuery('');

@@ -262,7 +262,7 @@ function LoyaltyManagementContent() {
             if (newVals.searchQuery !== undefined) setSearchQuery(newVals.searchQuery);
             setLoyaltyFilterValues(newVals);
           }}
-          onApplyFilters={(vals) => alert(`Filters applied for: ${activeMeta.name}`)}
+          onApplyFilters={() => {}}
           onResetFilters={() => {
             setSearchQuery('');
             setTierFilter('ALL');

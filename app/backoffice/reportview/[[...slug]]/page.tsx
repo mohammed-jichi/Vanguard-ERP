@@ -365,7 +365,7 @@ export default function MasterReportViewPage() {
             if (newVals.searchQuery !== undefined) setSearchQuery(newVals.searchQuery);
             setSalesFilterValues(newVals);
           }}
-          onApplyFilters={(vals) => alert(`Filters applied for: ${activeMeta.name}`)}
+          onApplyFilters={() => {}}
           onResetFilters={() => {
             const defRange = getDefaultReportDateRange('Custom');
             setSearchQuery('');

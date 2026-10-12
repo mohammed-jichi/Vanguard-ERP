@@ -1405,7 +1405,7 @@ export default function AuthenticVanguardInventoryReports() {
             setOpsFilterValues(newVals);
             setCurrentPage(1);
           }}
-          onApplyFilters={(vals) => alert(`Filters applied for: ${selectedReportName}`)}
+          onApplyFilters={() => {}}
           onResetFilters={handleResetFilters}
         />
       }

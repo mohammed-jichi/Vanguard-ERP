@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-11T20:17:56.599Z",
+  "last_updated": "2026-10-12T10:25:54.924Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,72 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-1fa1996",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (1fa1996) - Restore complete Omega operations center navigation tree from git history",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "1fa199670794518458cd3a0b436d7341db928ecf",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Core System Architecture"
+        ]
+      },
+      "created_at": "2026-10-12T10:14:02.000Z"
+    },
+    {
+      "id": "act-rel-d06e0c1",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (d06e0c1) - Standardize blank filter state, dynamic toggle shift, and blue collapsible categories",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "d06e0c1ec08ac5e0672b87bff2c5e86914c18460",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Core Shell & UI"
+        ]
+      },
+      "created_at": "2026-10-12T09:45:38.000Z"
+    },
+    {
+      "id": "act-rel-2d0b746",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (2d0b746) - Remove duplicate upper sidebar toggle button",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "2d0b746de08e987bee82366944b6151e5c692864",
+        "version": "v2.0.0",
+        "category": "refactor",
+        "modules": [
+          "Core Shell & UI"
+        ]
+      },
+      "created_at": "2026-10-12T09:37:09.000Z"
+    },
+    {
+      "id": "act-rel-3b97462",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (3b97462) - Resolve infinite redirect loop on header background image",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "3b97462892d7862470196d2d6adf2953ea86d327",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Core Shell & UI",
+          "Sales & POS",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-11T20:19:48.000Z"
+    },
     {
       "id": "act-rel-e8d48dc",
       "company_id": 1300,
@@ -6734,6 +6800,62 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-1fa1996",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Restore complete Omega operations center navigation tree from git history",
+      "message": "fix(nav): restore complete Omega operations center navigation tree from git history",
+      "timestamp": "2026-10-12T10:14:02.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "1fa199670794518458cd3a0b436d7341db928ecf",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-d06e0c1",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Standardize blank filter state, dynamic toggle shift, and blue collapsible categories",
+      "message": "feat(reports): standardize blank filter state, dynamic toggle shift, and blue collapsible categories",
+      "timestamp": "2026-10-12T09:45:38.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "d06e0c1ec08ac5e0672b87bff2c5e86914c18460",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-2d0b746",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Remove duplicate upper sidebar toggle button",
+      "message": "style(header): remove duplicate upper sidebar toggle button",
+      "timestamp": "2026-10-12T09:37:09.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "2d0b746de08e987bee82366944b6151e5c692864",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-3b97462",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Resolve infinite redirect loop on header background image",
+      "message": "fix(assets): resolve infinite redirect loop on header background image",
+      "timestamp": "2026-10-11T20:19:48.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "3b97462892d7862470196d2d6adf2953ea86d327",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-e8d48dc",
       "type": "SYSTEM_RELEASE",
