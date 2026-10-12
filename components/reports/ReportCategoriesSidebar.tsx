@@ -201,9 +201,7 @@ export default function ReportCategoriesSidebar({
 }: ReportCategoriesSidebarProps) {
   const { t, dir } = useLanguage();
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
-  const [openSubFolderIds, setOpenSubFolderIds] = useState<Record<string, boolean>>({
-    'ic-transactions': true,
-  });
+  const [openSubFolderIds, setOpenSubFolderIds] = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const toggleCategory = (categoryId: string) => {
@@ -276,7 +274,7 @@ export default function ReportCategoriesSidebar({
       </div>
 
       {/* 3. Category Accordion List */}
-      <div className="divide-y divide-border border-t border-border">
+      <div className="space-y-2 mt-4">
         {filteredCategories.map((category) => {
           const isOpen = openCategoryId === category.id || (!!searchQuery && filteredCategories.length <= 3);
           const visibleDirectReports = (category.reports || []).filter(
@@ -292,12 +290,12 @@ export default function ReportCategoriesSidebar({
             .filter((sf) => !searchQuery || sf.reports.length > 0);
 
           return (
-            <div key={category.id} className="border-b border-border">
+            <div key={category.id} className="mb-2">
               <div 
                 onClick={() => toggleCategory(category.id)}
-                className="report-category-header text-foreground font-semibold text-sm px-4 py-3 border-b border-border/60 bg-card hover:bg-muted/50 flex justify-between items-center cursor-pointer select-none sticky top-0 z-10 transition-colors"
+                className="report-category-header w-full flex items-center justify-between py-1 px-1 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors cursor-pointer select-none"
               >
-                <span className="text-foreground">
+                <span className="text-blue-600">
                   {t(category.name, category.name || 'Recently Viewed')}
                 </span>
 
@@ -344,7 +342,7 @@ export default function ReportCategoriesSidebar({
                     const isSubOpen =
                       openSubFolderIds[subFolder.id] !== undefined
                         ? openSubFolderIds[subFolder.id]
-                        : true;
+                        : false;
 
                     return (
                       <div

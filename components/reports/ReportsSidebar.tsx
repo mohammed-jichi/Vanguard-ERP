@@ -76,19 +76,14 @@ export function VanguardReportsSidebar({ onSelectCategory }: { onSelectCategory?
         </div>
 
         {/* Categories List */}
-        <ul className="divide-y divide-border border-t border-border">
+        <ul className="space-y-2 mt-4">
           {filteredCategories.map((cat) => {
-            const isActive = activeCategory === cat.id;
             return (
-              <li key={cat.id}>
+              <li key={cat.id} className="mb-2">
                 <button
                   type="button"
                   onClick={() => handleCategoryClick(cat.id)}
-                  className={`w-full text-left py-2.5 px-2 text-[13.5px] font-medium transition-all rounded-lg block ${
-                    isActive
-                      ? 'bg-muted text-foreground font-bold pl-3'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground hover:pl-3'
-                  }`}
+                  className="w-full flex items-center justify-between py-1 px-1 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors cursor-pointer select-none"
                 >
                   {t(cat.key, cat.title)}
                 </button>
