@@ -564,7 +564,7 @@ export default function ReportRibbon({
           )}
 
           {/* Action Buttons */}
-          <button type="button" onClick={() => alert(`Filter Applied: ${activeReport.title}`)} className="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-lg text-xs">
+          <button type="button" onClick={() => console.log(`Filter Applied: ${activeReport.title}`)} className="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-lg text-xs">
             Filter Report
           </button>
           <button type="button" onClick={() => { setShowRateFilter(false); setGroupByDateFilter(false); }} className="px-3.5 py-1.5 bg-muted hover:bg-muted/80 text-foreground border border-border font-bold rounded-lg text-xs">
@@ -608,7 +608,7 @@ export default function ReportRibbon({
               <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="font-bold text-slate-800 text-xs">Default Date Range Selection</label>
-                  <button type="button" onClick={() => alert(`Default Date Range Saved as ${defaultDateSelection}`)} className="px-3.5 py-1 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
+                  <button type="button" onClick={() => console.log(`Default Date Range Saved as ${defaultDateSelection}`)} className="px-3.5 py-1 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
                 </div>
                 <select value={defaultDateSelection} onChange={(e) => setDefaultDateSelection(e.target.value)} className="w-full p-2 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-800 focus:outline-none">
                   <option value="THIS_MONTH">This Month</option>
@@ -673,7 +673,7 @@ export default function ReportRibbon({
                 <label className="block font-bold text-slate-800 mb-1">Category Name</label>
                 <div className="flex items-center gap-2">
                   <input type="text" value={customCategoryName} onChange={(e) => setCustomCategoryName(e.target.value)} placeholder="e.g. Daily Operations Summary" className="flex-1 p-2 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-border" />
-                  <button type="button" onClick={() => { if (!customCategoryName.trim()) { alert('Please enter a Category Name'); return; } alert(`Custom Category "${customCategoryName}" saved!`); setCustomCategoryModalOpen(false); }} className="px-4 py-2 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
+                  <button type="button" onClick={() => { if (!customCategoryName.trim()) { console.log('Please enter a Category Name'); return; } console.log(`Custom Category "${customCategoryName}" saved!`); setCustomCategoryModalOpen(false); }} className="px-4 py-2 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg text-xs shadow-2xs">Save</button>
                 </div>
               </div>
 

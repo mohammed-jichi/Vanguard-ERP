@@ -209,11 +209,11 @@ export default function ReportSidebarNav({
             1. DYNAMIC "RECENTLY VIEWED" GROUP (Always on top above categories)
             ================================================================= */}
         {(!searchQuery || filteredRecentItems.length > 0) && (
-          <div className="border-b border-slate-100 pb-2 mb-1">
+          <div className="mb-2">
             <button
               type="button"
               onClick={() => toggleGroup('Recently Viewed')}
-              className="w-full flex items-center justify-between py-1 px-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer group"
+              className="w-full flex items-center justify-between py-1 px-1 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors cursor-pointer group"
             >
               <div className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-blue-600 group-hover:scale-105 transition-transform" />
@@ -298,12 +298,12 @@ export default function ReportSidebarNav({
           const isRecommended = group.title.trim().toLowerCase() === 'recommended';
 
           return (
-            <div key={group.title} className="border-b border-slate-100 pb-2 mb-1 last:border-b-0">
+            <div key={group.title} className="mb-2">
               {/* Category Header */}
               <button
                 type="button"
                 onClick={() => toggleGroup(group.title)}
-                className="w-full flex items-center justify-between py-1 px-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer group"
+                className="w-full flex items-center justify-between py-1 px-1 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-1.5">
                   {isRecommended ? (
@@ -400,7 +400,7 @@ export default function ReportSidebarNav({
                               [subGroupKey]: !isSubExpanded,
                             }))
                           }
-                          className="w-full flex items-center justify-between py-1 px-1 text-[11.5px] font-semibold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
+                          className="w-full flex items-center justify-between py-1 px-1 text-[11.5px] font-medium text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
                         >
                           <span className="truncate">{translateReportItem(sub.title)}</span>
                           <ChevronDown

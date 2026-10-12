@@ -333,8 +333,8 @@ export default function MasterReportViewPage() {
             <ExportButtons
               onExportPdf={() => window.print()}
               onPrint={() => window.print()}
-              onExportExcel={() => alert(`Exporting ${activeMeta.name} to Excel (.xlsx)...`)}
-              onExportCsv={() => alert(`Exporting ${activeMeta.name} to CSV...`)}
+              onExportExcel={() => console.log(`Exporting ${activeMeta.name} to Excel (.xlsx)...`)}
+              onExportCsv={() => console.log(`Exporting ${activeMeta.name} to CSV...`)}
             />
           }
         />

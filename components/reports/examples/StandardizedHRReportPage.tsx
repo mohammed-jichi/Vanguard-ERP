@@ -122,10 +122,10 @@ export default function StandardizedHRReportPage() {
           ]}
           actions={
             <ExportButtons
-              onExportPdf={() => alert('Exporting PDF...')}
+              onExportPdf={() => console.log('Exporting PDF...')}
               onPrint={() => window.print()}
-              onExportExcel={() => alert('Exporting Excel spreadsheet...')}
-              onExportCsv={() => alert('Exporting CSV...')}
+              onExportExcel={() => console.log('Exporting Excel spreadsheet...')}
+              onExportCsv={() => console.log('Exporting CSV...')}
             />
           }
         />
@@ -146,7 +146,7 @@ export default function StandardizedHRReportPage() {
             setFromDate(from);
             setToDate(to);
           }}
-          onApplyFilters={() => alert('Filters applied.')}
+          onApplyFilters={() => console.log('Filters applied.')}
           onResetFilters={() => {
             const defRange = getDefaultInitialDateRange('This Month');
             setSearchQuery('');

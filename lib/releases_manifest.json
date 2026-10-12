@@ -1,5 +1,53 @@
 [
   {
+    "id": "0417f3fb-3d21-4536-a4f2-cd56b2591207",
+    "commit_hash": "0417f3fb3d21f53684f2cd56b2591207beb9e59f",
+    "short_hash": "0417f3f",
+    "version": "v2.0.0",
+    "title": "Bind pos form state to active user and default dates to today",
+    "category": "fix",
+    "description": "fix(sales): bind pos form state to active user and default dates to today",
+    "bullet_points": [
+      "Resolved: bind pos form state to active user and default dates to today",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Sales & POS"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-12T10:49:22.000Z",
+    "created_at": "2026-10-12T10:55:06.464Z"
+  },
+  {
+    "id": "442ce6f6-069e-43a0-a716-8d33376daf5e",
+    "commit_hash": "442ce6f6069e43a097168d33376daf5e3f7f5f74",
+    "short_hash": "442ce6f",
+    "version": "v2.0.0",
+    "title": "Surgically restore working data rendering and remove portrait button",
+    "category": "fix",
+    "description": "fix(reports): surgically restore working data rendering and remove portrait button",
+    "bullet_points": [
+      "Resolved: surgically restore working data rendering and remove portrait button",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Accounting & Finance",
+      "Fleet & Distribution",
+      "Customer Relations (CRM)",
+      "Operations & Inventory",
+      "Core Shell & UI"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-12T10:26:07.000Z",
+    "created_at": "2026-10-12T10:48:44.092Z"
+  },
+  {
     "id": "1fa19967-0794-4184-a8cd-3a0b436d7341",
     "commit_hash": "1fa199670794518458cd3a0b436d7341db928ecf",
     "short_hash": "1fa1996",

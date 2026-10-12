@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-12T10:25:54.924Z",
+  "last_updated": "2026-10-12T10:55:06.471Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,42 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-0417f3f",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (0417f3f) - Bind pos form state to active user and default dates to today",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "0417f3fb3d21f53684f2cd56b2591207beb9e59f",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Sales & POS"
+        ]
+      },
+      "created_at": "2026-10-12T10:49:22.000Z"
+    },
+    {
+      "id": "act-rel-442ce6f",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (442ce6f) - Surgically restore working data rendering and remove portrait button",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "442ce6f6069e43a097168d33376daf5e3f7f5f74",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Accounting & Finance",
+          "Fleet & Distribution",
+          "Customer Relations (CRM)",
+          "Operations & Inventory",
+          "Core Shell & UI"
+        ]
+      },
+      "created_at": "2026-10-12T10:26:07.000Z"
+    },
     {
       "id": "act-rel-1fa1996",
       "company_id": 1300,
@@ -6800,6 +6836,34 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-0417f3f",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Bind pos form state to active user and default dates to today",
+      "message": "fix(sales): bind pos form state to active user and default dates to today",
+      "timestamp": "2026-10-12T10:49:22.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "0417f3fb3d21f53684f2cd56b2591207beb9e59f",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
+    {
+      "id": "alert-rel-442ce6f",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Surgically restore working data rendering and remove portrait button",
+      "message": "fix(reports): surgically restore working data rendering and remove portrait button",
+      "timestamp": "2026-10-12T10:26:07.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "442ce6f6069e43a097168d33376daf5e3f7f5f74",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-1fa1996",
       "type": "SYSTEM_RELEASE",

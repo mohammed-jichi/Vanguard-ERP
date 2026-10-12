@@ -519,7 +519,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const [quotationCustomerSearch, setQuotationCustomerSearch] = useState('');
   const [quotationCustomerGroup, setQuotationCustomerGroup] = useState('All Customer Groups');
   const [quotationSearchQuery, setQuotationSearchQuery] = useState('');
-  const [quotationFromDate, setQuotationFromDate] = useState('01-Sep-2026');
+  const [quotationFromDate, setQuotationFromDate] = useState(getTodayFormatted());
   const [quotationToDate, setQuotationToDate] = useState(getTodayFormatted());
   const [selectedQuotationId, setSelectedQuotationId] = useState<string | null>('QUO-2026-0041');
 
@@ -930,7 +930,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const [isConfirmPostAllOpen, setIsConfirmPostAllOpen] = useState(false);
   const [isPostingAll, setIsPostingAll] = useState(false);
 
-  const [previewFromDate, setPreviewFromDate] = useState('01-Sep-2026');
+  const [previewFromDate, setPreviewFromDate] = useState(getTodayFormatted());
   const [previewToDate, setPreviewToDate] = useState(getTodayFormatted());
 
   // Existing Invoices Directory

@@ -240,8 +240,8 @@ function LoyaltyManagementContent() {
               <ExportButtons
                 onPrint={() => window.print()}
                 onExportPdf={() => window.print()}
-                onExportExcel={() => alert(`Exporting ${activeMeta.name} to Excel (.xlsx)...`)}
-                onExportCsv={() => alert(`Exporting ${activeMeta.name} to CSV...`)}
+                onExportExcel={() => console.log(`Exporting ${activeMeta.name} to Excel (.xlsx)...`)}
+                onExportCsv={() => console.log(`Exporting ${activeMeta.name} to CSV...`)}
               />
             }
           />

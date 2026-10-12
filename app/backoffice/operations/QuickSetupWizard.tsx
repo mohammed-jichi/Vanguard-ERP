@@ -173,8 +173,8 @@ export default function AuthenticOmegaQuickSetupWizard() {
   // Tax Registrations & Fiscal Dates
   const [taxReg1, setTaxReg1] = useState('');
   const [taxReg2, setTaxReg2] = useState('');
-  const [fiscalStart, setFiscalStart] = useState('2026-01-01');
-  const [fiscalEnd, setFiscalEnd] = useState('2026-12-31');
+  const [fiscalStart, setFiscalStart] = useState(() => `${new Date().getFullYear()}-01-01`);
+  const [fiscalEnd, setFiscalEnd] = useState(() => `${new Date().getFullYear()}-12-31`);
 
   // Invoice Messages
   const [invoiceMsg1, setInvoiceMsg1] = useState('');

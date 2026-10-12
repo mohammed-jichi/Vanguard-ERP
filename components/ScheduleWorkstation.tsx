@@ -138,7 +138,11 @@ export default function ScheduleWorkstation() {
   const [sendEmailConfirmation, setSendEmailConfirmation] = useState(false);
   const [showEmployeeColors, setShowEmployeeColors] = useState(false);
   const [employees, setEmployees] = useState<EmployeeScheduleConfig[]>(INITIAL_EMPLOYEES);
-  const [selectedDayDate, setSelectedDayDate] = useState('07-Sep-2026');
+  const [selectedDayDate, setSelectedDayDate] = useState(() => {
+    const d = new Date();
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getDate().toString().padStart(2, '0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
+  });
 
   const formattedDayTitle = useMemo(() => {
     try {

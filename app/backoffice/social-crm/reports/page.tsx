@@ -284,8 +284,8 @@ export default function SocialCrmReportsHub() {
             <ExportButtons
               onExportPdf={() => window.print()}
               onPrint={() => window.print()}
-              onExportExcel={() => alert(`Exporting ${activeReportObj.label} to Excel (.xlsx)...`)}
-              onExportCsv={() => alert(`Exporting ${activeReportObj.label} to CSV...`)}
+              onExportExcel={() => console.log(`Exporting ${activeReportObj.label} to Excel (.xlsx)...`)}
+              onExportCsv={() => console.log(`Exporting ${activeReportObj.label} to CSV...`)}
             />
           }
         />

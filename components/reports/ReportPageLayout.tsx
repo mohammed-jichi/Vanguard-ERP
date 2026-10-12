@@ -422,7 +422,7 @@ export function ExportButtons({
     } else if (onExportPdf) {
       onExportPdf();
     } else {
-      alert('Exporting report document...');
+      console.log('Exporting report document...');
     }
   };
 
