@@ -282,16 +282,16 @@ export function ReportHeader({
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 select-none print:hidden">
       <div>
         <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-          {toggleSidebar && (
+          {toggleSidebar && !isSidebarOpen && (
             <button
               type="button"
               onClick={toggleSidebar}
-              title={isSidebarOpen ? t('hide_navigation', 'Hide Report Menu') : t('show_navigation', 'Show Report Menu')}
+              title={t('show_navigation', 'Show Report Menu')}
               className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-700 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 text-xs font-semibold shadow-2xs"
             >
               <Menu className="w-4 h-4 text-slate-700" />
               <span className="hidden sm:inline">
-                {isSidebarOpen ? t('hide_menu', 'Hide Menu') : t('show_menu', 'Show Menu')}
+                {t('show_menu', 'Show Menu')}
               </span>
             </button>
           )}
@@ -1052,24 +1052,16 @@ export default function ReportPageLayout({
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const [internalSelectedReport, setInternalSelectedReport] = useState(
-    categories[0]?.items?.[0]
-      ? typeof categories[0].items[0] === 'string'
-        ? categories[0].items[0]
-        : categories[0].items[0].name
-      : categories[0]?.subGroups?.[0]?.items?.[0]
-      ? typeof categories[0].subGroups[0].items[0] === 'string'
-        ? categories[0].subGroups[0].items[0]
-        : categories[0].subGroups[0].items[0].name
-      : 'Transactions by Date'
-  );
+  const [internalSelectedReport, setInternalSelectedReport] = useState<string | null>(null);
 
   const activeReport = externalSelectedReport !== undefined ? externalSelectedReport : internalSelectedReport;
   const [appliedFilters, setAppliedFilters] = useState<Record<string, any>>(getInitialAppliedFilters);
+  const [hasRunReport, setHasRunReport] = useState(false);
 
   const handleSelect = (name: string) => {
     setInternalSelectedReport(name);
     setAppliedFilters(getInitialAppliedFilters());
+    setHasRunReport(false);
     if (onSelectReport) onSelectReport(name);
   };
 
@@ -1077,6 +1069,7 @@ export default function ReportPageLayout({
   // controlled selection) so a new report never inherits another report's parameters.
   useEffect(() => {
     setAppliedFilters(getInitialAppliedFilters());
+    setHasRunReport(false);
   }, [activeReport]);
 
   const handleApplyFilters = (vals: Record<string, any>) => {
@@ -1087,11 +1080,13 @@ export default function ReportPageLayout({
       terminal: vals.terminal ?? vals.biometricTerminal,
     };
     setAppliedFilters(normalized);
+    setHasRunReport(true);
     onApplyFilters?.(normalized);
   };
 
   const handleResetFilters = () => {
     setAppliedFilters(getInitialAppliedFilters());
+    setHasRunReport(false);
     onResetFilters?.();
   };
 
@@ -1117,8 +1112,9 @@ export default function ReportPageLayout({
                     moduleKey={moduleKey}
                     storageKeyOverride={storageKeyOverride}
                     categories={categories}
-                    activeReport={activeReport}
+                    activeReport={activeReport || ''}
                     onSelectReport={handleSelect}
+                    onToggleSidebar={toggleSidebar}
                   />
                 )}
               </div>
@@ -1133,30 +1129,44 @@ export default function ReportPageLayout({
               header
             ) : (
               <ReportHeader
-                title={activeReport}
+                title={activeReport || 'No Report Selected'}
                 breadcrumbs={[
                   { label: t('home', 'Home'), href: '/backoffice' },
                   { label: moduleTitle },
-                  { label: activeReport },
+                  ...(activeReport ? [{ label: activeReport }] : []),
                 ]}
               />
             )}
 
             {/* Filter Box */}
-            {filters ? (
-              filters
-            ) : (
-              <DynamicReportFilterRenderer
-                key={activeReport}
-                activeReportKey={activeReport}
-                module={moduleKey as any}
-                onApplyFilters={handleApplyFilters}
-                onResetFilters={handleResetFilters}
-              />
+            {activeReport && (
+              filters ? (
+                filters
+              ) : (
+                <DynamicReportFilterRenderer
+                  key={activeReport}
+                  activeReportKey={activeReport}
+                  module={moduleKey as any}
+                  onApplyFilters={handleApplyFilters}
+                  onResetFilters={handleResetFilters}
+                />
+              )
             )}
 
             {/* Report Preview Container & Document Sheet Canvas */}
-            {table ? (
+            {!activeReport ? (
+              <div className="w-full h-96 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50 mt-4">
+                <FileSpreadsheet className="w-12 h-12 text-slate-300 mb-3" />
+                <h3 className="text-slate-500 font-semibold text-sm">No Report Selected</h3>
+                <p className="text-slate-400 text-xs mt-1">Please select a report from the left sidebar menu.</p>
+              </div>
+            ) : !hasRunReport ? (
+              <div className="w-full h-96 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50 mt-4">
+                <SlidersHorizontal className="w-12 h-12 text-slate-300 mb-3" />
+                <h3 className="text-slate-500 font-semibold text-sm">Ready to Generate</h3>
+                <p className="text-slate-400 text-xs mt-1">Select your parameters above and click "Filter Report" to view results.</p>
+              </div>
+            ) : table ? (
               <React.Fragment key={activeReport}>
                 {typeof table === 'function' ? table(appliedFilters, activeReport) : table}
               </React.Fragment>

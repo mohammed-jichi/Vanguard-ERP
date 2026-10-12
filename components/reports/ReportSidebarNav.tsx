@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Clock, Sparkles, ChevronDown, ChevronRight, Folder, ArrowUpRight } from 'lucide-react';
+import { Search, Clock, Sparkles, ChevronDown, ChevronRight, Folder, ArrowUpRight, Menu } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { ReportCategoryGroup, ReportCategoryItem, ReportCategorySubGroup } from './ReportPageLayout';
 
@@ -14,6 +14,7 @@ export interface ReportSidebarNavProps {
   onSelectReport?: (reportName: string) => void;
   className?: string;
   searchPlaceholder?: string;
+  onToggleSidebar?: () => void;
 }
 
 /**
@@ -52,6 +53,7 @@ export default function ReportSidebarNav({
   onSelectReport,
   className = '',
   searchPlaceholder = 'Search reports...',
+  onToggleSidebar,
 }: ReportSidebarNavProps) {
   const router = useRouter();
   const { t, dir } = useLanguage();
@@ -80,8 +82,8 @@ export default function ReportSidebarNav({
       : `vanguard_recent_reports_${moduleKey}`);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-  const [collapsedSubGroups, setCollapsedSubGroups] = useState<Record<string, boolean>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [expandedSubGroups, setExpandedSubGroups] = useState<Record<string, boolean>>({});
   const [recentReports, setRecentReports] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -129,7 +131,7 @@ export default function ReportSidebarNav({
 
   const toggleGroup = (title: string) => {
     React.startTransition(() => {
-      setCollapsedGroups((prev) => ({
+      setExpandedGroups((prev) => ({
         ...prev,
         [title]: !prev[title],
       }));
@@ -138,7 +140,7 @@ export default function ReportSidebarNav({
 
   const toggleSubGroup = (key: string) => {
     React.startTransition(() => {
-      setCollapsedSubGroups((prev) => ({
+      setExpandedSubGroups((prev) => ({
         ...prev,
         [key]: !prev[key],
       }));
@@ -177,16 +179,28 @@ export default function ReportSidebarNav({
         )}
       </div>
 
-      {/* Dedicated Search Input */}
-      <div className="relative">
-        <input
-          type="text"
-          placeholder={t('search_reports', searchPlaceholder || 'Search reports...')}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-slate-50 border border-slate-200 rounded-md py-1.5 px-3 pl-8 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white transition-all shadow-2xs"
-        />
-        <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+      {/* Dedicated Search Input & Toggle Button */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 min-w-0">
+          <input
+            type="text"
+            placeholder={t('search_reports', searchPlaceholder || 'Search reports...')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-slate-50 border border-slate-200 rounded-md py-1.5 px-3 pl-8 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white transition-all shadow-2xs"
+          />
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+        </div>
+        {onToggleSidebar && (
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            title={t('hide_navigation', 'Hide Report Menu')}
+            className="p-1.5 border border-slate-200 bg-slate-50 hover:bg-slate-100 rounded-md text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shrink-0"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Report Tree Navigation Corridor */}
@@ -199,20 +213,20 @@ export default function ReportSidebarNav({
             <button
               type="button"
               onClick={() => toggleGroup('Recently Viewed')}
-              className="w-full flex items-center justify-between py-1 px-1 text-xs font-bold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer group"
+              className="w-full flex items-center justify-between py-1 px-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer group"
             >
               <div className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-blue-600 group-hover:scale-105 transition-transform" />
                 <span>{t('recently_viewed', 'Recently Viewed')}</span>
               </div>
               <ChevronDown
-                className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
-                  collapsedGroups['Recently Viewed'] ? '-rotate-90' : ''
+                className={`w-3.5 h-3.5 text-blue-400 transition-transform duration-150 ${
+                  !expandedGroups['Recently Viewed'] ? '-rotate-90' : ''
                 }`}
               />
             </button>
 
-            {!collapsedGroups['Recently Viewed'] && (
+            {expandedGroups['Recently Viewed'] && (
               <div className="space-y-0.5 mt-1">
                 {/* SSR Guard / Empty State */}
                 {!isMounted || recentReports.length === 0 ? (
@@ -254,7 +268,7 @@ export default function ReportSidebarNav({
             2. CATEGORIES & SUB-SECTIONS (Match 1:1 authentic Omega hierarchy)
             ================================================================= */}
         {nonRecentCategories.map((group) => {
-          const isCollapsed = !!collapsedGroups[group.title];
+          const isExpanded = !!expandedGroups[group.title];
 
           // Check if flat items match search
           const directItems = group.items || [];
@@ -289,25 +303,25 @@ export default function ReportSidebarNav({
               <button
                 type="button"
                 onClick={() => toggleGroup(group.title)}
-                className="w-full flex items-center justify-between py-1 px-1 text-xs font-bold text-slate-800 hover:text-slate-950 transition-colors cursor-pointer group"
+                className="w-full flex items-center justify-between py-1 px-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-1.5">
                   {isRecommended ? (
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500 group-hover:rotate-12 transition-transform" />
+                    <Sparkles className="w-3.5 h-3.5 text-blue-500 group-hover:rotate-12 transition-transform" />
                   ) : (
-                    <Folder className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-600 transition-colors" />
+                    <Folder className="w-3.5 h-3.5 text-blue-500 group-hover:text-blue-700 transition-colors" />
                   )}
                   <span>{translateReportItem(group.title)}</span>
                 </div>
                 <ChevronDown
-                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
-                    isCollapsed ? '-rotate-90' : ''
+                  className={`w-3.5 h-3.5 text-blue-400 transition-transform duration-150 ${
+                    !isExpanded ? '-rotate-90' : ''
                   }`}
                 />
               </button>
 
               {/* Category Content */}
-              {!isCollapsed && (
+              {isExpanded && (
                 <div className="space-y-1 mt-1 pl-1">
                   {/* A. Flat items under Category */}
                   {matchingDirectItems.map((item, idx) => {
@@ -370,10 +384,10 @@ export default function ReportSidebarNav({
                       const name = typeof item === 'string' ? item : item.name;
                       return name === activeReport;
                     });
-                    const isSubCollapsed =
-                      collapsedSubGroups[subGroupKey] !== undefined
-                        ? collapsedSubGroups[subGroupKey]
-                        : (!containsActive && !searchQuery);
+                    const isSubExpanded =
+                      expandedSubGroups[subGroupKey] !== undefined
+                        ? expandedSubGroups[subGroupKey]
+                        : (containsActive || !!searchQuery);
 
                     return (
                       <div key={subGroupKey} className="pt-0.5 pb-1 border-l-2 border-slate-100 pl-2 ml-1 space-y-0.5">
@@ -381,23 +395,23 @@ export default function ReportSidebarNav({
                         <button
                           type="button"
                           onClick={() =>
-                            setCollapsedSubGroups((prev) => ({
+                            setExpandedSubGroups((prev) => ({
                               ...prev,
-                              [subGroupKey]: !isSubCollapsed,
+                              [subGroupKey]: !isSubExpanded,
                             }))
                           }
-                          className="w-full flex items-center justify-between py-1 px-1 text-[11.5px] font-semibold text-slate-700 hover:text-blue-700 transition-colors cursor-pointer"
+                          className="w-full flex items-center justify-between py-1 px-1 text-[11.5px] font-semibold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
                         >
                           <span className="truncate">{translateReportItem(sub.title)}</span>
                           <ChevronDown
-                            className={`w-3 h-3 text-slate-400 transition-transform duration-150 ${
-                              isSubCollapsed ? '-rotate-90' : ''
+                            className={`w-3 h-3 text-blue-400 transition-transform duration-150 ${
+                              !isSubExpanded ? '-rotate-90' : ''
                             }`}
                           />
                         </button>
 
                         {/* SubGroup Leaf Items */}
-                        {!isSubCollapsed && (
+                        {isSubExpanded && (
                           <div className="space-y-0.5 pl-1">
                             {sub.items.map((item, iIdx) => {
                               const name = typeof item === 'string' ? item : item.name;
