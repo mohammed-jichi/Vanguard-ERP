@@ -54,7 +54,17 @@ import {
 } from 'lucide-react';
 import DatePickerInput from '@/components/DatePickerInput';
 import { useTenant } from '@/lib/TenantContext';
+import { useActiveUser } from '@/lib/useActiveUser';
 import { supabase } from '@/lib/supabaseClient';
+
+const getTodayFormatted = () => {
+  const d = new Date();
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+};
 
 export interface SalesItem {
   id: string;
@@ -435,6 +445,7 @@ export default function AuthenticOmegaSalesWorkstation({
   withOmegaSidebar?: boolean;
 }) {
   const { currentTenant } = useTenant();
+  const profile = useActiveUser();
   // --- Sidebar State (when running in Standalone Omega layout) ---
   const [omegaSidebarCollapsed, setOmegaSidebarCollapsed] = useState(false);
   const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
@@ -451,8 +462,8 @@ export default function AuthenticOmegaSalesWorkstation({
   const [invoiceNumber, setInvoiceNumber] = useState('INV-2026-08942');
   const [customerSearch, setCustomerSearch] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState(CUSTOMER_PRESETS[0]);
-  const [invoiceDate, setInvoiceDate] = useState('07-Sep-2026');
-  const [deliveryDate, setDeliveryDate] = useState('07-Sep-2026');
+  const [invoiceDate, setInvoiceDate] = useState(getTodayFormatted());
+  const [deliveryDate, setDeliveryDate] = useState(getTodayFormatted());
   const [deliveredBy, setDeliveredBy] = useState('Providers');
   const [currency, setCurrency] = useState('USD');
   const [transactionType, setTransactionType] = useState('Local');
@@ -473,7 +484,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const [isEditingRate, setIsEditingRate] = useState(false);
   const [workstationId, setWorkstationId] = useState('W#: 2000');
   const [isEditingWorkstation, setIsEditingWorkstation] = useState(false);
-  const [invoiceSalesman, setInvoiceSalesman] = useState('Mahdi');
+  const [invoiceSalesman, setInvoiceSalesman] = useState(profile?.name || 'Vanguard Operator');
   const [invoiceDepartment, setInvoiceDepartment] = useState('Showroom');
   const [invoiceReferenceNumber, setInvoiceReferenceNumber] = useState('');
   const [invoiceNote, setInvoiceNote] = useState('');
@@ -509,7 +520,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const [quotationCustomerGroup, setQuotationCustomerGroup] = useState('All Customer Groups');
   const [quotationSearchQuery, setQuotationSearchQuery] = useState('');
   const [quotationFromDate, setQuotationFromDate] = useState('01-Sep-2026');
-  const [quotationToDate, setQuotationToDate] = useState('07-Sep-2026');
+  const [quotationToDate, setQuotationToDate] = useState(getTodayFormatted());
   const [selectedQuotationId, setSelectedQuotationId] = useState<string | null>('QUO-2026-0041');
 
   // --- Pending Quotations Dataset ---
@@ -920,7 +931,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const [isPostingAll, setIsPostingAll] = useState(false);
 
   const [previewFromDate, setPreviewFromDate] = useState('01-Sep-2026');
-  const [previewToDate, setPreviewToDate] = useState('07-Sep-2026');
+  const [previewToDate, setPreviewToDate] = useState(getTodayFormatted());
 
   // Existing Invoices Directory
   const [invoicesDirectory, setInvoicesDirectory] = useState<InvoiceRecord[]>([
@@ -1214,6 +1225,8 @@ export default function AuthenticOmegaSalesWorkstation({
     setPayments([]);
     setSelectedCustomer(CUSTOMER_PRESETS[0]);
     setCustomerSearch('');
+    setInvoiceDate(getTodayFormatted());
+    setDeliveryDate(getTodayFormatted());
     setStatusNotice(`New blank invoice initialized: ${nextNb}`);
     setTimeout(() => setStatusNotice(null), 3000);
   };
@@ -1255,7 +1268,10 @@ export default function AuthenticOmegaSalesWorkstation({
       branch: branchName,
       customerName: selectedCustomer.name || 'Miscellaneous / Cash Customer',
       customerId: selectedCustomer.id || 'CUST-001',
+      company: (selectedCustomer as any).company || '-',
       customerAddress: selectedCustomer.address || 'Local Branch',
+      salesman: invoiceSalesman || profile?.name || 'Vanguard Operator',
+      createdBy: profile?.name || 'Vanguard Operator',
       deliveredBy: deliveredBy,
       currency: currency,
       transactionType: transactionType,
