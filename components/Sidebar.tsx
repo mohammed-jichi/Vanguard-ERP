@@ -443,6 +443,248 @@ export default function Sidebar({
                 <Wrench strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                 <span>{t('quality_control', 'Quality Control')}</span>
               </Link>
+
+              {/* Actions */}
+              <div className="pt-0.5">
+                <button
+                  onClick={() => toggleGroup('op_actions')}
+                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Sliders strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <span>{t('actions', 'Actions')}</span>
+                  </div>
+                  <span className="text-[9px]">{expandedGroups['op_actions'] ? '▲' : '▼'}</span>
+                </button>
+                {expandedGroups['op_actions'] && (
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    <Link prefetch={false} href="/backoffice/operations?section=sales" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <ShoppingCart strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('sales', 'Sales')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=quotations" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('quotations', 'Quotations')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=delivery_goods" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('delivery_goods', 'Delivery of Goods')}</span>
+                    </Link>
+                    {isModuleEnabled('purchasing') && (
+                      <>
+                        <Link prefetch={false} href="/backoffice/operations?section=purchases" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                          <ShoppingBag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span>{t('purchases', 'Purchases')}</span>
+                        </Link>
+                        <Link prefetch={false} href="/backoffice/operations?section=purchase_orders" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                          <ClipboardList strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span>{t('purchase_orders', 'Purchase Orders')}</span>
+                        </Link>
+                        <Link prefetch={false} href="/backoffice/operations?section=reorder_guide" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                          <ListFilter strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span>{t('reorder_guide', 'Reorder Guide')}</span>
+                        </Link>
+                      </>
+                    )}
+                    <Link prefetch={false} href="/backoffice/operations?section=transfers" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <ArrowRightLeft strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('transfers', 'Transfers')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=lost_goods" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <ShieldAlert strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('lost_goods', 'Lost Goods')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=item_assembly" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <Boxes strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('item_assembly', 'Item Assembly')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=adjustments" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <Sliders strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('adjustments', 'Adjustments')}</span>
+                    </Link>
+
+                    {/* Product Request */}
+                    <div className="pt-0.5">
+                      <button
+                        onClick={() => toggleGroup('op_prodreq')}
+                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <Package strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                          <span>{t('product_request', 'Product Request')}</span>
+                        </div>
+                        <span className="text-[9px]">{expandedGroups['op_prodreq'] ? '▲' : '▼'}</span>
+                      </button>
+                      {expandedGroups['op_prodreq'] && (
+                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                          <Link prefetch={false} href="/backoffice/operations?section=product_request" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                            <Package strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span>{t('product_request', 'Product Request')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=manage_product_requests" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                            <ClipboardCheck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span>{t('manage_product_requests', 'Manage Product Requests')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=product_req_prep" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded font-bold text-teal-700">
+                            <PackageCheck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            <span>{t('product_req_prep', 'Product Req. Preparation')}</span>
+                          </Link>
+                          {isModuleEnabled('purchasing') && (
+                            <Link prefetch={false} href="/backoffice/operations?section=receiving_goods" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                              <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                              <span>{t('receiving_goods', 'Receiving of goods')}</span>
+                            </Link>
+                          )}
+                          <Link prefetch={false} href="/backoffice/operations?section=product_req_reports" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                            <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span>{t('product_req_reports', 'Reports')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=request_reject_reasons" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                            <XCircle strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span>{t('request_reject_reasons', 'Request Reject Reasons')}</span>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Events */}
+                    <div className="pt-0.5">
+                      <button
+                        onClick={() => toggleGroup('op_events')}
+                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <Calendar strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                          <span>{t('events', 'Events')}</span>
+                        </div>
+                        <span className="text-[9px]">{expandedGroups['op_events'] ? '▲' : '▼'}</span>
+                      </button>
+                      {expandedGroups['op_events'] && (
+                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                          <Link prefetch={false} href="/backoffice/operations?section=events" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                            <Calendar strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span>{t('events', 'Events')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=event_venues" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                            <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span>{t('event_venues', 'Event Venues')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=event_resources" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                            <Boxes strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span>{t('event_resources', 'Event Resources')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=event_types" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                            <Tag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span>{t('event_types', 'Event Types')}</span>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Setup */}
+              <div className="pt-0.5">
+                <button
+                  onClick={() => toggleGroup('op_setup')}
+                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  <span>{t('setup', 'Setup')}</span>
+                  <span className="text-[9px]">{expandedGroups['op_setup'] ? '▲' : '▼'}</span>
+                </button>
+                {expandedGroups['op_setup'] && (
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    <Link prefetch={false} href="/backoffice/operations?section=quick_setup" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <Sliders strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span>{t('quick_setup', 'Quick Setup')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=products_services" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <Package strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span>{t('products_services', 'Products & Services')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=groups" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <span>{t('groups', 'Groups')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=divisions" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <Bookmark strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span>{t('divisions', 'Divisions')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=categories" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <Tag strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span>{t('categories', 'Categories')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=units" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <Scale strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span>{t('units', 'Units')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=locations" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span>{t('locations', 'Locations')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=suppliers" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <Users strokeWidth={1.5} className="w-3.5 h-3.5 text-violet-500 shrink-0" />
+                      <span>{t('suppliers', 'Suppliers')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=departments" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                      <Building strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span>{t('departments', 'Departments')}</span>
+                    </Link>
+
+                    {/* More Sub-Accordion */}
+                    <div className="pt-1">
+                      <button
+                        onClick={() => toggleGroup('op_more')}
+                        className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                      >
+                        <span className="font-semibold text-slate-800">{t('more', 'More')}</span>
+                        <span className="text-[9px] text-primary">{expandedGroups['op_more'] ? '▲' : '▼'}</span>
+                      </button>
+                      {expandedGroups['op_more'] && (
+                        <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                          <Link prefetch={false} href="/backoffice/operations?section=lost_goods_reason" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <Search strokeWidth={1.5} className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                            <span>{t('lost_goods_reason', 'Lost Goods Reason')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=sizes_groups" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <Maximize2 strokeWidth={1.5} className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                            <span>{t('sizes_groups', 'Sizes Groups')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=sizes" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <Maximize2 strokeWidth={1.5} className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                            <span>{t('sizes', 'Sizes')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=colors" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <Palette strokeWidth={1.5} className="w-3.5 h-3.5 text-pink-500 shrink-0" />
+                            <span>{t('colors', 'Colors')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=discounts" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <Percent strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            <span>{t('discounts', 'Discounts')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=payment_types" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <CreditCard strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            <span>{t('payment_types', 'Payment Types')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=currency_setup" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <Coins strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            <span>{t('currency_setup', 'Currency Setup')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=inventory_brands" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <Award strokeWidth={1.5} className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                            <span>{t('inventory_brands', 'Inventory Brands')}</span>
+                          </Link>
+                          <Link prefetch={false} href="/backoffice/operations?section=delivery_providers" className="flex items-center gap-2 p-1 hover:text-primary hover:bg-slate-50 rounded">
+                            <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            <span>{t('delivery_providers', 'Delivery Providers')}</span>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
