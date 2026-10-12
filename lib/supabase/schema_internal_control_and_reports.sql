@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS pos_transactions_ledger (
     customer_id UUID REFERENCES customers(customer_id),
     customer_name VARCHAR(150),
     server_name VARCHAR(100) NOT NULL,
+    salesman VARCHAR(100),
+    created_by VARCHAR(100),
+    company VARCHAR(150),
     workstation_id VARCHAR(30) NOT NULL DEFAULT '1', -- '1' for POS Counter, '2000' for Backoffice
     invoice_type VARCHAR(30) DEFAULT 'POS' CHECK (invoice_type IN ('POS', 'INVENTORY', 'TRAINING', 'ONLINE')),
     department VARCHAR(50) DEFAULT 'LOCAL', -- 'LOCAL', 'INTERNATIONAL', 'ONLINE'

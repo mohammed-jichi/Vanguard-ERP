@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-12T11:08:58.683Z",
+  "last_updated": "2026-10-12T11:35:00.313Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-4973e1b",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (4973e1b) - Enforce dynamic transaction date and persist created_by/salesman/company context",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "4973e1b13d402873a6053d5ce709ca7aac7f310c",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Sales & POS",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-12T11:09:25.000Z"
+    },
     {
       "id": "act-rel-588cdcb",
       "company_id": 1300,
@@ -6874,6 +6891,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-4973e1b",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Enforce dynamic transaction date and persist created_by/salesman/company context",
+      "message": "fix(sales): enforce dynamic transaction date and persist created_by/salesman/company context",
+      "timestamp": "2026-10-12T11:09:25.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "4973e1b13d402873a6053d5ce709ca7aac7f310c",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-588cdcb",
       "type": "SYSTEM_RELEASE",
