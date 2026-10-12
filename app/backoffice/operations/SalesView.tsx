@@ -58,12 +58,7 @@ import { useActiveUser } from '@/lib/useActiveUser';
 import { supabase } from '@/lib/supabaseClient';
 
 const getTodayFormatted = () => {
-  const d = new Date();
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const day = d.getDate().toString().padStart(2, '0');
-  const month = months[d.getMonth()];
-  const year = d.getFullYear();
-  return `${day}-${month}-${year}`;
+  return new Date().toISOString().split('T')[0];
 };
 
 export interface SalesItem {
@@ -1268,9 +1263,9 @@ export default function AuthenticOmegaSalesWorkstation({
       branch: branchName,
       customerName: selectedCustomer.name || 'Miscellaneous / Cash Customer',
       customerId: selectedCustomer.id || 'CUST-001',
-      company: (selectedCustomer as any).company || '-',
+      company: ((selectedCustomer as any).company && (selectedCustomer as any).company !== '-') ? (selectedCustomer as any).company : 'Walk-in Cash Customer',
       customerAddress: selectedCustomer.address || 'Local Branch',
-      salesman: invoiceSalesman || profile?.name || 'Vanguard Operator',
+      salesman: invoiceSalesman || profile?.name || 'Direct Counter',
       createdBy: profile?.name || 'Vanguard Operator',
       deliveredBy: deliveredBy,
       currency: currency,
@@ -1282,7 +1277,7 @@ export default function AuthenticOmegaSalesWorkstation({
       grandTotal: grandTotal,
       payments: [...payments],
       status: postImmediately ? 'Posted' : 'Draft',
-      createdAt: new Date().toLocaleString()
+      createdAt: new Date().toISOString()
     };
 
     setInvoicesDirectory((prev) => [newRecord, ...prev]);
@@ -3750,13 +3745,13 @@ export default function AuthenticOmegaSalesWorkstation({
                         {inv.customerId}
                       </td>
                       <td className="py-2.5 px-2 whitespace-nowrap text-slate-700" dir="rtl">
-                        {inv.company || '—'}
+                        {inv.company && inv.company !== '-' ? inv.company : 'Walk-in Cash Customer'}
                       </td>
                       <td className="py-2.5 px-2 whitespace-nowrap text-slate-700">
-                        {inv.salesman || '—'}
+                        {inv.salesman || 'Direct Counter'}
                       </td>
                       <td className="py-2.5 px-2 whitespace-nowrap text-slate-700">
-                        {inv.createdBy || '—'}
+                        {inv.createdBy || 'Vanguard Operator'}
                       </td>
                       <td className="py-2.5 px-2 whitespace-nowrap text-slate-700">
                         {inv.source || 'Inventory'}
