@@ -1263,7 +1263,7 @@ export default function AuthenticOmegaSalesWorkstation({
       branch: branchName,
       customerName: selectedCustomer.name || 'Miscellaneous / Cash Customer',
       customerId: selectedCustomer.id || 'CUST-001',
-      company: ((selectedCustomer as any).company && (selectedCustomer as any).company !== '-') ? (selectedCustomer as any).company : 'Walk-in Cash Customer',
+      company: ((selectedCustomer as any).company && (selectedCustomer as any).company !== '-') ? (selectedCustomer as any).company : (selectedCustomer.name || 'Walk-in Cash Customer'),
       customerAddress: selectedCustomer.address || 'Local Branch',
       salesman: invoiceSalesman || profile?.name || 'Direct Counter',
       createdBy: profile?.name || 'Vanguard Operator',
