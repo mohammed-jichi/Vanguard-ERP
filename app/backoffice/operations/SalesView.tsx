@@ -50,7 +50,8 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Filter,
-  Tag
+  Tag,
+  Unlock
 } from 'lucide-react';
 import DatePickerInput from '@/components/DatePickerInput';
 import { useTenant } from '@/lib/TenantContext';
@@ -929,6 +930,12 @@ export default function AuthenticOmegaSalesWorkstation({
   const [isPostingAction, setIsPostingAction] = useState(false);
   const [isPostingAll, setIsPostingAll] = useState(false);
 
+  // Current loaded invoice in the editor & Unpost states
+  const [currentInvoice, setCurrentInvoice] = useState<InvoiceRecord | null>(null);
+  const [isConfirmUnpostOpen, setIsConfirmUnpostOpen] = useState(false);
+  const [invoiceToUnpost, setInvoiceToUnpost] = useState<InvoiceRecord | null>(null);
+  const [isUnpostingAction, setIsUnpostingAction] = useState(false);
+
   const [previewFromDate, setPreviewFromDate] = useState(getTodayFormatted());
   const [previewToDate, setPreviewToDate] = useState(getTodayFormatted());
 
@@ -1228,6 +1235,7 @@ export default function AuthenticOmegaSalesWorkstation({
   };
 
   const handleNewInvoice = () => {
+    setCurrentInvoice(null);
     const nextNb = `INV-2026-${Math.floor(10000 + Math.random() * 90000)}`;
     setInvoiceNumber(nextNb);
     setCartItems([]);
@@ -1296,7 +1304,16 @@ export default function AuthenticOmegaSalesWorkstation({
       createdAt: new Date().toISOString()
     };
 
-    setInvoicesDirectory((prev) => [newRecord, ...prev]);
+    setInvoicesDirectory((prev) => {
+      const exists = prev.some((inv) => inv.id === newRecord.id || inv.invoiceNumber === newRecord.invoiceNumber);
+      if (exists) {
+        return prev.map((inv) =>
+          inv.id === newRecord.id || inv.invoiceNumber === newRecord.invoiceNumber ? newRecord : inv
+        );
+      }
+      return [newRecord, ...prev];
+    });
+    setCurrentInvoice(newRecord);
 
     if (postImmediately) {
       const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
@@ -1333,6 +1350,7 @@ export default function AuthenticOmegaSalesWorkstation({
   };
 
   const handleLoadInvoice = (rec: InvoiceRecord) => {
+    setCurrentInvoice(rec);
     setInvoiceNumber(rec.invoiceNumber);
     setInvoiceDate(rec.date);
     setDeliveryDate(rec.deliveryDate);
@@ -1704,6 +1722,20 @@ export default function AuthenticOmegaSalesWorkstation({
     return filteredPreviewInvoices.some((inv) => !inv.posted);
   }, [filteredPreviewInvoices]);
 
+  // Check if currently loaded invoice in editor is posted
+  const isCurrentInvoicePosted = useMemo(() => {
+    if (!currentInvoice) return false;
+    const matchingDirInv = invoicesDirectory.find(
+      (inv) => inv.id === currentInvoice.id || inv.invoiceNumber === currentInvoice.invoiceNumber
+    );
+    const target = matchingDirInv || currentInvoice;
+    return Boolean(
+      target.posted === true ||
+      (target as any).is_posted === true ||
+      target.status === 'Posted'
+    );
+  }, [currentInvoice, invoicesDirectory]);
+
   const handleOpenReportScreen = (inv?: any) => {
     setReportTargetInvoice(inv || {
       invoiceNumber: invoiceNumber,
@@ -1889,6 +1921,94 @@ export default function AuthenticOmegaSalesWorkstation({
   };
 
   const handleExecutePostAll = handleConfirmPost;
+
+  // --- UNPOST EXECUTION LOGIC (OMEGA POS LEDGER CONTROL PATTERN) ---
+  const executeDatabaseUnpost = async (invoice: InvoiceRecord) => {
+    const isUUID = (val: string) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
+
+    const invRef = invoice.invoiceNumber || invoice.id;
+
+    // 1. Update sales_invoices table in database
+    try {
+      if (isUUID(invoice.id)) {
+        await supabase
+          .from('sales_invoices')
+          .update({ is_posted: false, status: 'Unposted' })
+          .eq('id', invoice.id);
+      } else {
+        await supabase
+          .from('sales_invoices')
+          .update({ is_posted: false, status: 'Unposted' })
+          .eq('invoice_ref', invRef);
+      }
+    } catch (err) {
+      console.warn('Supabase sales_invoices unpost notice:', err);
+    }
+
+    // 2. Update orders table in database if linked
+    try {
+      if (isUUID(invoice.id)) {
+        await supabase
+          .from('orders')
+          .update({ is_posted: false, status: 'DRAFT' })
+          .eq('id', invoice.id);
+      } else {
+        await supabase
+          .from('orders')
+          .update({ is_posted: false, status: 'DRAFT' })
+          .eq('order_number', invRef);
+      }
+    } catch (err) {
+      console.warn('Supabase orders unpost notice:', err);
+    }
+  };
+
+  const handlePromptUnpost = (inv?: InvoiceRecord) => {
+    const target = inv || currentInvoice;
+    if (!target) return;
+    setInvoiceToUnpost(target);
+    setIsConfirmUnpostOpen(true);
+  };
+
+  const handleConfirmUnpost = async () => {
+    const target = invoiceToUnpost || currentInvoice;
+    if (!target) return;
+
+    setIsUnpostingAction(true);
+    try {
+      // a) Execute mutation in Supabase / data store
+      await executeDatabaseUnpost(target);
+
+      // b) Update local state (invoicesDirectory, previewInvoices, currentInvoice)
+      const targetId = target.id || target.invoiceNumber;
+      setInvoicesDirectory((prev) =>
+        prev.map((item) =>
+          item.id === targetId || item.invoiceNumber === target.invoiceNumber
+            ? { ...item, status: 'Unposted', is_posted: false, posted: false }
+            : item
+        )
+      );
+
+      if (currentInvoice && (currentInvoice.id === targetId || currentInvoice.invoiceNumber === target.invoiceNumber)) {
+        setCurrentInvoice((prev) =>
+          prev ? { ...prev, status: 'Unposted', is_posted: false, posted: false } : null
+        );
+      }
+
+      // d) Display toast confirmation
+      setStatusNotice('Invoice successfully unposted.');
+      setTimeout(() => setStatusNotice(null), 3500);
+    } catch (error) {
+      console.error('Error unposting invoice:', error);
+      setStatusNotice(`Failed to unpost invoice: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setTimeout(() => setStatusNotice(null), 4000);
+    } finally {
+      setIsUnpostingAction(false);
+      setInvoiceToUnpost(null);
+      setIsConfirmUnpostOpen(false);
+    }
+  };
 
   return (
     <div className="flex h-screen w-full bg-background text-slate-800 font-sans select-none overflow-hidden">
@@ -2532,6 +2652,36 @@ export default function AuthenticOmegaSalesWorkstation({
           {/* Customer & Metadata Block */}
           <div className="p-3 bg-white border-b border-border space-y-2 shrink-0">
             
+            {/* Invoice Number & Live Status Badge */}
+            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-slate-800">
+                  Invoice #{invoiceNumber}
+                </span>
+                {isCurrentInvoicePosted ? (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                    <Check className="w-3 h-3 text-emerald-700" />
+                    <span>Posted (Locked)</span>
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
+                    Draft (Editable)
+                  </span>
+                )}
+              </div>
+              {isCurrentInvoicePosted && (
+                <button
+                  type="button"
+                  onClick={() => handlePromptUnpost(currentInvoice || undefined)}
+                  className="px-2.5 py-0.5 rounded text-[11px] font-bold text-rose-700 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Click to unpost and unlock invoice"
+                >
+                  <Unlock className="w-3 h-3" />
+                  <span>Unpost Invoice</span>
+                </button>
+              )}
+            </div>
+            
             {/* Upper Section: Customer info on Left, Metadata on Right */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start text-xs">
               
@@ -2805,34 +2955,59 @@ export default function AuthenticOmegaSalesWorkstation({
               </button>
             </div>
 
-            {/* Right Action Buttons: Save (Orange) & Save & Post (Green) */}
-            <div className="flex items-center gap-1.5">
+            {/* Right Action Buttons: Unpost (Danger) | Save (Orange) & Save & Post (Green) */}
+            <div className="flex items-center gap-2">
               
-              {/* Save Button (Orange #fb8205) */}
+              {/* Unpost Button (Danger Theme) - Active when loaded invoice is posted */}
+              {isCurrentInvoicePosted ? (
+                <button
+                  type="button"
+                  onClick={() => handlePromptUnpost(currentInvoice || undefined)}
+                  className="py-1.5 px-4 rounded text-xs text-white font-semibold shadow-2xs transition-colors flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 cursor-pointer"
+                  title="Unpost this invoice to unlock transaction for modification"
+                >
+                  <Unlock className="w-3.5 h-3.5" />
+                  <span>Unpost</span>
+                </button>
+              ) : null}
+
+              {/* Save Button (Orange #fb8205) - Disabled when posted */}
               <button
                 type="button"
-                onClick={() => handleSaveInvoice(false)}
-                disabled={cartItems.length === 0}
-                className={`py-1.5 px-4 rounded text-xs text-white font-medium shadow-2xs transition-colors flex items-center gap-1 cursor-pointer ${
-                  cartItems.length === 0
+                onClick={() => {
+                  if (isCurrentInvoicePosted) return;
+                  handleSaveInvoice(false);
+                }}
+                disabled={cartItems.length === 0 || isCurrentInvoicePosted}
+                className={`py-1.5 px-4 rounded text-xs text-white font-medium shadow-2xs transition-colors flex items-center gap-1 ${
+                  isCurrentInvoicePosted
+                    ? 'bg-slate-400 opacity-50 cursor-not-allowed'
+                    : cartItems.length === 0
                     ? 'bg-amber-600/60 cursor-not-allowed'
-                    : 'bg-amber-600 hover:bg-amber-700'
+                    : 'bg-amber-600 hover:bg-amber-700 cursor-pointer'
                 }`}
+                title={isCurrentInvoicePosted ? 'Cannot edit posted ledger transaction. Unpost first.' : 'Save Draft'}
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save</span>
               </button>
 
-              {/* Save & Post Button (Green #1e3a2b / #15803d) */}
+              {/* Save & Post Button (Green #1e3a2b / #15803d) - Disabled when posted */}
               <button
                 type="button"
-                onClick={() => handleSaveInvoice(true)}
-                disabled={cartItems.length === 0}
-                className={`py-1.5 px-4 rounded text-xs text-white font-medium shadow-2xs transition-colors flex items-center gap-1 cursor-pointer ${
-                  cartItems.length === 0
+                onClick={() => {
+                  if (isCurrentInvoicePosted) return;
+                  handleSaveInvoice(true);
+                }}
+                disabled={cartItems.length === 0 || isCurrentInvoicePosted}
+                className={`py-1.5 px-4 rounded text-xs text-white font-medium shadow-2xs transition-colors flex items-center gap-1 ${
+                  isCurrentInvoicePosted
+                    ? 'bg-primary/40 opacity-50 cursor-not-allowed'
+                    : cartItems.length === 0
                     ? 'bg-primary/60 cursor-not-allowed'
-                    : 'bg-primary hover:bg-primary/90'
+                    : 'bg-primary hover:bg-primary/90 cursor-pointer'
                 }`}
+                title={isCurrentInvoicePosted ? 'Invoice is already posted.' : 'Save and Post to General Ledger'}
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Save & Post</span>
@@ -3968,21 +4143,40 @@ export default function AuthenticOmegaSalesWorkstation({
                       </td>
                       <td className="py-2.5 px-2 text-center">
                         {((inv as any).is_posted === true || inv.status === 'Posted' || (inv as any).posted === true) ? (
-                          <Check className="w-4 h-4 text-emerald-600 inline-block font-bold" />
+                          <button
+                            type="button"
+                            onClick={() => handlePromptUnpost(inv)}
+                            className="bg-emerald-100 hover:bg-rose-100 text-emerald-800 hover:text-rose-800 border border-emerald-300 hover:border-rose-300 px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors inline-flex items-center gap-1 group"
+                            title="Posted to GL — Click to Unpost"
+                          >
+                            <Check className="w-3 h-3 text-emerald-600 group-hover:hidden" />
+                            <Unlock className="w-3 h-3 text-rose-600 hidden group-hover:inline" />
+                            <span className="group-hover:hidden">Posted</span>
+                            <span className="hidden group-hover:inline">Unpost</span>
+                          </button>
                         ) : (
                           <button
                             type="button"
                             onClick={() => handlePromptPostSingleInvoice(inv)}
-                            className="bg-amber-100 hover:bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors"
+                            className="bg-amber-100 hover:bg-emerald-100 text-amber-800 hover:text-emerald-800 border border-amber-300 hover:border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors inline-flex items-center gap-1"
                             title="Click to post this invoice"
                           >
-                            Unposted
+                            <span>Unposted</span>
                           </button>
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-center whitespace-nowrap">
                         <div className="flex items-center justify-center gap-1.5">
-                          {!(inv.status === 'Posted' || (inv as any).is_posted === true || (inv as any).posted === true) && (
+                          {((inv as any).is_posted === true || inv.status === 'Posted' || (inv as any).posted === true) ? (
+                            <button
+                              type="button"
+                              onClick={() => handlePromptUnpost(inv)}
+                              className="bg-rose-600 hover:bg-rose-700 text-white p-1 rounded cursor-pointer shadow-2xs transition-colors"
+                              title="Unpost Invoice (Unlock for Editing)"
+                            >
+                              <Unlock className="w-3 h-3" />
+                            </button>
+                          ) : (
                             <button
                               type="button"
                               onClick={() => handlePromptPostSingleInvoice(inv)}
@@ -5808,6 +6002,102 @@ export default function AuthenticOmegaSalesWorkstation({
                   <span>{readingType === 'Z' ? 'Finalize & Print Z-Report' : 'Print X-Reading Audit'}</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* CONFIRMATION DIALOG FOR UNPOSTING INVOICE (OMEGA POS PATTERN)             */}
+      {/* ========================================================================= */}
+      {isConfirmUnpostOpen && (
+        <div className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-md p-6 text-xs space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5 text-rose-700">
+                <div className="p-2 bg-rose-100 rounded-full">
+                  <Unlock className="w-5 h-5 text-rose-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Unpost Invoice #{invoiceToUnpost?.invoiceNumber || currentInvoice?.invoiceNumber}
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Ledger Transaction Unlock
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={isUnpostingAction}
+                onClick={() => {
+                  setIsConfirmUnpostOpen(false);
+                  setInvoiceToUnpost(null);
+                }}
+                className="text-slate-400 hover:text-slate-600 text-lg font-light cursor-pointer disabled:opacity-50"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="bg-rose-50/70 border border-rose-200/90 rounded-lg p-3 text-slate-700 text-xs leading-relaxed font-medium">
+              Are you sure you want to unpost this invoice? This will unlock the transaction for modification.
+            </div>
+
+            {(invoiceToUnpost || currentInvoice) && (
+              <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-[11px] space-y-1">
+                <div className="flex justify-between text-slate-600">
+                  <span>Customer:</span>
+                  <span className="font-semibold text-slate-800">
+                    {(invoiceToUnpost || currentInvoice)?.customerName}
+                  </span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Total Amount:</span>
+                  <span className="font-mono font-bold text-primary">
+                    ${(invoiceToUnpost || currentInvoice)?.grandTotal.toFixed(2)}{' '}
+                    {(invoiceToUnpost || currentInvoice)?.currency}
+                  </span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Date:</span>
+                  <span className="font-medium text-slate-700">
+                    {(invoiceToUnpost || currentInvoice)?.date}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={isUnpostingAction}
+                onClick={() => {
+                  setIsConfirmUnpostOpen(false);
+                  setInvoiceToUnpost(null);
+                }}
+                className="px-3.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer disabled:opacity-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isUnpostingAction}
+                onClick={handleConfirmUnpost}
+                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs font-bold shadow-2xs cursor-pointer transition-colors flex items-center gap-1.5 disabled:opacity-50"
+              >
+                {isUnpostingAction ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Unposting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Unlock className="w-3.5 h-3.5" />
+                    <span>Yes, Unpost</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
