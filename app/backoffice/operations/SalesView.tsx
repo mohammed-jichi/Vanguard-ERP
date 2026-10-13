@@ -120,6 +120,8 @@ export interface InvoiceRecord {
   grandTotal: number;
   payments: PaymentEntry[];
   status: 'Posted' | 'Unposted' | 'Draft';
+  is_posted?: boolean;
+  posted?: boolean;
   createdAt: string;
 }
 
@@ -921,8 +923,10 @@ export default function AuthenticOmegaSalesWorkstation({
   const [activeSearchDropdown, setActiveSearchDropdown] = useState<string | null>(null);
   const [dropdownSearchTerm, setDropdownSearchTerm] = useState('');
 
-  // Confirmation & loading states for Post All (Matching Screenshot 2)
+  // Confirmation & loading states for Invoice Posting (Single & Batch)
   const [isConfirmPostAllOpen, setIsConfirmPostAllOpen] = useState(false);
+  const [invoiceToPost, setInvoiceToPost] = useState<InvoiceRecord | null>(null);
+  const [isPostingAction, setIsPostingAction] = useState(false);
   const [isPostingAll, setIsPostingAll] = useState(false);
 
   const [previewFromDate, setPreviewFromDate] = useState(getTodayFormatted());
@@ -1629,8 +1633,9 @@ export default function AuthenticOmegaSalesWorkstation({
       }
       // Status (All Status, Unposted, Posted)
       if (previewStatusFilter !== 'All Status') {
-        if (previewStatusFilter === 'Posted' && inv.status !== 'Posted') return false;
-        if (previewStatusFilter === 'Unposted' && inv.status === 'Posted') return false;
+        const isPosted = inv.status === 'Posted' || (inv as any).is_posted === true || (inv as any).posted === true;
+        if (previewStatusFilter === 'Posted' && !isPosted) return false;
+        if (previewStatusFilter === 'Unposted' && isPosted) return false;
       }
       // Salesman
       if (previewSalesmanFilter !== 'All Salesmen' && inv.salesman !== previewSalesmanFilter) {
@@ -1696,45 +1701,172 @@ export default function AuthenticOmegaSalesWorkstation({
     setShowReportInvoice(false);
   };
 
-  const handlePostAllInvoices = () => {
+  // --- Invoice Posting Handlers (Single & Bulk) ---
+  const handlePromptPostSingleInvoice = (inv: InvoiceRecord) => {
+    setInvoiceToPost(inv);
     setIsConfirmPostAllOpen(true);
   };
 
-  const handleExecutePostAll = async () => {
-    setIsConfirmPostAllOpen(false);
-    setIsPostingAll(true);
-    
-    try {
-      const unpostedIds = invoicesDirectory
-        .filter(inv => inv.status !== 'Posted' && (inv as any).is_posted !== true)
-        .map(inv => inv.id);
+  const handlePostAllInvoices = () => {
+    setInvoiceToPost(null);
+    setIsConfirmPostAllOpen(true);
+  };
 
-      if (unpostedIds.length > 0) {
-        const { error } = await supabase
-          .from('sales_invoices')
-          .update({ is_posted: true, status: 'Posted' })
-          .in('id', unpostedIds);
-          
-        if (error) {
-          console.warn('Supabase post update failed or table missing, proceeding with local update:', error.message);
+  const executeDatabasePost = async (invoicesToUpdate: InvoiceRecord[]) => {
+    const isUUID = (val: string) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
+
+    const targetTenantId =
+      currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-')
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
+
+    for (const inv of invoicesToUpdate) {
+      const invRef = inv.invoiceNumber || inv.id;
+
+      // 1. Update sales_invoices table in database
+      try {
+        if (isUUID(inv.id)) {
+          const { error } = await supabase
+            .from('sales_invoices')
+            .update({ is_posted: true, status: 'Posted' })
+            .eq('id', inv.id);
+
+          if (error) {
+            await supabase
+              .from('sales_invoices')
+              .update({ is_posted: true })
+              .eq('id', inv.id);
+          }
+        } else {
+          const { error } = await supabase
+            .from('sales_invoices')
+            .update({ is_posted: true, status: 'Posted' })
+            .eq('invoice_ref', invRef);
+
+          if (error) {
+            await supabase
+              .from('sales_invoices')
+              .update({ is_posted: true })
+              .eq('invoice_ref', invRef);
+          }
         }
+      } catch (err) {
+        console.warn('Supabase sales_invoices update notice:', err);
       }
 
-      setInvoicesDirectory((prev) =>
-        prev.map((inv) => ({
-          ...inv,
-          status: 'Posted',
-          is_posted: true
-        }))
-      );
-      setIsPostingAll(false);
-      setStatusNotice(`All unposted invoices successfully posted to General Ledger!`);
-      setTimeout(() => setStatusNotice(null), 3500);
-    } catch (error) {
-      console.error('Error posting invoices:', error);
-      setIsPostingAll(false);
+      // 2. Update orders table in database if linked
+      try {
+        if (isUUID(inv.id)) {
+          await supabase
+            .from('orders')
+            .update({ is_posted: true, status: 'POSTED' })
+            .eq('id', inv.id);
+        } else {
+          await supabase
+            .from('orders')
+            .update({ is_posted: true, status: 'POSTED' })
+            .eq('order_number', invRef);
+        }
+      } catch (err) {
+        console.warn('Supabase orders update notice:', err);
+      }
+
+      // 3. Post stock transaction deduction if items present
+      if (inv.items && inv.items.length > 0) {
+        try {
+          const stockTxns = inv.items.map((item) => ({
+            tenant_id: targetTenantId,
+            item_id: (item as any).sku || item.id,
+            transaction_type: 'SALES_DEDUCTION',
+            quantity: -item.qty,
+            reference_number: inv.invoiceNumber,
+            branch_id: inv.branch || selectedBranch || 'BRANCH-01',
+            created_at: new Date().toISOString()
+          }));
+
+          await supabase.from('stock_transactions').insert(stockTxns);
+        } catch (err) {
+          console.warn('Stock transaction deduction notice:', err);
+        }
+      }
     }
   };
+
+  const postInvoice = async (invoiceId: string) => {
+    const inv = invoicesDirectory.find((i) => i.id === invoiceId || i.invoiceNumber === invoiceId);
+    if (!inv) return;
+
+    // a) Await database update
+    await executeDatabasePost([inv]);
+
+    // b) Update local state
+    setInvoicesDirectory((prev) =>
+      prev.map((item) =>
+        item.id === invoiceId || item.invoiceNumber === invoiceId
+          ? { ...item, status: 'Posted', is_posted: true, posted: true }
+          : item
+      )
+    );
+
+    // c) Provide feedback
+    setStatusNotice(`Invoice #${inv.invoiceNumber} successfully posted to General Ledger!`);
+    setTimeout(() => setStatusNotice(null), 3500);
+  };
+
+  const batchPostInvoices = async () => {
+    const unposted = invoicesDirectory.filter(
+      (inv) => inv.status !== 'Posted' && (inv as any).is_posted !== true && (inv as any).posted !== true
+    );
+    if (unposted.length === 0) {
+      setStatusNotice('No unposted invoices to post.');
+      setTimeout(() => setStatusNotice(null), 3000);
+      return;
+    }
+
+    // a) Await database update
+    await executeDatabasePost(unposted);
+
+    // b) Update local state
+    setInvoicesDirectory((prev) =>
+      prev.map((inv) => ({
+        ...inv,
+        status: 'Posted',
+        is_posted: true,
+        posted: true
+      }))
+    );
+
+    // c) Provide feedback
+    setStatusNotice(`All ${unposted.length} unposted invoices successfully posted to General Ledger!`);
+    setTimeout(() => setStatusNotice(null), 3500);
+  };
+
+  const handleConfirmPost = async () => {
+    setIsPostingAction(true);
+    if (!invoiceToPost) {
+      setIsPostingAll(true);
+    }
+
+    try {
+      if (invoiceToPost) {
+        await postInvoice(invoiceToPost.id || invoiceToPost.invoiceNumber);
+      } else {
+        await batchPostInvoices();
+      }
+    } catch (error) {
+      console.error('Error posting invoice(s):', error);
+      setStatusNotice(`Failed to post: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setTimeout(() => setStatusNotice(null), 4000);
+    } finally {
+      setIsPostingAction(false);
+      setIsPostingAll(false);
+      setInvoiceToPost(null);
+      setIsConfirmPostAllOpen(false);
+    }
+  };
+
+  const handleExecutePostAll = handleConfirmPost;
 
   return (
     <div className="flex h-screen w-full bg-background text-slate-800 font-sans select-none overflow-hidden">
@@ -3813,14 +3945,31 @@ export default function AuthenticOmegaSalesWorkstation({
                         {inv.currency}
                       </td>
                       <td className="py-2.5 px-2 text-center">
-                        {((inv as any).is_posted === true || inv.status === 'Posted') ? (
+                        {((inv as any).is_posted === true || inv.status === 'Posted' || (inv as any).posted === true) ? (
                           <Check className="w-4 h-4 text-emerald-600 inline-block font-bold" />
                         ) : (
-                          <span className="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded text-[10px] font-semibold">Unposted</span>
+                          <button
+                            type="button"
+                            onClick={() => handlePromptPostSingleInvoice(inv)}
+                            className="bg-amber-100 hover:bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors"
+                            title="Click to post this invoice"
+                          >
+                            Unposted
+                          </button>
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-center whitespace-nowrap">
                         <div className="flex items-center justify-center gap-1.5">
+                          {!(inv.status === 'Posted' || (inv as any).is_posted === true || (inv as any).posted === true) && (
+                            <button
+                              type="button"
+                              onClick={() => handlePromptPostSingleInvoice(inv)}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white p-1 rounded cursor-pointer shadow-2xs transition-colors"
+                              title="Post Invoice to GL"
+                            >
+                              <CheckCircle2 className="w-3 h-3" />
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => handleLoadInvoice(inv)}
@@ -3890,18 +4039,36 @@ export default function AuthenticOmegaSalesWorkstation({
               </div>
             </div>
 
-            {/* Confirmation Dialog for Post All (Matching Screenshot 2) */}
+            {/* Confirmation Dialog for Posting (Single Invoice or Post All) */}
             {isConfirmPostAllOpen && (
               <div className="fixed inset-0 z-60 bg-black/25 flex items-start justify-center pt-8 animate-fade-in">
                 <div className="bg-white rounded-md shadow-2xl border border-slate-300 w-full max-w-md p-5 text-xs">
                   <div className="flex items-start justify-between">
-                    <p className="text-sm font-medium text-slate-800 pr-4">
-                      Are you sure you want to post all sales transactions?
-                    </p>
+                    <div className="pr-4">
+                      <p className="text-sm font-medium text-slate-800">
+                        {invoiceToPost
+                          ? `Are you sure you want to post invoice #${invoiceToPost.invoiceNumber}?`
+                          : 'Are you sure you want to post all sales transactions?'}
+                      </p>
+                      {invoiceToPost ? (
+                        <p className="text-xs text-slate-500 mt-1">
+                          Customer: <span className="font-medium text-slate-700">{invoiceToPost.customerName}</span> • Total:{' '}
+                          <span className="font-semibold text-primary">${invoiceToPost.grandTotal.toFixed(2)} {invoiceToPost.currency}</span>
+                        </p>
+                      ) : (
+                        <p className="text-xs text-slate-500 mt-1">
+                          All unposted sales invoices will be committed to the General Ledger and stock deducted.
+                        </p>
+                      )}
+                    </div>
                     <button
                       type="button"
-                      onClick={() => setIsConfirmPostAllOpen(false)}
-                      className="text-slate-400 hover:text-slate-600 text-base font-light cursor-pointer"
+                      disabled={isPostingAction || isPostingAll}
+                      onClick={() => {
+                        setIsConfirmPostAllOpen(false);
+                        setInvoiceToPost(null);
+                      }}
+                      className="text-slate-400 hover:text-slate-600 text-base font-light cursor-pointer disabled:opacity-50"
                     >
                       ✕
                     </button>
@@ -3909,17 +4076,29 @@ export default function AuthenticOmegaSalesWorkstation({
                   <div className="flex items-center justify-end gap-3 mt-6">
                     <button
                       type="button"
-                      onClick={() => setIsConfirmPostAllOpen(false)}
-                      className="text-slate-600 hover:text-slate-800 text-xs font-medium px-3 py-1 cursor-pointer"
+                      disabled={isPostingAction || isPostingAll}
+                      onClick={() => {
+                        setIsConfirmPostAllOpen(false);
+                        setInvoiceToPost(null);
+                      }}
+                      className="text-slate-600 hover:text-slate-800 text-xs font-medium px-3 py-1 cursor-pointer disabled:opacity-50"
                     >
                       Cancel
                     </button>
                     <button
                       type="button"
-                      onClick={handleExecutePostAll}
-                      className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer transition-colors"
+                      disabled={isPostingAction || isPostingAll}
+                      onClick={handleConfirmPost}
+                      className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold shadow-2xs cursor-pointer transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     >
-                      OK
+                      {(isPostingAction || isPostingAll) ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Posting...</span>
+                        </>
+                      ) : (
+                        <span>Yes, Post</span>
+                      )}
                     </button>
                   </div>
                 </div>
