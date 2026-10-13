@@ -621,6 +621,15 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
   }
 ];
 
+function generateUniqueInvoiceNumber(existingList?: { invoiceNumber?: string }[]): string {
+  const existingSet = new Set((existingList || []).map((i) => i.invoiceNumber));
+  let num = `INV-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+  while (existingSet.has(num)) {
+    num = `INV-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+  }
+  return num;
+}
+
 export default function AuthenticOmegaSalesWorkstation({
   withOmegaSidebar = false
 }: {
@@ -641,7 +650,9 @@ export default function AuthenticOmegaSalesWorkstation({
   const [catalogSearch, setCatalogSearch] = useState('');
 
   // --- Invoice Header State ---
-  const [invoiceNumber, setInvoiceNumber] = useState('INV-2026-08942');
+  const [invoiceNumber, setInvoiceNumber] = useState<string>(() =>
+    generateUniqueInvoiceNumber(INITIAL_INVOICES_DIRECTORY)
+  );
   const [customerSearch, setCustomerSearch] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState(CUSTOMER_PRESETS[0]);
   const [invoiceDate, setInvoiceDate] = useState(getTodayFormatted());
@@ -1052,7 +1063,7 @@ export default function AuthenticOmegaSalesWorkstation({
             customerName: p.customer_name || 'Customer',
             customerId: p.customer_id || 'CUST-001',
             method: p.payment_method || 'Cash USD',
-            invoiceRef: p.reference_invoice || 'INV-2026-08942',
+            invoiceRef: p.reference_invoice || 'INV-2026-0001',
             amount: Number(p.amount) || 0,
             cleared: true
           }));
@@ -1267,19 +1278,18 @@ export default function AuthenticOmegaSalesWorkstation({
           });
         });
 
-        // 6. Synchronize currentInvoice if matching
+        // 6. Synchronize currentInvoice ONLY if explicitly loaded (prev !== null)
         setCurrentInvoice((prev) => {
-          const targetKey = prev?.id || prev?.invoiceNumber || invoiceNumber;
+          if (!prev) return null;
+          const targetKey = prev.id || prev.invoiceNumber;
           const isPosted = persistentStatusMap[targetKey];
           if (isPosted !== undefined) {
-            if (prev) {
-              return {
-                ...prev,
-                posted: isPosted,
-                is_posted: isPosted,
-                status: isPosted ? 'Posted' : 'Unposted',
-              };
-            }
+            return {
+              ...prev,
+              posted: isPosted,
+              is_posted: isPosted,
+              status: isPosted ? 'Posted' : 'Unposted',
+            };
           }
           return prev;
         });
@@ -1411,7 +1421,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
   const handleNewInvoice = () => {
     setCurrentInvoice(null);
-    const nextNb = `INV-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    const nextNb = generateUniqueInvoiceNumber(invoicesDirectory);
     setInvoiceNumber(nextNb);
     setCartItems([]);
     setPayments([]);
@@ -1684,7 +1694,7 @@ export default function AuthenticOmegaSalesWorkstation({
       customerName: selectedCustomer.name || 'Miscellaneous Customer',
       customerId: selectedCustomer.id || 'CUST-001',
       method: newReceiptMethod,
-      invoiceRef: invoiceNumber || 'INV-2026-08942',
+      invoiceRef: invoiceNumber || 'INV-2026-0001',
       amount: amt,
       cleared: true
     };
@@ -1704,7 +1714,7 @@ export default function AuthenticOmegaSalesWorkstation({
           receipt_number: rctNum,
           amount: amt,
           payment_method: newReceiptMethod,
-          reference_invoice: invoiceNumber || 'INV-2026-08942',
+          reference_invoice: invoiceNumber || 'INV-2026-0001',
           notes: newReceiptNotes || 'Customer Receipt Settlement',
           created_at: new Date().toISOString()
         }]);
@@ -1899,19 +1909,12 @@ export default function AuthenticOmegaSalesWorkstation({
   }, [filteredPreviewInvoices]);
 
   // Check if currently loaded invoice in editor is posted
-  const isCurrentInvoicePosted = useMemo(() => {
-    const activeId = currentInvoice?.id || currentInvoice?.invoiceNumber || invoiceNumber;
-    const matchingDirInv = invoicesDirectory.find(
-      (inv) => inv.id === activeId || inv.invoiceNumber === activeId
-    );
-    const target = matchingDirInv || currentInvoice;
-    if (!target) return false;
-    return Boolean(
-      target.posted === true ||
-      (target as any).is_posted === true ||
-      target.status === 'Posted'
-    );
-  }, [currentInvoice, invoicesDirectory, invoiceNumber]);
+  const isCurrentInvoicePosted = Boolean(
+    currentInvoice &&
+      (currentInvoice.posted === true ||
+        (currentInvoice as any).is_posted === true ||
+        currentInvoice.status === 'Posted')
+  );
 
   const handleOpenReportScreen = (inv?: any) => {
     setReportTargetInvoice(inv || {
@@ -2948,11 +2951,6 @@ export default function AuthenticOmegaSalesWorkstation({
                 <span className="font-bold text-slate-800">
                   Invoice #{invoiceNumber}
                 </span>
-                {!isCurrentInvoicePosted && (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
-                    Draft (Editable)
-                  </span>
-                )}
               </div>
             </div>
             
