@@ -3951,7 +3951,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   style={{
                     filter: printColor === 'Black and white' ? 'grayscale(100%)' : 'none'
                   }}
-                  className={`bg-white shadow-2xl p-10 w-full text-slate-900 font-sans border border-slate-400 flex flex-col justify-between my-2 transition-all ${
+                  className={`printable-document vanguard-printable bg-white shadow-2xl p-10 w-full text-slate-900 font-sans border border-slate-400 flex flex-col justify-between my-2 transition-all ${
                     printLayout === 'Landscape' ? 'max-w-[1060px] min-h-[720px]' : 'max-w-[800px] min-h-[1050px]'
                   }`}
                 >
@@ -4267,8 +4267,8 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     setIsChromePrintPreviewOpen(false);
                     notify('Quotations.pdf downloaded to computer and real Google Drive opened!');
                   } else {
-                    setIsChromePrintPreviewOpen(false);
                     window.print();
+                    setIsChromePrintPreviewOpen(false);
                     notify(`Printed to ${printDestination} (${printPaperSize}, ${printCopies} copy)`);
                   }
                 }}
@@ -4451,9 +4451,9 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               <button
                 type="button"
                 onClick={() => {
+                  window.print();
                   setIsSystemPrintModalOpen(false);
                   setIsChromePrintPreviewOpen(false);
-                  window.print();
                   notify(`Printed successfully to ${selectedSystemPrinter}`);
                 }}
                 className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#0078d7] text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"

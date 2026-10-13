@@ -341,7 +341,7 @@ export default function VMenuQrGeneratorConsole() {
             </div>
 
             {/* Simulated Table Tent Display Card */}
-            <div className="w-full max-w-sm border-2 border-emerald-800 rounded-3xl p-6 bg-gradient-to-b from-amber-50/50 via-white to-emerald-50/30 shadow-md space-y-4 my-2">
+            <div className="printable-document vanguard-printable w-full max-w-sm border-2 border-emerald-800 rounded-3xl p-6 bg-gradient-to-b from-amber-50/50 via-white to-emerald-50/30 shadow-md space-y-4 my-2">
               <div className="space-y-1">
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-800">
                   Southern Olive Oil Products
@@ -519,7 +519,7 @@ export default function VMenuQrGeneratorConsole() {
             </div>
 
             {/* Representative Display Card */}
-            <div className="w-full max-w-sm border-2 border-slate-900 rounded-3xl p-6 bg-gradient-to-b from-slate-900 via-slate-850 to-slate-950 text-white shadow-xl space-y-4 my-2">
+            <div className="printable-document vanguard-printable w-full max-w-sm border-2 border-slate-900 rounded-3xl p-6 bg-gradient-to-b from-slate-900 via-slate-850 to-slate-950 text-white shadow-xl space-y-4 my-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`w-8 h-8 rounded-xl ${selectedRep.avatarBg} text-white font-black text-xs flex items-center justify-center shadow-xs`}>

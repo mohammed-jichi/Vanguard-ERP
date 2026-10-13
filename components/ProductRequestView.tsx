@@ -1480,7 +1480,7 @@ export default function ProductRequestView() {
             </div>
 
             {/* Document Body */}
-            <div className="p-8 text-slate-800 font-sans text-xs">
+            <div className="printable-document vanguard-printable bg-white p-8 text-slate-800 font-sans text-xs">
               {/* Header */}
               <div className="flex items-start justify-between border-b pb-4 mb-6">
                 <div>

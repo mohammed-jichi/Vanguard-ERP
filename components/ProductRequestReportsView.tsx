@@ -623,7 +623,7 @@ export default function ProductRequestReportsView() {
                         </div>
                       ) : (
                         /* Rich Interactive Grid */
-                        <div className="space-y-6" style={{ zoom: `${zoomLevel}%` }}>
+                        <div className="printable-document vanguard-printable space-y-6" style={{ zoom: `${zoomLevel}%` }}>
                           {/* Standardized 3-Zone Corporate Header */}
                           <Corporate3ZoneHeader
                             documentTitle={selectedReport?.REPORTNAME || 'PRODUCT REQUEST REPORT'}

@@ -588,7 +588,7 @@ export default function ReceivingOfGoodsView() {
               </div>
             </div>
 
-            <div className="p-8 text-slate-800 font-mono text-xs space-y-5">
+            <div className="printable-document vanguard-printable bg-white p-8 text-slate-800 font-mono text-xs space-y-5">
               {/* Standardized 3-Zone Corporate Header */}
               <Corporate3ZoneHeader
                 documentTitle="GOODS RECEIPT NOTE (GRN)"

@@ -347,7 +347,7 @@ export default function ReportLayoutShell({
       {/* 3. REPORT DATA SURFACE / MATRIX                                     */}
       {/* =================================================================== */}
       <div
-        className={`report-surface bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden transition-all ${
+        className={`printable-document vanguard-printable report-surface bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden transition-all ${
           isThermalActive
             ? 'thermal-roll-print max-w-[76mm] mx-auto border-dashed p-3 shadow-md'
             : 'w-full'

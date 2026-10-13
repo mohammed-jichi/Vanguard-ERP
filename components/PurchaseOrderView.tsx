@@ -2410,7 +2410,7 @@ export default function PurchaseOrderView() {
               </div>
             </div>
 
-            <div className="p-8 overflow-y-auto flex-1 bg-white font-sans text-xs">
+            <div className="printable-document vanguard-printable p-8 overflow-y-auto flex-1 bg-white font-sans text-xs">
               <Corporate3ZoneHeader
                 documentTitle="PURCHASE ORDER"
                 voucherCode={formPoNumber}

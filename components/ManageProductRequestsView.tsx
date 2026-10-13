@@ -1363,7 +1363,7 @@ export default function ManageProductRequestsView() {
               </div>
             </div>
 
-            <div className="p-8 text-slate-800 font-sans text-xs space-y-8">
+            <div className="printable-document vanguard-printable bg-white p-8 text-slate-800 font-sans text-xs space-y-8">
               {filteredRequests
                 .filter(pr => selectedPrIds.includes(pr.ID))
                 .map(pr => (

@@ -120,7 +120,7 @@ export default function LicenseActivationCertificateModal({
         </div>
 
         {/* PRINTABLE CERTIFICATE CANVAS */}
-        <div id="vanguard-license-certificate" className="p-6 sm:p-8 md:p-10 bg-[#faf9f5] text-slate-900 relative overflow-y-auto flex-1 font-serif">
+        <div id="vanguard-license-certificate" className="printable-document vanguard-printable p-6 sm:p-8 md:p-10 bg-[#faf9f5] text-slate-900 relative overflow-y-auto flex-1 font-serif">
           
           {/* ORNATE CERTIFICATE BORDER */}
           <div className="absolute inset-2 sm:inset-3 border-4 border-double border-amber-600/50 pointer-events-none rounded-2xl" />

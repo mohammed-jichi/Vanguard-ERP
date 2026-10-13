@@ -937,7 +937,7 @@ export default function TransfersView() {
           </div>
 
           {/* Printable Report Document */}
-          <div className="bg-slate-50 border border-slate-300 rounded-lg p-8 shadow-inner font-sans max-w-5xl mx-auto space-y-6">
+          <div className="printable-document vanguard-printable bg-slate-50 border border-slate-300 rounded-lg p-8 shadow-inner font-sans max-w-5xl mx-auto space-y-6">
             {/* Standardized 3-Zone Corporate Header */}
             <Corporate3ZoneHeader
               documentTitle="GOODS TRANSFER VOUCHER"

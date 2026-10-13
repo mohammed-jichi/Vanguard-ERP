@@ -87,7 +87,7 @@ export function AccountingPrintableVoucherModal({
         </div>
 
         {/* Printable Document Area */}
-        <div className="p-8 overflow-y-auto flex-1 bg-white font-sans text-xs">
+        <div className="printable-document p-8 overflow-y-auto flex-1 bg-white font-sans text-xs">
           {/* Standardized 3-Zone Corporate Header */}
           <Corporate3ZoneHeader
             documentTitle={docTitle}

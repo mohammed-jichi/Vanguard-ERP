@@ -3059,7 +3059,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
           {/* Printable Report Document */}
           <div className="flex-1 p-6 flex justify-center">
-            <div id="vanguard-printable-invoice" className="bg-white border border-slate-300 shadow-xl rounded-sm w-full max-w-[850px] p-8 text-slate-800 font-sans space-y-6">
+            <div id="vanguard-printable-invoice" className="printable-document vanguard-printable bg-white border border-slate-300 shadow-xl rounded-sm w-full max-w-[850px] p-8 text-slate-800 font-sans space-y-6">
               {/* Standardized 3-Zone Corporate Header */}
               <Corporate3ZoneHeader
                 documentTitle={previewSalesFilter === 'Quotations' ? 'SALES QUOTATION' : 'SALES INVOICE'}
@@ -4596,7 +4596,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
             {/* Printable Document Paper */}
             <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
-              <div className="bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
+              <div className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
                 {/* Standardized 3-Zone Corporate Header */}
                 <Corporate3ZoneHeader
                   documentTitle="SALES INVOICE"

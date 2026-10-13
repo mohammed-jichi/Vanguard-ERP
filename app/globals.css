@@ -80,81 +80,123 @@
     page-orientation: portrait;
   }
 
-  html, body {
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Isolate and display only the elements flagged for printing */
+  .printable-document,
+  .printable-document *,
+  #vanguard-printable-invoice,
+  #vanguard-printable-invoice *,
+  .vanguard-printable,
+  .vanguard-printable *,
+  .printable-voucher-card,
+  .printable-voucher-card *,
+  .printable-report-area,
+  .printable-report-area *,
+  .printable-sheet,
+  .printable-sheet *,
+  .report-sheet,
+  .report-sheet *,
+  .report-surface,
+  .report-surface *,
+  #print-mount-portal,
+  #print-mount-portal * {
+    visibility: visible !important;
+  }
+
+  /* Position the printable container at the top of the physical page */
+  .printable-document,
+  #vanguard-printable-invoice,
+  .vanguard-printable {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Ensure parent modal wrappers don't clip or collapse page breaks */
+  html, body {
+    overflow: visible !important;
     height: auto !important;
+    background: #ffffff !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   html, body, #__next, #root, main, .min-h-screen, .h-screen {
     background: #ffffff !important;
     color: #000000 !important;
-    margin: 0 !important;
-    padding: 0 !important;
     overflow: visible !important;
     height: auto !important;
     min-height: 0 !important;
     width: 100% !important;
   }
 
-  /* 1. HIDE ALL APPLICATION SHELLS, SIDEBARS, TOOLBARS, BUTTONS, & MODALS */
-  header,
-  aside,
-  nav,
-  .sidebar,
+  /* Reset parent modal containers and dialog wrappers so they never clip or constrain height/overflow */
+  .fixed,
+  .inset-0,
+  [role="dialog"],
+  [data-radix-portal],
+  div:has(.printable-document),
+  div:has(#vanguard-printable-invoice),
+  div:has(.vanguard-printable) {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Hide interactive buttons, navigation, scrollbars, and backdrops */
+  .no-print,
   .print-hidden,
   [class*="print:hidden"],
   button:not(.print-include),
   input:not(.print-include),
   select:not(.print-include),
+  header,
+  nav,
+  aside,
+  footer,
+  .global-footer,
   .reports-sidebar,
   .report-toolbar,
   .filter-fields,
   .report-card-filters,
-  .global-footer,
-  footer,
-  .fixed.inset-0,
-  [role="dialog"] {
+  .backdrop-blur-sm:not(:has(.printable-document)),
+  .backdrop-blur-xs:not(:has(.printable-document)),
+  .backdrop-blur-md:not(:has(.printable-document)),
+  .backdrop-blur:not(:has(.printable-document)) {
     display: none !important;
   }
 
-  /* 1. Hide the entire application body and background */
-  body * {
-    visibility: hidden !important;
-  }
-
-  /* 2. Make the printable invoice container and its children visible */
-  #vanguard-printable-invoice,
-  #vanguard-printable-invoice *,
-  .vanguard-printable,
-  .vanguard-printable * {
-    visibility: visible !important;
-  }
-
-  /* 3. Extract the invoice from the fixed modal positioning so it flows naturally onto paper */
-  #vanguard-printable-invoice,
-  .vanguard-printable {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 10mm !important;
-    box-shadow: none !important;
-    border: none !important;
-    background: #ffffff !important;
-    z-index: 9999999 !important;
-  }
-
-  /* 4. Completely suppress black backdrops, modal footers, and action buttons */
-  header,
-  nav,
-  aside,
-  button,
-  .no-print,
-  [data-radix-portal] > div:first-child,
-  .fixed.inset-0.bg-black\/50,
-  [role="dialog"] > div:last-child {
-    display: none !important;
+  /* Neutralize all backdrop filters in print media */
+  .backdrop-blur-sm,
+  .backdrop-blur-xs,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   /* ========================================================================== */
@@ -193,13 +235,12 @@
   /* Hide any internal action buttons or control bars */
   .printable-voucher-card button,
   .printable-voucher-card .no-print,
-  .printable-voucher-card [class*="print:hidden"],
-  .no-print {
+  .printable-voucher-card [class*="print:hidden"] {
     display: none !important;
     visibility: hidden !important;
   }
 
-  /* 2. REMOVE SCROLLBARS, SHADOWS, AND SCREEN ARTIFACTS */
+  /* REMOVE SCROLLBARS, SHADOWS, AND SCREEN ARTIFACTS */
   * {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;

@@ -2214,7 +2214,7 @@ function PrintVoucherModal({
         </div>
 
         {/* Printable Document Area */}
-        <div className="p-8 overflow-y-auto flex-1 font-serif text-slate-900 bg-white">
+        <div className="printable-document vanguard-printable p-8 overflow-y-auto flex-1 font-serif text-slate-900 bg-white">
           {/* Standardized 3-Zone Corporate Header */}
           <Corporate3ZoneHeader
             documentTitle="LOST GOODS VOUCHER"

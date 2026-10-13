@@ -598,7 +598,7 @@ export default function AdjustmentsView() {
         </div>
 
         {/* Printable Document Paper */}
-        <div className="max-w-4xl mx-auto bg-white border border-slate-300 rounded-lg p-8 sm:p-10 shadow-lg text-slate-900 print:border-none print:shadow-none print:p-0">
+        <div className="printable-document vanguard-printable max-w-4xl mx-auto bg-white border border-slate-300 rounded-lg p-8 sm:p-10 shadow-lg text-slate-900 print:border-none print:shadow-none print:p-0">
           {/* Standardized 3-Zone Corporate Header */}
           <Corporate3ZoneHeader
             documentTitle="INVENTORY ADJUSTMENTS VOUCHER"

@@ -1240,7 +1240,7 @@ export default function ItemAssemblyView() {
         </div>
 
         {/* Printable Sheet */}
-        <div className="w-full max-w-4xl bg-white p-10 rounded-xl shadow-lg border border-slate-200 print:border-none print:shadow-none font-sans text-slate-900">
+        <div className="printable-document vanguard-printable w-full max-w-4xl bg-white p-10 rounded-xl shadow-lg border border-slate-200 print:border-none print:shadow-none font-sans text-slate-900">
           {/* Standardized 3-Zone Corporate Header */}
           <Corporate3ZoneHeader
             documentTitle="ITEM ASSEMBLY REPORT"

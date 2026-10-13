@@ -182,7 +182,7 @@ export default function DynamicMasterReportViewer({
       {/* =================================================================== */}
       {/* 2. STRICT VANGUARD A4 PRINT MATRIX (w-[794px] min-h-[1123px])          */}
       {/* =================================================================== */}
-      <div className="w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-200 shadow-sm print:border-none print:shadow-none print:m-0 print:p-6 select-none">
+      <div className="printable-document vanguard-printable w-[794px] min-h-[1123px] page-break-after-always relative bg-white p-8 text-black font-sans mx-auto border border-slate-200 shadow-sm print:border-none print:shadow-none print:m-0 print:p-6 select-none">
         
         {/* A4 Document Header */}
         <div className="border-b border-black pb-2 mb-2">
