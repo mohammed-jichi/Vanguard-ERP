@@ -5,6 +5,8 @@ import { useLanguage } from '@/lib/LanguageContext';
 import { Search, ChevronDown, Calendar as CalendarIcon, Filter, CheckCircle2, Pencil, Minus, Plus, ArrowLeft, X } from 'lucide-react';
 import Link from 'next/link';
 import DatePickerInput from './DatePickerInput';
+import { toggleDocumentPosting } from '@/lib/dataGateway';
+
 
 export interface DeliveryItem {
   qty: number;
@@ -142,8 +144,13 @@ export default function DeliveryOfGoodsView() {
     setDeliveredMarkingModalOpen(true);
   };
 
-  const handleConfirmSetDelivered = () => {
+  const handleConfirmSetDelivered = async () => {
     if (!deliveredTargetRecord) return;
+    try {
+      await toggleDocumentPosting('SALES', deliveredTargetRecord.invoiceNumber, true);
+    } catch (err) {
+      console.warn('Notice calling toggleDocumentPosting on delivery note:', err);
+    }
     setDeliveryRecords(prev => prev.map(r => 
       r.id === deliveredTargetRecord.id 
         ? { ...r, status: 'Delivered', deliveryDate: deliveredActualDate } 
@@ -153,6 +160,7 @@ export default function DeliveryOfGoodsView() {
     setNotice(`Invoice #${deliveredTargetRecord.invoiceNumber} marked as Delivered by ${deliveredByEmployee}.`);
     setTimeout(() => setNotice(null), 3000);
   };
+
 
   const handleOpenSerialModal = (invoiceNumber: string) => {
     setSerialTargetInvoice(invoiceNumber);

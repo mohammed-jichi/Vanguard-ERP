@@ -23,12 +23,15 @@ import {
   Tag,
   Package,
   Layers,
-  Building
+  Building,
+  Unlock
 } from 'lucide-react';
 import Link from 'next/link';
 import DatePickerInput from './DatePickerInput';
 import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabase';
+import { toggleDocumentPosting } from '@/lib/dataGateway';
+
 
 export interface PurchaseItemLine {
   id: string;
@@ -151,8 +154,14 @@ export default function PurchasesView() {
 
   const [notice, setNotice] = useState<string | null>(null);
 
+  // Unpost states (Omega POS pattern)
+  const [purchaseToUnpost, setPurchaseToUnpost] = useState<PurchaseInvoice | null>(null);
+  const [isConfirmUnpostPurchaseOpen, setIsConfirmUnpostPurchaseOpen] = useState(false);
+  const [isUnpostingPurchase, setIsUnpostingPurchase] = useState(false);
+
   // Purchases Master List State
   const [purchases, setPurchases] = useState<PurchaseInvoice[]>([
+
     {
       id: 'PUR-01',
       branch: 'Main Branch',
@@ -444,8 +453,32 @@ export default function PurchasesView() {
     });
   }, [purchases, filterBranch, filterSupplier, filterStatus, filterTransfer, searchFilter]);
 
-  // Open New Purchase form
+  // Reactive posting selectors (Omega POS pattern)
+  const isCurrentPurchasePosted = useMemo(() => {
+    if (!activeEditingInvoiceId) return false;
+    const found = purchases.find((p) => p.id === activeEditingInvoiceId || p.invoiceNumber === activeEditingInvoiceId);
+    return found?.posted === true;
+  }, [activeEditingInvoiceId, purchases]);
+
+  const hasUnpostedPurchases = useMemo(
+    () => filteredPurchases.some((p) => !p.posted),
+    [filteredPurchases]
+  );
+
+  // Post All Purchase Invoices
   const handlePostAllPurchases = async () => {
+    if (!hasUnpostedPurchases) return;
+    const unposted = purchases.filter((p) => !p.posted);
+    if (unposted.length === 0) return;
+
+    for (const p of unposted) {
+      try {
+        await toggleDocumentPosting('PURCHASE', p.id, true);
+      } catch (err) {
+        console.warn('Notice posting purchase to unified service:', err);
+      }
+    }
+
     const updated = purchases.map(p => ({ ...p, posted: true }));
     const res = await persistPurchasesToDatabase(updated);
     if (!res.success) {
@@ -457,6 +490,7 @@ export default function PurchasesView() {
     setNotice('All unposted purchase invoices posted successfully to database.');
     setTimeout(() => setNotice(null), 3000);
   };
+
 
   const handleOpenNewForm = () => {
     setActiveEditingInvoiceId(null);
@@ -670,9 +704,54 @@ export default function PurchasesView() {
     setViewMode('list');
   };
 
+  // Prompt Unpost for a Purchase Invoice (from table or form footer)
+  const handlePromptUnpostPurchase = (inv?: PurchaseInvoice) => {
+    const target = inv || purchases.find((p) => p.id === activeEditingInvoiceId);
+    if (!target) return;
+    setPurchaseToUnpost(target);
+    setIsConfirmUnpostPurchaseOpen(true);
+  };
+
+  const handleConfirmUnpostPurchase = async () => {
+    if (!purchaseToUnpost) return;
+    setIsUnpostingPurchase(true);
+    try {
+      const targetId = purchaseToUnpost.id;
+      const invNum = purchaseToUnpost.invoiceNumber;
+
+      // Authoritative unified posting service
+      try {
+        await toggleDocumentPosting('PURCHASE', targetId, false, 'Unposted by user from Purchasing workstation');
+      } catch (err) {
+        console.warn('Notice calling toggleDocumentPosting:', err);
+      }
+
+      const updated = purchases.map((p) =>
+        p.id === targetId || p.invoiceNumber === invNum ? { ...p, posted: false, transferred: false } : p
+      );
+      await persistPurchasesToDatabase(updated);
+      setPurchases(updated);
+      setNotice(`Invoice #${invNum} successfully unposted.`);
+      setTimeout(() => setNotice(null), 3500);
+    } catch (err: any) {
+      console.error('Error unposting purchase invoice:', err);
+      setNotice(`Failed to unpost: ${err?.message || 'Unknown error'}`);
+      setTimeout(() => setNotice(null), 4000);
+    } finally {
+      setIsUnpostingPurchase(false);
+      setPurchaseToUnpost(null);
+      setIsConfirmUnpostPurchaseOpen(false);
+    }
+  };
+
   // Post an existing unposted draft invoice from table
   const handlePostInvoiceFromTable = async (id: string, invNum: string, loc: string) => {
     if (confirm(`Do you want to POST Invoice #${invNum}? This will increase inventory in ${loc} and commit costs.`)) {
+      try {
+        await toggleDocumentPosting('PURCHASE', id, true);
+      } catch (err) {
+        console.warn('Notice calling toggleDocumentPosting on purchase:', err);
+      }
       const updated = purchases.map((p) => (p.id === id ? { ...p, posted: true, transferred: true } : p));
       const res = await persistPurchasesToDatabase(updated);
       if (!res.success) {
@@ -685,6 +764,7 @@ export default function PurchasesView() {
       setTimeout(() => setNotice(null), 4000);
     }
   };
+
 
   // Add Location Modal save (Screenshot 3)
   const handleSaveNewLocation = () => {
@@ -936,14 +1016,16 @@ export default function PurchasesView() {
                     <th className="py-2.5 px-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <span>{t('actions', 'Actions')}</span>
-                        <button
-                          type="button"
-                          onClick={handlePostAllPurchases}
-                          className="bg-emerald-700 hover:bg-emerald-800 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow-2xs cursor-pointer transition-colors"
-                          title={t('post_all_unposted_purchase_invoices', 'Post all unposted purchase invoices')}
-                        >
-                          {t('post_all', 'Post All')}
-                        </button>
+                        {hasUnpostedPurchases && (
+                          <button
+                            type="button"
+                            onClick={handlePostAllPurchases}
+                            className="bg-emerald-700 hover:bg-emerald-800 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow-2xs cursor-pointer transition-colors"
+                            title={t('post_all_unposted_purchase_invoices', 'Post all unposted purchase invoices')}
+                          >
+                            {t('post_all', 'Post All')}
+                          </button>
+                        )}
                       </div>
                     </th>
                   </tr>
@@ -996,7 +1078,7 @@ export default function PurchasesView() {
                         >
                           {t('edit', 'Edit')}
                         </button>
-                        {!pur.posted && (
+                        {!pur.posted ? (
                           <button
                             type="button"
                             onClick={() => handlePostInvoiceFromTable(pur.id, pur.invoiceNumber, pur.location)}
@@ -1005,9 +1087,20 @@ export default function PurchasesView() {
                           >
                             {t('post', 'Post')}
                           </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handlePromptUnpostPurchase(pur)}
+                            className="px-2.5 py-1 rounded bg-rose-950/40 text-rose-700 hover:bg-rose-900/60 font-bold cursor-pointer shadow-2xs transition-colors border border-rose-800/40 text-xs inline-flex items-center gap-1"
+                            title="Unpost invoice (unlock transaction for modification)"
+                          >
+                            <Unlock className="w-3 h-3" />
+                            <span>{t('unpost', 'Unpost')}</span>
+                          </button>
                         )}
                       </td>
                     </tr>
+
                   ))}
 
                   {filteredPurchases.length === 0 && (
@@ -1608,30 +1701,70 @@ export default function PurchasesView() {
               </div>
             </div>
 
-            {/* Bottom Actions: Save (Orange) & Save & Post (Green) matching Screenshot 2 */}
+            {/* Bottom Actions: Unpost (Rose) OR Save (Orange) & Save & Post (Green) matching Omega POS pattern */}
             <div className="flex items-center justify-end gap-3 pt-2">
-              {/* Save Draft (Orange button #f07e13) */}
-              <button
-                type="button"
-                onClick={handleSaveDraft}
-                className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
-                title="Save as Unposted Draft (Invoice saved in Purchases list, stock not yet committed)"
-              >
-                <Save className="w-4 h-4" />
-                <span>{t('save', 'Save')}</span>
-              </button>
+              {isCurrentPurchasePosted ? (
+                <>
+                  {/* Active Unpost Button */}
+                  <button
+                    type="button"
+                    onClick={() => handlePromptUnpostPurchase()}
+                    className="bg-rose-950/40 text-rose-300 border border-rose-800/60 hover:bg-rose-900/60 text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                    title="Unpost purchase invoice (unlock transaction for editing)"
+                  >
+                    <Unlock className="w-4 h-4 text-rose-400" />
+                    <span>{t('unpost', 'Unpost')}</span>
+                  </button>
 
-              {/* Save & Post (Green button #198754) */}
-              <button
-                type="button"
-                onClick={handleSaveAndPost}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
-                title="Save & Post (Immediately commits inventory to stock and posts to Accounts Payable)"
-              >
-                <FileText className="w-4 h-4" />
-                <span>{t('save_and_post', 'Save & Post')}</span>
-              </button>
+                  {/* Disabled Save Draft Button */}
+                  <button
+                    type="button"
+                    disabled
+                    className="opacity-50 cursor-not-allowed pointer-events-none bg-amber-600 text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs"
+                    title="Transaction is posted. Unpost to enable editing."
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{t('save', 'Save')}</span>
+                  </button>
+
+                  {/* Disabled Save & Post Button */}
+                  <button
+                    type="button"
+                    disabled
+                    className="opacity-50 cursor-not-allowed pointer-events-none bg-emerald-700 text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs"
+                    title="Transaction is already posted."
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>{t('save_and_post', 'Save & Post')}</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  {/* Save Draft (Orange button #f07e13) */}
+                  <button
+                    type="button"
+                    onClick={handleSaveDraft}
+                    className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                    title="Save as Unposted Draft (Invoice saved in Purchases list, stock not yet committed)"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{t('save', 'Save')}</span>
+                  </button>
+
+                  {/* Save & Post (Green button #198754) */}
+                  <button
+                    type="button"
+                    onClick={handleSaveAndPost}
+                    className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-5 py-2 rounded flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                    title="Save & Post (Immediately commits inventory to stock and posts to Accounts Payable)"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>{t('save_and_post', 'Save & Post')}</span>
+                  </button>
+                </>
+              )}
             </div>
+
           </div>
         )}
       </div>
@@ -1796,6 +1929,68 @@ export default function PurchasesView() {
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>{t('save', 'Save')}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 3: UNPOST PURCHASE INVOICE CONFIRMATION (OMEGA POS LEDGER CONTROL)  */}
+      {/* ========================================================================= */}
+      {isConfirmUnpostPurchaseOpen && purchaseToUnpost && (
+
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-2xs p-4 animate-fade-in">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 shadow-2xl text-slate-100 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                <Unlock className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-100">
+                  {t('unpost_invoice', 'Unpost Purchase Invoice')}
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Invoice #{purchaseToUnpost.invoiceNumber}
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1.5">
+              <p className="font-semibold text-rose-300">
+                Are you sure you want to unpost this invoice? This will unlock the transaction for modification.
+              </p>
+              <p className="text-slate-400 text-[11px]">
+                Supplier: <span className="text-slate-200">{purchaseToUnpost.supplier}</span>
+                <br />
+                Total: <span className="font-mono text-emerald-400">{purchaseToUnpost.amountLL.toLocaleString()} LL</span>
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                disabled={isUnpostingPurchase}
+                onClick={() => {
+                  setIsConfirmUnpostPurchaseOpen(false);
+                  setPurchaseToUnpost(null);
+                }}
+                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold cursor-pointer transition-colors"
+              >
+                {t('cancel', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                disabled={isUnpostingPurchase}
+                onClick={handleConfirmUnpostPurchase}
+                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shadow-lg shadow-rose-900/30"
+              >
+                {isUnpostingPurchase ? (
+                  <RotateCcw className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Unlock className="w-3.5 h-3.5" />
+                )}
+                <span>Yes, Unpost</span>
               </button>
             </div>
           </div>

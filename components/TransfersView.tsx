@@ -36,12 +36,15 @@ import {
   Undo,
   Upload,
   MessageSquare,
-  Barcode
+  Barcode,
+  Unlock
 } from 'lucide-react';
 import SearchInventoryItemsModal, { SelectedTransferItemPayload } from '@/components/SearchInventoryItemsModal';
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
+import { toggleDocumentPosting } from '@/lib/dataGateway';
 
 import { OMEGA_ITEM_BRANDS } from '@/lib/omegaProductsData';
+
 
 export interface TransferItem {
   id: string;
@@ -657,6 +660,11 @@ export default function TransfersView() {
     if (current && current.status === 'DRAFT') {
       await executeTransferStockMovements(current, 'DISPATCH_IN_TRANSIT');
     }
+    try {
+      await toggleDocumentPosting('TRANSFER', transferNumber, true);
+    } catch (err) {
+      console.warn('Notice calling toggleDocumentPosting:', err);
+    }
     const updated = savedTransfers.map(tr => tr.reqNo === transferNumber ? { ...tr, status: 'IN_TRANSIT' as const, posted: true } : tr);
     const res = await persistTransfersToDatabase(updated);
     if (!res.success) {
@@ -666,6 +674,23 @@ export default function TransfersView() {
     setSavedTransfers(updated);
     showToast('Transfer ' + transferNumber + ' dispatched (IN_TRANSIT).');
   };
+
+  const handleUnpostCurrentTransfer = async () => {
+    try {
+      await toggleDocumentPosting('TRANSFER', transferNumber, false, 'Unposted from Transfers workstation');
+    } catch (err) {
+      console.warn('Notice calling toggleDocumentPosting:', err);
+    }
+    const updated = savedTransfers.map(tr => tr.reqNo === transferNumber ? { ...tr, status: 'DRAFT' as const, posted: false } : tr);
+    const res = await persistTransfersToDatabase(updated);
+    if (!res.success) {
+      showToast('Database write failed: ' + res.error);
+      return;
+    }
+    setSavedTransfers(updated);
+    showToast('Transfer ' + transferNumber + ' successfully unposted to Draft.');
+  };
+
 
   // Receive Transfer at Destination (IN_TRANSIT -> RECEIVED)
   const handleReceiveTransfer = async (trIdOrReqNo: string) => {
@@ -734,9 +759,29 @@ export default function TransfersView() {
   };
 
   // Post Transfer from Preview Modal Table
-  const handlePostFromPreview = (trId: string) => {
-    setSavedTransfers(savedTransfers.map(tr => tr.id === trId ? { ...tr, status: 'POSTED', posted: true } : tr));
+  const handlePostFromPreview = async (trId: string) => {
+    try {
+      await toggleDocumentPosting('TRANSFER', trId, true);
+    } catch (err) {
+      console.warn('Notice calling toggleDocumentPosting:', err);
+    }
+    const updated = savedTransfers.map(tr => tr.id === trId ? { ...tr, status: 'POSTED' as const, posted: true } : tr);
+    setSavedTransfers(updated);
+    persistTransfersToDatabase(updated);
     showToast('Transfer posted.');
+  };
+
+  // Unpost Transfer from Preview Modal Table
+  const handleUnpostFromPreview = async (trId: string) => {
+    try {
+      await toggleDocumentPosting('TRANSFER', trId, false, 'Unposted from Transfers workstation');
+    } catch (err) {
+      console.warn('Notice calling toggleDocumentPosting:', err);
+    }
+    const updated = savedTransfers.map(tr => tr.id === trId ? { ...tr, status: 'DRAFT' as const, posted: false } : tr);
+    setSavedTransfers(updated);
+    persistTransfersToDatabase(updated);
+    showToast('Transfer unposted to Draft.');
   };
 
   // Delete Transfer from Preview Modal Table
@@ -757,15 +802,25 @@ export default function TransfersView() {
   };
 
   // Post Selected in Multiple Posting Mode
-  const handlePostSelectedTransactions = () => {
-    const selectedCount = savedTransfers.filter(tr => tr.selected && !tr.posted).length;
-    if (selectedCount === 0) {
+  const handlePostSelectedTransactions = async () => {
+    const selectedTransfers = savedTransfers.filter(tr => tr.selected && !tr.posted);
+    if (selectedTransfers.length === 0) {
       showToast('No unposted transfers selected.');
       return;
     }
-    setSavedTransfers(savedTransfers.map(tr => tr.selected ? { ...tr, status: 'POSTED', posted: true, selected: false } : tr));
-    showToast(`Posted ${selectedCount} selected transfer(s).`);
+    for (const tr of selectedTransfers) {
+      try {
+        await toggleDocumentPosting('TRANSFER', tr.id, true);
+      } catch (err) {
+        console.warn('Notice calling toggleDocumentPosting on selected transfer:', err);
+      }
+    }
+    const updated = savedTransfers.map(tr => tr.selected ? { ...tr, status: 'POSTED' as const, posted: true, selected: false } : tr);
+    setSavedTransfers(updated);
+    persistTransfersToDatabase(updated);
+    showToast(`Posted ${selectedTransfers.length} selected transfer(s).`);
   };
+
 
   // Filtered Saved Transfers in Preview Modal
   const filteredSavedTransfers = useMemo(() => {
@@ -1663,18 +1718,49 @@ export default function TransfersView() {
                     </>
                   ) : (
                     <>
-                      <button
-                        onClick={() => handleSaveTransfer(false)}
-                        className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm transition"
-                      >
-                        {t('save', 'Save')}
-                      </button>
-                      <button
-                        onClick={handlePostCurrentTransfer}
-                        className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-sm transition"
-                      >
-                        {t('post', 'Post')}
-                      </button>
+                      {savedTransfers.find(tr => tr.reqNo === transferNumber)?.posted ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={handleUnpostCurrentTransfer}
+                            className="px-4 py-2 bg-rose-950/40 text-rose-300 border border-rose-800/60 hover:bg-rose-900/60 text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                            title="Unpost transfer (unlock transaction for editing)"
+                          >
+                            <Unlock className="w-3.5 h-3.5 text-rose-400" />
+                            <span>{t('unpost', 'Unpost')}</span>
+                          </button>
+                          <button
+                            disabled
+                            className="opacity-50 cursor-not-allowed pointer-events-none px-4 py-2 bg-amber-600 text-white text-xs font-bold rounded-lg shadow-sm"
+                            title="Transfer is posted. Unpost to edit."
+                          >
+                            {t('save', 'Save')}
+                          </button>
+                          <button
+                            disabled
+                            className="opacity-50 cursor-not-allowed pointer-events-none px-4 py-2 bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm"
+                            title="Transfer is already posted."
+                          >
+                            {t('post', 'Post')}
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleSaveTransfer(false)}
+                            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm transition"
+                          >
+                            {t('save', 'Save')}
+                          </button>
+                          <button
+                            onClick={handlePostCurrentTransfer}
+                            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-sm transition"
+                          >
+                            {t('post', 'Post')}
+                          </button>
+                        </>
+                      )}
+
                       {savedTransfers.find(tr => tr.reqNo === transferNumber)?.status === 'IN_TRANSIT' && (
                         <button
                           onClick={() => handleReceiveTransfer(transferNumber)}
@@ -1958,8 +2044,8 @@ export default function TransfersView() {
                               <Check className="w-3.5 h-3.5" />
                             </button>
                           )}
-                          {/* [Tag] Post Transfer */}
-                          {!row.posted && (
+                          {/* [Tag] Post Transfer or [Unlock] Unpost Transfer */}
+                          {!row.posted ? (
                             <button
                               onClick={() => handlePostFromPreview(row.id)}
                               className="p-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded transition shadow-2xs"
@@ -1967,7 +2053,16 @@ export default function TransfersView() {
                             >
                               <Tag className="w-3.5 h-3.5" />
                             </button>
+                          ) : (
+                            <button
+                              onClick={() => handleUnpostFromPreview(row.id)}
+                              className="p-1.5 bg-rose-950/40 text-rose-300 border border-rose-800/60 hover:bg-rose-900/60 rounded transition shadow-2xs"
+                              title={t('unpost_transfer', 'Unpost Transfer')}
+                            >
+                              <Unlock className="w-3.5 h-3.5" />
+                            </button>
                           )}
+
 
                           {/* [Trash] Delete */}
                           <button

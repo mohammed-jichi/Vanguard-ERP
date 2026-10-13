@@ -194,3 +194,102 @@ export function subscribeToDataGateway(callback: (event: CustomEvent) => void): 
   window.addEventListener(DATA_GATEWAY_SYNC_EVENT, handler);
   return () => window.removeEventListener(DATA_GATEWAY_SYNC_EVENT, handler);
 }
+
+export type DocumentPostingType = 'SALES' | 'PURCHASE' | 'TRANSFER' | 'RETURN' | 'VOUCHER';
+
+export interface DocumentPostingResult {
+  success: boolean;
+  data?: any;
+  error?: any;
+}
+
+/**
+ * Universal toggle for persistent document posting across Vanguard ERP
+ */
+export async function toggleDocumentPosting(
+  type: DocumentPostingType,
+  id: string,
+  targetStatus: boolean,
+  reason?: string,
+  tenantId?: string
+): Promise<DocumentPostingResult> {
+  const isBrowser = typeof window !== 'undefined';
+  try {
+    if (isBrowser) {
+      const res = await fetch('/api/ledger/toggle-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documentType: type,
+          documentId: id,
+          posted: targetStatus,
+          reason,
+          tenantId,
+        }),
+      });
+
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.success) {
+        return {
+          success: false,
+          error: json.error || { message: `Toggle post failed with HTTP ${res.status}` },
+        };
+      }
+
+      window.dispatchEvent(
+        new CustomEvent(DATA_GATEWAY_SYNC_EVENT, {
+          detail: {
+            table: `posting_${type.toLowerCase()}`,
+            operation: targetStatus ? 'POST' : 'UNPOST',
+            data: json,
+            primaryKey: { field: 'id', value: id },
+            timestamp: new Date().toISOString(),
+          },
+        })
+      );
+
+      return {
+        success: true,
+        data: json,
+      };
+    } else {
+      const { getSupabaseServerClient } = await import('./supabaseClient');
+      const supabaseServer = getSupabaseServerClient();
+      const now = new Date().toISOString();
+      const postedAt = targetStatus ? now : null;
+      const unpostedAt = !targetStatus ? now : null;
+
+      if (type === 'SALES') {
+        await supabaseServer.from('sales_invoices').update({
+          is_posted: targetStatus,
+          status: targetStatus ? 'Posted' : 'Unposted',
+          posted_at: postedAt,
+          unposted_at: unpostedAt,
+        }).or(`invoice_ref.eq.${id},id.eq.${id}`);
+      } else if (type === 'PURCHASE') {
+        await supabaseServer.from('purchases_invoices').update({
+          is_posted: targetStatus,
+          posted: targetStatus,
+          status: targetStatus ? 'POSTED' : 'UNPOSTED',
+          posted_at: postedAt,
+          unposted_at: unpostedAt,
+        }).or(`invoice_number.eq.${id},id.eq.${id}`);
+      } else if (type === 'TRANSFER') {
+        await supabaseServer.from('inventory_transfers').update({
+          is_posted: targetStatus,
+          posted: targetStatus,
+          status: targetStatus ? 'POSTED' : 'DRAFT',
+          posted_at: postedAt,
+          unposted_at: unpostedAt,
+        }).or(`req_no.eq.${id},id.eq.${id}`);
+      }
+      return { success: true, data: { id, targetStatus } };
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      error: { message: err?.message || 'Toggle posting network exception' },
+    };
+  }
+}
+

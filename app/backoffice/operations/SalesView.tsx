@@ -57,6 +57,8 @@ import DatePickerInput from '@/components/DatePickerInput';
 import { useTenant } from '@/lib/TenantContext';
 import { useActiveUser } from '@/lib/useActiveUser';
 import { supabase } from '@/lib/supabaseClient';
+import { toggleDocumentPosting } from '@/lib/dataGateway';
+
 
 const getTodayFormatted = () => {
   return new Date().toISOString().split('T')[0];
@@ -1778,6 +1780,13 @@ export default function AuthenticOmegaSalesWorkstation({
     for (const inv of invoicesToUpdate) {
       const invRef = inv.invoiceNumber || inv.id;
 
+      // Trigger authoritative unified toggle-post service
+      try {
+        await toggleDocumentPosting('SALES', invRef, true, undefined, targetTenantId);
+      } catch (toggleErr) {
+        console.warn('Unified toggle-post notice:', toggleErr);
+      }
+
       // 1. Update sales_invoices table in database
       try {
         if (isUUID(inv.id)) {
@@ -1928,6 +1937,13 @@ export default function AuthenticOmegaSalesWorkstation({
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
 
     const invRef = invoice.invoiceNumber || invoice.id;
+
+    // Trigger authoritative unified toggle-post service for unposting & ledger reversal
+    try {
+      await toggleDocumentPosting('SALES', invRef, false, 'Unposted by user from Sales workstation');
+    } catch (toggleErr) {
+      console.warn('Unified toggle-post unpost notice:', toggleErr);
+    }
 
     // 1. Update sales_invoices table in database
     try {

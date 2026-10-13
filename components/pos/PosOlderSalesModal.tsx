@@ -13,8 +13,11 @@ import {
   Receipt,
   Eye,
   FileText,
+  Unlock,
 } from 'lucide-react';
 import { POS_EXCHANGE_RATE } from '@/lib/pos/posStateEngine';
+import { toggleDocumentPosting } from '@/lib/dataGateway';
+
 
 interface HistoricalInvoiceItem {
   name: string;
@@ -52,20 +55,69 @@ export default function PosOlderSalesModal({
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string>('INV-2026-0848');
   const [notification, setNotification] = useState<string | null>(null);
 
-  // Mock historical transactions
-  const historicalInvoices: HistoricalInvoice[] = [];
+  // Historical transactions state (supports reversal / unposting)
+  const [invoices, setInvoices] = useState<HistoricalInvoice[]>([
+    {
+      id: 'inv-pos-101',
+      invoiceNo: 'INV-2026-0848',
+      timestamp: 'Today, 14:32',
+      customerName: 'Al-Bustan Restaurant',
+      tenderMethod: 'CASH_USD',
+      cashierName: 'Ahmad K.',
+      itemsCount: 3,
+      totalUsd: 145.0,
+      totalLbp: 12977500,
+      items: [
+        { name: 'Extra Virgin Olive Oil 16L', qty: 1, priceUsd: 95.0, totalUsd: 95.0 },
+        { name: 'Cold-Pressed Glass 750ml', qty: 5, priceUsd: 7.0, totalUsd: 35.0 },
+        { name: 'Fig Jam with Sesame 800g', qty: 3, priceUsd: 5.0, totalUsd: 15.0 },
+      ],
+    },
+    {
+      id: 'inv-pos-102',
+      invoiceNo: 'INV-2026-0847',
+      timestamp: 'Today, 13:15',
+      customerName: 'General Walk-in Customer',
+      tenderMethod: 'CASH_LBP',
+      cashierName: 'Maya S.',
+      itemsCount: 1,
+      totalUsd: 25.0,
+      totalLbp: 2237500,
+      items: [
+        { name: 'Wild Thyme & Sumac 500g', qty: 2, priceUsd: 12.5, totalUsd: 25.0 },
+      ],
+    }
+  ]);
+  const [isUnposting, setIsUnposting] = useState(false);
+
+  const handleUnpostSelectedInvoice = async () => {
+    if (!selectedInvoice) return;
+    if (!confirm(`Are you sure you want to unpost invoice #${selectedInvoice.invoiceNo}? This will reverse the ledger transaction and unlock it.`)) return;
+
+    setIsUnposting(true);
+    try {
+      await toggleDocumentPosting('SALES', selectedInvoice.invoiceNo, false, 'Unposted by cashier from POS');
+      notify(`Invoice #${selectedInvoice.invoiceNo} successfully unposted.`);
+      setInvoices(prev => prev.filter(i => i.invoiceNo !== selectedInvoice.invoiceNo));
+    } catch (err: any) {
+      notify(`Failed to unpost: ${err?.message || 'Error'}`);
+    } finally {
+      setIsUnposting(false);
+    }
+  };
 
   const filteredInvoices = useMemo(() => {
-    return historicalInvoices.filter((inv) => {
+    return invoices.filter((inv) => {
       const matchInv = inv.invoiceNo.toLowerCase().includes(invoiceQuery.trim().toLowerCase());
       const matchCust = inv.customerName.toLowerCase().includes(customerQuery.trim().toLowerCase());
       return matchInv && matchCust;
     });
-  }, [historicalInvoices, invoiceQuery, customerQuery]);
+  }, [invoices, invoiceQuery, customerQuery]);
 
   const selectedInvoice = useMemo(() => {
-    return historicalInvoices.find((i) => i.invoiceNo === selectedInvoiceId) || filteredInvoices[0] || null;
-  }, [historicalInvoices, selectedInvoiceId, filteredInvoices]);
+    return invoices.find((i) => i.invoiceNo === selectedInvoiceId) || filteredInvoices[0] || null;
+  }, [invoices, selectedInvoiceId, filteredInvoices]);
+
 
   const notify = (msg: string) => {
     setNotification(msg);
@@ -302,6 +354,19 @@ export default function PosOlderSalesModal({
           </div>
 
           <div className="flex items-center gap-2.5">
+            {selectedInvoice && (
+              <button
+                type="button"
+                disabled={isUnposting}
+                onClick={handleUnpostSelectedInvoice}
+                className="px-4 py-2.5 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-300 hover:bg-rose-900/60 font-mono text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                title="Unpost / Reverse POS transaction"
+              >
+                <Unlock className="w-3.5 h-3.5 text-rose-400" />
+                <span>{isUnposting ? 'Unposting...' : 'Unpost Transaction'}</span>
+              </button>
+            )}
+
             <button
               type="button"
               disabled={!selectedInvoice}
@@ -316,6 +381,7 @@ export default function PosOlderSalesModal({
               <Printer className="w-4 h-4" />
               <span>Reprint Invoice (F1)</span>
             </button>
+
 
             <button
               type="button"
