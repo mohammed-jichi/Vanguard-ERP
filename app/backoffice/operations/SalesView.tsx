@@ -439,6 +439,187 @@ export const PAYMENT_TYPES = [
   { id: 'whish', name: 'Whish Money / OMT' }
 ];
 
+export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
+  {
+    id: '4000035',
+    invoiceNumber: '4000035',
+    refCode: '3SO538A0D9',
+    date: '04 Sep, 2026',
+    deliveryDate: '04 Sep, 2026',
+    branch: 'Zeit w zaytoun ljanoub',
+    customerName: 'Abou Hamza',
+    customerId: '31',
+    company: 'Abou Hamzeh Nuts',
+    salesman: 'Mahdi',
+    createdBy: 'Mohammed Jichi',
+    source: 'Local',
+    refNumber: '',
+    customerAddress: 'Saida Main Road, Abou Hamza Center',
+    deliveredBy: 'Providers',
+    currency: 'USD',
+    transactionType: 'Local',
+    invoiceType: 'All Invoices',
+    salesChannel: 'Retail',
+    items: [
+      {
+        id: 'item-1',
+        itemId: 'EVOO-TIN-16L',
+        code: 'EVOO-TIN-16L',
+        name: 'Extra Virgin Olive Oil 16L Tin',
+        qty: 2,
+        unit: 'TIN',
+        unitPrice: 115.00,
+        total: 230.00,
+        location: 'Southern Olive and Oil Products - Main'
+      },
+      {
+        id: 'item-2',
+        itemId: 'CWV250MLB103',
+        code: 'CWV250MLB103',
+        name: 'White Vinegar 250ml',
+        qty: 72,
+        unit: 'BOT',
+        unitPrice: 0.50,
+        total: 36.00,
+        location: 'Southern Olive and Oil Products - Main'
+      }
+    ],
+    subtotal: 266.00,
+    discount: 0.00,
+    tax: 0.00,
+    grandTotal: 266.00,
+    payments: [{ id: 'p-01', type: 'Cash USD', amount: 266.00 }],
+    status: 'Posted',
+    is_posted: true,
+    posted: true,
+    createdAt: '2026-09-04 11:20'
+  },
+  {
+    id: 'INV-2026-08940',
+    invoiceNumber: 'INV-2026-08940',
+    refCode: '3SO538B12F',
+    date: '05 Sep, 2026',
+    deliveryDate: '06 Sep, 2026',
+    branch: 'Zeit w zaytoun ljanoub',
+    customerName: 'Beirut Gourmet Market',
+    customerId: 'CUST-002',
+    company: 'Beirut Gourmet S.A.L',
+    salesman: 'Hiba Aloulou',
+    createdBy: 'Mohammed Jichi',
+    source: 'Vanguard Market place',
+    refNumber: 'REF-8901',
+    customerAddress: 'Hamra Street, Bloc B, Beirut',
+    deliveredBy: 'In-House Fleet',
+    currency: 'USD',
+    transactionType: 'Local',
+    invoiceType: 'All Invoices',
+    salesChannel: 'Wholesale Orders',
+    items: [],
+    subtotal: 145.00,
+    discount: 0.00,
+    tax: 0.00,
+    grandTotal: 145.00,
+    payments: [{ id: 'p-02', type: 'Cash USD', amount: 145.00 }],
+    status: 'Posted',
+    is_posted: true,
+    posted: true,
+    createdAt: '2026-09-05 14:30'
+  },
+  {
+    id: 'INV-2026-08942',
+    invoiceNumber: 'INV-2026-08942',
+    refCode: '3SO538C44A',
+    date: '06 Sep, 2026',
+    deliveryDate: '07 Sep, 2026',
+    branch: 'Zeit w zaytoun ljanoub',
+    customerName: 'Cedar Valley Organics',
+    customerId: 'CUST-005',
+    company: 'Cedar Organics SARL',
+    salesman: 'Mahdi',
+    createdBy: 'Admin',
+    source: 'Local',
+    refNumber: '',
+    customerAddress: 'Ashrafieh, Tabaris, Beirut',
+    deliveredBy: 'Providers',
+    currency: 'USD',
+    transactionType: 'Local',
+    invoiceType: 'With Discounts',
+    salesChannel: 'Retail Counter',
+    items: [],
+    subtotal: 435.00,
+    discount: 15.00,
+    tax: 0.00,
+    grandTotal: 420.00,
+    payments: [],
+    status: 'Unposted',
+    is_posted: false,
+    posted: false,
+    createdAt: '2026-09-06 16:45'
+  },
+  {
+    id: 'INV-2026-08870',
+    invoiceNumber: 'INV-2026-08870',
+    refCode: '3SO538D98C',
+    date: '07 Sep, 2026',
+    deliveryDate: '07 Sep, 2026',
+    branch: 'Zeit w zaytoun ljanoub',
+    customerName: 'Al-Janoub Mart Supermarket',
+    customerId: 'CUST-003',
+    company: 'Al Janoub Group',
+    salesman: 'HUSSEIN',
+    createdBy: 'Mohammed Jichi',
+    source: 'Local',
+    refNumber: 'REF-8840',
+    customerAddress: 'Main Highway, Nabatieh',
+    deliveredBy: 'In-House Fleet',
+    currency: 'USD',
+    transactionType: 'Local',
+    invoiceType: 'All Invoices',
+    salesChannel: 'Wholesale Orders',
+    items: [],
+    subtotal: 1240.00,
+    discount: 0.00,
+    tax: 0.00,
+    grandTotal: 1240.00,
+    payments: [{ id: 'p-03', type: 'Bank Check', amount: 1240.00 }],
+    status: 'Posted',
+    is_posted: true,
+    posted: true,
+    createdAt: '2026-09-07 09:15'
+  },
+  {
+    id: 'INV-2026-08795',
+    invoiceNumber: 'INV-2026-08795',
+    refCode: '3SO538E55B',
+    date: '07 Sep, 2026',
+    deliveryDate: '08 Sep, 2026',
+    branch: 'Zeit w zaytoun ljanoub',
+    customerName: 'Tyre Regional Co-op',
+    customerId: 'CUST-004',
+    company: 'Tyre Farmers Co-op',
+    salesman: 'Ricky',
+    createdBy: 'Fadi Kassir',
+    source: 'Vanguard Market place',
+    refNumber: 'REF-8710',
+    customerAddress: 'Port Road, Tyre',
+    deliveredBy: 'Providers',
+    currency: 'USD',
+    transactionType: 'Local',
+    invoiceType: 'All Invoices',
+    salesChannel: 'Wholesale Orders',
+    items: [],
+    subtotal: 950.00,
+    discount: 0.00,
+    tax: 0.00,
+    grandTotal: 950.00,
+    payments: [{ id: 'p-04', type: 'Cash USD', amount: 950.00 }],
+    status: 'Posted',
+    is_posted: true,
+    posted: true,
+    createdAt: '2026-09-07 10:30'
+  }
+];
+
 export default function AuthenticOmegaSalesWorkstation({
   withOmegaSidebar = false
 }: {
@@ -941,187 +1122,178 @@ export default function AuthenticOmegaSalesWorkstation({
   const [previewFromDate, setPreviewFromDate] = useState(getTodayFormatted());
   const [previewToDate, setPreviewToDate] = useState(getTodayFormatted());
 
-  // Existing Invoices Directory
-  const [invoicesDirectory, setInvoicesDirectory] = useState<InvoiceRecord[]>([
-    {
-      id: '4000035',
-      invoiceNumber: '4000035',
-      refCode: '3SO538A0D9',
-      date: '04 Sep, 2026',
-      deliveryDate: '04 Sep, 2026',
-      branch: 'Zeit w zaytoun ljanoub',
-      customerName: 'Abou Hamza',
-      customerId: '31',
-      company: 'Abou Hamzeh Nuts',
-      salesman: 'Mahdi',
-      createdBy: 'Mohammed Jichi',
-      source: 'Local',
-      refNumber: '',
-      customerAddress: 'Saida Main Road, Abou Hamza Center',
-      deliveredBy: 'Providers',
-      currency: 'USD',
-      transactionType: 'Local',
-      invoiceType: 'All Invoices',
-      salesChannel: 'Retail',
-      items: [
-        {
-          id: 'item-1',
-          itemId: 'EVOO-TIN-16L',
-          code: 'EVOO-TIN-16L',
-          name: 'Extra Virgin Olive Oil 16L Tin',
-          qty: 2,
-          unit: 'TIN',
-          unitPrice: 115.00,
-          total: 230.00,
-          location: 'Southern Olive and Oil Products - Main'
-        },
-        {
-          id: 'item-2',
-          itemId: 'CWV250MLB103',
-          code: 'CWV250MLB103',
-          name: 'White Vinegar 250ml',
-          qty: 72,
-          unit: 'BOT',
-          unitPrice: 0.50,
-          total: 36.00,
-          location: 'Southern Olive and Oil Products - Main'
+  // Existing Invoices Directory (initialized with static seeds, then hydrated from persistent store)
+  const [invoicesDirectory, setInvoicesDirectory] = useState<InvoiceRecord[]>(INITIAL_INVOICES_DIRECTORY);
+
+  // Hydrate Invoices Directory & Persistent Posting Status from Supabase, feature_flags, and API
+  useEffect(() => {
+    let isMounted = true;
+
+    const hydrateInvoices = async () => {
+      try {
+        const targetTenantId =
+          currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-')
+            ? currentTenant.id
+            : '00000000-0000-0000-0000-000000000001';
+
+        const persistentStatusMap: Record<string, boolean> = {};
+        let savedDirectoryList: any[] = [];
+
+        // 1. Fetch from /api/ledger/toggle-post?documentType=SALES
+        try {
+          const apiRes = await fetch(
+            `/api/ledger/toggle-post?documentType=SALES&tenantId=${encodeURIComponent(targetTenantId)}`
+          );
+          if (apiRes.ok) {
+            const apiData = await apiRes.json();
+            if (apiData.sales_posting_status) {
+              Object.assign(persistentStatusMap, apiData.sales_posting_status);
+            }
+            if (Array.isArray(apiData.sales_invoices_directory)) {
+              savedDirectoryList = apiData.sales_invoices_directory;
+            } else if (Array.isArray(apiData.sales_invoices)) {
+              savedDirectoryList = apiData.sales_invoices;
+            }
+            if (Array.isArray(apiData.db_invoices)) {
+              apiData.db_invoices.forEach((row: any) => {
+                const k = row.invoice_ref || row.invoice_number || row.id;
+                if (k && (row.is_posted !== undefined || row.posted !== undefined)) {
+                  persistentStatusMap[k] = Boolean(row.is_posted === true || row.posted === true || row.status === 'Posted');
+                }
+              });
+            }
+          }
+        } catch (apiErr) {
+          console.warn('[SalesView] API toggle-post GET hydration notice:', apiErr);
         }
-      ],
-      subtotal: 266.00,
-      discount: 0.00,
-      tax: 0.00,
-      grandTotal: 266.00,
-      payments: [{ id: 'p-01', type: 'Cash USD', amount: 266.00 }],
-      status: 'Posted',
-      is_posted: true,
-      posted: true,
-      createdAt: '2026-09-04 11:20'
-    },
-    {
-      id: 'INV-2026-08940',
-      invoiceNumber: 'INV-2026-08940',
-      refCode: '3SO538B12F',
-      date: '05 Sep, 2026',
-      deliveryDate: '06 Sep, 2026',
-      branch: 'Zeit w zaytoun ljanoub',
-      customerName: 'Beirut Gourmet Market',
-      customerId: 'CUST-002',
-      company: 'Beirut Gourmet S.A.L',
-      salesman: 'Hiba Aloulou',
-      createdBy: 'Mohammed Jichi',
-      source: 'Vanguard Market place',
-      refNumber: 'REF-8901',
-      customerAddress: 'Hamra Street, Bloc B, Beirut',
-      deliveredBy: 'In-House Fleet',
-      currency: 'USD',
-      transactionType: 'Local',
-      invoiceType: 'All Invoices',
-      salesChannel: 'Wholesale Orders',
-      items: [],
-      subtotal: 145.00,
-      discount: 0.00,
-      tax: 0.00,
-      grandTotal: 145.00,
-      payments: [{ id: 'p-02', type: 'Cash USD', amount: 145.00 }],
-      status: 'Posted',
-      is_posted: true,
-      posted: true,
-      createdAt: '2026-09-05 14:30'
-    },
-    {
-      id: 'INV-2026-08942',
-      invoiceNumber: 'INV-2026-08942',
-      refCode: '3SO538C44A',
-      date: '06 Sep, 2026',
-      deliveryDate: '07 Sep, 2026',
-      branch: 'Zeit w zaytoun ljanoub',
-      customerName: 'Cedar Valley Organics',
-      customerId: 'CUST-005',
-      company: 'Cedar Organics SARL',
-      salesman: 'Mahdi',
-      createdBy: 'Admin',
-      source: 'Local',
-      refNumber: '',
-      customerAddress: 'Ashrafieh, Tabaris, Beirut',
-      deliveredBy: 'Providers',
-      currency: 'USD',
-      transactionType: 'Local',
-      invoiceType: 'With Discounts',
-      salesChannel: 'Retail Counter',
-      items: [],
-      subtotal: 435.00,
-      discount: 15.00,
-      tax: 0.00,
-      grandTotal: 420.00,
-      payments: [],
-      status: 'Unposted',
-      is_posted: false,
-      posted: false,
-      createdAt: '2026-09-06 16:45'
-    },
-    {
-      id: 'INV-2026-08870',
-      invoiceNumber: 'INV-2026-08870',
-      refCode: '3SO538D98C',
-      date: '07 Sep, 2026',
-      deliveryDate: '07 Sep, 2026',
-      branch: 'Zeit w zaytoun ljanoub',
-      customerName: 'Al-Janoub Mart Supermarket',
-      customerId: 'CUST-003',
-      company: 'Al Janoub Group',
-      salesman: 'HUSSEIN',
-      createdBy: 'Mohammed Jichi',
-      source: 'Local',
-      refNumber: 'REF-8840',
-      customerAddress: 'Main Highway, Nabatieh',
-      deliveredBy: 'In-House Fleet',
-      currency: 'USD',
-      transactionType: 'Local',
-      invoiceType: 'All Invoices',
-      salesChannel: 'Wholesale Orders',
-      items: [],
-      subtotal: 1240.00,
-      discount: 0.00,
-      tax: 0.00,
-      grandTotal: 1240.00,
-      payments: [{ id: 'p-03', type: 'Bank Check', amount: 1240.00 }],
-      status: 'Posted',
-      is_posted: true,
-      posted: true,
-      createdAt: '2026-09-07 09:15'
-    },
-    {
-      id: 'INV-2026-08795',
-      invoiceNumber: 'INV-2026-08795',
-      refCode: '3SO538E55B',
-      date: '07 Sep, 2026',
-      deliveryDate: '08 Sep, 2026',
-      branch: 'Zeit w zaytoun ljanoub',
-      customerName: 'Tyre Regional Co-op',
-      customerId: 'CUST-004',
-      company: 'Tyre Farmers Co-op',
-      salesman: 'Ricky',
-      createdBy: 'Fadi Kassir',
-      source: 'Vanguard Market place',
-      refNumber: 'REF-8710',
-      customerAddress: 'Port Road, Tyre',
-      deliveredBy: 'Providers',
-      currency: 'USD',
-      transactionType: 'Local',
-      invoiceType: 'All Invoices',
-      salesChannel: 'Wholesale Orders',
-      items: [],
-      subtotal: 950.00,
-      discount: 0.00,
-      tax: 0.00,
-      grandTotal: 950.00,
-      payments: [{ id: 'p-04', type: 'Cash USD', amount: 950.00 }],
-      status: 'Posted',
-      is_posted: true,
-      posted: true,
-      createdAt: '2026-09-07 10:30'
-    }
-  ]);
+
+        // 2. Direct Supabase query to tenants.feature_flags as authoritative fallback/supplement
+        try {
+          const { data: tenantData } = await supabase
+            .from('tenants')
+            .select('feature_flags')
+            .eq('id', targetTenantId)
+            .maybeSingle();
+
+          const flags = (tenantData?.feature_flags as Record<string, any>) || {};
+          if (flags.sales_posting_status) {
+            Object.assign(persistentStatusMap, flags.sales_posting_status);
+          }
+          const flagList = Array.isArray(flags.sales_invoices_directory)
+            ? flags.sales_invoices_directory
+            : Array.isArray(flags.sales_invoices)
+            ? flags.sales_invoices
+            : [];
+          if (flagList.length > 0) {
+            savedDirectoryList = [...flagList, ...savedDirectoryList];
+          }
+        } catch (tenantErr) {
+          console.warn('[SalesView] Supabase tenant feature_flags hydration notice:', tenantErr);
+        }
+
+        // 3. Direct Supabase query to sales_invoices table
+        try {
+          const { data: dbSales } = await supabase
+            .from('sales_invoices')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (Array.isArray(dbSales)) {
+            dbSales.forEach((row: any) => {
+              const k = row.invoice_ref || row.invoice_number || row.id;
+              if (k && (row.is_posted !== undefined || row.posted !== undefined)) {
+                persistentStatusMap[k] = Boolean(row.is_posted === true || row.posted === true || row.status === 'Posted');
+              }
+            });
+          }
+        } catch (dbErr) {
+          console.warn('[SalesView] Supabase sales_invoices query notice:', dbErr);
+        }
+
+        // 4. Local storage fallback for client offline / instant refresh
+        try {
+          const stored = localStorage.getItem('vanguard_sales_posting_status');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            Object.assign(persistentStatusMap, parsed);
+          }
+        } catch {}
+
+        // Populate from savedDirectoryList
+        savedDirectoryList.forEach((saved: any) => {
+          const k = saved.invoiceNumber || saved.id || saved.invoice_number;
+          if (k && (saved.posted !== undefined || saved.is_posted !== undefined || saved.status !== undefined)) {
+            persistentStatusMap[k] = Boolean(
+              saved.posted === true || saved.is_posted === true || saved.status === 'Posted'
+            );
+          }
+        });
+
+        if (!isMounted) return;
+
+        // 5. Merge persistent status over invoicesDirectory
+        setInvoicesDirectory((prev) => {
+          return prev.map((inv) => {
+            const invKey = inv.invoiceNumber || inv.id;
+            const hasExplicitStatus = persistentStatusMap[invKey] !== undefined || persistentStatusMap[inv.id] !== undefined;
+            if (hasExplicitStatus) {
+              const isPosted = persistentStatusMap[invKey] !== undefined ? persistentStatusMap[invKey] : persistentStatusMap[inv.id];
+              return {
+                ...inv,
+                posted: isPosted,
+                is_posted: isPosted,
+                status: isPosted ? 'Posted' : 'Unposted',
+              };
+            }
+
+            const matchSaved = savedDirectoryList.find(
+              (s: any) => s.id === inv.id || s.invoiceNumber === inv.invoiceNumber
+            );
+            if (matchSaved && (matchSaved.posted !== undefined || matchSaved.is_posted !== undefined || matchSaved.status !== undefined)) {
+              const isPosted = Boolean(
+                matchSaved.posted === true || matchSaved.is_posted === true || matchSaved.status === 'Posted'
+              );
+              return {
+                ...inv,
+                ...matchSaved,
+                posted: isPosted,
+                is_posted: isPosted,
+                status: isPosted ? 'Posted' : 'Unposted',
+              };
+            }
+
+            return inv;
+          });
+        });
+
+        // 6. Synchronize currentInvoice if matching
+        setCurrentInvoice((prev) => {
+          const targetKey = prev?.id || prev?.invoiceNumber || invoiceNumber;
+          const isPosted = persistentStatusMap[targetKey];
+          if (isPosted !== undefined) {
+            if (prev) {
+              return {
+                ...prev,
+                posted: isPosted,
+                is_posted: isPosted,
+                status: isPosted ? 'Posted' : 'Unposted',
+              };
+            }
+          }
+          return prev;
+        });
+
+      } catch (err) {
+        console.warn('[SalesView] Invoices directory hydration exception:', err);
+      }
+    };
+
+    hydrateInvoices();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentTenant?.id, invoiceNumber]);
 
   // Synchronize division options when category changes
   useEffect(() => {
@@ -1318,6 +1490,7 @@ export default function AuthenticOmegaSalesWorkstation({
     setCurrentInvoice(newRecord);
 
     if (postImmediately) {
+      executeDatabasePost([newRecord]);
       const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
         ? currentTenant.id
         : '00000000-0000-0000-0000-000000000001';
@@ -1726,17 +1899,18 @@ export default function AuthenticOmegaSalesWorkstation({
 
   // Check if currently loaded invoice in editor is posted
   const isCurrentInvoicePosted = useMemo(() => {
-    if (!currentInvoice) return false;
+    const activeId = currentInvoice?.id || currentInvoice?.invoiceNumber || invoiceNumber;
     const matchingDirInv = invoicesDirectory.find(
-      (inv) => inv.id === currentInvoice.id || inv.invoiceNumber === currentInvoice.invoiceNumber
+      (inv) => inv.id === activeId || inv.invoiceNumber === activeId
     );
     const target = matchingDirInv || currentInvoice;
+    if (!target) return false;
     return Boolean(
       target.posted === true ||
       (target as any).is_posted === true ||
       target.status === 'Posted'
     );
-  }, [currentInvoice, invoicesDirectory]);
+  }, [currentInvoice, invoicesDirectory, invoiceNumber]);
 
   const handleOpenReportScreen = (inv?: any) => {
     setReportTargetInvoice(inv || {
@@ -1768,7 +1942,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
   const handlePostAll = handlePostAllInvoices;
 
-  const executeDatabasePost = async (invoicesToUpdate: InvoiceRecord[]) => {
+  async function executeDatabasePost(invoicesToUpdate: InvoiceRecord[]) {
     const isUUID = (val: string) =>
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
 
@@ -1853,6 +2027,53 @@ export default function AuthenticOmegaSalesWorkstation({
           console.warn('Stock transaction deduction notice:', err);
         }
       }
+
+      // 4. Synchronize tenant feature_flags and local client cache
+      try {
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetTenantId)
+          .maybeSingle();
+
+        const flags = (tenantData?.feature_flags as Record<string, any>) || {};
+        flags.sales_posting_status = flags.sales_posting_status || {};
+        flags.sales_posting_status[invRef] = true;
+        flags.sales_posting_status[inv.id] = true;
+
+        if (!Array.isArray(flags.sales_invoices_directory)) {
+          flags.sales_invoices_directory = [];
+        }
+        const dirIdx = flags.sales_invoices_directory.findIndex(
+          (item: any) => item.id === inv.id || item.invoiceNumber === invRef
+        );
+        const updatedEntry = {
+          ...inv,
+          posted: true,
+          is_posted: true,
+          status: 'Posted',
+          posted_at: new Date().toISOString(),
+        };
+        if (dirIdx >= 0) {
+          flags.sales_invoices_directory[dirIdx] = updatedEntry;
+        } else {
+          flags.sales_invoices_directory.push(updatedEntry);
+        }
+
+        await supabase
+          .from('tenants')
+          .update({ feature_flags: flags, updated_at: new Date().toISOString() })
+          .eq('id', targetTenantId);
+
+        try {
+          const cached = JSON.parse(localStorage.getItem('vanguard_sales_posting_status') || '{}');
+          cached[invRef] = true;
+          cached[inv.id] = true;
+          localStorage.setItem('vanguard_sales_posting_status', JSON.stringify(cached));
+        } catch {}
+      } catch (flagErr) {
+        console.warn('Feature flags post persistence notice:', flagErr);
+      }
     }
   };
 
@@ -1932,7 +2153,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const handleExecutePostAll = handleConfirmPost;
 
   // --- UNPOST EXECUTION LOGIC (OMEGA POS LEDGER CONTROL PATTERN) ---
-  const executeDatabaseUnpost = async (invoice: InvoiceRecord) => {
+  async function executeDatabaseUnpost(invoice: InvoiceRecord) {
     const isUUID = (val: string) =>
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
 
@@ -1977,6 +2198,58 @@ export default function AuthenticOmegaSalesWorkstation({
       }
     } catch (err) {
       console.warn('Supabase orders unpost notice:', err);
+    }
+
+    // 3. Synchronize tenant feature_flags and local client cache for unposting
+    try {
+      const targetTenantId =
+        currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-')
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+      const { data: tenantData } = await supabase
+        .from('tenants')
+        .select('feature_flags')
+        .eq('id', targetTenantId)
+        .maybeSingle();
+
+      const flags = (tenantData?.feature_flags as Record<string, any>) || {};
+      flags.sales_posting_status = flags.sales_posting_status || {};
+      flags.sales_posting_status[invRef] = false;
+      flags.sales_posting_status[invoice.id] = false;
+
+      if (!Array.isArray(flags.sales_invoices_directory)) {
+        flags.sales_invoices_directory = [];
+      }
+      const dirIdx = flags.sales_invoices_directory.findIndex(
+        (item: any) => item.id === invoice.id || item.invoiceNumber === invRef
+      );
+      const updatedEntry = {
+        ...invoice,
+        posted: false,
+        is_posted: false,
+        status: 'Unposted',
+        unposted_at: new Date().toISOString(),
+      };
+      if (dirIdx >= 0) {
+        flags.sales_invoices_directory[dirIdx] = updatedEntry;
+      } else {
+        flags.sales_invoices_directory.push(updatedEntry);
+      }
+
+      await supabase
+        .from('tenants')
+        .update({ feature_flags: flags, updated_at: new Date().toISOString() })
+        .eq('id', targetTenantId);
+
+      try {
+        const cached = JSON.parse(localStorage.getItem('vanguard_sales_posting_status') || '{}');
+        cached[invRef] = false;
+        cached[invoice.id] = false;
+        localStorage.setItem('vanguard_sales_posting_status', JSON.stringify(cached));
+      } catch {}
+    } catch (flagErr) {
+      console.warn('Feature flags unpost persistence notice:', flagErr);
     }
   };
 

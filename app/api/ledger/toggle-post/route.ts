@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
             }
           }
 
-          // d) Synchronize tenant feature_flags (sales_invoices / directory)
+          // d) Synchronize tenant feature_flags (sales_invoices / directory / sales_posting_status)
           try {
             const { data: tenantData } = await supabase
               .from('tenants')
@@ -152,51 +152,80 @@ export async function POST(req: NextRequest) {
               .eq('id', targetTenantId)
               .maybeSingle();
 
-            if (tenantData?.feature_flags) {
-              const flags = tenantData.feature_flags;
-              let dirty = false;
+            const flags = (tenantData?.feature_flags as Record<string, any>) || {};
 
-              if (Array.isArray(flags.sales_invoices)) {
-                flags.sales_invoices = flags.sales_invoices.map((inv: any) => {
-                  if (inv.id === id || inv.invoiceNumber === id || inv.invoice_number === id) {
-                    dirty = true;
-                    return {
-                      ...inv,
-                      posted: posted,
-                      is_posted: posted,
-                      status: posted ? 'Posted' : 'Unposted',
-                      posted_at: postedAt,
-                      updatedAt: now,
-                    };
-                  }
-                  return inv;
-                });
-              }
-
-              if (Array.isArray(flags.sales_invoices_directory)) {
-                flags.sales_invoices_directory = flags.sales_invoices_directory.map((inv: any) => {
-                  if (inv.id === id || inv.invoiceNumber === id || inv.invoice_number === id) {
-                    dirty = true;
-                    return {
-                      ...inv,
-                      posted: posted,
-                      is_posted: posted,
-                      status: posted ? 'Posted' : 'Unposted',
-                      posted_at: postedAt,
-                      updatedAt: now,
-                    };
-                  }
-                  return inv;
-                });
-              }
-
-              if (dirty) {
-                await supabase
-                  .from('tenants')
-                  .update({ feature_flags: flags, updated_at: now })
-                  .eq('id', targetTenantId);
-              }
+            // 1. Maintain fast-lookup status map: flags.sales_posting_status = { [id]: boolean }
+            if (!flags.sales_posting_status || typeof flags.sales_posting_status !== 'object') {
+              flags.sales_posting_status = {};
             }
+            flags.sales_posting_status[id] = posted;
+            flags.sales_posting_status[id.trim()] = posted;
+
+            // 2. Synchronize flags.sales_invoices
+            if (!Array.isArray(flags.sales_invoices)) {
+              flags.sales_invoices = [];
+            }
+            const invIdx = flags.sales_invoices.findIndex(
+              (inv: any) => inv.id === id || inv.invoiceNumber === id || inv.invoice_number === id
+            );
+            if (invIdx >= 0) {
+              flags.sales_invoices[invIdx] = {
+                ...flags.sales_invoices[invIdx],
+                posted: posted,
+                is_posted: posted,
+                status: posted ? 'Posted' : 'Unposted',
+                posted_at: postedAt,
+                unposted_at: unpostedAt,
+                updatedAt: now,
+              };
+            } else {
+              flags.sales_invoices.push({
+                id,
+                invoiceNumber: id,
+                posted: posted,
+                is_posted: posted,
+                status: posted ? 'Posted' : 'Unposted',
+                posted_at: postedAt,
+                unposted_at: unpostedAt,
+                updatedAt: now,
+              });
+            }
+
+            // 3. Synchronize flags.sales_invoices_directory
+            if (!Array.isArray(flags.sales_invoices_directory)) {
+              flags.sales_invoices_directory = [];
+            }
+            const dirIdx = flags.sales_invoices_directory.findIndex(
+              (inv: any) => inv.id === id || inv.invoiceNumber === id || inv.invoice_number === id
+            );
+            if (dirIdx >= 0) {
+              flags.sales_invoices_directory[dirIdx] = {
+                ...flags.sales_invoices_directory[dirIdx],
+                posted: posted,
+                is_posted: posted,
+                status: posted ? 'Posted' : 'Unposted',
+                posted_at: postedAt,
+                unposted_at: unpostedAt,
+                updatedAt: now,
+              };
+            } else {
+              flags.sales_invoices_directory.push({
+                id,
+                invoiceNumber: id,
+                posted: posted,
+                is_posted: posted,
+                status: posted ? 'Posted' : 'Unposted',
+                posted_at: postedAt,
+                unposted_at: unpostedAt,
+                updatedAt: now,
+              });
+            }
+
+            // Authoritatively persist feature_flags to Supabase tenant
+            await supabase
+              .from('tenants')
+              .update({ feature_flags: flags, updated_at: now })
+              .eq('id', targetTenantId);
           } catch (tenantErr) {
             console.warn('[toggle-post] tenant feature_flags sync notice:', tenantErr);
           }
@@ -441,3 +470,62 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+/**
+ * GET /api/ledger/toggle-post?documentType=SALES&tenantId=...
+ * Hydrates persisted posting statuses and invoice records from authoritative persistent store.
+ */
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const documentType = searchParams.get('documentType') || 'SALES';
+    const tenantIdParam = searchParams.get('tenantId');
+    const targetTenantId =
+      tenantIdParam && tenantIdParam !== '1300' && !tenantIdParam.startsWith('comp-')
+        ? tenantIdParam
+        : DEFAULT_TENANT_ID;
+
+    const supabase = getSupabaseServerClient();
+
+    // 1. Fetch tenant feature flags
+    const { data: tenantData } = await supabase
+      .from('tenants')
+      .select('feature_flags')
+      .eq('id', targetTenantId)
+      .maybeSingle();
+
+    const flags = (tenantData?.feature_flags as Record<string, any>) || {};
+
+    // 2. Fetch sales_invoices table if documentType is SALES
+    let dbInvoices: any[] = [];
+    if (documentType === 'SALES') {
+      try {
+        const { data } = await supabase
+          .from('sales_invoices')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (Array.isArray(data)) {
+          dbInvoices = data;
+        }
+      } catch (dbErr) {
+        console.warn('[toggle-post GET] dbInvoices fetch notice:', dbErr);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      documentType,
+      tenantId: targetTenantId,
+      sales_posting_status: flags.sales_posting_status || {},
+      sales_invoices: flags.sales_invoices || [],
+      sales_invoices_directory: flags.sales_invoices_directory || [],
+      db_invoices: dbInvoices,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { success: false, error: err?.message || 'Failed to fetch posting statuses' },
+      { status: 500 }
+    );
+  }
+}
+
