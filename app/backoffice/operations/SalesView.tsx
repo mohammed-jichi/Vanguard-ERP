@@ -984,6 +984,8 @@ export default function AuthenticOmegaSalesWorkstation({
       grandTotal: 266.00,
       payments: [{ id: 'p-01', type: 'Cash USD', amount: 266.00 }],
       status: 'Posted',
+      is_posted: true,
+      posted: true,
       createdAt: '2026-09-04 11:20'
     },
     {
@@ -1013,6 +1015,8 @@ export default function AuthenticOmegaSalesWorkstation({
       grandTotal: 145.00,
       payments: [{ id: 'p-02', type: 'Cash USD', amount: 145.00 }],
       status: 'Posted',
+      is_posted: true,
+      posted: true,
       createdAt: '2026-09-05 14:30'
     },
     {
@@ -1042,6 +1046,8 @@ export default function AuthenticOmegaSalesWorkstation({
       grandTotal: 420.00,
       payments: [],
       status: 'Unposted',
+      is_posted: false,
+      posted: false,
       createdAt: '2026-09-06 16:45'
     },
     {
@@ -1071,6 +1077,8 @@ export default function AuthenticOmegaSalesWorkstation({
       grandTotal: 1240.00,
       payments: [{ id: 'p-03', type: 'Bank Check', amount: 1240.00 }],
       status: 'Posted',
+      is_posted: true,
+      posted: true,
       createdAt: '2026-09-07 09:15'
     },
     {
@@ -1100,6 +1108,8 @@ export default function AuthenticOmegaSalesWorkstation({
       grandTotal: 950.00,
       payments: [{ id: 'p-04', type: 'Cash USD', amount: 950.00 }],
       status: 'Posted',
+      is_posted: true,
+      posted: true,
       createdAt: '2026-09-07 10:30'
     }
   ]);
@@ -1281,6 +1291,8 @@ export default function AuthenticOmegaSalesWorkstation({
       grandTotal: grandTotal,
       payments: [...payments],
       status: postImmediately ? 'Posted' : 'Draft',
+      is_posted: postImmediately,
+      posted: postImmediately,
       createdAt: new Date().toISOString()
     };
 
@@ -1455,6 +1467,8 @@ export default function AuthenticOmegaSalesWorkstation({
       grandTotal: -grandTotal,
       payments: [{ id: `p-${Date.now()}`, type: 'Credit to Account', amount: grandTotal }],
       status: 'Posted',
+      is_posted: true,
+      posted: true,
       createdAt: new Date().toLocaleString()
     };
     setInvoicesDirectory((prev) => [crnRecord, ...prev]);
@@ -1685,6 +1699,11 @@ export default function AuthenticOmegaSalesWorkstation({
     };
   }, [filteredPreviewInvoices]);
 
+  // Check for unposted invoices in the current filtered list
+  const hasUnpostedInvoices = useMemo(() => {
+    return filteredPreviewInvoices.some((inv) => !inv.posted);
+  }, [filteredPreviewInvoices]);
+
   const handleOpenReportScreen = (inv?: any) => {
     setReportTargetInvoice(inv || {
       invoiceNumber: invoiceNumber,
@@ -1708,9 +1727,12 @@ export default function AuthenticOmegaSalesWorkstation({
   };
 
   const handlePostAllInvoices = () => {
+    if (!hasUnpostedInvoices) return;
     setInvoiceToPost(null);
     setIsConfirmPostAllOpen(true);
   };
+
+  const handlePostAll = handlePostAllInvoices;
 
   const executeDatabasePost = async (invoicesToUpdate: InvoiceRecord[]) => {
     const isUUID = (val: string) =>
@@ -3846,7 +3868,7 @@ export default function AuthenticOmegaSalesWorkstation({
                     <th className="py-2.5 px-2">Cur.</th>
                     <th className="py-2.5 px-2 text-center">Posted</th>
                     <th className="py-2.5 px-3 text-center">
-                      {previewSalesFilter !== 'Quotations' ? (
+                      {previewSalesFilter !== 'Quotations' && hasUnpostedInvoices ? (
                         <button
                           type="button"
                           onClick={handlePostAllInvoices}
