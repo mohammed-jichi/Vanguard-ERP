@@ -75,6 +75,8 @@ export interface Corporate3ZoneHeaderProps {
   // Center Zone (Dynamic Document Title & Metadata)
   documentTitle: string;
   voucherCode?: string;
+  voucherLabel?: string;
+  hideStatusBadge?: boolean;
   transactionDate?: string;
   status?: string;
   periodText?: string;
@@ -93,8 +95,8 @@ export interface Corporate3ZoneHeaderProps {
  * +---------------------------------------------------------------------------------------------------------+
  * | [LEFT ZONE - Head Office]            |           [CENTER ZONE]          | [RIGHT ZONE - Active Branch]  |
  * | Southern Olive Oil S.A.R.L.          |           SALES INVOICE          | Facility: Choueifat Main Plant|
- * | منتوجات زيت وزيتون الجنوب ش.م.م     |      Ref #: INV-2026-0042        | Industrial Zone, Old Saida Rd |
- * | Choueifat Central Highway, Lebanon   |  Date: 01-Oct-2026 • Status: POST| Dispatch / Cell: +961 70 00000|
+ * | منتوجات زيت وزيتون الجنوب ش.م.م     |    Invoice #: INV-2026-0042       | Industrial Zone, Old Saida Rd |
+ * | Choueifat Central Highway, Lebanon   |  Date: 01-Oct-2026               | Dispatch / Cell: +961 70 00000|
  * | www.southernolive-lb.com             |                                  | Page 1 of 1                   |
  * | Tel / Direct: +961 05 430 000        |                                  |                               |
  * | Print Date: 01-Oct-2026              |                                  |                               |
@@ -109,6 +111,8 @@ export function Corporate3ZoneHeader({
   printDate,
   documentTitle,
   voucherCode,
+  voucherLabel,
+  hideStatusBadge = false,
   transactionDate,
   status,
   periodText,
@@ -137,6 +141,27 @@ export function Corporate3ZoneHeader({
   const isConsolidated = cleanFacility.toLowerCase().includes('consolidated') || cleanFacility.toLowerCase().includes('enterprise');
   const resolvedAddress = isConsolidated ? 'Enterprise Consolidated Audit' : facilityAddress;
   const resolvedDirect = isConsolidated ? 'Tenant Master Central Dispatch' : facilityDirect;
+
+  const isInvoiceDoc =
+    documentTitle?.toUpperCase().includes('INVOICE') ||
+    Boolean(voucherCode && voucherCode.toUpperCase().startsWith('INV'));
+
+  const defaultVoucherPrefix = voucherLabel || (isInvoiceDoc ? 'Invoice #' : 'Ref #');
+
+  const formattedVoucherDisplay = voucherCode
+    ? voucherCode.includes('#') ||
+      voucherCode.startsWith('Ref') ||
+      voucherCode.startsWith('Doc') ||
+      voucherCode.startsWith('Invoice')
+      ? voucherCode
+      : `${defaultVoucherPrefix}: ${voucherCode}`
+    : '';
+
+  // Internal POSTED / ledger tags should not be rendered on customer-facing invoices
+  const shouldRenderStatusBadge =
+    Boolean(status) &&
+    !hideStatusBadge &&
+    !(isInvoiceDoc && status?.toUpperCase() === 'POSTED');
 
   return (
     <div className={`w-full pb-3 mb-4 border-b-2 border-slate-900 font-sans text-slate-800 ${className}`}>
@@ -180,9 +205,7 @@ export function Corporate3ZoneHeader({
 
           {voucherCode && (
             <div className="mt-1 font-mono font-bold text-[13px] text-slate-900 bg-slate-100/80 px-2.5 py-0.5 rounded border border-slate-300">
-              {voucherCode.includes('#') || voucherCode.startsWith('Ref') || voucherCode.startsWith('Doc')
-                ? voucherCode
-                : `Ref #: ${voucherCode}`}
+              {formattedVoucherDisplay}
             </div>
           )}
 
@@ -192,13 +215,13 @@ export function Corporate3ZoneHeader({
                 {transactionDate.startsWith('Date:') ? transactionDate : `Date: ${transactionDate}`}
               </span>
             )}
-            {transactionDate && status && <span>•</span>}
-            {status && (
+            {transactionDate && shouldRenderStatusBadge && <span>•</span>}
+            {shouldRenderStatusBadge && (
               <span
                 className={`font-bold px-1.5 py-0.2 rounded text-[10px] uppercase ${
-                  status.toLowerCase().includes('post') || status.toLowerCase().includes('approv') || status.toLowerCase().includes('confirm')
+                  status!.toLowerCase().includes('post') || status!.toLowerCase().includes('approv') || status!.toLowerCase().includes('confirm')
                     ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                    : status.toLowerCase().includes('draft')
+                    : status!.toLowerCase().includes('draft')
                     ? 'bg-amber-100 text-amber-800 border border-amber-300'
                     : 'bg-slate-100 text-slate-800 border border-slate-300'
                 }`}
@@ -257,10 +280,16 @@ export function CorporatePrintableFooter({
 }: CorporatePrintableFooterProps) {
   const { t } = useLanguage();
 
+  const isInvoice = voucherCode && (voucherCode.toUpperCase().startsWith('INV') || voucherCode.toUpperCase().includes('INVOICE'));
+  const defaultPrefix = isInvoice ? 'Invoice No:' : 'Ref:';
+
   const formattedRef = voucherCode
-    ? voucherCode.startsWith('Ref:') || voucherCode.startsWith('Doc Ref:')
+    ? voucherCode.startsWith('Ref:') ||
+      voucherCode.startsWith('Doc Ref:') ||
+      voucherCode.startsWith('Invoice No:') ||
+      voucherCode.startsWith('Invoice #')
       ? voucherCode
-      : `Ref: ${voucherCode}`
+      : `${defaultPrefix} ${voucherCode}`
     : 'Ref: VANGUARD-DOC';
 
   const cleanUrl = websiteUrl.replace(/^https?:\/\//i, '');

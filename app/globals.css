@@ -80,111 +80,76 @@
     page-orientation: portrait;
   }
 
-  /* Hide everything by default */
-  body * {
-    visibility: hidden;
+  /* Hide entire normal body flow to prevent layout height spill and blank pages */
+  html,
+  body {
+    visibility: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    height: auto !important;
+    background: #ffffff !important;
   }
 
-  /* Isolate and display only the elements flagged for printing */
+  /* Isolate print container strictly to 1 page */
   .printable-document,
-  .printable-document *,
   #vanguard-printable-invoice,
-  #vanguard-printable-invoice *,
   .vanguard-printable,
-  .vanguard-printable *,
   .printable-voucher-card,
-  .printable-voucher-card *,
   .printable-report-area,
-  .printable-report-area *,
   .printable-sheet,
-  .printable-sheet *,
   .report-sheet,
-  .report-sheet *,
   .report-surface,
+  #print-mount-portal {
+    visibility: visible !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100vw !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .printable-document *,
+  #vanguard-printable-invoice *,
+  .vanguard-printable *,
+  .printable-voucher-card *,
+  .printable-report-area *,
+  .printable-sheet *,
+  .report-sheet *,
   .report-surface *,
-  #print-mount-portal,
   #print-mount-portal * {
     visibility: visible !important;
   }
 
-  /* Position the printable container at the top of the physical page */
-  .printable-document,
-  #vanguard-printable-invoice,
-  .vanguard-printable {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
-    color: #000000 !important;
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  /* Ensure parent modal wrappers don't clip or collapse page breaks */
-  html, body {
-    overflow: visible !important;
-    height: auto !important;
-    background: #ffffff !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  html, body, #__next, #root, main, .min-h-screen, .h-screen {
-    background: #ffffff !important;
-    color: #000000 !important;
-    overflow: visible !important;
-    height: auto !important;
-    min-height: 0 !important;
-    width: 100% !important;
-  }
-
-  /* Reset parent modal containers and dialog wrappers so they never clip or constrain height/overflow */
-  .fixed,
-  .inset-0,
-  [role="dialog"],
-  [data-radix-portal],
-  div:has(.printable-document),
-  div:has(#vanguard-printable-invoice),
-  div:has(.vanguard-printable) {
-    position: static !important;
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
-    width: 100% !important;
-    max-width: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-    transform: none !important;
-    filter: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* Hide interactive buttons, navigation, scrollbars, and backdrops */
-  .no-print,
-  .print-hidden,
-  [class*="print:hidden"],
-  button:not(.print-include),
-  input:not(.print-include),
-  select:not(.print-include),
+  /* Hide UI elements and backdrop */
   header,
   nav,
   aside,
-  footer,
+  button,
+  .no-print,
+  .print-hidden,
+  [class*="print:hidden"],
+  footer:not(.printable-document footer):not(#vanguard-printable-invoice footer),
   .global-footer,
   .reports-sidebar,
   .report-toolbar,
   .filter-fields,
   .report-card-filters,
-  .backdrop-blur-sm:not(:has(.printable-document)),
-  .backdrop-blur-xs:not(:has(.printable-document)),
-  .backdrop-blur-md:not(:has(.printable-document)),
-  .backdrop-blur:not(:has(.printable-document)) {
+  .backdrop-blur-sm,
+  .backdrop-blur-xs,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur {
     display: none !important;
   }
 
@@ -197,6 +162,19 @@
   .backdrop-blur {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+
+  /* Reset modal containers so they never clip or spill */
+  .fixed,
+  .inset-0,
+  [role="dialog"],
+  [data-radix-portal] {
+    position: static !important;
+    overflow: hidden !important;
+    height: auto !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
   }
 
   /* ========================================================================== */

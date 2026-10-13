@@ -3528,8 +3528,9 @@ export default function AuthenticOmegaSalesWorkstation({
               <Corporate3ZoneHeader
                 documentTitle={previewSalesFilter === 'Quotations' ? 'SALES QUOTATION' : 'SALES INVOICE'}
                 voucherCode={reportTargetInvoice?.invoiceNumber || invoiceNumber}
+                voucherLabel="Invoice #"
                 transactionDate={reportTargetInvoice?.date || '10-Sep-2026'}
-                status={((reportTargetInvoice as any)?.is_posted === true || reportTargetInvoice?.status === 'Posted') ? 'POSTED' : 'UNPOSTED'}
+                hideStatusBadge={true}
                 facilityName="Facility: Choueifat Main Plant"
               />
 
@@ -3543,7 +3544,7 @@ export default function AuthenticOmegaSalesWorkstation({
                 <div className="text-right">
                   <span className="font-bold text-slate-700">Payment Terms:</span>
                   <div className="font-medium text-slate-800 mt-0.5">Cash / On Delivery</div>
-                  <div className="text-slate-500">Salesman: {reportTargetInvoice?.salesman || invoiceSalesman || 'Direct Counter'} • Status: {((reportTargetInvoice as any)?.is_posted === true || reportTargetInvoice?.status === 'Posted') ? 'Posted' : 'Unposted'}</div>
+                  <div className="text-slate-500">Salesman: {reportTargetInvoice?.salesman || invoiceSalesman || 'Direct Counter'}</div>
                 </div>
               </div>
 
@@ -5084,8 +5085,9 @@ export default function AuthenticOmegaSalesWorkstation({
                 <Corporate3ZoneHeader
                   documentTitle="SALES INVOICE"
                   voucherCode={invoiceNumber}
+                  voucherLabel="Invoice #"
                   transactionDate={invoiceDate}
-                  status="POSTED"
+                  hideStatusBadge={true}
                   facilityName="Facility: Choueifat Main Plant"
                 />
 
@@ -5138,7 +5140,6 @@ export default function AuthenticOmegaSalesWorkstation({
                   <div className="text-[11px] text-slate-500 max-w-xs space-y-1">
                     <p className="font-semibold text-slate-700">Payment Terms & Conditions:</p>
                     <p>Goods received in good condition. All returns subject to inspection within 7 days.</p>
-                    <p className="font-mono text-[10px] text-slate-400">BLOM Bank USD Acc: #2481-992018-01</p>
                   </div>
                   <div className="w-56 space-y-1.5 text-xs text-right">
                     <div className="flex justify-between text-slate-600">
