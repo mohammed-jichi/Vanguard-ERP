@@ -2,10 +2,12 @@
 
 import React, { useState, useMemo } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
-import { Search, ChevronDown, Calendar as CalendarIcon, Filter, CheckCircle2, Pencil, Minus, Plus, ArrowLeft, X } from 'lucide-react';
+import { Search, ChevronDown, Calendar as CalendarIcon, Filter, CheckCircle2, Pencil, Minus, Plus, ArrowLeft, X, Printer } from 'lucide-react';
 import Link from 'next/link';
 import DatePickerInput from './DatePickerInput';
 import { toggleDocumentPosting } from '@/lib/dataGateway';
+import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
+import { printElementById } from '@/lib/utils/printDocument';
 
 
 export interface DeliveryItem {
@@ -46,6 +48,9 @@ export default function DeliveryOfGoodsView() {
   // Edit Delivery Date Modal state (as described in the voice audio)
   const [editingRecord, setEditingRecord] = useState<DeliveryRecord | null>(null);
   const [newDeliveryDate, setNewDeliveryDate] = useState<string>('');
+
+  // Delivery Note Print Modal state
+  const [printingDeliveryRecord, setPrintingDeliveryRecord] = useState<DeliveryRecord | null>(null);
 
   // Comprehensive sample records representing all 3 statuses (No Delivery, Pending Delivery, Delivered)
   const [deliveryRecords, setDeliveryRecords] = useState<DeliveryRecord[]>([
@@ -585,6 +590,15 @@ export default function DeliveryOfGoodsView() {
 
                           <button
                             type="button"
+                            onClick={() => setPrintingDeliveryRecord(rec)}
+                            className="bg-slate-100 hover:bg-slate-200 text-slate-700 p-1 rounded cursor-pointer shadow-2xs border border-slate-300 transition-colors"
+                            title="Print Delivery Note"
+                          >
+                            <Printer className="w-3.5 h-3.5 text-slate-700" />
+                          </button>
+
+                          <button
+                            type="button"
                             onClick={() => toggleRowExpansion(rec.invoiceNumber)}
                             className="text-slate-600 hover:text-blue-700 font-bold p-1 cursor-pointer transition-transform"
                             title={isExpanded ? 'Collapse Items' : 'Expand Items'}
@@ -946,6 +960,119 @@ export default function DeliveryOfGoodsView() {
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Save / OK</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* DELIVERY NOTE PRINT PREVIEW MODAL (#printable-delivery-note)             */}
+      {/* ========================================================================= */}
+      {printingDeliveryRecord && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white rounded-lg shadow-2xl border border-slate-300 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <Printer className="w-4 h-4 text-amber-400" />
+                <h3 className="text-sm font-bold">Delivery Note (Bon de Livraison) &mdash; #{printingDeliveryRecord.invoiceNumber}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPrintingDeliveryRecord(null)}
+                className="text-slate-300 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
+              <div id="printable-delivery-note" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
+                <Corporate3ZoneHeader
+                  documentTitle="DELIVERY NOTE"
+                  voucherCode={`DN-${printingDeliveryRecord.invoiceNumber}`}
+                  transactionDate={printingDeliveryRecord.deliveryDate || printingDeliveryRecord.invoiceDate}
+                  status={printingDeliveryRecord.status === 'Delivered' ? 'DELIVERED' : 'DISPATCHED'}
+                  facilityName={`Facility: ${printingDeliveryRecord.branch || 'Main Branch'}`}
+                />
+
+                <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Delivery Destination:</span>
+                    <p className="font-bold text-slate-800 text-sm">{printingDeliveryRecord.customerName}</p>
+                    <p className="text-slate-600 text-[11px]">{printingDeliveryRecord.companyName}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Carrier / Branch:</span>
+                    <p className="font-semibold text-slate-800">{printingDeliveryRecord.branch}</p>
+                    <p className="text-slate-500 text-[11px]">Invoice Ref: #{printingDeliveryRecord.invoiceNumber}</p>
+                  </div>
+                </div>
+
+                <table className="w-full border-collapse text-left text-xs">
+                  <thead>
+                    <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
+                      <th className="py-2 px-2.5">Item Description</th>
+                      <th className="py-2 px-2 text-right">Dispatched Qty</th>
+                      <th className="py-2 px-2 text-center">Packaging</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {printingDeliveryRecord.items.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50">
+                        <td className="py-2 px-2.5 font-medium text-slate-800" dir="rtl">
+                          {item.name}
+                        </td>
+                        <td className="py-2 px-2 text-right font-bold text-emerald-700">
+                          {item.qty}
+                        </td>
+                        <td className="py-2 px-2 text-center text-slate-500">
+                          Carton / Standard
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div className="pt-8 grid grid-cols-3 gap-4 text-[11px] text-slate-500 text-center border-t border-slate-200">
+                  <div>
+                    <div className="h-10 border-b border-dashed border-slate-300"></div>
+                    <span className="mt-1 block">Warehouse Keeper (Dispatched)</span>
+                  </div>
+                  <div>
+                    <div className="h-10 border-b border-dashed border-slate-300"></div>
+                    <span className="mt-1 block">Delivery Driver (Transit)</span>
+                  </div>
+                  <div>
+                    <div className="h-10 border-b border-dashed border-slate-300"></div>
+                    <span className="mt-1 block">Customer Received (Full & Intact)</span>
+                  </div>
+                </div>
+
+                <CorporatePrintableFooter voucherCode={`DN-${printingDeliveryRecord.invoiceNumber}`} />
+              </div>
+            </div>
+
+            <div className="bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between shrink-0">
+              <span className="text-xs text-slate-500">Warehouse Dispatch Authorization Copy</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPrintingDeliveryRecord(null)}
+                  className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    printElementById('printable-delivery-note', 'Delivery Note');
+                  }}
+                  className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Print Delivery Note</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
+import { printElementById } from '@/lib/utils/printDocument';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import {
@@ -2941,34 +2942,18 @@ export default function AuthenticOmegaSalesWorkstation({
           {/* Customer & Metadata Block */}
           <div className="p-3 bg-white border-b border-border space-y-2 shrink-0">
             
-            {/* Invoice Number & Live Status Badge */}
+            {/* Invoice Number Header */}
             <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 text-xs">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-slate-800">
                   Invoice #{invoiceNumber}
                 </span>
-                {isCurrentInvoicePosted ? (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                    <Check className="w-3 h-3 text-emerald-700" />
-                    <span>Posted (Locked)</span>
-                  </span>
-                ) : (
+                {!isCurrentInvoicePosted && (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
                     Draft (Editable)
                   </span>
                 )}
               </div>
-              {isCurrentInvoicePosted && (
-                <button
-                  type="button"
-                  onClick={() => handlePromptUnpost(currentInvoice || undefined)}
-                  className="px-2.5 py-0.5 rounded text-[11px] font-bold text-rose-700 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
-                  title="Click to unpost and unlock invoice"
-                >
-                  <Unlock className="w-3 h-3" />
-                  <span>Unpost Invoice</span>
-                </button>
-              )}
             </div>
             
             {/* Upper Section: Customer info on Left, Metadata on Right */}
@@ -3485,7 +3470,7 @@ export default function AuthenticOmegaSalesWorkstation({
             <div className="hidden sm:flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => window.print()}
+                onClick={() => printElementById('printable-sales-invoice', 'Sales Invoice')}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-1.5 rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -3523,7 +3508,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
           {/* Printable Report Document */}
           <div className="flex-1 p-6 flex justify-center">
-            <div id="vanguard-printable-invoice" className="printable-document vanguard-printable bg-white border border-slate-300 shadow-xl rounded-sm w-full max-w-[850px] p-8 text-slate-800 font-sans space-y-6">
+            <div id="printable-sales-invoice" className="printable-document vanguard-printable bg-white border border-slate-300 shadow-xl rounded-sm w-full max-w-[850px] p-8 text-slate-800 font-sans space-y-6">
               {/* Standardized 3-Zone Corporate Header */}
               <Corporate3ZoneHeader
                 documentTitle={previewSalesFilter === 'Quotations' ? 'SALES QUOTATION' : 'SALES INVOICE'}
@@ -5080,7 +5065,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
             {/* Printable Document Paper */}
             <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
-              <div className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
+              <div id="printable-sales-invoice" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
                 {/* Standardized 3-Zone Corporate Header */}
                 <Corporate3ZoneHeader
                   documentTitle="SALES INVOICE"
@@ -5192,7 +5177,7 @@ export default function AuthenticOmegaSalesWorkstation({
                 <button
                   type="button"
                   onClick={() => {
-                    window.print();
+                    printElementById('printable-sales-invoice', 'Sales Invoice');
                     setIsPrintInvoiceModalOpen(false);
                     setStatusNotice(`Invoice ${invoiceNumber} sent to printer!`);
                     setTimeout(() => setStatusNotice(null), 3000);
@@ -5229,7 +5214,7 @@ export default function AuthenticOmegaSalesWorkstation({
             </div>
 
             <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
-              <div className="bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
+              <div id="printable-delivery-note" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
                 {/* Standardized 3-Zone Corporate Header */}
                 <Corporate3ZoneHeader
                   documentTitle="DELIVERY NOTE"
@@ -5314,7 +5299,7 @@ export default function AuthenticOmegaSalesWorkstation({
                 <button
                   type="button"
                   onClick={() => {
-                    window.print();
+                    printElementById('printable-delivery-note', 'Delivery Note');
                     setIsDeliveryNoteModalOpen(false);
                     setStatusNotice(`Delivery Note DN-${invoiceNumber.replace('INV-', '')} printed.`);
                     setTimeout(() => setStatusNotice(null), 3000);

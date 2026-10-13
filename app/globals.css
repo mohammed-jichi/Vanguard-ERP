@@ -94,6 +94,8 @@
   /* Isolate print container strictly to 1 page */
   .printable-document,
   #vanguard-printable-invoice,
+  #printable-sales-invoice,
+  #printable-delivery-note,
   .vanguard-printable,
   .printable-voucher-card,
   .printable-report-area,
@@ -120,6 +122,8 @@
 
   .printable-document *,
   #vanguard-printable-invoice *,
+  #printable-sales-invoice *,
+  #printable-delivery-note *,
   .vanguard-printable *,
   .printable-voucher-card *,
   .printable-report-area *,
