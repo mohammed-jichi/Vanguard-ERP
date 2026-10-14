@@ -713,15 +713,51 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['cust'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link prefetch={false} href="/customer-management?tab=accounts" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+              <Link
+                prefetch={false}
+                href="/customer-management?tab=accounts"
+                onClick={(e) => {
+                  if (onSelectScreen) {
+                    e.preventDefault();
+                    onSelectScreen('wholesale-accounts');
+                  }
+                }}
+                className={`flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded transition ${
+                  activeScreen === 'wholesale-accounts' || activeScreen === 'wholesale' ? 'bg-blue-50 text-blue-700 font-bold' : 'font-semibold text-slate-800'
+                }`}
+              >
                 <img src="/icons/backoffice_customer_rec.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('wholesale_accounts', 'Wholesale Accounts')}</span>
               </Link>
-              <Link prefetch={false} href="/customer-management?tab=zones" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link
+                prefetch={false}
+                href="/customer-management?tab=zones"
+                onClick={(e) => {
+                  if (onSelectScreen) {
+                    e.preventDefault();
+                    onSelectScreen('zones-territories');
+                  }
+                }}
+                className={`flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded transition ${
+                  activeScreen === 'zones-territories' || activeScreen === 'zones' ? 'bg-emerald-50 text-emerald-700 font-bold' : 'font-medium text-slate-700'
+                }`}
+              >
                 <MapPin strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{t('zones_territories', 'Zones & Territories')}</span>
               </Link>
-              <Link prefetch={false} href="/customer-management?tab=categories" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-medium">
+              <Link
+                prefetch={false}
+                href="/customer-management?tab=categories"
+                onClick={(e) => {
+                  if (onSelectScreen) {
+                    e.preventDefault();
+                    onSelectScreen('customer-categories');
+                  }
+                }}
+                className={`flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded transition ${
+                  activeScreen === 'customer-categories' || activeScreen === 'categories' ? 'bg-purple-50 text-purple-700 font-bold' : 'font-medium text-slate-700'
+                }`}
+              >
                 <img src="/icons/backoffice_customer_category.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
                 <span>{t('customer_categories', 'Customer Categories')}</span>
               </Link>

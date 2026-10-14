@@ -8,6 +8,7 @@ import UnifiedModuleReportsHub, { ReportCategory } from '@/components/reports/Un
 import UnifiedPrintableReportSheet from '@/components/reports/UnifiedPrintableReportSheet';
 import { CustomerListStandardTemplate } from '@/components/reports/sales/CustomerListStandardTemplate';
 import UnifiedCustomerManagementConsole from '@/components/modules/customers/UnifiedCustomerManagementConsole';
+import CrmSubModulesView from '@/components/modules/customers/CrmSubModulesView';
 
 const customerReportMenuData: ReportCategory[] = [
   {
@@ -40,7 +41,33 @@ const customerReportMenuData: ReportCategory[] = [
 function CustomersPageContent() {
   const { t, dir } = useLanguage();
   const searchParams = useSearchParams();
-  const section = searchParams.get('section');
+  const section = searchParams.get('section') || searchParams.get('tab');
+
+  if (section) {
+    const s = section.toLowerCase();
+    if (s.includes('wholesale') || s === 'accounts') {
+      return (
+        <div dir={dir} className="p-4 md:p-6 min-h-screen bg-background text-foreground font-sans">
+          <CrmSubModulesView initialTab="wholesale-accounts" />
+        </div>
+      );
+    }
+    if (s.includes('zone') || s.includes('territor')) {
+      return (
+        <div dir={dir} className="p-4 md:p-6 min-h-screen bg-background text-foreground font-sans">
+          <CrmSubModulesView initialTab="zones-territories" />
+        </div>
+      );
+    }
+    if (s.includes('categor')) {
+      return (
+        <div dir={dir} className="p-4 md:p-6 min-h-screen bg-background text-foreground font-sans">
+          <CrmSubModulesView initialTab="customer-categories" />
+        </div>
+      );
+    }
+  }
+
   const [activeTab, setActiveTab] = useState<'directory' | 'report'>('directory');
   const [selectedReport, setSelectedReport] = useState<string>(
     'Customer List Standard & AR Aging Summary'

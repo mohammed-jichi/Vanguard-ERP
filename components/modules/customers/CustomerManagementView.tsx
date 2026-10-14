@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { useTenant } from '@/lib/TenantContext';
 import { toast } from '@/lib/toast';
@@ -9,6 +10,7 @@ import {
   AlertTriangle, CheckCircle2, HeadphonesIcon, 
   CreditCard, FileText, X
 } from 'lucide-react';
+import CrmSubModulesView from './CrmSubModulesView';
 
 interface Category { id: string; name: string; discount_rate: number; }
 interface Zone { id: string; zone_name: string; }
@@ -30,8 +32,9 @@ interface Ticket {
 export function CustomerManagementView() {
   const { currentTenant } = useTenant();
   const tenantId = currentTenant?.id || 'default-tenant';
+  const searchParams = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState<'directory' | 'wholesale' | 'support'>('directory');
+  const [activeTab, setActiveTab] = useState<'directory' | 'wholesale' | 'zones' | 'categories' | 'support'>('directory');
   const [loading, setLoading] = useState(true);
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -83,6 +86,24 @@ export function CustomerManagementView() {
   };
 
   useEffect(() => { if (tenantId) fetchData(); }, [tenantId]);
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      const lower = tabParam.toLowerCase();
+      if (lower === 'accounts' || lower === 'wholesale' || lower === 'wholesale-accounts') {
+        setActiveTab('wholesale');
+      } else if (lower === 'zones' || lower === 'zones-territories' || lower === 'territories') {
+        setActiveTab('zones');
+      } else if (lower === 'categories' || lower === 'customer-categories') {
+        setActiveTab('categories');
+      } else if (lower === 'support' || lower === 'tickets') {
+        setActiveTab('support');
+      } else if (lower === 'directory') {
+        setActiveTab('directory');
+      }
+    }
+  }, [searchParams]);
 
   const handleAddCategory = async () => {
     if (!newCat.name) return toast.error('Category name is required');
@@ -185,10 +206,12 @@ export function CustomerManagementView() {
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 bg-slate-100 p-1 rounded-xl w-max">
+      <div className="flex space-x-1 bg-slate-100 p-1 rounded-xl w-max flex-wrap gap-1">
         {[
           { id: 'directory', label: 'Directory', icon: Users },
           { id: 'wholesale', label: 'Wholesale Accounts', icon: Building2 },
+          { id: 'zones', label: 'Zones & Territories', icon: MapPin },
+          { id: 'categories', label: 'Customer Categories', icon: Tag },
           { id: 'support', label: 'Support & Feedback', icon: HeadphonesIcon },
         ].map(t => (
           <button
@@ -274,54 +297,22 @@ export function CustomerManagementView() {
 
             {/* WHOLESALE TAB */}
             {activeTab === 'wholesale' && (
-              <div className="p-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                  <h2 className="text-lg font-semibold text-slate-800">Wholesale Partners & Credit Lines</h2>
-                  <div className="relative w-full md:w-72">
-                    <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-                    <input type="text" placeholder="Search wholesale..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
-                  </div>
-                </div>
+              <div className="p-2 md:p-4">
+                <CrmSubModulesView initialTab="wholesale-accounts" showBackNavigation={false} />
+              </div>
+            )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {wholesaleCustomers.length === 0 && <div className="col-span-full py-8 text-center text-slate-500">No wholesale accounts found.</div>}
-                  {wholesaleCustomers.map(c => {
-                    const overLimit = c.credit_limit > 0 && c.current_balance > c.credit_limit;
-                    return (
-                      <div key={c.id} className={`border rounded-xl p-4 shadow-sm transition-shadow ${overLimit ? 'border-rose-200 bg-rose-50' : 'border-slate-200'}`}>
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="font-bold text-slate-900 truncate">{c.company_name || c.full_name}</span>
-                          <span className="px-2 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded">{c.payment_terms}</span>
-                        </div>
-                        <p className="text-xs text-slate-500 mb-4">{c.account_code}</p>
-                        
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-sm text-slate-600">Balance:</span>
-                          <span className={`text-sm font-bold ${overLimit ? 'text-rose-600' : 'text-slate-900'}`}>${c.current_balance.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between items-center mb-4">
-                          <span className="text-sm text-slate-600">Credit Limit:</span>
-                          <span className="text-sm font-medium text-slate-700">${c.credit_limit > 0 ? c.credit_limit.toFixed(2) : 'Unlimited'}</span>
-                        </div>
+            {/* ZONES TAB */}
+            {activeTab === 'zones' && (
+              <div className="p-2 md:p-4">
+                <CrmSubModulesView initialTab="zones-territories" showBackNavigation={false} />
+              </div>
+            )}
 
-                        {overLimit && (
-                          <div className="mb-4 flex items-center gap-1 text-xs text-rose-600 font-medium">
-                            <AlertTriangle className="w-3 h-3" /> Credit Limit Exceeded
-                          </div>
-                        )}
-
-                        <div className="flex gap-2">
-                          <button onClick={() => { setSelectedCustomer(c); setShowTransactionModal(true); }} className="flex-1 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg flex justify-center items-center gap-1">
-                            <CreditCard className="w-3 h-3" /> Add Tx
-                          </button>
-                          <button onClick={() => { setSelectedCustomer(c); loadLedger(c); }} className="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg flex justify-center items-center gap-1 border border-slate-200">
-                            <FileText className="w-3 h-3" /> Ledger
-                          </button>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+            {/* CATEGORIES TAB */}
+            {activeTab === 'categories' && (
+              <div className="p-2 md:p-4">
+                <CrmSubModulesView initialTab="customer-categories" showBackNavigation={false} />
               </div>
             )}
 

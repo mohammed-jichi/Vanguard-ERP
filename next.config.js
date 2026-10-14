@@ -123,6 +123,12 @@ const nextConfig = {
       // 3. CUSTOMER MANAGEMENT
       // ==========================================
       { source: '/customer-management/customers', destination: '/backoffice/customers' },
+      { source: '/customer-management/wholesale', destination: '/customer-management?tab=accounts' },
+      { source: '/customer-management/wholesale-accounts', destination: '/customer-management?tab=accounts' },
+      { source: '/customer-management/zones', destination: '/customer-management?tab=zones' },
+      { source: '/customer-management/zones-territories', destination: '/customer-management?tab=zones' },
+      { source: '/customer-management/categories', destination: '/customer-management?tab=categories' },
+      { source: '/customer-management/customer-categories', destination: '/customer-management?tab=categories' },
       { source: '/customer-management/receipts', destination: '/backoffice/customers?section=receipts' },
       { source: '/customer-management/aged', destination: '/backoffice/customers?section=aged' },
       { source: '/customer-management/insights', destination: '/customer-insights' },

@@ -19,6 +19,7 @@ import GenericDataTable from './GenericDataTable';
 import SalesDashboard from './SalesDashboard';
 import ReportsMasterDetail from './ReportsMasterDetail';
 import SocialMediaManagementHub from './modules/social/SocialMediaManagementHub';
+import CrmSubModulesView from './modules/customers/CrmSubModulesView';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
@@ -97,7 +98,13 @@ const SALES_CONTROL_TITLES: Record<string, string> = {
   'sales-moresetup-vatexempt': 'VAT Exemptions Reason',
   'sales-moresetup-invoicemsg': 'Message on Invoice',
   'sales-moresetup-zonesetup': 'Zone Setup',
-  'sales-moresetup-currencysetup': 'Currency Setup'
+  'sales-moresetup-currencysetup': 'Currency Setup',
+  'wholesale-accounts': 'Wholesale Accounts & Credit Lines',
+  'wholesale_accounts': 'Wholesale Accounts & Credit Lines',
+  'zones-territories': 'Zones & Territories',
+  'zones_territories': 'Zones & Territories',
+  'customer-categories': 'Customer Categories',
+  'customer_categories': 'Customer Categories'
 };
 
 function getSectionMetadata(screenKey: string) {
@@ -247,7 +254,14 @@ function getSectionMetadata(screenKey: string) {
     'hr-payroll-dash': { titleAr: 'لوحة مسير الرواتب والأجور', titleEn: 'Payroll Dashboard', module: 'Payroll Management' },
     'hr-payroll-payslips': { titleAr: 'قسائم الرواتب واحتساب الصافي', titleEn: 'Net Pay & Payslips', module: 'Payroll Management' },
     'hr-payroll-paymentsettings': { titleAr: 'إعدادات تحويل الرواتب للبنك', titleEn: 'Payroll Payment Settings', module: 'Payroll Management' },
-    'hr-payroll-earningsdeductions': { titleAr: 'التعويضات المكافآت والحسميات', titleEn: 'Earnings & Deductions', module: 'Payroll Management' }
+    'hr-payroll-earningsdeductions': { titleAr: 'التعويضات المكافآت والحسميات', titleEn: 'Earnings & Deductions', module: 'Payroll Management' },
+    // Customers / CRM Sub-Modules
+    'wholesale-accounts': { titleAr: 'حسابات الجملة والتسهيلات الائتمانية', titleEn: 'Wholesale Accounts & Credit Lines', module: 'Customers & CRM' },
+    'wholesale_accounts': { titleAr: 'حسابات الجملة والتسهيلات الائتمانية', titleEn: 'Wholesale Accounts & Credit Lines', module: 'Customers & CRM' },
+    'zones-territories': { titleAr: 'المناطق وقطاعات التوزيع الجغرافية', titleEn: 'Zones & Territories', module: 'Customers & CRM' },
+    'zones_territories': { titleAr: 'المناطق وقطاعات التوزيع الجغرافية', titleEn: 'Zones & Territories', module: 'Customers & CRM' },
+    'customer-categories': { titleAr: 'تصنيفات العملاء وفئات الأسعار', titleEn: 'Customer Categories', module: 'Customers & CRM' },
+    'customer_categories': { titleAr: 'تصنيفات العملاء وفئات الأسعار', titleEn: 'Customer Categories', module: 'Customers & CRM' }
   };
 
   return map[screenKey] || {
@@ -699,6 +713,17 @@ export default function MainTileDashboard({ initialScreen = 'grid-dash' }: MainT
               activeScreen === 'social-agents' ? 'agents' :
               activeScreen === 'social-distributors' ? 'distributors' :
               'inbox'
+            }
+            onBack={() => setActiveScreen('grid-dash')}
+          />
+        ) : (activeScreen === 'wholesale-accounts' || activeScreen === 'wholesale_accounts' || activeScreen === 'wholesale' || activeScreen === 'crm-wholesale' || activeScreen === 'zones-territories' || activeScreen === 'zones_territories' || activeScreen === 'zones' || activeScreen === 'territories' || activeScreen === 'customer-categories' || activeScreen === 'customer_categories' || activeScreen === 'crm-categories') ? (
+          <CrmSubModulesView
+            initialTab={
+              (activeScreen.includes('zone') || activeScreen.includes('territor'))
+                ? 'zones-territories'
+                : (activeScreen.includes('categor'))
+                ? 'customer-categories'
+                : 'wholesale-accounts'
             }
             onBack={() => setActiveScreen('grid-dash')}
           />

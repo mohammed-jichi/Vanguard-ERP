@@ -26,6 +26,7 @@ import OperationsEventsViews from './OperationsEventsViews';
 import OperationsSetupViews from './OperationsSetupViews';
 import StandardUnderDevelopmentPlaceholder from '@/components/StandardUnderDevelopmentPlaceholder';
 import PressingMillPage from '@/components/PressingMillConsole';
+import CrmSubModulesView from '@/components/modules/customers/CrmSubModulesView';
 
 const HANDLED_OPS_SECTIONS = new Set([
   'dashboard', 'reports', 'sales', 'quotations', 'delivery_goods', 'purchases',
@@ -36,7 +37,10 @@ const HANDLED_OPS_SECTIONS = new Set([
   'groups', 'divisions', 'categories', 'units', 'locations', 'suppliers',
   'departments', 'lost_goods_reason', 'sizes_groups', 'sizes', 'colors',
   'discounts', 'payment_types', 'currency_setup', 'inventory_brands',
-  'inventory_sources', 'delivery_providers'
+  'inventory_sources', 'delivery_providers',
+  'wholesale_accounts', 'wholesale-accounts', 'wholesale', 'crm_wholesale', 'crm-wholesale',
+  'zones_territories', 'zones-territories', 'zones', 'territories', 'crm_zones', 'crm-zones',
+  'customer_categories', 'customer-categories', 'crm_categories', 'crm-categories'
 ]);
 
 export type OpsSectionKey =
@@ -89,7 +93,23 @@ export type OpsSectionKey =
   | 'currency_setup'
   | 'inventory_brands'
   | 'inventory_sources'
-  | 'delivery_providers';
+  | 'delivery_providers'
+  // 8. CRM Sub-Modules
+  | 'wholesale_accounts'
+  | 'wholesale-accounts'
+  | 'wholesale'
+  | 'crm_wholesale'
+  | 'crm-wholesale'
+  | 'zones_territories'
+  | 'zones-territories'
+  | 'zones'
+  | 'territories'
+  | 'crm_zones'
+  | 'crm-zones'
+  | 'customer_categories'
+  | 'customer-categories'
+  | 'crm_categories'
+  | 'crm-categories';
 
 function OperationsCenterComponent() {
   const searchParams = useSearchParams();
@@ -265,6 +285,35 @@ function OperationsCenterComponent() {
           activeSection === 'inventory_sources' ||
           activeSection === 'delivery_providers') && (
           <OperationsSetupViews section={activeSection as any} />
+        )}
+
+        {/* =========================================================================
+            CRM SUB-MODULES (WHOLESALE ACCOUNTS, ZONES & TERRITORIES, CUSTOMER CATEGORIES)
+            ========================================================================= */}
+        {(activeSection === 'wholesale_accounts' ||
+          activeSection === 'wholesale-accounts' ||
+          activeSection === 'wholesale' ||
+          activeSection === 'crm_wholesale' ||
+          activeSection === 'crm-wholesale' ||
+          activeSection === 'zones_territories' ||
+          activeSection === 'zones-territories' ||
+          activeSection === 'zones' ||
+          activeSection === 'territories' ||
+          activeSection === 'crm_zones' ||
+          activeSection === 'crm-zones' ||
+          activeSection === 'customer_categories' ||
+          activeSection === 'customer-categories' ||
+          activeSection === 'crm_categories' ||
+          activeSection === 'crm-categories') && (
+          <CrmSubModulesView
+            initialTab={
+              (activeSection.includes('zone') || activeSection.includes('territor'))
+                ? 'zones-territories'
+                : (activeSection.includes('categor'))
+                ? 'customer-categories'
+                : 'wholesale-accounts'
+            }
+          />
         )}
 
         {/* =========================================================================
