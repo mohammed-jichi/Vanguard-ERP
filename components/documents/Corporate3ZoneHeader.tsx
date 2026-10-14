@@ -2,13 +2,14 @@
 
 import React from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
 
 /**
  * Sanitizes and normalizes branch/facility names:
  * Purges duplicate "Branch: Branch:" and legacy distorted naming.
  */
 export function sanitizeFacilityName(branch?: string): string {
-  if (!branch) return 'Facility: [1300-01] Southern Olive and Oil Products - Main';
+  if (!branch) return 'Facility: [1300-01] Main';
   const lower = branch.trim().toLowerCase();
 
   // Consolidated enterprise check
@@ -31,22 +32,28 @@ export function sanitizeFacilityName(branch?: string): string {
 
   // Purge legacy distortions
   cleaned = cleaned.replace(/\s*\(\s*Zeit w zaytoun ljanoub\s*\)/gi, '');
-  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Southern Olive and Oil Products - Main');
+  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Main');
   cleaned = cleaned.replace(/\s*\(\s*Choueifat Main Facility\s*\)/gi, '');
-  cleaned = cleaned.replace(/Choueifat Main Plant/gi, 'Southern Olive and Oil Products - Main');
+  cleaned = cleaned.replace(/Choueifat Main Plant/gi, 'Main');
+  cleaned = cleaned.replace(/1300-01 - Choueifat Main Facility/gi, '[1300-01] Main');
+  cleaned = cleaned.replace(/Southern Olive and Oil Products - Main/gi, 'Main');
+  cleaned = cleaned.replace(/Southern Olive and Oil Products/gi, 'Main');
 
   if (cleaned.startsWith('[1300-') || cleaned.startsWith('Facility: [1300-')) {
+    cleaned = cleaned.replace(/\[1300-01\]\s*(Southern Olive and Oil Products - )?Main/gi, '[1300-01] Main');
     return cleaned.startsWith('Facility:') ? cleaned : `Facility: ${cleaned}`;
   }
 
   if (cleaned.startsWith('1300-01')) {
-    return 'Facility: [1300-01] Southern Olive and Oil Products - Main';
+    return 'Facility: [1300-01] Main';
   }
 
   if (cleaned.startsWith('1300-')) {
     const match = cleaned.match(/^(1300-\d+)\s*[-–•:]*\s*(.*)$/);
     if (match) {
-      return `Facility: [${match[1]}] ${match[2] || 'Branch Facility'}`;
+      const sub = match[2] || 'Branch Facility';
+      const cleanSub = sub.replace(/Southern Olive and Oil Products - /gi, '').trim();
+      return `Facility: [${match[1]}] ${cleanSub}`;
     }
     return `Facility: [${cleaned}]`;
   }
@@ -55,18 +62,21 @@ export function sanitizeFacilityName(branch?: string): string {
     !cleaned ||
     lower === 'main branch' ||
     lower.includes('southern olive and oil products - main') ||
-    lower.includes('choueifat')
+    lower.includes('southern olive and oil products') ||
+    lower.includes('choueifat') ||
+    cleaned === 'Main'
   ) {
-    return 'Facility: [1300-01] Southern Olive and Oil Products - Main';
+    return 'Facility: [1300-01] Main';
   }
 
   return `Facility: ${cleaned}`;
 }
 
 export interface Corporate3ZoneHeaderProps {
-  // Left Zone (Head Office)
+  // Left Zone (Head Office / Company Details)
   companyName?: string;
   companyArabicName?: string;
+  companyTaxNumber?: string;
   hqAddress?: string;
   companyWebsite?: string;
   hqPhone?: string;
@@ -76,85 +86,132 @@ export interface Corporate3ZoneHeaderProps {
   documentTitle: string;
   voucherCode?: string;
   voucherLabel?: string;
+  refNumber?: string;
   hideStatusBadge?: boolean;
   transactionDate?: string;
   status?: string;
   periodText?: string;
 
-  // Right Zone (Active Branch / Facility)
+  // Right Zone (Active Branch / Facility Details)
   facilityName?: string;
   facilityAddress?: string;
   facilityDirect?: string;
+  facilityEmail?: string;
   pageInfo?: string;
 
   className?: string;
 }
 
 /**
- * Standardized 3-Zone Corporate Document Header
+ * Standardized Corporate Document Header with 2-Column Top Row & Centered Title:
  * +---------------------------------------------------------------------------------------------------------+
- * | [LEFT ZONE - Head Office]            |           [CENTER ZONE]          | [RIGHT ZONE - Active Branch]  |
- * | Southern Olive Oil S.A.R.L.          |           SALES INVOICE          | Facility: Choueifat Main Plant|
- * | منتوجات زيت وزيتون الجنوب ش.م.م     |    Invoice #: INV-2026-0042       | Industrial Zone, Old Saida Rd |
- * | Choueifat Central Highway, Lebanon   |  Date: 01-Oct-2026               | Dispatch / Cell: +961 70 00000|
- * | www.southernolive-lb.com             |                                  | Page 1 of 1                   |
- * | Tel / Direct: +961 05 430 000        |                                  |                               |
- * | Print Date: 01-Oct-2026              |                                  |                               |
+ * | [TOP-LEFT: Company Details]                           | [TOP-RIGHT: Facility Details]                   |
+ * | Southern Olive and Oil Products S.A.R.L.              | Facility: [1300-01] Main                        |
+ * | منتوجات زيت وزيتون الجنوب ش.م.م                      | Industrial Zone, Old Saida Rd                   |
+ * | Tax ID / MOF #: 3491820-601                           | Cell: +961 70 000 000                           |
+ * | Old Saida Road, Choueifat, Lebanon                    | Email: sales@southernolive-lb.com               |
+ * | www.southernolive-lb.com                              | Page 1 of 1                                     |
+ * | Tel / Support: +961 05 430 000                        |                                                 |
+ * +---------------------------------------------------------------------------------------------------------+
+ * |                                            SALES INVOICE                                                |
+ * |                                       Invoice #: 2026-21889                                             |
+ * |                                  Date: 14-Oct-2026 • Ref #: REF-8901                                    |
  * +---------------------------------------------------------------------------------------------------------+
  */
 export function Corporate3ZoneHeader({
-  companyName = 'Southern Olive Oil S.A.R.L.',
+  companyName = 'Southern Olive and Oil Products S.A.R.L.',
   companyArabicName = 'منتوجات زيت وزيتون الجنوب ش.م.م',
+  companyTaxNumber,
   hqAddress = 'Old Saida Road, Choueifat, Lebanon',
   companyWebsite = 'www.southernolive-lb.com',
-  hqPhone = 'Tel / Support: +961 05 430 000',
-  printDate,
+  hqPhone = '+961 05 430 000',
+  printDate: _printDate,
   documentTitle,
   voucherCode,
   voucherLabel,
+  refNumber,
   hideStatusBadge = false,
   transactionDate,
   status,
   periodText,
-  facilityName = 'Facility: 1300-01 - Choueifat Main Facility',
+  facilityName = 'Facility: [1300-01] Main',
   facilityAddress = 'Industrial Zone, Old Saida Rd',
-  facilityDirect = 'Dispatch / Cell: +961 70 000 000',
+  facilityDirect = 'Cell: +961 70 000 000',
+  facilityEmail = 'Email: sales@southernolive-lb.com',
   pageInfo = 'Page 1 of 1',
   className = '',
 }: Corporate3ZoneHeaderProps) {
   const { t } = useLanguage();
 
-  const rawDate =
-    printDate ||
-    new Date().toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
+  let tenantTaxNumber: string | undefined;
+  try {
+    const tenantCtx = useTenant();
+    if (
+      tenantCtx?.currentTenant?.taxIdentificationNumber &&
+      !tenantCtx.currentTenant.taxIdentificationNumber.includes('7489201')
+    ) {
+      tenantTaxNumber = tenantCtx.currentTenant.taxIdentificationNumber;
+    }
+  } catch (_e) {
+    // Graceful fallback if invoked outside TenantProvider
+  }
 
-  const displayDate = rawDate.startsWith('Print Date:') || rawDate.startsWith('Date:')
-    ? rawDate
-    : `Print Date: ${rawDate}`;
+  const resolvedTaxNumber = companyTaxNumber || tenantTaxNumber || '3491820-601';
 
   const cleanFacility = sanitizeFacilityName(facilityName);
   const cleanWebsite = companyWebsite.replace(/^https?:\/\//i, '');
-  const isConsolidated = cleanFacility.toLowerCase().includes('consolidated') || cleanFacility.toLowerCase().includes('enterprise');
-  const resolvedAddress = isConsolidated ? 'Enterprise Consolidated Audit' : facilityAddress;
-  const resolvedDirect = isConsolidated ? 'Tenant Master Central Dispatch' : facilityDirect;
+  const isConsolidated =
+    cleanFacility.toLowerCase().includes('consolidated') ||
+    cleanFacility.toLowerCase().includes('enterprise');
+  const resolvedAddress = isConsolidated
+    ? 'Enterprise Consolidated Audit'
+    : facilityAddress;
+
+  const resolvedDirectRaw = isConsolidated
+    ? 'Tenant Master Central Dispatch'
+    : facilityDirect;
+  const cleanDirect = resolvedDirectRaw
+    .replace(/^(Dispatch\s*\/\s*Cell|Dispatch|Cell):\s*/i, '')
+    .trim();
+  const displayDirect = isConsolidated
+    ? resolvedDirectRaw
+    : `Cell: ${cleanDirect || '+961 70 000 000'}`;
+
+  const cleanEmail = (facilityEmail || 'sales@southernolive-lb.com')
+    .replace(/^Email:\s*/i, '')
+    .trim();
+  const displayEmail = `Email: ${cleanEmail}`;
+
+  const cleanHqPhone = hqPhone
+    .replace(/^(Tel\s*\/\s*Support|Tel\s*\/\s*Direct|Tel):\s*/i, '')
+    .trim();
+  const displayHqPhone = `Tel / Support: ${cleanHqPhone || '+961 05 430 000'}`;
 
   const isInvoiceDoc =
     documentTitle?.toUpperCase().includes('INVOICE') ||
     Boolean(voucherCode && voucherCode.toUpperCase().startsWith('INV'));
 
-  const defaultVoucherPrefix = voucherLabel || (isInvoiceDoc ? 'Invoice #' : 'Ref #');
+  const defaultVoucherPrefix =
+    voucherLabel || (isInvoiceDoc ? 'Invoice #' : 'Ref #');
 
-  const formattedVoucherDisplay = voucherCode
-    ? voucherCode.includes('#') ||
-      voucherCode.startsWith('Ref') ||
-      voucherCode.startsWith('Doc') ||
-      voucherCode.startsWith('Invoice')
-      ? voucherCode
-      : `${defaultVoucherPrefix}: ${voucherCode}`
+  // Strip redundant INV- prefix from displayed invoice number
+  let cleanVoucherCode = voucherCode || '';
+  if (isInvoiceDoc && cleanVoucherCode) {
+    cleanVoucherCode = cleanVoucherCode
+      .replace(/^Invoice\s*(#|No:?):?\s*/i, '')
+      .replace(/^INV-/i, '')
+      .trim();
+  }
+
+  const formattedVoucherDisplay = cleanVoucherCode
+    ? isInvoiceDoc
+      ? `${defaultVoucherPrefix}: ${cleanVoucherCode}`
+      : cleanVoucherCode.includes('#') ||
+        cleanVoucherCode.startsWith('Ref') ||
+        cleanVoucherCode.startsWith('Doc') ||
+        cleanVoucherCode.startsWith('Invoice')
+      ? cleanVoucherCode
+      : `${defaultVoucherPrefix}: ${cleanVoucherCode}`
     : '';
 
   // Internal POSTED / ledger tags should not be rendered on customer-facing invoices
@@ -164,10 +221,13 @@ export function Corporate3ZoneHeader({
     !(isInvoiceDoc && status?.toUpperCase() === 'POSTED');
 
   return (
-    <div className={`w-full pb-3 mb-4 border-b-2 border-slate-900 font-sans text-slate-800 ${className}`}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-        {/* [LEFT ZONE - Head Office] */}
-        <div className="text-left flex flex-col justify-start text-[11px] leading-tight space-y-0.5">
+    <div
+      className={`w-full pb-3 mb-4 border-b-2 border-slate-900 font-sans text-slate-800 ${className}`}
+    >
+      {/* 1. TOP ROW: Company Left vs Facility Right */}
+      <div className="flex justify-between items-start text-[11px] leading-tight mb-3">
+        {/* Top-Left Block (Company Details) */}
+        <div className="text-left flex flex-col justify-start space-y-0.5">
           <div className="font-black text-[13.5px] text-slate-950 tracking-tight">
             {t(companyName, companyName)}
           </div>
@@ -176,6 +236,9 @@ export function Corporate3ZoneHeader({
               {companyArabicName}
             </div>
           )}
+          <div className="text-slate-600 font-mono text-[10.5px]">
+            Tax ID / MOF #: {resolvedTaxNumber}
+          </div>
           <div className="text-slate-600 font-medium">
             {t(hqAddress, hqAddress)}
           </div>
@@ -190,36 +253,64 @@ export function Corporate3ZoneHeader({
             </a>
           </div>
           <div className="text-slate-600 font-mono text-[10.5px]">
-            {hqPhone.startsWith('Tel') ? hqPhone : `Tel / Support: ${hqPhone}`}
-          </div>
-          <div className="text-slate-500 font-mono text-[10px] pt-0.5">
-            {displayDate}
+            {displayHqPhone}
           </div>
         </div>
 
-        {/* [CENTER ZONE - Dynamic Document Title & Identification] */}
-        <div className="text-center flex flex-col items-center justify-center pt-0.5">
-          <h1 className="font-black text-[17px] sm:text-[19px] text-slate-950 tracking-tight uppercase leading-snug">
-            {t(documentTitle, documentTitle)}
-          </h1>
+        {/* Top-Right Block (Facing Company Details) */}
+        <div className="text-right flex flex-col justify-start items-end space-y-0.5">
+          <div className="font-bold text-[13px] text-slate-900">
+            {t(cleanFacility, cleanFacility)}
+          </div>
+          <div className="text-slate-600 font-medium">
+            {t(resolvedAddress, resolvedAddress)}
+          </div>
+          <div className="text-slate-600 font-mono text-[10.5px]">
+            {displayDirect}
+          </div>
+          <div className="text-slate-600 font-mono text-[10.5px]">
+            {displayEmail}
+          </div>
+          <div className="text-slate-500 font-mono text-[10px] pt-0.5">
+            {pageInfo}
+          </div>
+        </div>
+      </div>
 
-          {voucherCode && (
-            <div className="mt-1 font-mono font-bold text-[13px] text-slate-900 bg-slate-100/80 px-2.5 py-0.5 rounded border border-slate-300">
-              {formattedVoucherDisplay}
-            </div>
+      {/* 2. CENTER SECTION: Title & Invoice / Reference Number Formatting */}
+      <div className="text-center flex flex-col items-center justify-center pt-2 border-t border-slate-200">
+        <h1 className="font-black text-[18px] sm:text-[20px] text-slate-950 tracking-tight uppercase leading-snug">
+          {t(documentTitle, documentTitle)}
+        </h1>
+
+        {voucherCode && (
+          <div className="mt-1 font-mono font-bold text-[13px] text-slate-900 bg-slate-100/80 px-2.5 py-0.5 rounded border border-slate-300">
+            {formattedVoucherDisplay}
+          </div>
+        )}
+
+        <div className="mt-1 flex flex-wrap items-center justify-center gap-2 text-[11px] font-medium text-slate-700 font-mono">
+          {transactionDate && (
+            <span>
+              {transactionDate.startsWith('Date:')
+                ? transactionDate
+                : `Date: ${transactionDate}`}
+            </span>
           )}
-
-          <div className="mt-1 flex flex-wrap items-center justify-center gap-2 text-[11px] font-medium text-slate-700 font-mono">
-            {transactionDate && (
-              <span>
-                {transactionDate.startsWith('Date:') ? transactionDate : `Date: ${transactionDate}`}
-              </span>
-            )}
-            {transactionDate && shouldRenderStatusBadge && <span>•</span>}
-            {shouldRenderStatusBadge && (
+          {refNumber !== undefined && (
+            <>
+              {transactionDate && <span>•</span>}
+              <span>Ref #: {refNumber || '—'}</span>
+            </>
+          )}
+          {shouldRenderStatusBadge && (
+            <>
+              {(transactionDate || refNumber !== undefined) && <span>•</span>}
               <span
                 className={`font-bold px-1.5 py-0.2 rounded text-[10px] uppercase ${
-                  status!.toLowerCase().includes('post') || status!.toLowerCase().includes('approv') || status!.toLowerCase().includes('confirm')
+                  status!.toLowerCase().includes('post') ||
+                  status!.toLowerCase().includes('approv') ||
+                  status!.toLowerCase().includes('confirm')
                     ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                     : status!.toLowerCase().includes('draft')
                     ? 'bg-amber-100 text-amber-800 border border-amber-300'
@@ -228,31 +319,15 @@ export function Corporate3ZoneHeader({
               >
                 {status}
               </span>
-            )}
-          </div>
-
-          {periodText && (
-            <div className="mt-0.5 text-[10.5px] font-mono font-semibold text-slate-600">
-              {periodText}
-            </div>
+            </>
           )}
         </div>
 
-        {/* [RIGHT ZONE - Active Facility & Pagination] */}
-        <div className="text-right flex flex-col justify-start items-end text-[11px] leading-tight space-y-0.5">
-          <div className="font-bold text-[13px] text-slate-900">
-            {t(cleanFacility, cleanFacility)}
+        {periodText && (
+          <div className="mt-0.5 text-[10.5px] font-mono font-semibold text-slate-600">
+            {periodText}
           </div>
-          <div className="text-slate-600 font-medium">
-            {t(resolvedAddress, resolvedAddress)}
-          </div>
-          <div className="text-slate-600 font-mono text-[10.5px]">
-            {resolvedDirect}
-          </div>
-          <div className="text-slate-500 font-mono text-[10px] pt-1">
-            {pageInfo}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -260,6 +335,7 @@ export function Corporate3ZoneHeader({
 
 export interface CorporatePrintableFooterProps {
   voucherCode?: string;
+  isInvoice?: boolean;
   copyrightNotice?: string;
   websiteUrl?: string;
   className?: string;
@@ -268,28 +344,48 @@ export interface CorporatePrintableFooterProps {
 /**
  * Standardized Corporate Printable Document Footer
  * Enforces clean, single-line border-separated footer at bottom edge:
- * - Left: Unique Document Voucher Reference Code (e.g. Ref: INV-2026-0042)
+ * - Left: Unique Document Voucher Reference Code (e.g. Invoice No: 2026-0042)
  * - Center: Copyright © 2026 Vanguard ERP. All Rights Reserved.
  * - Right: www.vanguard-erp.net
  */
 export function CorporatePrintableFooter({
   voucherCode = 'INV-2026-0001',
+  isInvoice,
   copyrightNotice = 'Copyright © 2026 Vanguard ERP. All Rights Reserved.',
   websiteUrl = 'www.vanguard-erp.net',
   className = '',
 }: CorporatePrintableFooterProps) {
   const { t } = useLanguage();
 
-  const isInvoice = voucherCode && (voucherCode.toUpperCase().startsWith('INV') || voucherCode.toUpperCase().includes('INVOICE'));
-  const defaultPrefix = isInvoice ? 'Invoice No:' : 'Ref:';
+  const isInvoiceDoc =
+    isInvoice !== undefined
+      ? isInvoice
+      : Boolean(
+          voucherCode &&
+            (voucherCode.toUpperCase().startsWith('INV') ||
+              voucherCode.toUpperCase().includes('INVOICE') ||
+              /^\d{4}-\d+$/.test(voucherCode.trim()))
+        );
 
-  const formattedRef = voucherCode
-    ? voucherCode.startsWith('Ref:') ||
-      voucherCode.startsWith('Doc Ref:') ||
-      voucherCode.startsWith('Invoice No:') ||
-      voucherCode.startsWith('Invoice #')
-      ? voucherCode
-      : `${defaultPrefix} ${voucherCode}`
+  const defaultPrefix = isInvoiceDoc ? 'Invoice No:' : 'Ref:';
+
+  let cleanVoucher = voucherCode ? voucherCode.trim() : '';
+  if (isInvoiceDoc && cleanVoucher) {
+    cleanVoucher = cleanVoucher
+      .replace(/^Invoice\s*(No|#):?\s*/i, '')
+      .replace(/^INV-/i, '')
+      .trim();
+  }
+
+  const formattedRef = cleanVoucher
+    ? isInvoiceDoc
+      ? `Invoice No: ${cleanVoucher}`
+      : cleanVoucher.startsWith('Ref:') ||
+        cleanVoucher.startsWith('Doc Ref:') ||
+        cleanVoucher.startsWith('Invoice No:') ||
+        cleanVoucher.startsWith('Invoice #')
+      ? cleanVoucher
+      : `${defaultPrefix} ${cleanVoucher}`
     : 'Ref: VANGUARD-DOC';
 
   const cleanUrl = websiteUrl.replace(/^https?:\/\//i, '');

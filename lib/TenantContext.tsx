@@ -326,7 +326,7 @@ const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   taxIdLabel: 'Tax ID Number (MOF / الرقم المالي - وزارة المالية)',
   crNumberLabel: 'Commercial Registration (CR / السجل التجاري)',
   companyRegistrationNumber: 'CR-104928-LB',
-  taxIdentificationNumber: 'MOF-7489201',
+  taxIdentificationNumber: '3491820-601',
   baseCurrency: 'USD',
   secondaryCurrency: 'LBP',
   isDualCurrencyEnabled: true,

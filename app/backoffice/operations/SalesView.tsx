@@ -111,6 +111,7 @@ export interface InvoiceRecord {
   createdBy?: string;
   source?: string;
   refNumber?: string;
+  reference?: string;
   customerAddress: string;
   deliveredBy: string;
   currency: string;
@@ -3664,8 +3665,9 @@ export default function AuthenticOmegaSalesWorkstation({
                 voucherCode={reportTargetInvoice?.invoiceNumber || invoiceNumber}
                 voucherLabel="Invoice #"
                 transactionDate={reportTargetInvoice?.date || '10-Sep-2026'}
+                refNumber={reportTargetInvoice?.refNumber || reportTargetInvoice?.reference || (reportTargetInvoice ? reportTargetInvoice.refCode : invoiceReferenceNumber) || '—'}
                 hideStatusBadge={true}
-                facilityName="Facility: Choueifat Main Plant"
+                facilityName="Facility: [1300-01] Main"
               />
 
               {/* Customer Info */}
@@ -5221,8 +5223,9 @@ export default function AuthenticOmegaSalesWorkstation({
                   voucherCode={invoiceNumber}
                   voucherLabel="Invoice #"
                   transactionDate={invoiceDate}
+                  refNumber={currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
                   hideStatusBadge={true}
-                  facilityName="Facility: Choueifat Main Plant"
+                  facilityName="Facility: [1300-01] Main"
                 />
 
                 {/* Customer Details Box */}
@@ -5367,10 +5370,11 @@ export default function AuthenticOmegaSalesWorkstation({
                 {/* Standardized 3-Zone Corporate Header */}
                 <Corporate3ZoneHeader
                   documentTitle="DELIVERY NOTE"
-                  voucherCode={`DN-${invoiceNumber.replace('INV-', '')}`}
+                  voucherCode={`DN-${invoiceNumber.replace(/^INV-/i, '')}`}
                   transactionDate={deliveryDate}
+                  refNumber={currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
                   status="DISPATCHED"
-                  facilityName="Facility: Choueifat Main Plant"
+                  facilityName="Facility: [1300-01] Main"
                 />
 
                 <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
