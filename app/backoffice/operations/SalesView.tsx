@@ -919,6 +919,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
   // --- Actions Dropdown Functional Modals State ---
   const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState(false);
+  const [printSnapshotInvoice, setPrintSnapshotInvoice] = useState<any | null>(null);
   const [isPrintInvoiceModalOpen, setIsPrintInvoiceModalOpen] = useState(false);
   const [isDeliveryNoteModalOpen, setIsDeliveryNoteModalOpen] = useState(false);
   const [isCreditNoteModalOpen, setIsCreditNoteModalOpen] = useState(false);
@@ -1483,6 +1484,54 @@ export default function AuthenticVanguardSalesWorkstation({
   const remainingBalance = Math.max(0, grandTotal - totalPaid);
   const changeDue = Math.max(0, totalPaid - grandTotal);
 
+  const targetPrintInvoice = useMemo(() => {
+    if (printSnapshotInvoice) return printSnapshotInvoice;
+    if (currentInvoice) return currentInvoice;
+    return {
+      id: invoiceNumber,
+      invoiceNumber: invoiceNumber,
+      docType: docType,
+      date: invoiceDate,
+      deliveryDate: deliveryDate,
+      branch: BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.',
+      customerName: selectedCustomer?.name || 'Miscellaneous / Cash Customer',
+      customerAddress: selectedCustomer?.address || 'Local Branch',
+      deliveredBy: deliveredBy,
+      currency: currency,
+      transactionType: transactionType,
+      salesman: invoiceSalesman || 'Direct Counter',
+      refNumber: invoiceReferenceNumber || '—',
+      reference: invoiceReferenceNumber || '—',
+      items: cartItems,
+      subtotal: subtotal,
+      discount: discount,
+      tax: tax,
+      grandTotal: grandTotal,
+      payments: payments,
+      status: 'Draft'
+    };
+  }, [
+    printSnapshotInvoice,
+    currentInvoice,
+    invoiceNumber,
+    docType,
+    invoiceDate,
+    deliveryDate,
+    selectedBranch,
+    selectedCustomer,
+    deliveredBy,
+    currency,
+    transactionType,
+    invoiceSalesman,
+    invoiceReferenceNumber,
+    cartItems,
+    subtotal,
+    discount,
+    tax,
+    grandTotal,
+    payments
+  ]);
+
   useEffect(() => {
     if (isPaymentModalOpen) {
       setPaymentAmountInput(remainingBalance.toFixed(2));
@@ -1561,6 +1610,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
   const handleNewInvoice = () => {
     setCurrentInvoice(null);
+    setPrintSnapshotInvoice(null);
     setDocType('SALE');
     setParentInvoiceNo(null);
     const nextNb = generateUniqueInvoiceNumber(invoicesDirectory);
@@ -1681,10 +1731,29 @@ export default function AuthenticVanguardSalesWorkstation({
         crnRecord as any,
         ...prev.filter((i) => i.id !== crnRecord.id && i.invoiceNumber !== crnRecord.invoiceNumber)
       ]);
+      setPrintSnapshotInvoice(crnRecord);
+      setCurrentInvoice(crnRecord as any);
       setStatusNotice(`Credit Note #${invoiceNumber} POSTED! Inventory restocked (+qty) and GL updated.`);
-      setTimeout(() => {
-        handleNewInvoice();
-      }, 1500);
+
+      const cleanCrnNo = invoiceNumber.replace(/^CRN-/i, '');
+      const shouldAutoPrint = salesOptions.print_report_on_save === 'auto' || (salesOptions.print_report_on_save as string) === 'always';
+      const shouldAskPrint = salesOptions.print_report_on_save === 'ask';
+
+      if (shouldAutoPrint) {
+        setTimeout(() => {
+          printElementById('printable-sales-invoice', 'Credit Note');
+        }, 150);
+      } else if (shouldAskPrint) {
+        setTimeout(() => {
+          if (confirm(`Credit Note #${cleanCrnNo} saved! Do you want to print now?`)) {
+            printElementById('printable-sales-invoice', 'Credit Note');
+          }
+        }, 150);
+      } else {
+        setTimeout(() => {
+          handleNewInvoice();
+        }, 1500);
+      }
       return;
     }
 
@@ -1717,6 +1786,10 @@ export default function AuthenticVanguardSalesWorkstation({
       createdAt: new Date().toISOString()
     };
 
+    // 1. Snapshot the saved invoice immediately before any form changes
+    setPrintSnapshotInvoice(newRecord);
+    setCurrentInvoice(newRecord);
+
     setInvoicesDirectory((prev) => {
       const exists = prev.some((inv) => inv.id === newRecord.id || inv.invoiceNumber === newRecord.invoiceNumber);
       if (exists) {
@@ -1726,7 +1799,6 @@ export default function AuthenticVanguardSalesWorkstation({
       }
       return [newRecord, ...prev];
     });
-    setCurrentInvoice(newRecord);
 
     if (postImmediately) {
       executeDatabasePost([newRecord]);
@@ -1749,33 +1821,45 @@ export default function AuthenticVanguardSalesWorkstation({
       });
     }
 
-    // Print on Save workflow
-    if (salesOptions.print_report_on_save === 'auto') {
-      setTimeout(() => {
-        printElementById('printable-sales-invoice', 'Sales Invoice');
-      }, 500);
-    } else if (salesOptions.print_report_on_save === 'ask') {
-      setTimeout(() => {
-        if (confirm(`Invoice ${invoiceNumber} saved! Do you want to print the sales invoice now?`)) {
-          printElementById('printable-sales-invoice', 'Sales Invoice');
-        }
-      }, 300);
-    }
+    // Sequence Print on Save workflow
+    const cleanInvoiceNo = invoiceNumber.replace(/^INV-/i, '');
+    const shouldAutoPrint = salesOptions.print_report_on_save === 'auto' || (salesOptions.print_report_on_save as string) === 'always';
+    const shouldAskPrint = salesOptions.print_report_on_save === 'ask';
 
-    if (salesOptions.print_delivery_note) {
+    const triggerPrintFlow = () => {
+      printElementById('printable-sales-invoice', 'Sales Invoice');
+      if (salesOptions.print_delivery_note) {
+        setTimeout(() => {
+          printElementById('printable-delivery-note', 'Delivery Note');
+        }, 500);
+      }
+    };
+
+    if (shouldAutoPrint) {
+      setTimeout(() => {
+        triggerPrintFlow();
+      }, 150);
+    } else if (shouldAskPrint) {
+      setTimeout(() => {
+        if (confirm(`Invoice #${cleanInvoiceNo} saved! Do you want to print the sales invoice now?`)) {
+          triggerPrintFlow();
+        }
+      }, 150);
+    } else if (salesOptions.print_delivery_note) {
       setTimeout(() => {
         printElementById('printable-delivery-note', 'Delivery Note');
-      }, 800);
+      }, 150);
     }
 
     setStatusNotice(
       postImmediately
-        ? `Invoice ${invoiceNumber} SAVED & POSTED! Inventory deducted.`
-        : `Invoice ${invoiceNumber} saved as DRAFT.`
+        ? `Invoice #${cleanInvoiceNo} SAVED & POSTED! Inventory deducted.`
+        : `Invoice #${cleanInvoiceNo} saved as DRAFT.`
     );
     setTimeout(() => setStatusNotice(null), 4000);
 
-    if (postImmediately) {
+    // Keep invoice loaded in posted state; only auto-advance to blank invoice if printing is not configured
+    if (postImmediately && salesOptions.print_report_on_save === 'never' && !salesOptions.print_delivery_note) {
       setTimeout(() => {
         handleNewInvoice();
       }, 1500);
@@ -1784,6 +1868,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
   const handleLoadInvoice = (rec: InvoiceRecord) => {
     setCurrentInvoice(rec);
+    setPrintSnapshotInvoice(rec);
     setInvoiceNumber(rec.invoiceNumber);
     setInvoiceDate(rec.date);
     setDeliveryDate(rec.deliveryDate);
@@ -3942,7 +4027,7 @@ export default function AuthenticVanguardSalesWorkstation({
             <div className="hidden sm:flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => printElementById('printable-sales-invoice', 'Sales Invoice')}
+                onClick={() => printElementById('printable-sales-report', 'Sales Report')}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-1.5 rounded shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -3980,7 +4065,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
           {/* Printable Report Document */}
           <div className="flex-1 p-6 flex justify-center">
-            <div id="printable-sales-invoice" className="printable-document vanguard-printable bg-white border border-slate-300 shadow-xl rounded-sm w-full max-w-[850px] p-8 text-slate-800 font-sans space-y-6">
+            <div id="printable-sales-report" className="printable-document vanguard-printable bg-white border border-slate-300 shadow-xl rounded-sm w-full max-w-[850px] p-8 text-slate-800 font-sans space-y-6">
               {/* Standardized 3-Zone Corporate Header */}
               <Corporate3ZoneHeader
                 documentTitle={previewSalesFilter === 'Quotations' ? 'SALES QUOTATION' : 'SALES INVOICE'}
@@ -5491,312 +5576,336 @@ export default function AuthenticVanguardSalesWorkstation({
       {/* ========================================================================= */}
       {/* 8. PRINT INVOICE MODAL                                                    */}
       {/* ========================================================================= */}
-      {isPrintInvoiceModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            {/* Modal Header */}
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <Printer className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Print Sales Invoice</h3>
+      <div
+        className={
+          isPrintInvoiceModalOpen
+            ? 'fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in'
+            : 'fixed -left-[9999px] top-0 pointer-events-none opacity-0 overflow-hidden w-[850px] max-w-[850px] z-[-100]'
+        }
+        aria-hidden={!isPrintInvoiceModalOpen}
+      >
+        <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          {/* Modal Header */}
+          <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <Printer className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-sm font-bold">Print Sales Invoice</h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsPrintInvoiceModalOpen(false)}
+              className="text-slate-300 hover:text-white cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Printable Document Paper */}
+          <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
+            <div id="printable-sales-invoice" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
+              {/* Standardized 3-Zone Corporate Header */}
+              <Corporate3ZoneHeader
+                documentTitle={
+                  targetPrintInvoice?.docType === 'CREDIT_NOTE'
+                    ? 'CREDIT NOTE / إشعار دائن'
+                    : salesOptions.invoice_language === 'ar'
+                      ? 'فاتورة مبيعات'
+                      : salesOptions.invoice_language === 'bilingual'
+                        ? 'SALES INVOICE / فاتورة مبيعات'
+                        : 'SALES INVOICE'
+                }
+                voucherCode={targetPrintInvoice?.invoiceNumber || invoiceNumber}
+                voucherLabel={
+                  targetPrintInvoice?.docType === 'CREDIT_NOTE'
+                    ? 'Credit Note #'
+                    : salesOptions.invoice_language === 'ar'
+                      ? 'رقم الفاتورة'
+                      : 'Invoice #'
+                }
+                transactionDate={targetPrintInvoice?.date || invoiceDate}
+                refNumber={targetPrintInvoice?.refNumber || targetPrintInvoice?.reference || currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
+                hideStatusBadge={true}
+                facilityName={targetPrintInvoice?.branch || BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Facility: [1300-01] Main'}
+              />
+
+              {/* Optional Branch Address & Payment Info Banners */}
+              {salesOptions.show_branch_address && (
+                <div className="text-[10px] text-slate-500 border-b border-slate-200 pb-1">
+                  Branch: {targetPrintInvoice?.branch || BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'} • Nabatieh Industrial Blvd, South Lebanon
+                </div>
+              )}
+
+              {salesOptions.show_branch_payment_info && (
+                <div className="bg-slate-50 border border-slate-200 rounded p-2 text-[10px] text-slate-700 flex justify-between">
+                  <span><strong>Bank Payment:</strong> BLOM Bank (IBAN: LB82001400000000000123456789)</span>
+                  <span><strong>OMT / Whish:</strong> 03-998877 (SOUTHERN OIL)</span>
+                </div>
+              )}
+
+              {/* Customer Details Box */}
+              <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Bill To:</span>
+                  <p className="font-bold text-slate-800 text-sm">{targetPrintInvoice?.customerName || selectedCustomer.name}</p>
+                  <p className="text-slate-600 text-[11px]">{targetPrintInvoice?.customerAddress || selectedCustomer.address}</p>
+                  {salesOptions.show_delivery_provider_info && (targetPrintInvoice?.deliveredBy || deliveredBy) && (
+                    <p className="text-slate-500 text-[10px] mt-1">Delivery Provider: <span className="font-semibold text-slate-700">{targetPrintInvoice?.deliveredBy || deliveredBy}</span></p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Details:</span>
+                  <p className="text-slate-700">Currency: <span className="font-semibold">{targetPrintInvoice?.currency || currency}</span></p>
+                  <p className="text-slate-700">Payment: <span className="font-semibold">{targetPrintInvoice?.transactionType || transactionType}</span></p>
+                  <p className="text-slate-500 text-[10px]">Salesman: <span className="font-semibold text-slate-700">{targetPrintInvoice?.salesman || invoiceSalesman || 'Direct Counter'}</span></p>
+                </div>
               </div>
+
+              {/* Line Items Table */}
+              <table className="w-full border-collapse text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
+                    <th className="py-2 px-2.5">Item Description</th>
+                    {salesOptions.show_barcode_on_invoice && (
+                      <th className="py-2 px-2 font-mono text-[10px]">Barcode / Code</th>
+                    )}
+                    <th className="py-2 px-2 text-center">Unit</th>
+                    <th className="py-2 px-2 text-right">Qty</th>
+                    <th className="py-2 px-2 text-right">Price</th>
+                    <th className="py-2 px-2.5 text-right">Total ({targetPrintInvoice?.currency || currency})</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {((targetPrintInvoice?.items && targetPrintInvoice.items.length > 0) ? targetPrintInvoice.items : (cartItems.length > 0 ? cartItems : [
+                    { id: '1', code: 'EVOO-16L', name: 'Extra Virgin Olive Oil 16L Tin', unit: 'TIN', qty: 2, unitPrice: 115.00, total: 230.00 },
+                    { id: '2', code: 'CWV250MLB103', name: 'White Vinegar 250ml', unit: 'BOT', qty: 12, unitPrice: 0.50, total: 6.00 }
+                  ])).map((item: any, idx: number) => (
+                    <tr key={idx} className="hover:bg-slate-50">
+                      <td className="py-2 px-2.5">
+                        <p className="font-semibold text-slate-800">{item.name}</p>
+                        <span className="text-[10px] font-mono text-slate-400">{item.code}</span>
+                      </td>
+                      {salesOptions.show_barcode_on_invoice && (
+                        <td className="py-2 px-2 font-mono text-[10px] text-slate-500">{item.code}</td>
+                      )}
+                      <td className="py-2 px-2 text-center text-slate-600">{item.unit}</td>
+                      <td className="py-2 px-2 text-right font-semibold text-slate-800">{item.qty}</td>
+                      <td className="py-2 px-2 text-right text-slate-600">${Number(item.unitPrice || 0).toFixed(2)}</td>
+                      <td className="py-2 px-2.5 text-right font-bold text-slate-900">${Number(item.total || 0).toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Financial Summary */}
+              <div className="border-t border-slate-300 pt-3 flex justify-between items-start">
+                <div className="text-[11px] text-slate-500 max-w-xs space-y-1">
+                  {salesOptions.show_message_on_invoice && (
+                    <>
+                      <p className="font-semibold text-slate-700">Payment Terms & Conditions:</p>
+                      <p>Goods received in good condition. All returns subject to inspection within 7 days.</p>
+                    </>
+                  )}
+                </div>
+                <div className="w-56 space-y-1.5 text-xs text-right">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Subtotal:</span>
+                    <span className="font-semibold font-mono">${Number(targetPrintInvoice?.subtotal !== undefined ? targetPrintInvoice.subtotal : (cartItems.length > 0 ? subtotal : 236.00)).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Discount:</span>
+                    <span className="font-semibold font-mono">${Number(targetPrintInvoice?.discount !== undefined ? targetPrintInvoice.discount : discount).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>{isTaxExempt ? 'Tax (Exempt 0%):' : 'Tax (VAT 11%):'}</span>
+                    <span className="font-semibold font-mono">${Number(targetPrintInvoice?.tax !== undefined ? targetPrintInvoice.tax : tax).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm font-bold text-slate-900 border-t border-slate-300 pt-1.5">
+                    <span>Grand Total:</span>
+                    <span className="text-emerald-700 font-mono">${Number(targetPrintInvoice?.grandTotal !== undefined ? targetPrintInvoice.grandTotal : (cartItems.length > 0 ? grandTotal : 236.00)).toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Custom Sales Report Footer */}
+              {salesOptions.sales_report_footer && (
+                <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-700 whitespace-pre-line text-center font-medium">
+                  {salesOptions.sales_report_footer}
+                </div>
+              )}
+
+              {/* Signatures */}
+              <div className="pt-6 grid grid-cols-2 gap-8 text-[11px] text-slate-500 text-center border-t border-slate-200">
+                <div>
+                  <div className="h-10 border-b border-dashed border-slate-300"></div>
+                  <span className="mt-1 block">Prepared By / Sales Officer</span>
+                </div>
+                <div>
+                  <div className="h-10 border-b border-dashed border-slate-300"></div>
+                  <span className="mt-1 block">Client Signature & Stamp</span>
+                </div>
+              </div>
+
+              {/* Standardized Corporate Footer */}
+              <CorporatePrintableFooter voucherCode={targetPrintInvoice?.invoiceNumber || invoiceNumber} />
+            </div>
+          </div>
+
+          {/* Actions Footer */}
+          <div className="bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between shrink-0">
+            <span className="text-xs text-slate-500">Ready for Thermal 80mm or Laser A4</span>
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setIsPrintInvoiceModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
+                className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                Cancel
               </button>
-            </div>
-
-            {/* Printable Document Paper */}
-            <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
-              <div id="printable-sales-invoice" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
-                {/* Standardized 3-Zone Corporate Header */}
-                <Corporate3ZoneHeader
-                  documentTitle={salesOptions.invoice_language === 'ar' ? 'فاتورة مبيعات' : salesOptions.invoice_language === 'bilingual' ? 'SALES INVOICE / فاتورة مبيعات' : 'SALES INVOICE'}
-                  voucherCode={invoiceNumber}
-                  voucherLabel={salesOptions.invoice_language === 'ar' ? 'رقم الفاتورة' : 'Invoice #'}
-                  transactionDate={invoiceDate}
-                  refNumber={currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
-                  hideStatusBadge={true}
-                  facilityName={BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Facility: [1300-01] Main'}
-                />
-
-                {/* Optional Branch Address & Payment Info Banners */}
-                {salesOptions.show_branch_address && (
-                  <div className="text-[10px] text-slate-500 border-b border-slate-200 pb-1">
-                    Branch: {BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'} • Nabatieh Industrial Blvd, South Lebanon
-                  </div>
-                )}
-
-                {salesOptions.show_branch_payment_info && (
-                  <div className="bg-slate-50 border border-slate-200 rounded p-2 text-[10px] text-slate-700 flex justify-between">
-                    <span><strong>Bank Payment:</strong> BLOM Bank (IBAN: LB82001400000000000123456789)</span>
-                    <span><strong>OMT / Whish:</strong> 03-998877 (SOUTHERN OIL)</span>
-                  </div>
-                )}
-
-                {/* Customer Details Box */}
-                <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Bill To:</span>
-                    <p className="font-bold text-slate-800 text-sm">{selectedCustomer.name}</p>
-                    <p className="text-slate-600 text-[11px]">{selectedCustomer.address}</p>
-                    {salesOptions.show_delivery_provider_info && deliveredBy && (
-                      <p className="text-slate-500 text-[10px] mt-1">Delivery Provider: <span className="font-semibold text-slate-700">{deliveredBy}</span></p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Details:</span>
-                    <p className="text-slate-700">Currency: <span className="font-semibold">{currency}</span></p>
-                    <p className="text-slate-700">Payment: <span className="font-semibold">{transactionType}</span></p>
-                    <p className="text-slate-500 text-[10px]">Salesman: <span className="font-semibold text-slate-700">{invoiceSalesman || 'Direct Counter'}</span></p>
-                  </div>
-                </div>
-
-                {/* Line Items Table */}
-                <table className="w-full border-collapse text-left text-xs">
-                  <thead>
-                    <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
-                      <th className="py-2 px-2.5">Item Description</th>
-                      {salesOptions.show_barcode_on_invoice && (
-                        <th className="py-2 px-2 font-mono text-[10px]">Barcode / Code</th>
-                      )}
-                      <th className="py-2 px-2 text-center">Unit</th>
-                      <th className="py-2 px-2 text-right">Qty</th>
-                      <th className="py-2 px-2 text-right">Price</th>
-                      <th className="py-2 px-2.5 text-right">Total ({currency})</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {(cartItems.length > 0 ? cartItems : [
-                      { id: '1', code: 'EVOO-16L', name: 'Extra Virgin Olive Oil 16L Tin', unit: 'TIN', qty: 2, unitPrice: 115.00, total: 230.00 },
-                      { id: '2', code: 'CWV250MLB103', name: 'White Vinegar 250ml', unit: 'BOT', qty: 12, unitPrice: 0.50, total: 6.00 }
-                    ]).map((item, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50">
-                        <td className="py-2 px-2.5">
-                          <p className="font-semibold text-slate-800">{item.name}</p>
-                          <span className="text-[10px] font-mono text-slate-400">{item.code}</span>
-                        </td>
-                        {salesOptions.show_barcode_on_invoice && (
-                          <td className="py-2 px-2 font-mono text-[10px] text-slate-500">{item.code}</td>
-                        )}
-                        <td className="py-2 px-2 text-center text-slate-600">{item.unit}</td>
-                        <td className="py-2 px-2 text-right font-semibold text-slate-800">{item.qty}</td>
-                        <td className="py-2 px-2 text-right text-slate-600">${item.unitPrice.toFixed(2)}</td>
-                        <td className="py-2 px-2.5 text-right font-bold text-slate-900">${item.total.toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {/* Financial Summary */}
-                <div className="border-t border-slate-300 pt-3 flex justify-between items-start">
-                  <div className="text-[11px] text-slate-500 max-w-xs space-y-1">
-                    {salesOptions.show_message_on_invoice && (
-                      <>
-                        <p className="font-semibold text-slate-700">Payment Terms & Conditions:</p>
-                        <p>Goods received in good condition. All returns subject to inspection within 7 days.</p>
-                      </>
-                    )}
-                  </div>
-                  <div className="w-56 space-y-1.5 text-xs text-right">
-                    <div className="flex justify-between text-slate-600">
-                      <span>Subtotal:</span>
-                      <span className="font-semibold font-mono">${(cartItems.length > 0 ? subtotal : 236.00).toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Discount:</span>
-                      <span className="font-semibold font-mono">${discount.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>{isTaxExempt ? 'Tax (Exempt 0%):' : 'Tax (VAT 11%):'}</span>
-                      <span className="font-semibold font-mono">${tax.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm font-bold text-slate-900 border-t border-slate-300 pt-1.5">
-                      <span>Grand Total:</span>
-                      <span className="text-emerald-700 font-mono">${(cartItems.length > 0 ? grandTotal : 236.00).toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Custom Sales Report Footer */}
-                {salesOptions.sales_report_footer && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-700 whitespace-pre-line text-center font-medium">
-                    {salesOptions.sales_report_footer}
-                  </div>
-                )}
-
-                {/* Signatures */}
-                <div className="pt-6 grid grid-cols-2 gap-8 text-[11px] text-slate-500 text-center border-t border-slate-200">
-                  <div>
-                    <div className="h-10 border-b border-dashed border-slate-300"></div>
-                    <span className="mt-1 block">Prepared By / Sales Officer</span>
-                  </div>
-                  <div>
-                    <div className="h-10 border-b border-dashed border-slate-300"></div>
-                    <span className="mt-1 block">Client Signature & Stamp</span>
-                  </div>
-                </div>
-
-                {/* Standardized Corporate Footer */}
-                <CorporatePrintableFooter voucherCode={invoiceNumber} />
-              </div>
-            </div>
-
-            {/* Actions Footer */}
-            <div className="bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between shrink-0">
-              <span className="text-xs text-slate-500">Ready for Thermal 80mm or Laser A4</span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsPrintInvoiceModalOpen(false)}
-                  className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    printElementById('printable-sales-invoice', 'Sales Invoice');
-                    setIsPrintInvoiceModalOpen(false);
-                    setStatusNotice(`Invoice ${invoiceNumber} sent to printer!`);
-                    setTimeout(() => setStatusNotice(null), 3000);
-                  }}
-                  className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Print Document</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  printElementById('printable-sales-invoice', 'Sales Invoice');
+                  setIsPrintInvoiceModalOpen(false);
+                  setStatusNotice(`Invoice #${(targetPrintInvoice?.invoiceNumber || invoiceNumber).replace(/^INV-/i, '')} sent to printer!`);
+                  setTimeout(() => setStatusNotice(null), 3000);
+                }}
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Document</span>
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* ========================================================================= */}
       {/* 9. PRINT DELIVERY NOTE MODAL                                              */}
       {/* ========================================================================= */}
-      {isDeliveryNoteModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4 text-amber-400" />
-                <h3 className="text-sm font-bold">Delivery Note (Bon de Livraison)</h3>
+      <div
+        className={
+          isDeliveryNoteModalOpen
+            ? 'fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in'
+            : 'fixed -left-[9999px] top-0 pointer-events-none opacity-0 overflow-hidden w-[850px] max-w-[850px] z-[-100]'
+        }
+        aria-hidden={!isDeliveryNoteModalOpen}
+      >
+        <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <Truck className="w-4 h-4 text-amber-400" />
+              <h3 className="text-sm font-bold">Delivery Note (Bon de Livraison)</h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsDeliveryNoteModalOpen(false)}
+              className="text-slate-300 hover:text-white cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
+            <div id="printable-delivery-note" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
+              {/* Standardized 3-Zone Corporate Header */}
+              <Corporate3ZoneHeader
+                documentTitle="DELIVERY NOTE"
+                voucherCode={`DN-${(targetPrintInvoice?.invoiceNumber || invoiceNumber).replace(/^INV-/i, '')}`}
+                transactionDate={targetPrintInvoice?.deliveryDate || targetPrintInvoice?.date || deliveryDate}
+                refNumber={targetPrintInvoice?.refNumber || targetPrintInvoice?.reference || currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
+                status="DISPATCHED"
+                facilityName={targetPrintInvoice?.branch || BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Facility: [1300-01] Main'}
+              />
+
+              <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Delivery Destination:</span>
+                  <p className="font-bold text-slate-800 text-sm">{targetPrintInvoice?.customerName || selectedCustomer.name}</p>
+                  <p className="text-slate-600 text-[11px]">{targetPrintInvoice?.customerAddress || selectedCustomer.address}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-slate-400 block text-[10px] uppercase font-semibold">Carrier / Driver:</span>
+                  <p className="font-semibold text-slate-800">{targetPrintInvoice?.deliveredBy || deliveredBy}</p>
+                  <p className="text-slate-500 text-[11px]">Vehicle: Van #4 (License 289410-B)</p>
+                </div>
               </div>
+
+              <table className="w-full border-collapse text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
+                    <th className="py-2 px-2.5">Item Code & Name</th>
+                    <th className="py-2 px-2 text-center">Unit</th>
+                    <th className="py-2 px-2 text-right">Ordered</th>
+                    <th className="py-2 px-2 text-right">Dispatched Qty</th>
+                    <th className="py-2 px-2 text-center">Packaging</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {((targetPrintInvoice?.items && targetPrintInvoice.items.length > 0) ? targetPrintInvoice.items : (cartItems.length > 0 ? cartItems : [
+                    { id: '1', code: 'EVOO-16L', name: 'Extra Virgin Olive Oil 16L Tin', unit: 'TIN', qty: 2, total: 230.00 },
+                    { id: '2', code: 'CWV250MLB103', name: 'White Vinegar 250ml', unit: 'BOT', qty: 12, total: 6.00 }
+                  ])).map((item: any, idx: number) => (
+                    <tr key={idx} className="hover:bg-slate-50">
+                      <td className="py-2 px-2.5">
+                        <p className="font-semibold text-slate-800">{item.name}</p>
+                        <span className="text-[10px] font-mono text-slate-400">{item.code}</span>
+                      </td>
+                      <td className="py-2 px-2 text-center text-slate-600">{item.unit}</td>
+                      <td className="py-2 px-2 text-right text-slate-600">{item.qty}</td>
+                      <td className="py-2 px-2 text-right font-bold text-emerald-700">{item.qty}</td>
+                      <td className="py-2 px-2 text-center text-slate-500">Carton / Crate</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="pt-8 grid grid-cols-3 gap-4 text-[11px] text-slate-500 text-center border-t border-slate-200">
+                <div>
+                  <div className="h-10 border-b border-dashed border-slate-300"></div>
+                  <span className="mt-1 block">Warehouse Keeper (Dispatched)</span>
+                </div>
+                <div>
+                  <div className="h-10 border-b border-dashed border-slate-300"></div>
+                  <span className="mt-1 block">Delivery Driver (Transit)</span>
+                </div>
+                <div>
+                  <div className="h-10 border-b border-dashed border-slate-300"></div>
+                  <span className="mt-1 block">Customer Received (Full & Intact)</span>
+                </div>
+              </div>
+
+              {/* Standardized Corporate Footer */}
+              <CorporatePrintableFooter voucherCode={`DN-${(targetPrintInvoice?.invoiceNumber || invoiceNumber).replace(/^INV-/i, '')}`} />
+            </div>
+          </div>
+
+          <div className="bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between shrink-0">
+            <span className="text-xs text-slate-500">Warehouse Dispatch Authorization Copy</span>
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setIsDeliveryNoteModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
+                className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                Cancel
               </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
-              <div id="printable-delivery-note" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
-                {/* Standardized 3-Zone Corporate Header */}
-                <Corporate3ZoneHeader
-                  documentTitle="DELIVERY NOTE"
-                  voucherCode={`DN-${invoiceNumber.replace(/^INV-/i, '')}`}
-                  transactionDate={deliveryDate}
-                  refNumber={currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
-                  status="DISPATCHED"
-                  facilityName="Facility: [1300-01] Main"
-                />
-
-                <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Delivery Destination:</span>
-                    <p className="font-bold text-slate-800 text-sm">{selectedCustomer.name}</p>
-                    <p className="text-slate-600 text-[11px]">{selectedCustomer.address}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Carrier / Driver:</span>
-                    <p className="font-semibold text-slate-800">{deliveredBy}</p>
-                    <p className="text-slate-500 text-[11px]">Vehicle: Van #4 (License 289410-B)</p>
-                  </div>
-                </div>
-
-                <table className="w-full border-collapse text-left text-xs">
-                  <thead>
-                    <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
-                      <th className="py-2 px-2.5">Item Code & Name</th>
-                      <th className="py-2 px-2 text-center">Unit</th>
-                      <th className="py-2 px-2 text-right">Ordered</th>
-                      <th className="py-2 px-2 text-right">Dispatched Qty</th>
-                      <th className="py-2 px-2 text-center">Packaging</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {(cartItems.length > 0 ? cartItems : [
-                      { id: '1', code: 'EVOO-16L', name: 'Extra Virgin Olive Oil 16L Tin', unit: 'TIN', qty: 2, total: 230.00 },
-                      { id: '2', code: 'CWV250MLB103', name: 'White Vinegar 250ml', unit: 'BOT', qty: 12, total: 6.00 }
-                    ]).map((item, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50">
-                        <td className="py-2 px-2.5">
-                          <p className="font-semibold text-slate-800">{item.name}</p>
-                          <span className="text-[10px] font-mono text-slate-400">{item.code}</span>
-                        </td>
-                        <td className="py-2 px-2 text-center text-slate-600">{item.unit}</td>
-                        <td className="py-2 px-2 text-right text-slate-600">{item.qty}</td>
-                        <td className="py-2 px-2 text-right font-bold text-emerald-700">{item.qty}</td>
-                        <td className="py-2 px-2 text-center text-slate-500">Carton / Crate</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <div className="pt-8 grid grid-cols-3 gap-4 text-[11px] text-slate-500 text-center border-t border-slate-200">
-                  <div>
-                    <div className="h-10 border-b border-dashed border-slate-300"></div>
-                    <span className="mt-1 block">Warehouse Keeper (Dispatched)</span>
-                  </div>
-                  <div>
-                    <div className="h-10 border-b border-dashed border-slate-300"></div>
-                    <span className="mt-1 block">Delivery Driver (Transit)</span>
-                  </div>
-                  <div>
-                    <div className="h-10 border-b border-dashed border-slate-300"></div>
-                    <span className="mt-1 block">Customer Received (Full & Intact)</span>
-                  </div>
-                </div>
-
-                {/* Standardized Corporate Footer */}
-                <CorporatePrintableFooter voucherCode={`DN-${invoiceNumber.replace('INV-', '')}`} />
-              </div>
-            </div>
-
-            <div className="bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between shrink-0">
-              <span className="text-xs text-slate-500">Warehouse Dispatch Authorization Copy</span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsDeliveryNoteModalOpen(false)}
-                  className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    printElementById('printable-delivery-note', 'Delivery Note');
-                    setIsDeliveryNoteModalOpen(false);
-                    setStatusNotice(`Delivery Note DN-${invoiceNumber.replace('INV-', '')} printed.`);
-                    setTimeout(() => setStatusNotice(null), 3000);
-                  }}
-                  className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Print Delivery Slip</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  printElementById('printable-delivery-note', 'Delivery Note');
+                  setIsDeliveryNoteModalOpen(false);
+                  setStatusNotice(`Delivery Note DN-${(targetPrintInvoice?.invoiceNumber || invoiceNumber).replace(/^INV-/i, '')} printed.`);
+                  setTimeout(() => setStatusNotice(null), 3000);
+                }}
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Delivery Slip</span>
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* ========================================================================= */}
       {/* 9b. ADD DELIVERY PROVIDER MODAL                                           */}
