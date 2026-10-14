@@ -630,6 +630,16 @@ function generateUniqueInvoiceNumber(existingList?: { invoiceNumber?: string }[]
   return num;
 }
 
+export const DEFAULT_DELIVERY_PROVIDERS = [
+  'Providers',
+  'In-House Fleet',
+  'Customer Pickup',
+  'Direct Counter',
+  'Aramex',
+  'Wakilni',
+  'Cargomaster'
+];
+
 export default function AuthenticOmegaSalesWorkstation({
   withOmegaSidebar = false
 }: {
@@ -658,6 +668,13 @@ export default function AuthenticOmegaSalesWorkstation({
   const [invoiceDate, setInvoiceDate] = useState(getTodayFormatted());
   const [deliveryDate, setDeliveryDate] = useState(getTodayFormatted());
   const [deliveredBy, setDeliveredBy] = useState('Providers');
+  const [deliveryProviders, setDeliveryProviders] = useState<string[]>(DEFAULT_DELIVERY_PROVIDERS);
+  const [isAddProviderModalOpen, setIsAddProviderModalOpen] = useState(false);
+  const [newProviderName, setNewProviderName] = useState('');
+  const [newProviderPhone, setNewProviderPhone] = useState('');
+  const [newProviderServiceType, setNewProviderServiceType] = useState('');
+  const [newProviderNotes, setNewProviderNotes] = useState('');
+  const [isSavingProvider, setIsSavingProvider] = useState(false);
   const [currency, setCurrency] = useState('USD');
   const [transactionType, setTransactionType] = useState('Local');
   const [isCustomerDropdownOpen, setIsCustomerDropdownOpen] = useState(false);
@@ -1137,6 +1154,68 @@ export default function AuthenticOmegaSalesWorkstation({
   // Existing Invoices Directory (initialized with static seeds, then hydrated from persistent store)
   const [invoicesDirectory, setInvoicesDirectory] = useState<InvoiceRecord[]>(INITIAL_INVOICES_DIRECTORY);
 
+  // Hydrate Delivery Providers from localStorage & Supabase feature_flags
+  useEffect(() => {
+    let isMounted = true;
+
+    const hydrateDeliveryProviders = async () => {
+      let combined = [...DEFAULT_DELIVERY_PROVIDERS];
+
+      // 1. Read localStorage fallback
+      try {
+        const local = localStorage.getItem('vanguard_delivery_providers');
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed)) {
+            parsed.forEach((p: any) => {
+              const name = typeof p === 'string' ? p.trim() : (p?.name || '').trim();
+              if (name && !combined.includes(name)) {
+                combined.push(name);
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Error reading local delivery providers:', e);
+      }
+
+      // 2. Read Supabase tenants.feature_flags.delivery_providers
+      try {
+        const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetTenantId)
+          .single();
+
+        const flags = (tenantData?.feature_flags as Record<string, any>) || {};
+        if (Array.isArray(flags.delivery_providers)) {
+          flags.delivery_providers.forEach((p: any) => {
+            const name = typeof p === 'string' ? p.trim() : (p?.name || '').trim();
+            if (name && !combined.includes(name)) {
+              combined.push(name);
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Error hydrating delivery providers from Supabase:', err);
+      }
+
+      if (isMounted) {
+        setDeliveryProviders(combined);
+      }
+    };
+
+    hydrateDeliveryProviders();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentTenant?.id]);
+
   // Hydrate Invoices Directory & Persistent Posting Status from Supabase, feature_flags, and API
   useEffect(() => {
     let isMounted = true;
@@ -1541,6 +1620,9 @@ export default function AuthenticOmegaSalesWorkstation({
     setInvoiceDate(rec.date);
     setDeliveryDate(rec.deliveryDate);
     setDeliveredBy(rec.deliveredBy);
+    if (rec.deliveredBy && !deliveryProviders.includes(rec.deliveredBy)) {
+      setDeliveryProviders((prev) => [...prev, rec.deliveredBy]);
+    }
     setCurrency(rec.currency);
     setTransactionType(rec.transactionType);
     setSelectedCustomer({
@@ -1554,6 +1636,72 @@ export default function AuthenticOmegaSalesWorkstation({
     setIsPreviewSalesModalOpen(false);
     setStatusNotice(`Loaded invoice: ${rec.invoiceNumber} (${rec.status})`);
     setTimeout(() => setStatusNotice(null), 3000);
+  };
+
+  const handleSaveDeliveryProvider = async () => {
+    const trimmed = newProviderName.trim();
+    if (!trimmed) {
+      setStatusNotice('Please enter a delivery provider or company name.');
+      setTimeout(() => setStatusNotice(null), 3000);
+      return;
+    }
+
+    setIsSavingProvider(true);
+    try {
+      const updatedList = Array.from(new Set([...deliveryProviders, trimmed]));
+      setDeliveryProviders(updatedList);
+      setDeliveredBy(trimmed);
+
+      // Save to localStorage
+      try {
+        localStorage.setItem('vanguard_delivery_providers', JSON.stringify(updatedList));
+      } catch (e) {
+        console.warn('Failed saving delivery providers to localStorage:', e);
+      }
+
+      // Save to Supabase feature_flags
+      try {
+        const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .eq('id', targetTenantId)
+          .single();
+
+        const currentFlags = (tenantData?.feature_flags as Record<string, any>) || {};
+        const newFlags = {
+          ...currentFlags,
+          delivery_providers: updatedList
+        };
+
+        await supabase
+          .from('tenants')
+          .update({
+            feature_flags: newFlags,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', targetTenantId);
+      } catch (err) {
+        console.warn('Failed saving delivery providers to Supabase:', err);
+      }
+
+      setStatusNotice('Delivery provider added successfully.');
+      setTimeout(() => setStatusNotice(null), 3500);
+
+      // Reset modal inputs & close
+      setNewProviderName('');
+      setNewProviderPhone('');
+      setNewProviderServiceType('');
+      setNewProviderNotes('');
+      setIsAddProviderModalOpen(false);
+    } catch (err) {
+      console.error('Error saving delivery provider:', err);
+    } finally {
+      setIsSavingProvider(false);
+    }
   };
 
   // --- Handlers for the 11 Actions ---
@@ -3057,13 +3205,16 @@ export default function AuthenticOmegaSalesWorkstation({
                       onChange={(e) => setDeliveredBy(e.target.value)}
                       className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
                     >
-                      <option value="Providers">Providers</option>
-                      <option value="In-House Fleet">In-House Fleet</option>
-                      <option value="Customer Pickup">Customer Pickup</option>
+                      {deliveryProviders.map((provider) => (
+                        <option key={provider} value={provider}>
+                          {provider}
+                        </option>
+                      ))}
                     </select>
                     <button
                       type="button"
-                      className="bg-emerald-700 hover:bg-emerald-800 text-white p-1 rounded shrink-0"
+                      onClick={() => setIsAddProviderModalOpen(true)}
+                      className="bg-emerald-700 hover:bg-emerald-800 text-white p-1 rounded shrink-0 cursor-pointer transition-colors"
                       title="Add Delivery Provider"
                     >
                       <Plus className="w-3 h-3" />
@@ -5308,6 +5459,124 @@ export default function AuthenticOmegaSalesWorkstation({
                   <span>Print Delivery Slip</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 9b. ADD DELIVERY PROVIDER MODAL                                           */}
+      {/* ========================================================================= */}
+      {isAddProviderModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-md overflow-hidden flex flex-col text-xs font-sans">
+            {/* Modal Header */}
+            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <Truck className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-sm font-bold">Add New Delivery Provider</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAddProviderModalOpen(false);
+                  setNewProviderName('');
+                  setNewProviderPhone('');
+                  setNewProviderServiceType('');
+                  setNewProviderNotes('');
+                }}
+                className="text-slate-300 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 space-y-3.5 bg-slate-50 text-slate-800">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Provider / Company Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  autoFocus
+                  value={newProviderName}
+                  onChange={(e) => setNewProviderName(e.target.value)}
+                  placeholder="e.g. Aramex Express, Wakilni, In-House Van #5"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary shadow-2xs"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSaveDeliveryProvider();
+                    }
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Contact / Phone Number (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={newProviderPhone}
+                  onChange={(e) => setNewProviderPhone(e.target.value)}
+                  placeholder="e.g. +961 70 123456"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary shadow-2xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Vehicle / Service Type (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={newProviderServiceType}
+                  onChange={(e) => setNewProviderServiceType(e.target.value)}
+                  placeholder="e.g. Standard Courier, Heavy Freight, Motorcycle"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary shadow-2xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Internal Notes (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={newProviderNotes}
+                  onChange={(e) => setNewProviderNotes(e.target.value)}
+                  placeholder="e.g. Account #89410, SLA 24-48h"
+                  className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-primary shadow-2xs"
+                />
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-end gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAddProviderModalOpen(false);
+                  setNewProviderName('');
+                  setNewProviderPhone('');
+                  setNewProviderServiceType('');
+                  setNewProviderNotes('');
+                }}
+                className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isSavingProvider || !newProviderName.trim()}
+                onClick={handleSaveDeliveryProvider}
+                className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>{isSavingProvider ? 'Saving...' : 'Save Provider'}</span>
+              </button>
             </div>
           </div>
         </div>
