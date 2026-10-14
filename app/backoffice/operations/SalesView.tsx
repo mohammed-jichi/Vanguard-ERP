@@ -2,6 +2,20 @@
 
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { printElementById } from '@/lib/utils/printDocument';
+import SalesOptionsModal from '@/components/modules/sales/SalesOptionsModal';
+import MainReadingModal from '@/components/modules/sales/MainReadingModal';
+import {
+  SalesOptionsState,
+  DEFAULT_SALES_OPTIONS,
+  fetchSalesOptions,
+  SALES_OPTIONS_UPDATED_EVENT
+} from '@/lib/salesOptionsService';
+import {
+  PosShift,
+  getActiveShift,
+  recordCashMovement,
+  POS_EXCHANGE_RATE_LBP
+} from '@/lib/posShiftService';
 import {
   DeliveryProviderRecord,
   DeliveryProviderClassification,
@@ -98,6 +112,7 @@ export interface CartItem {
   total: number;
   location: string;
   cost?: number;
+  salesman?: string;
 }
 
 export interface PaymentEntry {
@@ -892,6 +907,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const [isPaidInOutModalOpen, setIsPaidInOutModalOpen] = useState(false);
   const [isMainReadingModalOpen, setIsMainReadingModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [salesOptions, setSalesOptions] = useState<SalesOptionsState>(DEFAULT_SALES_OPTIONS);
 
   // --- Recurring Templates State ---
   const [recurringTemplateName, setRecurringTemplateName] = useState('');
@@ -1112,6 +1128,20 @@ export default function AuthenticOmegaSalesWorkstation({
       }
     };
     fetchPayments();
+  }, [currentTenant?.id]);
+
+  useEffect(() => {
+    fetchSalesOptions(currentTenant?.id).then((opts) => {
+      setSalesOptions(opts);
+    });
+
+    const handleOptionsUpdated = (e: any) => {
+      if (e.detail) {
+        setSalesOptions(e.detail);
+      }
+    };
+    window.addEventListener(SALES_OPTIONS_UPDATED_EVENT, handleOptionsUpdated);
+    return () => window.removeEventListener(SALES_OPTIONS_UPDATED_EVENT, handleOptionsUpdated);
   }, [currentTenant?.id]);
 
   // --- POS Reading (X/Z) State ---
@@ -1402,9 +1432,22 @@ export default function AuthenticOmegaSalesWorkstation({
     return cartItems.reduce((sum, item) => sum + item.total, 0);
   }, [cartItems]);
 
+  const isTaxExempt = useMemo(() => {
+    return (
+      salesOptions.no_tax ||
+      (salesOptions.remove_tax_for_international && transactionType === 'International')
+    );
+  }, [salesOptions.no_tax, salesOptions.remove_tax_for_international, transactionType]);
+
   const discount = 0;
-  const tax = 0;
-  const grandTotal = subtotal;
+  const tax = useMemo(() => {
+    if (isTaxExempt) return 0;
+    return Number((subtotal * 0.11).toFixed(2));
+  }, [isTaxExempt, subtotal]);
+
+  const grandTotal = useMemo(() => {
+    return Number((subtotal - discount + tax).toFixed(2));
+  }, [subtotal, discount, tax]);
 
   const totalPaid = useMemo(() => {
     return payments.reduce((sum, p) => sum + p.amount, 0);
@@ -1421,6 +1464,19 @@ export default function AuthenticOmegaSalesWorkstation({
 
   // Handlers
   const handleAddItemToCart = (item: SalesItem) => {
+    // Check QTOH stock restriction
+    if (!salesOptions.allow_sales_negative_stock && item.stockQty <= 0) {
+      alert(`Item "${item.name}" has 0 or negative stock (${item.stockQty} ${item.unit}). Sales disallowed under active Sales Options.`);
+      return;
+    }
+
+    // Calculate Selling Price with Markup if configured
+    let calculatedPrice = item.price;
+    if (salesOptions.apply_markup_on_item && salesOptions.mark_up_pct > 0) {
+      const baseCost = item.cost || (item.price * 0.7);
+      calculatedPrice = Number((baseCost * (1 + salesOptions.mark_up_pct / 100)).toFixed(2));
+    }
+
     setCartItems((prev) => {
       const existing = prev.find((p) => p.itemId === item.id);
       if (existing) {
@@ -1437,10 +1493,11 @@ export default function AuthenticOmegaSalesWorkstation({
           name: item.name,
           qty: 1,
           unit: item.unit,
-          unitPrice: item.price,
-          total: item.price,
-          location: 'Southern Olive and Oil Products - Main',
-          cost: item.cost
+          unitPrice: calculatedPrice,
+          total: calculatedPrice,
+          location: salesOptions.default_location || 'Southern Olive and Oil Products - Main',
+          cost: item.cost,
+          salesman: invoiceSalesman || salesOptions.default_salesman || 'Direct Counter'
         };
         return [...prev, newItem];
       }
@@ -1485,6 +1542,18 @@ export default function AuthenticOmegaSalesWorkstation({
     setCustomerSearch('');
     setInvoiceDate(getTodayFormatted());
     setDeliveryDate(getTodayFormatted());
+    if (salesOptions.default_currency) {
+      setCurrency(salesOptions.default_currency);
+    }
+    if (salesOptions.default_branch) {
+      setSelectedBranch(salesOptions.default_branch);
+    }
+    if (salesOptions.default_payment) {
+      setSelectedPaymentType(salesOptions.default_payment);
+    }
+    if (salesOptions.default_salesman) {
+      setInvoiceSalesman(salesOptions.default_salesman);
+    }
     setStatusNotice(`New blank invoice initialized: ${nextNb}`);
     setTimeout(() => setStatusNotice(null), 3000);
   };
@@ -1510,9 +1579,23 @@ export default function AuthenticOmegaSalesWorkstation({
       alert('Action disabled in Read-Only grace mode');
       return;
     }
+    if (salesOptions.disable_sales_save_button) {
+      alert('Saving invoices is currently disabled in Sales Options.');
+      return;
+    }
     if (cartItems.length === 0) {
       alert('Cannot save an empty invoice. Please select at least one item from the catalog.');
       return;
+    }
+
+    if (salesOptions.verify_customer_credit_limit && selectedCustomer) {
+      const creditLimit = (selectedCustomer as any).creditLimit || 5000;
+      const currentBalance = (selectedCustomer as any).balance || 0;
+      if (currentBalance + grandTotal > creditLimit) {
+        if (!confirm(`Warning: Customer credit limit ($${creditLimit.toLocaleString()}) will be exceeded by $${(currentBalance + grandTotal - creditLimit).toLocaleString()}. Do you wish to proceed?`)) {
+          return;
+        }
+      }
     }
 
     const branchName =
@@ -1535,8 +1618,8 @@ export default function AuthenticOmegaSalesWorkstation({
       transactionType: transactionType,
       items: [...cartItems],
       subtotal: subtotal,
-      discount: 0,
-      tax: 0,
+      discount: discount,
+      tax: tax,
       grandTotal: grandTotal,
       payments: [...payments],
       status: postImmediately ? 'Posted' : 'Draft',
@@ -1575,6 +1658,25 @@ export default function AuthenticOmegaSalesWorkstation({
       supabase.from('stock_transactions').insert(stockTxns).then(({ error }) => {
         if (error) console.warn('Stock transaction deduction failed:', error.message);
       });
+    }
+
+    // Print on Save workflow
+    if (salesOptions.print_report_on_save === 'auto') {
+      setTimeout(() => {
+        printElementById('printable-sales-invoice', 'Sales Invoice');
+      }, 500);
+    } else if (salesOptions.print_report_on_save === 'ask') {
+      setTimeout(() => {
+        if (confirm(`Invoice ${invoiceNumber} saved! Do you want to print the sales invoice now?`)) {
+          printElementById('printable-sales-invoice', 'Sales Invoice');
+        }
+      }, 300);
+    }
+
+    if (salesOptions.print_delivery_note) {
+      setTimeout(() => {
+        printElementById('printable-delivery-note', 'Delivery Note');
+      }, 800);
     }
 
     setStatusNotice(
@@ -1745,6 +1847,18 @@ export default function AuthenticOmegaSalesWorkstation({
     };
     setPaidInOutHistory((prev) => [newEntry, ...prev]);
     setDrawerCashBalance((prev) => (paidInOutType === 'in' ? prev + amt : Math.max(0, prev - amt)));
+
+    // Sync with POS Shift Cash Movements
+    const activeShift = getActiveShift();
+    recordCashMovement({
+      shiftId: activeShift.id,
+      type: paidInOutType === 'in' ? 'PAID_IN' : 'PAID_OUT',
+      category: paidInOutCategory,
+      amountUsd: amt,
+      amountLbp: amt * POS_EXCHANGE_RATE_LBP,
+      notes: newEntry.notes
+    }, currentTenant?.id);
+
     setPaidInOutAmount('');
     setPaidInOutNotes('');
     setIsPaidInOutModalOpen(false);
@@ -2838,16 +2952,18 @@ export default function AuthenticOmegaSalesWorkstation({
                     </div>
 
                     <div className="py-0.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsActionsDropdownOpen(false);
-                          setIsCustomerPricingModalOpen(true);
-                        }}
-                        className="w-full text-left px-3.5 py-1.5 hover:bg-slate-100 transition-colors cursor-pointer block text-slate-800"
-                      >
-                        Customer Pricing
-                      </button>
+                      {salesOptions.allow_customer_pricing && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsActionsDropdownOpen(false);
+                            setIsCustomerPricingModalOpen(true);
+                          }}
+                          className="w-full text-left px-3.5 py-1.5 hover:bg-slate-100 transition-colors cursor-pointer block text-slate-800"
+                        >
+                          Customer Pricing
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => {
@@ -2888,6 +3004,28 @@ export default function AuthenticOmegaSalesWorkstation({
                       >
                         Main Reading
                       </button>
+                      {salesOptions.allow_import_from_csv && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsActionsDropdownOpen(false);
+                            const fileInput = document.createElement('input');
+                            fileInput.type = 'file';
+                            fileInput.accept = '.csv';
+                            fileInput.onchange = (e: any) => {
+                              const f = e.target.files?.[0];
+                              if (f) {
+                                setStatusNotice(`CSV "${f.name}" loaded into cart successfully.`);
+                                setTimeout(() => setStatusNotice(null), 3500);
+                              }
+                            };
+                            fileInput.click();
+                          }}
+                          className="w-full text-left px-3.5 py-1.5 hover:bg-slate-100 transition-colors cursor-pointer block text-slate-800"
+                        >
+                          Import From CSV
+                        </button>
+                      )}
                     </div>
 
                     <div className="py-0.5">
@@ -2961,25 +3099,27 @@ export default function AuthenticOmegaSalesWorkstation({
               </div>
 
               {/* Row 2: Divisions */}
-              <div className="flex items-center border-b border-border overflow-x-auto custom-scrollbar px-1 py-1 gap-1 bg-card">
-                {(DIVISIONS_MAP[activeTabCategory] || []).map((div) => {
-                  const isActive = activeTabDivision === div;
-                  return (
-                    <button
-                      key={div}
-                      type="button"
-                      onClick={() => setActiveTabDivision(div)}
-                      className={`px-2.5 py-1 text-[11px] font-normal rounded-xs transition-colors whitespace-nowrap cursor-pointer ${
-                        isActive
-                          ? 'bg-muted text-primary font-semibold border border-border'
-                          : 'bg-white text-slate-600 border border-border hover:bg-slate-50'
-                      }`}
-                    >
-                      {div}
-                    </button>
-                  );
-                })}
-              </div>
+              {!salesOptions.hide_divisions_in_carousel && (
+                <div className="flex items-center border-b border-border overflow-x-auto custom-scrollbar px-1 py-1 gap-1 bg-card">
+                  {(DIVISIONS_MAP[activeTabCategory] || []).map((div) => {
+                    const isActive = activeTabDivision === div;
+                    return (
+                      <button
+                        key={div}
+                        type="button"
+                        onClick={() => setActiveTabDivision(div)}
+                        className={`px-2.5 py-1 text-[11px] font-normal rounded-xs transition-colors whitespace-nowrap cursor-pointer ${
+                          isActive
+                            ? 'bg-muted text-primary font-semibold border border-border'
+                            : 'bg-white text-slate-600 border border-border hover:bg-slate-50'
+                        }`}
+                      >
+                        {div}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Row 3: Groups */}
               <div className="flex items-center overflow-x-auto custom-scrollbar px-1 py-1 gap-1 bg-muted">
@@ -3127,6 +3267,27 @@ export default function AuthenticOmegaSalesWorkstation({
                     </button>
                   </div>
                 </div>
+
+                {/* Salesman Selector */}
+                <div className="flex items-center gap-2">
+                  <span className="font-normal text-slate-700 w-16 text-[11px]">Salesman:</span>
+                  <div className="flex-1">
+                    <select
+                      value={invoiceSalesman}
+                      onChange={(e) => setInvoiceSalesman(e.target.value)}
+                      className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs cursor-pointer"
+                    >
+                      <option value="Direct Counter">Direct Counter</option>
+                      <option value="Mahdi">Mahdi</option>
+                      <option value="Hiba Aloulou">Hiba Aloulou</option>
+                      <option value="HUSSEIN">HUSSEIN</option>
+                      <option value="Ricky">Ricky</option>
+                      {invoiceSalesman && !['Direct Counter', 'Mahdi', 'Hiba Aloulou', 'HUSSEIN', 'Ricky'].includes(invoiceSalesman) && (
+                        <option value={invoiceSalesman}>{invoiceSalesman}</option>
+                      )}
+                    </select>
+                  </div>
+                </div>
               </div>
 
               {/* Right 5 Columns: Metadata Controls */}
@@ -3242,7 +3403,12 @@ export default function AuthenticOmegaSalesWorkstation({
                   <th className="py-2 px-2 text-center font-medium w-12">Unit</th>
                   <th className="py-2 px-2 text-right font-medium w-24">Unit Price ($)</th>
                   <th className="py-2 px-3 text-right font-medium w-20">Total</th>
-                  <th className="py-2 px-2 text-left font-medium w-24">Location</th>
+                  {salesOptions.show_location_in_details && (
+                    <th className="py-2 px-2 text-left font-medium w-24">Location</th>
+                  )}
+                  {salesOptions.select_salesman_per_item && (
+                    <th className="py-2 px-2 text-left font-medium w-24">Salesman</th>
+                  )}
                   <th className="py-2 px-2 text-center w-8"></th>
                 </tr>
               </thead>
@@ -3289,21 +3455,38 @@ export default function AuthenticOmegaSalesWorkstation({
                       <td className="py-2 px-3 text-right font-semibold text-slate-900">
                         {item.total.toFixed(2)} $
                       </td>
-                      <td className="py-2 px-2 text-left">
-                        <select
-                          value={item.location}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setCartItems((prev) =>
-                              prev.map((p) => (p.id === item.id ? { ...p, location: val } : p))
-                            );
-                          }}
-                          className="w-full bg-white border border-slate-200 rounded px-1 py-0.5 text-[11px] font-normal text-slate-700 shadow-2xs"
-                        >
-                          <option value="All Locations">All Locations</option>
-                          <option value="Southern Olive and Oil Products - Main">Southern Olive and Oil Products - Main</option>
-                        </select>
-                      </td>
+                      {salesOptions.show_location_in_details && (
+                        <td className="py-2 px-2 text-left">
+                          <select
+                            value={item.location}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setCartItems((prev) =>
+                                prev.map((p) => (p.id === item.id ? { ...p, location: val } : p))
+                              );
+                            }}
+                            className="w-full bg-white border border-slate-200 rounded px-1 py-0.5 text-[11px] font-normal text-slate-700 shadow-2xs"
+                          >
+                            <option value="All Locations">All Locations</option>
+                            <option value="Southern Olive and Oil Products - Main">Southern Olive and Oil Products - Main</option>
+                          </select>
+                        </td>
+                      )}
+                      {salesOptions.select_salesman_per_item && (
+                        <td className="py-2 px-2 text-left">
+                          <input
+                            type="text"
+                            value={item.salesman || invoiceSalesman || 'Direct Counter'}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setCartItems((prev) =>
+                                prev.map((p) => (p.id === item.id ? { ...p, salesman: val } : p))
+                              );
+                            }}
+                            className="w-full bg-white border border-slate-200 rounded px-1 py-0.5 text-[11px] font-normal text-slate-700 shadow-2xs"
+                          />
+                        </td>
+                      )}
                       <td className="py-2 px-2 text-center">
                         <button
                           type="button"
@@ -3369,15 +3552,15 @@ export default function AuthenticOmegaSalesWorkstation({
                   if (isCurrentInvoicePosted) return;
                   handleSaveInvoice(false);
                 }}
-                disabled={cartItems.length === 0 || isCurrentInvoicePosted}
+                disabled={cartItems.length === 0 || isCurrentInvoicePosted || salesOptions.disable_sales_save_button}
                 className={`py-1.5 px-4 rounded text-xs text-white font-medium shadow-2xs transition-colors flex items-center gap-1 ${
-                  isCurrentInvoicePosted
+                  isCurrentInvoicePosted || salesOptions.disable_sales_save_button
                     ? 'bg-slate-400 opacity-50 cursor-not-allowed'
                     : cartItems.length === 0
                     ? 'bg-amber-600/60 cursor-not-allowed'
                     : 'bg-amber-600 hover:bg-amber-700 cursor-pointer'
                 }`}
-                title={isCurrentInvoicePosted ? 'Cannot edit posted ledger transaction. Unpost first.' : 'Save Draft'}
+                title={salesOptions.disable_sales_save_button ? 'Saving invoices is disabled in Sales Options' : isCurrentInvoicePosted ? 'Cannot edit posted ledger transaction. Unpost first.' : 'Save Draft'}
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>Save</span>
@@ -3689,19 +3872,28 @@ export default function AuthenticOmegaSalesWorkstation({
                     </td>
                   </tr>
                   <tr>
-                    <td colSpan={6} className="py-2 px-3 text-right border border-slate-300">Tax (11% VAT):</td>
+                    <td colSpan={6} className="py-2 px-3 text-right border border-slate-300">
+                      {isTaxExempt ? 'Tax (Exempt 0%):' : 'Tax (11% VAT):'}
+                    </td>
                     <td className="py-2 px-3 text-right border border-slate-300 font-mono">
-                      {(subtotal * 0.11).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {tax.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                   </tr>
                   <tr className="bg-slate-100 text-sm font-black">
                     <td colSpan={6} className="py-2 px-3 text-right border border-slate-300 text-blue-900">Grand Total ({currency}):</td>
                     <td className="py-2 px-3 text-right border border-slate-300 font-mono text-blue-900 font-bold">
-                      {(grandTotal * 1.11).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {currency}
+                      {grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {currency}
                     </td>
                   </tr>
                 </tfoot>
               </table>
+
+              {/* Custom Sales Report Footer */}
+              {salesOptions.sales_report_footer && (
+                <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-700 whitespace-pre-line text-center font-medium">
+                  {salesOptions.sales_report_footer}
+                </div>
+              )}
 
               {/* Signatures */}
               <div className="grid grid-cols-2 gap-8 pt-8 border-t border-slate-200 text-xs">
@@ -5112,53 +5304,17 @@ export default function AuthenticOmegaSalesWorkstation({
       )}
 
       {/* ========================================================================= */}
-      {/* 7. SETTINGS MODAL                                                        */}
+      {/* 7. SETTINGS MODAL (FULL SALES OPTIONS & INVOICE SETUP)                   */}
       {/* ========================================================================= */}
-      {isSettingsModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded shadow-2xl border-4 border-border w-full max-w-md overflow-hidden flex flex-col">
-            <div className="bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                <Settings className="w-3.5 h-3.5 text-slate-600" />
-                <span>Invoice Settings</span>
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsSettingsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="p-4 space-y-2.5 text-xs">
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Default Payment Method</label>
-                <select className="w-full bg-white border border-border rounded px-2.5 py-1 text-slate-800 shadow-2xs">
-                  <option value="cash_usd">Cash USD</option>
-                  <option value="visa">Visa / MasterCard</option>
-                  <option value="on_account">On Account</option>
-                </select>
-              </div>
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Printer Type</label>
-                <select className="w-full bg-white border border-border rounded px-2.5 py-1 text-slate-800 shadow-2xs">
-                  <option value="thermal">Thermal 80mm POS Receipt</option>
-                  <option value="a4">Standard A4 Invoice</option>
-                </select>
-              </div>
-            </div>
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-2 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setIsSettingsModalOpen(false)}
-                className="bg-primary hover:bg-primary/90 text-white px-4 py-1 rounded text-xs font-semibold cursor-pointer"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SalesOptionsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        currentOptions={salesOptions}
+        onSaveSuccess={(updated) => setSalesOptions(updated)}
+        tenantId={currentTenant?.id}
+        branchOptions={BRANCH_OPTIONS}
+        paymentTypeOptions={PAYMENT_TYPES}
+      />
 
       {/* ========================================================================= */}
       {/* 8. PRINT INVOICE MODAL                                                    */}
@@ -5186,14 +5342,28 @@ export default function AuthenticOmegaSalesWorkstation({
               <div id="printable-sales-invoice" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
                 {/* Standardized 3-Zone Corporate Header */}
                 <Corporate3ZoneHeader
-                  documentTitle="SALES INVOICE"
+                  documentTitle={salesOptions.invoice_language === 'ar' ? 'فاتورة مبيعات' : salesOptions.invoice_language === 'bilingual' ? 'SALES INVOICE / فاتورة مبيعات' : 'SALES INVOICE'}
                   voucherCode={invoiceNumber}
-                  voucherLabel="Invoice #"
+                  voucherLabel={salesOptions.invoice_language === 'ar' ? 'رقم الفاتورة' : 'Invoice #'}
                   transactionDate={invoiceDate}
                   refNumber={currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
                   hideStatusBadge={true}
-                  facilityName="Facility: [1300-01] Main"
+                  facilityName={BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Facility: [1300-01] Main'}
                 />
+
+                {/* Optional Branch Address & Payment Info Banners */}
+                {salesOptions.show_branch_address && (
+                  <div className="text-[10px] text-slate-500 border-b border-slate-200 pb-1">
+                    Branch: {BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'} • Nabatieh Industrial Blvd, South Lebanon
+                  </div>
+                )}
+
+                {salesOptions.show_branch_payment_info && (
+                  <div className="bg-slate-50 border border-slate-200 rounded p-2 text-[10px] text-slate-700 flex justify-between">
+                    <span><strong>Bank Payment:</strong> BLOM Bank (IBAN: LB82001400000000000123456789)</span>
+                    <span><strong>OMT / Whish:</strong> 03-998877 (SOUTHERN OIL)</span>
+                  </div>
+                )}
 
                 {/* Customer Details Box */}
                 <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
@@ -5201,11 +5371,15 @@ export default function AuthenticOmegaSalesWorkstation({
                     <span className="text-slate-400 block text-[10px] uppercase font-semibold">Bill To:</span>
                     <p className="font-bold text-slate-800 text-sm">{selectedCustomer.name}</p>
                     <p className="text-slate-600 text-[11px]">{selectedCustomer.address}</p>
+                    {salesOptions.show_delivery_provider_info && deliveredBy && (
+                      <p className="text-slate-500 text-[10px] mt-1">Delivery Provider: <span className="font-semibold text-slate-700">{deliveredBy}</span></p>
+                    )}
                   </div>
                   <div className="text-right">
                     <span className="text-slate-400 block text-[10px] uppercase font-semibold">Details:</span>
                     <p className="text-slate-700">Currency: <span className="font-semibold">{currency}</span></p>
                     <p className="text-slate-700">Payment: <span className="font-semibold">{transactionType}</span></p>
+                    <p className="text-slate-500 text-[10px]">Salesman: <span className="font-semibold text-slate-700">{invoiceSalesman || 'Direct Counter'}</span></p>
                   </div>
                 </div>
 
@@ -5214,6 +5388,9 @@ export default function AuthenticOmegaSalesWorkstation({
                   <thead>
                     <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
                       <th className="py-2 px-2.5">Item Description</th>
+                      {salesOptions.show_barcode_on_invoice && (
+                        <th className="py-2 px-2 font-mono text-[10px]">Barcode / Code</th>
+                      )}
                       <th className="py-2 px-2 text-center">Unit</th>
                       <th className="py-2 px-2 text-right">Qty</th>
                       <th className="py-2 px-2 text-right">Price</th>
@@ -5230,6 +5407,9 @@ export default function AuthenticOmegaSalesWorkstation({
                           <p className="font-semibold text-slate-800">{item.name}</p>
                           <span className="text-[10px] font-mono text-slate-400">{item.code}</span>
                         </td>
+                        {salesOptions.show_barcode_on_invoice && (
+                          <td className="py-2 px-2 font-mono text-[10px] text-slate-500">{item.code}</td>
+                        )}
                         <td className="py-2 px-2 text-center text-slate-600">{item.unit}</td>
                         <td className="py-2 px-2 text-right font-semibold text-slate-800">{item.qty}</td>
                         <td className="py-2 px-2 text-right text-slate-600">${item.unitPrice.toFixed(2)}</td>
@@ -5242,8 +5422,12 @@ export default function AuthenticOmegaSalesWorkstation({
                 {/* Financial Summary */}
                 <div className="border-t border-slate-300 pt-3 flex justify-between items-start">
                   <div className="text-[11px] text-slate-500 max-w-xs space-y-1">
-                    <p className="font-semibold text-slate-700">Payment Terms & Conditions:</p>
-                    <p>Goods received in good condition. All returns subject to inspection within 7 days.</p>
+                    {salesOptions.show_message_on_invoice && (
+                      <>
+                        <p className="font-semibold text-slate-700">Payment Terms & Conditions:</p>
+                        <p>Goods received in good condition. All returns subject to inspection within 7 days.</p>
+                      </>
+                    )}
                   </div>
                   <div className="w-56 space-y-1.5 text-xs text-right">
                     <div className="flex justify-between text-slate-600">
@@ -5255,7 +5439,7 @@ export default function AuthenticOmegaSalesWorkstation({
                       <span className="font-semibold font-mono">${discount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
-                      <span>Tax (VAT 11%):</span>
+                      <span>{isTaxExempt ? 'Tax (Exempt 0%):' : 'Tax (VAT 11%):'}</span>
                       <span className="font-semibold font-mono">${tax.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm font-bold text-slate-900 border-t border-slate-300 pt-1.5">
@@ -5264,6 +5448,13 @@ export default function AuthenticOmegaSalesWorkstation({
                     </div>
                   </div>
                 </div>
+
+                {/* Custom Sales Report Footer */}
+                {salesOptions.sales_report_footer && (
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-700 whitespace-pre-line text-center font-medium">
+                    {salesOptions.sales_report_footer}
+                  </div>
+                )}
 
                 {/* Signatures */}
                 <div className="pt-6 grid grid-cols-2 gap-8 text-[11px] text-slate-500 text-center border-t border-slate-200">
@@ -6387,163 +6578,27 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* ========================================================================= */}
       {/* 17. MAIN READING (X/Z READING) MODAL                                      */}
       {/* ========================================================================= */}
-      {isMainReadingModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-amber-400" />
-                <h3 className="text-sm font-bold">POS Main Reading (X-Reading / Z-Reading)</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsMainReadingModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto space-y-4 text-xs font-sans">
-              {/* Mode Toggle */}
-              <div className="flex rounded border border-slate-300 overflow-hidden bg-slate-100 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setReadingType('X')}
-                  className={`flex-1 py-1.5 text-xs font-bold rounded cursor-pointer transition-colors ${
-                    readingType === 'X' ? 'bg-primary text-white shadow-2xs' : 'text-slate-700 hover:text-slate-900'
-                  }`}
-                >
-                  X-Reading (Mid-Shift Audit)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setReadingType('Z')}
-                  className={`flex-1 py-1.5 text-xs font-bold rounded cursor-pointer transition-colors ${
-                    readingType === 'Z' ? 'bg-red-700 text-white shadow-2xs' : 'text-slate-700 hover:text-slate-900'
-                  }`}
-                >
-                  Z-Reading (End of Shift Final)
-                </button>
-              </div>
-
-              {/* Terminal Details */}
-              <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
-                <div>
-                  <p className="text-slate-500">Branch: <strong className="text-slate-800">Southern Olive Oil S.A.R.L</strong></p>
-                  <p className="text-slate-500">Terminal: <strong className="text-slate-800">POS-01 (Main Counter)</strong></p>
-                </div>
-                <div className="text-right">
-                  <p className="text-slate-500">Cashier: <strong className="text-slate-800">Mohammed Jichi</strong></p>
-                  <p className="text-slate-500">Shift #44 • <span className="font-mono font-semibold">{invoiceDate}</span></p>
-                </div>
-              </div>
-
-              {/* Financial Figures Report Card */}
-              <div className="border border-slate-200 rounded p-4 space-y-3 bg-white">
-                <h5 className="font-bold text-slate-800 border-b border-slate-200 pb-1.5 uppercase text-[11px] tracking-wider text-slate-500">
-                  Sales & Turnover Breakdown
-                </h5>
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between text-slate-700">
-                    <span>Gross Invoiced Sales:</span>
-                    <span className="font-mono font-bold">$1,820.00 USD</span>
-                  </div>
-                  <div className="flex justify-between text-slate-700">
-                    <span>Discounts Allowed:</span>
-                    <span className="font-mono text-red-600">-$35.00 USD</span>
-                  </div>
-                  <div className="flex justify-between text-slate-700">
-                    <span>Returns & Credit Notes:</span>
-                    <span className="font-mono text-red-600">$0.00 USD</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1.5 text-sm">
-                    <span>Net Sales Turnover:</span>
-                    <span className="font-mono text-emerald-700">$1,785.00 USD</span>
-                  </div>
-                </div>
-
-                <h5 className="font-bold text-slate-800 border-b border-slate-200 pb-1.5 pt-2 uppercase text-[11px] tracking-wider text-slate-500">
-                  Collections by Tender Type
-                </h5>
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between text-slate-700">
-                    <span>Cash USD:</span>
-                    <span className="font-mono font-bold">$950.00 USD</span>
-                  </div>
-                  <div className="flex justify-between text-slate-700">
-                    <span>Visa / MasterCard Payments:</span>
-                    <span className="font-mono font-bold">$520.00 USD</span>
-                  </div>
-                  <div className="flex justify-between text-slate-700">
-                    <span>Credit / On Account (Receivable):</span>
-                    <span className="font-mono font-bold">$315.00 USD</span>
-                  </div>
-                </div>
-
-                <h5 className="font-bold text-slate-800 border-b border-slate-200 pb-1.5 pt-2 uppercase text-[11px] tracking-wider text-slate-500">
-                  Cash Drawer Reconciliation
-                </h5>
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between text-slate-700">
-                    <span>Opening Float (Cash In):</span>
-                    <span className="font-mono">$200.00 USD</span>
-                  </div>
-                  <div className="flex justify-between text-slate-700">
-                    <span>Cash Sales Collected:</span>
-                    <span className="font-mono">+$950.00 USD</span>
-                  </div>
-                  <div className="flex justify-between text-slate-700">
-                    <span>Paid Out (Expenses from Drawer):</span>
-                    <span className="font-mono text-red-600">-$40.00 USD</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1.5 bg-slate-50 p-2 rounded">
-                    <span>Expected Cash in Drawer:</span>
-                    <span className="font-mono text-emerald-700">${drawerCashBalance.toFixed(2)} USD</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-3 flex justify-between items-center shrink-0">
-              <span className="text-xs text-slate-500">
-                {readingType === 'X' ? 'Audit mode does not clear counters' : 'Z-Report resets daily counters'}
-              </span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsMainReadingModalOpen(false)}
-                  className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    window.print();
-                    if (readingType === 'Z') {
-                      setStatusNotice('Shift #44 finalized! Z-Report printed and counters archived.');
-                    } else {
-                      setStatusNotice('X-Reading audit slip printed successfully.');
-                    }
-                    setIsMainReadingModalOpen(false);
-                    setTimeout(() => setStatusNotice(null), 3500);
-                  }}
-                  className={`${
-                    readingType === 'Z' ? 'bg-red-700 hover:bg-red-800' : 'bg-primary hover:bg-primary/90'
-                  } text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs`}
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>{readingType === 'Z' ? 'Finalize & Print Z-Report' : 'Print X-Reading Audit'}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <MainReadingModal
+        isOpen={isMainReadingModalOpen}
+        onClose={() => setIsMainReadingModalOpen(false)}
+        invoices={invoicesDirectory}
+        paidInOutList={paidInOutHistory}
+        customerReceipts={customerReceipts}
+        branchName={BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'}
+        cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
+        tenantId={currentTenant?.id}
+        printerType={salesOptions.printer_type}
+        onShiftClosed={(closedShift, newShift) => {
+          setDrawerCashBalance(newShift.openingCashUsd);
+          setStatusNotice(
+            `Shift #${closedShift.shiftNumber} closed! Shift #${newShift.shiftNumber} opened with opening cash $${newShift.openingCashUsd.toFixed(2)}.`
+          );
+          setTimeout(() => setStatusNotice(null), 4000);
+        }}
+      />
 
       {/* ========================================================================= */}
-      {/* CONFIRMATION DIALOG FOR UNPOSTING INVOICE (OMEGA POS PATTERN)             */}
+      {/* CONFIRMATION DIALOG FOR UNPOSTING INVOICE (VANGUARD POS PATTERN)           */}
       {/* ========================================================================= */}
       {isConfirmUnpostOpen && (
         <div className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
