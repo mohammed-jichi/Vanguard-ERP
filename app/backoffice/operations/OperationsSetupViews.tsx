@@ -1,6 +1,12 @@
-'use client';
-
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useTenant } from '@/lib/TenantContext';
+import { printElementById } from '@/lib/utils/printDocument';
+import {
+  fetchUnifiedDeliveryProviders,
+  persistUnifiedDeliveryProviders,
+  DELIVERY_PROVIDERS_UPDATED_EVENT,
+  DeliveryProviderClassification
+} from '@/lib/deliveryProviders';
 import {
   Plus,
   Search,
@@ -100,9 +106,59 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
   const [discounts, setDiscounts] = useState<DiscountRecord[]>(INITIAL_DISCOUNTS);
   const [paymentTypes, setPaymentTypes] = useState<PaymentTypeRecord[]>(INITIAL_PAYMENT_TYPES);
   const [currencies, setCurrencies] = useState<CurrencySetupRecord[]>(INITIAL_CURRENCIES);
+  const { currentTenant } = useTenant();
   const [brands, setBrands] = useState<InventoryBrandRecord[]>(INITIAL_BRANDS);
   const [sources, setSources] = useState<InventorySourceRecord[]>(INITIAL_SOURCES);
   const [deliveryProviders, setDeliveryProviders] = useState<DeliveryProviderRecord[]>(INITIAL_DELIVERY_PROVIDERS);
+  const [isSavingProvider, setIsSavingProvider] = useState(false);
+  const [editingProvider, setEditingProvider] = useState<DeliveryProviderRecord | null>(null);
+  const [providerForm, setProviderForm] = useState<{
+    id: string;
+    name: string;
+    classification: DeliveryProviderClassification;
+    contactPerson: string;
+    phone: string;
+    status: 'Active Carrier' | 'Inactive';
+  }>({
+    id: 'DP-SUPERSONIC',
+    name: '',
+    classification: '3PL_EXPRESS',
+    contactPerson: '',
+    phone: '',
+    status: 'Active Carrier'
+  });
+
+  // Hydrate unified delivery providers from Supabase / localStorage cache & real-time sync
+  useEffect(() => {
+    let isMounted = true;
+    const loadProviders = async () => {
+      try {
+        const list = await fetchUnifiedDeliveryProviders(currentTenant?.id);
+        if (isMounted) setDeliveryProviders(list);
+      } catch (err) {
+        console.warn('Error loading delivery providers in OperationsSetupViews:', err);
+      }
+    };
+
+    loadProviders();
+
+    const handleUpdate = (e: any) => {
+      if (e.detail && Array.isArray(e.detail)) {
+        setDeliveryProviders(e.detail);
+      } else {
+        loadProviders();
+      }
+    };
+
+    window.addEventListener(DELIVERY_PROVIDERS_UPDATED_EVENT, handleUpdate);
+    window.addEventListener('storage', loadProviders);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener(DELIVERY_PROVIDERS_UPDATED_EVENT, handleUpdate);
+      window.removeEventListener('storage', loadProviders);
+    };
+  }, [currentTenant?.id]);
 
   // Common UI states
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -193,6 +249,108 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  // Delivery Providers CRUD Handlers
+  const handleOpenAddProvider = () => {
+    setEditingProvider(null);
+    setProviderForm({
+      id: `DP-${Math.floor(1000 + Math.random() * 9000)}`,
+      name: '',
+      classification: '3PL_EXPRESS',
+      contactPerson: '',
+      phone: '+961 70 000 000',
+      status: 'Active Carrier'
+    });
+    setActiveModal('provider_modal');
+  };
+
+  const handleOpenEditProvider = (p: DeliveryProviderRecord) => {
+    setEditingProvider(p);
+    setProviderForm({
+      id: p.id || p.providerId || `DP-${Math.floor(1000 + Math.random() * 9000)}`,
+      name: p.name,
+      classification: p.classification || (p.providerType as any) || '3PL_EXPRESS',
+      contactPerson: p.contactPerson || '',
+      phone: p.phone || '',
+      status: p.status || (p.active ? 'Active Carrier' : 'Inactive')
+    });
+    setActiveModal('provider_modal');
+  };
+
+  const handleSaveProviderForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = providerForm.name.trim();
+    if (!trimmed) {
+      showToast('Please enter a carrier name');
+      return;
+    }
+
+    setIsSavingProvider(true);
+    try {
+      let updated: DeliveryProviderRecord[];
+      if (editingProvider) {
+        updated = deliveryProviders.map((p) =>
+          p.id === editingProvider.id
+            ? {
+                ...p,
+                name: trimmed,
+                classification: providerForm.classification,
+                providerType: providerForm.classification,
+                contactPerson: providerForm.contactPerson.trim() || 'Operations Dispatch',
+                phone: providerForm.phone.trim() || '+961 70 000 000',
+                status: providerForm.status,
+                active: providerForm.status === 'Active Carrier'
+              }
+            : p
+        );
+      } else {
+        const newRecord: DeliveryProviderRecord = {
+          id: providerForm.id.trim() || `DP-${Math.floor(1000 + Math.random() * 9000)}`,
+          providerId: providerForm.id.trim() || `DP-${Math.floor(1000 + Math.random() * 9000)}`,
+          name: trimmed,
+          classification: providerForm.classification,
+          providerType: providerForm.classification,
+          contactPerson: providerForm.contactPerson.trim() || 'Operations Dispatch',
+          phone: providerForm.phone.trim() || '+961 70 000 000',
+          status: providerForm.status,
+          active: providerForm.status === 'Active Carrier'
+        };
+        updated = [newRecord, ...deliveryProviders];
+      }
+
+      setDeliveryProviders(updated);
+      setActiveModal(null);
+      await persistUnifiedDeliveryProviders(updated, currentTenant?.id);
+      showToast(`Carrier "${trimmed}" ${editingProvider ? 'updated' : 'added'} successfully!`);
+    } catch (err) {
+      console.error('Error saving provider:', err);
+      showToast('Failed to save carrier');
+    } finally {
+      setIsSavingProvider(false);
+    }
+  };
+
+  const handleDeleteProvider = async (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete carrier "${name}"?`)) {
+      const updated = deliveryProviders.filter((p) => p.id !== id);
+      setDeliveryProviders(updated);
+      await persistUnifiedDeliveryProviders(updated, currentTenant?.id);
+      showToast(`Deleted carrier "${name}".`);
+    }
+  };
+
+  const handleToggleProviderStatus = async (p: DeliveryProviderRecord) => {
+    const newStatus: 'Active Carrier' | 'Inactive' =
+      p.status === 'Active Carrier' ? 'Inactive' : 'Active Carrier';
+    const updated = deliveryProviders.map((item) =>
+      item.id === p.id
+        ? { ...item, status: newStatus, active: newStatus === 'Active Carrier' }
+        : item
+    );
+    setDeliveryProviders(updated);
+    await persistUnifiedDeliveryProviders(updated, currentTenant?.id);
+    showToast(`Carrier "${p.name}" status: ${newStatus}`);
+  };
+
   // Reorder payment types (Move Up / Move Down)
   const handleMovePaymentType = (index: number, direction: 'up' | 'down') => {
     const updated = [...paymentTypes];
@@ -204,7 +362,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
     // update sorting indices
     const normalized = updated.map((p, i) => ({ ...p, sorting: i + 1 }));
     setPaymentTypes(normalized);
-    showToast(`Payment Type order updated!`);
+    showToast('Payment Type order updated!');
   };
 
   const handleExport = () => {
@@ -227,6 +385,30 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
     a.download = `vanguard_setup_${section}_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     showToast(`Exported ${section} configurations!`);
+  };
+
+  const handleExportCsv = () => {
+    if (section === 'delivery_providers') {
+      const headers = ['Provider ID', 'Provider Name', 'Service Classification', 'Contact Person', 'Phone Number', 'Status'];
+      const rows = deliveryProviders.map((dp) => [
+        dp.id || dp.providerId || '',
+        `"${(dp.name || '').replace(/"/g, '""')}"`,
+        dp.classification || dp.providerType || '',
+        `"${(dp.contactPerson || '').replace(/"/g, '""')}"`,
+        `"${(dp.phone || '').replace(/"/g, '""')}"`,
+        dp.status || (dp.active ? 'Active Carrier' : 'Inactive')
+      ]);
+      const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vanguard_delivery_providers_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      showToast('Exported Delivery Providers as CSV!');
+      return;
+    }
+    handleExport();
   };
 
   return (
@@ -385,8 +567,8 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
 
           {section === 'delivery_providers' && (
             <button
-              onClick={() => setActiveModal('new_provider')}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition shadow-md"
+              onClick={handleOpenAddProvider}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition shadow-md cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Add Provider</span>
@@ -395,16 +577,22 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
 
           <div className="flex items-center gap-1.5 ml-2 border-l border-slate-300 pl-3">
             <button
-              onClick={handleExport}
-              title="Export JSON"
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition"
+              onClick={handleExportCsv}
+              title={section === 'delivery_providers' ? 'Export CSV Spreadsheet' : 'Export Data'}
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition cursor-pointer"
             >
               <Download className="w-4 h-4" />
             </button>
             <button
-              onClick={() => window.print()}
+              onClick={() => {
+                if (section === 'delivery_providers') {
+                  printElementById('printable-delivery-providers', 'Delivery Providers & Aggregators');
+                } else {
+                  window.print();
+                }
+              }}
               title="Print Table"
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition cursor-pointer"
             >
               <Printer className="w-4 h-4" />
             </button>
@@ -898,7 +1086,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
           VIEW 9: DELIVERY PROVIDERS
           ========================================================================= */}
       {section === 'delivery_providers' && (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+        <div id="printable-delivery-providers" className="printable-document vanguard-printable bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-primary text-xs uppercase font-bold text-white border-b border-slate-200">
@@ -910,37 +1098,83 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   <th className="px-4 py-3.5">Contact Person</th>
                   <th className="px-4 py-3.5">Phone Number</th>
                   <th className="px-4 py-3.5 text-center">Status</th>
-                  <th className="px-4 py-3.5 text-right">Actions</th>
+                  <th className="px-4 py-3.5 text-right no-print">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 font-mono text-xs">
-                {deliveryProviders.map((dp, idx) => (
-                  <tr key={dp.id} className="hover:bg-slate-50 transition">
-                    <td className="px-4 py-3 text-slate-500 font-bold">{idx + 1}</td>
-                    <td className="px-4 py-3 font-bold text-cyan-400">{dp.providerId}</td>
-                    <td className="px-4 py-3 font-sans font-bold text-slate-100">{dp.name}</td>
-                    <td className="px-4 py-3 font-sans">
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[11px] bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                        {dp.providerType}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-sans text-slate-700 text-xs">{dp.contactPerson}</td>
-                    <td className="px-4 py-3 text-slate-500 font-mono">{dp.phone}</td>
-                    <td className="px-4 py-3 text-center font-sans">
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                        Active Carrier
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-sans">
-                      <button
-                        onClick={() => showToast(`Edited carrier profile for ${dp.name}`)}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold transition"
-                      >
-                        Configure
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {deliveryProviders.filter(dp => {
+                  if (!searchQuery.trim()) return true;
+                  const q = searchQuery.toLowerCase();
+                  return (
+                    dp.name.toLowerCase().includes(q) ||
+                    (dp.id && dp.id.toLowerCase().includes(q)) ||
+                    (dp.contactPerson && dp.contactPerson.toLowerCase().includes(q)) ||
+                    (dp.phone && dp.phone.includes(q))
+                  );
+                }).map((dp, idx) => {
+                  const classification = dp.classification || (dp.providerType as any) || '3PL_EXPRESS';
+                  const isInactive = dp.status === 'Inactive' || dp.active === false;
+                  return (
+                    <tr key={dp.id} className="hover:bg-slate-50 transition">
+                      <td className="px-4 py-3 text-slate-500 font-bold font-sans">{idx + 1}</td>
+                      <td className="px-4 py-3 font-bold font-mono text-cyan-700">{dp.id || dp.providerId}</td>
+                      <td className="px-4 py-3 font-sans font-semibold text-slate-900">{dp.name}</td>
+                      <td className="px-4 py-3 font-sans">
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+                          classification === 'INTERNAL_FLEET'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : classification === 'AGGREGATOR'
+                            ? 'bg-purple-50 text-purple-700 border-purple-200'
+                            : classification === 'DIRECT'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-blue-50 text-blue-700 border-blue-200'
+                        }`}>
+                          {classification === 'INTERNAL_FLEET' ? 'Internal Fleet' :
+                           classification === 'AGGREGATOR' ? 'Logistics Aggregator' :
+                           classification === 'DIRECT' ? 'Direct Counter / Pickup' :
+                           '3PL Express Delivery'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-sans text-slate-700 text-xs">{dp.contactPerson}</td>
+                      <td className="px-4 py-3 text-slate-600 font-mono">{dp.phone}</td>
+                      <td className="px-4 py-3 text-center font-sans">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleProviderStatus(dp)}
+                          title="Click to toggle status"
+                          className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold border cursor-pointer transition ${
+                            isInactive
+                              ? 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200'
+                              : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                          }`}
+                        >
+                          {isInactive ? 'Inactive' : 'Active Carrier'}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3 text-right font-sans no-print">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditProvider(dp)}
+                            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold transition flex items-center gap-1 cursor-pointer"
+                            title="Edit / Configure Provider"
+                          >
+                            <Edit2 className="w-3 h-3 text-slate-500" />
+                            <span>Configure</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteProvider(dp.id, dp.name)}
+                            className="p-1 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-transparent hover:border-rose-200 transition cursor-pointer"
+                            title="Delete Provider"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1646,6 +1880,142 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
                   className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition"
                 >
                   Save Source
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* =========================================================================
+          MODAL: DELIVERY PROVIDER (ADD & EDIT)
+          ========================================================================= */}
+      {activeModal === 'provider_modal' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white border border-slate-200 w-full text-slate-800 shadow-2xl max-w-md rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 text-slate-900 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-cyan-700 font-bold">
+                <Truck className="w-5 h-5 text-emerald-600" />
+                <span>{editingProvider ? 'Configure Delivery Provider' : 'Add Delivery Provider'}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveModal(null)}
+                className="text-slate-500 hover:text-slate-800 transition cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProviderForm} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Provider ID <span className="text-slate-400 font-normal">(System Code)</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={providerForm.id}
+                  onChange={(e) => setProviderForm({ ...providerForm, id: e.target.value.toUpperCase() })}
+                  className="w-full bg-slate-50 font-mono border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
+                  placeholder="e.g. DP-SUPERSONIC"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Provider / Carrier Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  value={providerForm.name}
+                  onChange={(e) => setProviderForm({ ...providerForm, name: e.target.value })}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
+                  placeholder="e.g. Aramex Lebanon International Cargo"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Service Classification <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  value={providerForm.classification}
+                  onChange={(e) =>
+                    setProviderForm({
+                      ...providerForm,
+                      classification: e.target.value as DeliveryProviderClassification
+                    })
+                  }
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary cursor-pointer"
+                >
+                  <option value="INTERNAL_FLEET">Internal Fleet Management (Dedicated In-House)</option>
+                  <option value="3PL_EXPRESS">3PL Express Courier & Logistics</option>
+                  <option value="AGGREGATOR">Logistics Aggregator (Multi-carrier Broker)</option>
+                  <option value="DIRECT">Direct Counter / Customer Pickup</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Contact Person / Dispatch Officer
+                </label>
+                <input
+                  type="text"
+                  value={providerForm.contactPerson}
+                  onChange={(e) => setProviderForm({ ...providerForm, contactPerson: e.target.value })}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary"
+                  placeholder="e.g. Tony Khoury (Lead Driver)"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  value={providerForm.phone}
+                  onChange={(e) => setProviderForm({ ...providerForm, phone: e.target.value })}
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary font-mono"
+                  placeholder="e.g. +961 71 332 901"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Status
+                </label>
+                <select
+                  value={providerForm.status}
+                  onChange={(e) =>
+                    setProviderForm({
+                      ...providerForm,
+                      status: e.target.value as 'Active Carrier' | 'Inactive'
+                    })
+                  }
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-primary cursor-pointer"
+                >
+                  <option value="Active Carrier">Active Carrier</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+
+              <div className="pt-3 border-t border-slate-200 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-sm font-semibold transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingProvider}
+                  className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white text-sm font-semibold transition cursor-pointer shadow-xs"
+                >
+                  {isSavingProvider ? 'Saving...' : editingProvider ? 'Update Carrier' : 'Save Carrier'}
                 </button>
               </div>
             </form>

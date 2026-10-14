@@ -486,15 +486,8 @@ export interface InventorySourceRecord {
   type: 'LOCAL' | 'MARKETPLACE';
 }
 
-export interface DeliveryProviderRecord {
-  id: string;
-  providerId: string;
-  name: string;
-  providerType: 'INTERNAL_FLEET' | '3PL_EXPRESS' | 'REGIONAL_CARRIER';
-  contactPerson: string;
-  phone: string;
-  active: boolean;
-}
+export type { DeliveryProviderRecord, DeliveryProviderClassification } from '@/lib/deliveryProviders';
+
 
 // ==========================================
 // SEED DATA: SOUTHERN OLIVE OIL PRODUCTS S.A.R.L
@@ -1406,11 +1399,9 @@ export const INITIAL_CURRENCIES: CurrencySetupRecord[] = [
   { id: 'CUR-02', currency: 'LBP', symbol: 'L.L.', rateVsUsd: 89500.0, decimals: 0, isMain: false }
 ];
 
-export const INITIAL_DELIVERY_PROVIDERS: DeliveryProviderRecord[] = [
-  { id: 'DP-01', providerId: 'DP-SUPERSONIC', name: 'SuperSonic Fleet Management (Internal)', providerType: 'INTERNAL_FLEET', contactPerson: 'Tony Khoury (Lead Driver)', phone: '+961 71 332 901', active: true },
-  { id: 'DP-02', providerId: 'DP-ARAMEX', name: 'Aramex Lebanon International Cargo', providerType: '3PL_EXPRESS', contactPerson: 'Karim Sadek', phone: '+961 1 543 210', active: true },
-  { id: 'DP-03', providerId: 'DP-DHL', name: 'DHL Express Fresh Cargo Logistics', providerType: '3PL_EXPRESS', contactPerson: 'Rana Chemali', phone: '+961 1 738 900', active: true }
-];
+import { DEFAULT_UNIFIED_DELIVERY_PROVIDERS, type DeliveryProviderRecord } from '@/lib/deliveryProviders';
+export const INITIAL_DELIVERY_PROVIDERS: DeliveryProviderRecord[] = DEFAULT_UNIFIED_DELIVERY_PROVIDERS;
+
 
 // Matrix connections representation showing relations between entities
 export const MATRIX_GRAPH = [
