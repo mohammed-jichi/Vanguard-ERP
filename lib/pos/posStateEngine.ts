@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * VANGUARD POS STATE & WORKFLOW ENGINE (OMEGA-STYLE ARCHITECTURE)
+ * VANGUARD POS STATE & WORKFLOW ENGINE (VANGUARD ERP ENTERPRISE ARCHITECTURE)
  * ============================================================================
  * Manages tactile touch login, role-based screen routing, transaction lines,
  * dual-currency calculation (USD / 89,500 LBP), and commercial POS functions.

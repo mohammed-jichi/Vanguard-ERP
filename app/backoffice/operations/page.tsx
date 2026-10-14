@@ -6,7 +6,7 @@ import { CheckCircle2, X } from 'lucide-react';
 
 import AuthenticVanguardOperationsDashboard from './dashboard/page';
 import AuthenticVanguardInventoryReports from './InventoryReportsView';
-import AuthenticOmegaSalesWorkstation from './SalesView';
+import AuthenticVanguardSalesWorkstation from './SalesView';
 import QuotationWorkstation from '@/components/QuotationWorkstation';
 import DeliveryOfGoodsView from '@/components/DeliveryOfGoodsView';
 import PurchasesView from '@/components/PurchasesView';
@@ -170,7 +170,7 @@ function OperationsCenterComponent() {
         {/* =========================================================================
             VIEW 3: SALES
             ========================================================================= */}
-        {activeSection === 'sales' && <AuthenticOmegaSalesWorkstation />}
+        {activeSection === 'sales' && <AuthenticVanguardSalesWorkstation />}
 
         {/* =========================================================================
             VIEW 4: QUOTATIONS

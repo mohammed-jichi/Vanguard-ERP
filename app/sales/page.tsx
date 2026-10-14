@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import AuthenticOmegaSalesWorkstation from '../backoffice/operations/SalesView';
+import AuthenticVanguardSalesWorkstation from '../backoffice/operations/SalesView';
 
-export default function StandaloneOmegaSalesPage() {
-  return <AuthenticOmegaSalesWorkstation withOmegaSidebar={true} />;
+export default function StandaloneVanguardSalesPage() {
+  return <AuthenticVanguardSalesWorkstation withSidebar={true} />;
 }

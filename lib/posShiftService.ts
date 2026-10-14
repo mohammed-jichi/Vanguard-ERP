@@ -18,6 +18,73 @@ export const ACTIVE_SHIFT_KEY = 'vanguard_pos_active_shift_v1';
 export const SHIFT_HISTORY_KEY = 'vanguard_pos_shift_history_v1';
 export const CASH_MOVEMENTS_KEY = 'vanguard_pos_cash_movements_v1';
 export const SHIFT_UPDATED_EVENT = 'vanguard_pos_shift_updated';
+export const CASH_MOVEMENTS_UPDATED_EVENT = 'vanguard_pos_cash_movements_updated';
+
+export type CashMovementType = 'PAID_IN' | 'PAID_OUT';
+
+export interface ReasonCategoryConfig {
+  code: 'OPENING_FLOAT' | 'PETTY_EXPENSE' | 'DELIVERY_EXPENSE' | 'CASH_DROP' | 'OTHER';
+  labelEn: string;
+  labelAr: string;
+  defaultType: CashMovementType;
+  targetAccountId: string;
+  targetAccountNumber: string;
+  targetAccountName: string;
+  targetAccountNameAr: string;
+}
+
+export const REASON_CATEGORIES: ReasonCategoryConfig[] = [
+  {
+    code: 'OPENING_FLOAT',
+    labelEn: 'Opening Float (إيداع فراطة أول النهار)',
+    labelAr: 'إيداع فراطة أول النهار - الخزينة الرئيسية',
+    defaultType: 'PAID_IN',
+    targetAccountId: 'acc-53000',
+    targetAccountNumber: '53000',
+    targetAccountName: 'Main Safe / الصندوق الرئيسي',
+    targetAccountNameAr: 'الصندوق - الخزينة الرئيسية'
+  },
+  {
+    code: 'PETTY_EXPENSE',
+    labelEn: 'General & Petty Cash Expenses (ضيافة ومصاريف نثرية)',
+    labelAr: 'ضيافة ومصاريف نثرية وإدارية',
+    defaultType: 'PAID_OUT',
+    targetAccountId: 'acc-61500',
+    targetAccountNumber: '61500',
+    targetAccountName: 'General & Petty Cash Expenses / مصاريف نثرية',
+    targetAccountNameAr: 'مصاريف نثرية وضيافة المحل'
+  },
+  {
+    code: 'DELIVERY_EXPENSE',
+    labelEn: 'Delivery & Dispatch Expense (مصاريف توصيل وشحن)',
+    labelAr: 'مصاريف توصيل وسائقين ومحروقات',
+    defaultType: 'PAID_OUT',
+    targetAccountId: 'acc-61300',
+    targetAccountNumber: '61300',
+    targetAccountName: 'Delivery & Dispatch Expense / مصاريف توصيل وشحن',
+    targetAccountNameAr: 'مصاريف نقل وشحن وتوصيل الطلبات'
+  },
+  {
+    code: 'CASH_DROP',
+    labelEn: 'Main Safe Transfer / Cash Drop (تحويل للصندوق الرئيسي)',
+    labelAr: 'تحويل وسحب نقدية للخزينة الرئيسية',
+    defaultType: 'PAID_OUT',
+    targetAccountId: 'acc-53000',
+    targetAccountNumber: '53000',
+    targetAccountName: 'Main Safe Transfer / تحويل للصندوق الرئيسي',
+    targetAccountNameAr: 'الصندوق - الخزينة الرئيسية'
+  },
+  {
+    code: 'OTHER',
+    labelEn: 'Miscellaneous Cash Movement (متفرقات الصندوق)',
+    labelAr: 'حساب متفرقات الصندوق',
+    defaultType: 'PAID_OUT',
+    targetAccountId: 'acc-61800',
+    targetAccountNumber: '61800',
+    targetAccountName: 'Miscellaneous Cash Account / متفرقات الصندوق',
+    targetAccountNameAr: 'حساب متفرقات وتسويات الصندوق'
+  }
+];
 
 export interface PosShift {
   id: string; // e.g. 'SH-20261014-44'
@@ -40,13 +107,30 @@ export interface PosShift {
 
 export interface CashMovement {
   id: string;
+  movementNo: string; // e.g. 'PI-00101' for Paid In, 'PO-00101' for Paid Out
+  branchId: string;
   shiftId: string;
-  type: 'PAID_IN' | 'PAID_OUT';
-  category: string;
+  userId?: string;
+  cashierName: string;
+  movementType: 'PAID_IN' | 'PAID_OUT';
+  type?: 'PAID_IN' | 'PAID_OUT' | 'in' | 'out'; // for backward compatibility
+  currencyCode: 'USD' | 'LBP' | 'EUR' | 'GBP';
+  amount: number;
   amountUsd: number;
   amountLbp: number;
+  exchangeRate: number;
+  reasonCategory: 'OPENING_FLOAT' | 'PETTY_EXPENSE' | 'DELIVERY_EXPENSE' | 'CASH_DROP' | 'OTHER' | string;
+  category?: string; // for backward compatibility
+  targetAccountId: string;
+  targetAccountNumber?: string;
+  targetAccountName: string;
   notes: string;
-  timestamp: string;
+  journalEntryId?: string;
+  createdAt: string;
+  timestamp?: string; // for backward compatibility
+  isVoided?: boolean;
+  voidReason?: string;
+  voidedAt?: string;
 }
 
 export interface TenderCollection {
@@ -223,49 +307,279 @@ export async function saveActiveShift(shift: PosShift, tenantId?: string): Promi
 }
 
 /**
- * Returns all recorded cash movements (Paid In / Paid Out)
+ * Generates next sequential movement voucher number (e.g. PI-00101, PO-00101)
+ */
+export function generateNextMovementNumber(movementType: 'PAID_IN' | 'PAID_OUT'): string {
+  const prefix = movementType === 'PAID_IN' ? 'PI' : 'PO';
+  const movements = getCashMovements();
+  let maxSeq = 100;
+  for (const m of movements) {
+    const code = m.movementNo || '';
+    if (code.startsWith(`${prefix}-`)) {
+      const numPart = parseInt(code.replace(`${prefix}-`, ''), 10);
+      if (!isNaN(numPart) && numPart > maxSeq) {
+        maxSeq = numPart;
+      }
+    }
+  }
+  const nextSeq = maxSeq + 1;
+  return `${prefix}-${nextSeq.toString().padStart(5, '0')}`;
+}
+
+/**
+ * Automatically creates and persists double-entry journal entry for POS Cash Movement
+ */
+export async function createJournalEntryForCashMovement(
+  movement: CashMovement,
+  tenantId?: string
+): Promise<string> {
+  const isPaidOut = movement.movementType === 'PAID_OUT';
+  const jvId = `jv-pos-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const jvNumber = `JV-${movement.movementNo}`;
+  const jvDate = movement.createdAt ? movement.createdAt.split('T')[0] : new Date().toISOString().split('T')[0];
+  const posCashAccountId = 'acc-53100';
+  const posCashAccountNo = '53100';
+  const posCashAccountName = 'POS Cash Drawer - Branch Main / صندوق الكاشير الفرعي';
+
+  const amountUsd = movement.amountUsd;
+  const amountNative = movement.amount;
+
+  const lines: any[] = isPaidOut
+    ? [
+        // PAID_OUT: Debit Selected Counter Account (e.g. Petty Cash), Credit POS Cash Drawer
+        {
+          id: `line-${Date.now()}-1`,
+          line_number: 1,
+          account_id: movement.targetAccountId || 'acc-61500',
+          account_number: movement.targetAccountNumber || '61500',
+          account_name: movement.targetAccountName || 'General & Petty Cash Expenses',
+          description: movement.notes || 'Petty cash disbursement',
+          amount_debit: amountUsd,
+          amount_credit: 0,
+          currency_rate: movement.exchangeRate,
+          amount_native: amountNative
+        },
+        {
+          id: `line-${Date.now()}-2`,
+          line_number: 2,
+          account_id: posCashAccountId,
+          account_number: posCashAccountNo,
+          account_name: posCashAccountName,
+          description: `Disbursement from POS drawer (${movement.movementNo})`,
+          amount_debit: 0,
+          amount_credit: amountUsd,
+          currency_rate: movement.exchangeRate,
+          amount_native: amountNative
+        }
+      ]
+    : [
+        // PAID_IN: Debit POS Cash Drawer, Credit Main Safe / Counter Account
+        {
+          id: `line-${Date.now()}-1`,
+          line_number: 1,
+          account_id: posCashAccountId,
+          account_number: posCashAccountNo,
+          account_name: posCashAccountName,
+          description: `Receipt into POS drawer (${movement.movementNo})`,
+          amount_debit: amountUsd,
+          amount_credit: 0,
+          currency_rate: movement.exchangeRate,
+          amount_native: amountNative
+        },
+        {
+          id: `line-${Date.now()}-2`,
+          line_number: 2,
+          account_id: movement.targetAccountId || 'acc-53000',
+          account_number: movement.targetAccountNumber || '53000',
+          account_name: movement.targetAccountName || 'Main Safe / الصندوق الرئيسي',
+          description: movement.notes || 'Cash drawer deposit',
+          amount_debit: 0,
+          amount_credit: amountUsd,
+          currency_rate: movement.exchangeRate,
+          amount_native: amountNative
+        }
+      ];
+
+  const jv = {
+    id: jvId,
+    tenant_id: resolveTenantId(tenantId),
+    jv_number: jvNumber,
+    date_of_jv: jvDate,
+    jv_type: isPaidOut ? 'PV' : 'RV',
+    currency_id: movement.currencyCode === 'LBP' ? 'LBP' : 'USD',
+    doc_ref_number: movement.movementNo,
+    description: `[POS Cash Movement] ${isPaidOut ? 'Paid Out (صرف نقدي)' : 'Paid In (قبض نقدي)'} - ${movement.notes} (${movement.movementNo})`,
+    payee_or_recipient: movement.cashierName,
+    created_by: movement.cashierName,
+    total_debit: amountUsd,
+    total_credit: amountUsd,
+    is_posted: true,
+    status: 'POSTED',
+    created_at: movement.createdAt,
+    lines
+  };
+
+  // 1. Sync to local storage vanguard_accounting_jvs_data
+  if (typeof window !== 'undefined') {
+    try {
+      const STORAGE_JVS_KEY = 'vanguard_accounting_jvs_data';
+      const existingRaw = localStorage.getItem(STORAGE_JVS_KEY);
+      const jvs = existingRaw ? JSON.parse(existingRaw) : [];
+      localStorage.setItem(STORAGE_JVS_KEY, JSON.stringify([jv, ...jvs]));
+      window.dispatchEvent(new CustomEvent('vanguard_accounting_sync', {
+        detail: { type: 'VOUCHER_SAVED', data: jv }
+      }));
+    } catch (e) {
+      console.warn('Error saving JV to localStorage:', e);
+    }
+  }
+
+  // 2. Dual persist to backend API if reachable
+  try {
+    fetch('/api/accounting/vouchers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        voucher: jv,
+        lines,
+        postImmediately: true,
+        user: movement.cashierName
+      })
+    }).catch(() => {});
+  } catch {}
+
+  return jvId;
+}
+
+/**
+ * Returns all recorded cash movements (Paid In / Paid Out), normalized
  */
 export function getCashMovements(): CashMovement[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(CASH_MOVEMENTS_KEY);
     if (raw) {
-      return JSON.parse(raw);
+      const parsed: any[] = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((item, idx) => {
+          const mType: 'PAID_IN' | 'PAID_OUT' =
+            item.movementType ||
+            (item.type === 'in' || item.type === 'PAID_IN' ? 'PAID_IN' : 'PAID_OUT');
+          const amtUsd = Number(item.amountUsd || item.amount || 0);
+          const amtLbp = Number(item.amountLbp || amtUsd * POS_EXCHANGE_RATE_LBP);
+          const code =
+            item.movementNo ||
+            `${mType === 'PAID_IN' ? 'PI' : 'PO'}-${(101 + idx).toString().padStart(5, '0')}`;
+          const cat = item.reasonCategory || (mType === 'PAID_IN' ? 'OPENING_FLOAT' : 'PETTY_EXPENSE');
+          const catConfig = REASON_CATEGORIES.find((c) => c.code === cat);
+
+          return {
+            id: item.id || `PIO-${Date.now()}-${idx}`,
+            movementNo: code,
+            branchId: item.branchId || 'Southern Olive and Oil Products S.A.R.L.',
+            shiftId: item.shiftId || 'SH-20261014-44',
+            userId: item.userId,
+            cashierName: item.cashierName || 'Active Cashier',
+            movementType: mType,
+            type: mType,
+            currencyCode: item.currencyCode || 'USD',
+            amount: Number(item.amount || amtUsd),
+            amountUsd: amtUsd,
+            amountLbp: amtLbp,
+            exchangeRate: Number(item.exchangeRate || POS_EXCHANGE_RATE_LBP),
+            reasonCategory: cat,
+            category: item.category || catConfig?.labelEn || cat,
+            targetAccountId: item.targetAccountId || catConfig?.targetAccountId || 'acc-53000',
+            targetAccountNumber: item.targetAccountNumber || catConfig?.targetAccountNumber || '53000',
+            targetAccountName: item.targetAccountName || catConfig?.targetAccountName || 'Main Safe',
+            notes: item.notes || (mType === 'PAID_IN' ? 'Cash Deposit' : 'Cash Disbursement'),
+            journalEntryId: item.journalEntryId,
+            createdAt: item.createdAt || new Date().toISOString(),
+            timestamp: item.timestamp || item.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isVoided: Boolean(item.isVoided),
+            voidReason: item.voidReason,
+            voidedAt: item.voidedAt
+          };
+        });
+      }
     }
   } catch (e) {
     console.warn('Error reading cash movements from localStorage:', e);
   }
+
   // Initial default seed movements
   const defaults: CashMovement[] = [
     {
       id: 'PIO-01',
+      movementNo: 'PI-00101',
+      branchId: 'Southern Olive and Oil Products S.A.R.L.',
       shiftId: 'SH-20261014-44',
+      cashierName: 'Active Cashier',
+      movementType: 'PAID_IN',
       type: 'PAID_IN',
-      category: 'Opening Float',
+      currencyCode: 'USD',
+      amount: 200.0,
       amountUsd: 200.0,
       amountLbp: 200.0 * POS_EXCHANGE_RATE_LBP,
+      exchangeRate: POS_EXCHANGE_RATE_LBP,
+      reasonCategory: 'OPENING_FLOAT',
+      category: 'Opening Float',
+      targetAccountId: 'acc-53000',
+      targetAccountNumber: '53000',
+      targetAccountName: 'Main Safe / الصندوق الرئيسي',
       notes: 'Initial morning drawer float',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      journalEntryId: 'jv-pos-seed-01',
+      createdAt: new Date().toISOString(),
+      timestamp: '08:00 AM',
+      isVoided: false
     },
     {
       id: 'PIO-02',
+      movementNo: 'PO-00101',
+      branchId: 'Southern Olive and Oil Products S.A.R.L.',
       shiftId: 'SH-20261014-44',
+      cashierName: 'Active Cashier',
+      movementType: 'PAID_OUT',
       type: 'PAID_OUT',
-      category: 'Delivery Driver Fuel',
+      currencyCode: 'USD',
+      amount: 25.0,
       amountUsd: 25.0,
       amountLbp: 25.0 * POS_EXCHANGE_RATE_LBP,
-      notes: 'Van #4 fuel receipt',
-      timestamp: '11:30 AM'
+      exchangeRate: POS_EXCHANGE_RATE_LBP,
+      reasonCategory: 'DELIVERY_EXPENSE',
+      category: 'Delivery Driver Fuel',
+      targetAccountId: 'acc-61300',
+      targetAccountNumber: '61300',
+      targetAccountName: 'Delivery & Dispatch Expense / مصاريف توصيل وشحن',
+      notes: 'Van #4 fuel receipt - Coral Station',
+      journalEntryId: 'jv-pos-seed-02',
+      createdAt: new Date().toISOString(),
+      timestamp: '11:30 AM',
+      isVoided: false
     },
     {
       id: 'PIO-03',
+      movementNo: 'PO-00102',
+      branchId: 'Southern Olive and Oil Products S.A.R.L.',
       shiftId: 'SH-20261014-44',
+      cashierName: 'Active Cashier',
+      movementType: 'PAID_OUT',
       type: 'PAID_OUT',
-      category: 'Packaging Supplies',
+      currencyCode: 'USD',
+      amount: 15.0,
       amountUsd: 15.0,
       amountLbp: 15.0 * POS_EXCHANGE_RATE_LBP,
-      notes: 'Cardboard tape & packing markers',
-      timestamp: '02:15 PM'
+      exchangeRate: POS_EXCHANGE_RATE_LBP,
+      reasonCategory: 'PETTY_EXPENSE',
+      category: 'Packaging Supplies',
+      targetAccountId: 'acc-61500',
+      targetAccountNumber: '61500',
+      targetAccountName: 'General & Petty Cash Expenses / مصاريف نثرية',
+      notes: 'Cardboard tape & packing markers for factory store',
+      journalEntryId: 'jv-pos-seed-03',
+      createdAt: new Date().toISOString(),
+      timestamp: '02:15 PM',
+      isVoided: false
     }
   ];
   saveCashMovements(defaults);
@@ -276,24 +590,87 @@ export function saveCashMovements(movements: CashMovement[]): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(CASH_MOVEMENTS_KEY, JSON.stringify(movements));
+    window.dispatchEvent(new CustomEvent(CASH_MOVEMENTS_UPDATED_EVENT, { detail: movements }));
   } catch (e) {
     console.warn('Error saving cash movements:', e);
   }
 }
 
 /**
- * Appends a cash movement (Paid In / Paid Out)
+ * Appends and persists a cash movement (Paid In / Paid Out) with GL Journal Entry
  */
-export function recordCashMovement(
-  movement: Omit<CashMovement, 'id' | 'timestamp'>,
+export async function recordCashMovement(
+  movement: Partial<CashMovement> & {
+    amount: number;
+    notes: string;
+    movementType?: 'PAID_IN' | 'PAID_OUT';
+  },
   tenantId?: string
-): CashMovement {
+): Promise<CashMovement> {
   const current = getCashMovements();
+  const mType: 'PAID_IN' | 'PAID_OUT' =
+    movement.movementType ||
+    (movement.type === 'in' || movement.type === 'PAID_IN' ? 'PAID_IN' : 'PAID_OUT');
+
+  const currCode = movement.currencyCode || 'USD';
+  const exRate = movement.exchangeRate || POS_EXCHANGE_RATE_LBP;
+  const rawAmt = Number(movement.amount || 0);
+
+  let amtUsd = 0;
+  let amtLbp = 0;
+  if (currCode === 'LBP') {
+    amtLbp = rawAmt;
+    amtUsd = Number((rawAmt / exRate).toFixed(2));
+  } else {
+    amtUsd = rawAmt;
+    amtLbp = Math.round(rawAmt * exRate);
+  }
+
+  const movNo = movement.movementNo || generateNextMovementNumber(mType);
+  const nowIso = new Date().toISOString();
+  const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // Map category & target account
+  const catCode = movement.reasonCategory || (mType === 'PAID_IN' ? 'OPENING_FLOAT' : 'PETTY_EXPENSE');
+  const catConfig = REASON_CATEGORIES.find((c) => c.code === catCode);
+
+  const targetAccId = movement.targetAccountId || catConfig?.targetAccountId || 'acc-53000';
+  const targetAccNo = movement.targetAccountNumber || catConfig?.targetAccountNumber || '53000';
+  const targetAccName = movement.targetAccountName || catConfig?.targetAccountName || 'Main Safe';
+
   const newRecord: CashMovement = {
-    ...movement,
-    id: `PIO-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    id: movement.id || `PIO-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    movementNo: movNo,
+    branchId: movement.branchId || 'Southern Olive and Oil Products S.A.R.L.',
+    shiftId: movement.shiftId || getActiveShift().id,
+    userId: movement.userId,
+    cashierName: movement.cashierName || 'Active Cashier',
+    movementType: mType,
+    type: mType,
+    currencyCode: currCode,
+    amount: rawAmt,
+    amountUsd: amtUsd,
+    amountLbp: amtLbp,
+    exchangeRate: exRate,
+    reasonCategory: catCode,
+    category: movement.category || catConfig?.labelEn || catCode,
+    targetAccountId: targetAccId,
+    targetAccountNumber: targetAccNo,
+    targetAccountName: targetAccName,
+    notes: movement.notes.trim(),
+    createdAt: nowIso,
+    timestamp: timeStr,
+    isVoided: false
   };
+
+  // Generate double-entry journal entry
+  try {
+    const jvId = await createJournalEntryForCashMovement(newRecord, tenantId);
+    newRecord.journalEntryId = jvId;
+  } catch (e) {
+    console.warn('Failed to auto-generate GL journal voucher:', e);
+  }
+
   const updated = [newRecord, ...current];
   saveCashMovements(updated);
 
@@ -312,6 +689,45 @@ export function recordCashMovement(
   } catch {}
 
   return newRecord;
+}
+
+/**
+ * Voids an existing cash movement and updates its linked GL Journal Entry
+ */
+export async function voidCashMovement(
+  id: string,
+  voidReason: string = 'Voided by user',
+  tenantId?: string
+): Promise<boolean> {
+  const current = getCashMovements();
+  const target = current.find((m) => m.id === id || m.movementNo === id);
+  if (!target) return false;
+
+  target.isVoided = true;
+  target.voidReason = voidReason;
+  target.voidedAt = new Date().toISOString();
+
+  // If there was a journal voucher, update it to Void
+  if (target.journalEntryId && typeof window !== 'undefined') {
+    try {
+      const STORAGE_JVS_KEY = 'vanguard_accounting_jvs_data';
+      const existingRaw = localStorage.getItem(STORAGE_JVS_KEY);
+      if (existingRaw) {
+        const jvs = JSON.parse(existingRaw);
+        const jvIdx = jvs.findIndex((j: any) => j.id === target.journalEntryId || j.jv_number === `JV-${target.movementNo}`);
+        if (jvIdx >= 0) {
+          jvs[jvIdx].status = 'Void';
+          localStorage.setItem(STORAGE_JVS_KEY, JSON.stringify(jvs));
+          window.dispatchEvent(new CustomEvent('vanguard_accounting_sync', {
+            detail: { type: 'VOUCHER_SAVED', data: jvs[jvIdx] }
+          }));
+        }
+      }
+    } catch {}
+  }
+
+  saveCashMovements([...current]);
+  return true;
 }
 
 /**
@@ -381,12 +797,18 @@ export async function closeShiftSession(
   await saveActiveShift(newShift, tenantId);
 
   // Record opening float movement for new shift
-  recordCashMovement({
+  await recordCashMovement({
     shiftId: newShift.id,
+    movementType: 'PAID_IN',
     type: 'PAID_IN',
-    category: 'Opening Float',
+    amount: newShift.openingCashUsd,
     amountUsd: newShift.openingCashUsd,
     amountLbp: newShift.openingCashLbp,
+    reasonCategory: 'OPENING_FLOAT',
+    category: 'Opening Float',
+    targetAccountId: 'acc-53000',
+    targetAccountNumber: '53000',
+    targetAccountName: 'Main Safe / الصندوق الرئيسي',
     notes: `Opening cash balance carried over from Shift #${shift.shiftNumber}`
   }, tenantId);
 
@@ -625,13 +1047,14 @@ export function computeMainReadingSummary({
   let paidOutTotalLbp = 0;
 
   paidInOutList.forEach((pio) => {
+    if (pio.isVoided) return;
     const amtUsd = Number(pio.amountUsd || pio.amount || 0);
     const amtLbp = Number(pio.amountLbp || amtUsd * exchangeRate);
-    const pType = (pio.type || '').toUpperCase();
+    const pType = (pio.movementType || pio.type || '').toUpperCase();
 
     // Ignore opening float in regular paid in total if it was already in opening float
     if (pType === 'PAID_IN' || pType === 'IN') {
-      if (pio.category !== 'Opening Float') {
+      if (pio.category !== 'Opening Float' && pio.reasonCategory !== 'OPENING_FLOAT') {
         paidInTotalUsd += amtUsd;
         paidInTotalLbp += amtLbp;
       }

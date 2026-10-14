@@ -44,7 +44,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import DatePickerInput from './DatePickerInput';
-import { OMEGA_SALES_ITEMS, SalesItem } from '@/app/backoffice/operations/SalesView';
+import { VANGUARD_SALES_ITEMS, SalesItem } from '@/app/backoffice/operations/SalesView';
 import { CRMContact, INITIAL_CONTACTS as INITIAL_CRM_CONTACTS } from './ContactsView';
 
 export interface QuotationItem {
@@ -100,7 +100,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     items: [
       {
         id: 'CACV250MLB103-1',
-        item: OMEGA_SALES_ITEMS[1], // خل تفاح 250مل
+        item: VANGUARD_SALES_ITEMS[1], // خل تفاح 250مل
         qty: 24,
         unitPrice: 0.50,
         discountPercent: 0,
@@ -108,7 +108,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
       },
       {
         id: 'PGM250MLB103-1',
-        item: OMEGA_SALES_ITEMS[6], // دبس رمان 250 مل
+        item: VANGUARD_SALES_ITEMS[6], // دبس رمان 250 مل
         qty: 12,
         unitPrice: 0.67,
         discountPercent: 0,
@@ -141,7 +141,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     items: [
       {
         id: 'OACV250MLB103-1',
-        item: OMEGA_SALES_ITEMS[2], // خل تفاح بلدي 250مل
+        item: VANGUARD_SALES_ITEMS[2], // خل تفاح بلدي 250مل
         qty: 50,
         unitPrice: 1.11,
         discountPercent: 5,
@@ -540,7 +540,7 @@ export const CATALOG_STRUCTURE: Record<
 
 // Full authentic catalog items with Wholesale, Retail, Offers, and Raw Materials
 export const ALL_CATALOG_ITEMS: SalesItem[] = [
-  ...OMEGA_SALES_ITEMS,
+  ...VANGUARD_SALES_ITEMS,
   // Wholesale items
   {
     id: 'WHOLE-PGM-12',
@@ -806,7 +806,7 @@ export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
     items: [
       {
         id: 'CACV250MLB103-1',
-        item: OMEGA_SALES_ITEMS[1],
+        item: VANGUARD_SALES_ITEMS[1],
         qty: 24,
         unitPrice: 0.50,
         discountPercent: 0,
@@ -814,7 +814,7 @@ export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
       },
       {
         id: 'PGM250MLB103-1',
-        item: OMEGA_SALES_ITEMS[6],
+        item: VANGUARD_SALES_ITEMS[6],
         qty: 12,
         unitPrice: 0.67,
         discountPercent: 0,
@@ -840,7 +840,7 @@ export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
     items: [
       {
         id: 'OACV250MLB103-1',
-        item: OMEGA_SALES_ITEMS[2],
+        item: VANGUARD_SALES_ITEMS[2],
         qty: 50,
         unitPrice: 1.11,
         discountPercent: 5,

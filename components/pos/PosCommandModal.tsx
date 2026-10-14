@@ -30,6 +30,7 @@ interface PosCommandModalProps {
   onOpenGlobalReport: () => void;
   onOpenCashierReport: () => void;
   onOpenOlderSales: () => void;
+  onPaidInOut?: () => void;
 }
 
 export default function PosCommandModal({
@@ -42,6 +43,7 @@ export default function PosCommandModal({
   onOpenGlobalReport,
   onOpenCashierReport,
   onOpenOlderSales,
+  onPaidInOut,
 }: PosCommandModalProps) {
   const router = useRouter();
 
@@ -50,7 +52,7 @@ export default function PosCommandModal({
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Hotkey combinations matching Omega POS standards
+      // Hotkey combinations matching Vanguard POS standards
       if (e.key === 'Escape') {
         e.preventDefault();
         onClose();
@@ -66,6 +68,10 @@ export default function PosCommandModal({
         e.preventDefault();
         onClose();
         onOpenOlderSales();
+      } else if (e.ctrlKey && e.key === 'F7' && onPaidInOut) {
+        e.preventDefault();
+        onClose();
+        onPaidInOut();
       } else if (e.ctrlKey && e.key === 'F8') {
         e.preventDefault();
         router.push('/backoffice');
@@ -74,7 +80,7 @@ export default function PosCommandModal({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, onOpenGlobalReport, onOpenCashierReport, onOpenOlderSales, router]);
+  }, [isOpen, onClose, onOpenGlobalReport, onOpenCashierReport, onOpenOlderSales, onPaidInOut, router]);
 
   if (!isOpen) return null;
 
@@ -101,12 +107,12 @@ export default function PosCommandModal({
                 <h2 className="text-base sm:text-lg font-mono font-black text-amber-400 uppercase tracking-wide">
                   COMMAND CENTER (CMD)
                 </h2>
-                <span className="px-2 py-0.5 rounded bg-amber-950 border border-amber-600/60 text-[10px] font-mono text-amber-300 font-bold">
-                  OMEGA MATRIX
+                <span className="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-600/60 text-[10px] font-mono text-emerald-300 font-bold">
+                  VANGUARD POS
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Workstation Operations & Supervisor Commands • Active Cashier: {currentUser?.name || 'Maya Khoury'}
+                Southern Olive and Oil Products S.A.R.L. • Active Cashier: {currentUser?.name || 'Active Cashier'}
               </p>
             </div>
           </div>
@@ -203,7 +209,34 @@ export default function PosCommandModal({
             </div>
           </button>
 
-          {/* 4. Open Cash Drawer / No Sale */}
+          {/* 4. Paid In / Out (Drawer Movements) (Ctrl+F7) */}
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              if (onPaidInOut) onPaidInOut();
+            }}
+            className={`${cmdCardClass} bg-[#1b2230] hover:bg-[#232c3e] border-slate-700 hover:border-emerald-500`}
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="p-2.5 rounded-lg bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 w-fit">
+                <DollarSign className="w-5 h-5" />
+              </div>
+              <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] font-mono text-emerald-300 font-bold">
+                Ctrl+F7
+              </span>
+            </div>
+            <div>
+              <span className="text-sm font-bold block text-slate-100 group-hover:text-emerald-300">
+                Paid In / Out (Petty Cash)
+              </span>
+              <span className="text-[11px] text-slate-400 mt-0.5 block">
+                Record drawer float, disbursements & voucher
+              </span>
+            </div>
+          </button>
+
+          {/* 5. Open Cash Drawer / No Sale */}
           <button
             type="button"
             onClick={() => {

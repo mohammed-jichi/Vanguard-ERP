@@ -20,6 +20,7 @@ import PosCommandModal from '@/components/pos/PosCommandModal';
 import PosGlobalReportModal from '@/components/pos/PosGlobalReportModal';
 import PosCashierReportModal from '@/components/pos/PosCashierReportModal';
 import PosOlderSalesModal from '@/components/pos/PosOlderSalesModal';
+import PaidInOutModal from '@/components/modules/sales/PaidInOutModal';
 import { useRouter } from 'next/navigation';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -88,6 +89,7 @@ export default function POSTouchTerminalPage() {
   const [isGlobalReportOpen, setIsGlobalReportOpen] = useState<boolean>(false);
   const [isCashierReportOpen, setIsCashierReportOpen] = useState<boolean>(false);
   const [isOlderSalesOpen, setIsOlderSalesOpen] = useState<boolean>(false);
+  const [isPaidInOutOpen, setIsPaidInOutOpen] = useState<boolean>(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isShiftModalOpen, setIsShiftModalOpen] = useState<boolean>(false);
@@ -612,7 +614,7 @@ export default function POSTouchTerminalPage() {
   // --------------------------------------------------------------------------
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      // Global Omega POS Hotkeys
+      // Global POS Hotkeys
       if (e.ctrlKey && e.key === 'F4') {
         e.preventDefault();
         setIsCmdOpen(false);
@@ -634,7 +636,17 @@ export default function POSTouchTerminalPage() {
         setIsCmdOpen(false);
         setIsGlobalReportOpen(false);
         setIsCashierReportOpen(false);
+        setIsPaidInOutOpen(false);
         setIsOlderSalesOpen((prev) => !prev);
+        return;
+      }
+      if (e.ctrlKey && e.key === 'F7') {
+        e.preventDefault();
+        setIsCmdOpen(false);
+        setIsGlobalReportOpen(false);
+        setIsCashierReportOpen(false);
+        setIsOlderSalesOpen(false);
+        setIsPaidInOutOpen((prev) => !prev);
         return;
       }
       if (e.ctrlKey && e.key === 'F8') {
@@ -649,6 +661,7 @@ export default function POSTouchTerminalPage() {
         isGlobalReportOpen ||
         isCashierReportOpen ||
         isOlderSalesOpen ||
+        isPaidInOutOpen ||
         isSearchOpen ||
         isCheckoutOpen
       ) {
@@ -950,7 +963,7 @@ export default function POSTouchTerminalPage() {
         currentUser={currentUser}
         onLock={handleLock}
         onLogout={handleLogout}
-        workstationMode="RETAIL TOUCH POS (OMEGA ENGINE)"
+        workstationMode="RETAIL TOUCH POS (VANGUARD ERP)"
       />
 
       {/* 2. Main 3-Column Terminal Workspace */}
@@ -1116,6 +1129,17 @@ export default function POSTouchTerminalPage() {
         onOpenGlobalReport={() => setIsGlobalReportOpen(true)}
         onOpenCashierReport={() => setIsCashierReportOpen(true)}
         onOpenOlderSales={() => setIsOlderSalesOpen(true)}
+        onPaidInOut={() => setIsPaidInOutOpen(true)}
+      />
+
+      {/* Paid In / Out Cash Movements Modal (Ctrl+F7) */}
+      <PaidInOutModal
+        isOpen={isPaidInOutOpen}
+        onClose={() => setIsPaidInOutOpen(false)}
+        tenantId={currentTenant?.id}
+        onMovementRecorded={(m: any) => {
+          setStatusMessage(`PAID ${m.type === 'PAID_IN' ? 'IN' : 'OUT'} VOUCHER ${m.movementNo} ($${m.amountUsd.toFixed(2)}) RECORDED`);
+        }}
       />
 
       {/* Global Daily Sales Audit Report (Ctrl+F4) */}

@@ -27,6 +27,7 @@ import { toast } from '@/lib/toast';
 import { printElementById } from '@/lib/utils/printDocument';
 import {
   PosShift,
+  CashMovement,
   getActiveShift,
   saveActiveShift,
   getCashMovements,
@@ -34,7 +35,8 @@ import {
   computeMainReadingSummary,
   MainReadingSummary,
   POS_EXCHANGE_RATE_LBP,
-  SHIFT_UPDATED_EVENT
+  SHIFT_UPDATED_EVENT,
+  CASH_MOVEMENTS_UPDATED_EVENT
 } from '@/lib/posShiftService';
 
 interface MainReadingModalProps {
@@ -72,6 +74,7 @@ export default function MainReadingModal({
   const [countedCashInputLbp, setCountedCashInputLbp] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'overview' | 'tenders' | 'cashflow' | 'divisions' | 'printPreview'>('overview');
   const [isClosingShift, setIsClosingShift] = useState(false);
+  const [liveMovements, setLiveMovements] = useState<CashMovement[]>([]);
 
   // Sync shift state on mount and update
   useEffect(() => {
@@ -80,18 +83,28 @@ export default function MainReadingModal({
       setActiveShift(shift);
       setOpeningFloatInputUsd(shift.openingCashUsd.toFixed(2));
       setOpeningFloatInputLbp(shift.openingCashLbp.toString());
+      setLiveMovements(getCashMovements());
     }
   }, [isOpen]);
 
-  // Listen to external shift events
+  // Listen to external shift events and cash movement updates
   useEffect(() => {
     const handleShiftUpdated = (e: any) => {
       if (e.detail) {
         setActiveShift(e.detail);
       }
     };
+    const handleCashMovementsUpdated = () => {
+      setLiveMovements(getCashMovements());
+    };
     window.addEventListener(SHIFT_UPDATED_EVENT, handleShiftUpdated);
-    return () => window.removeEventListener(SHIFT_UPDATED_EVENT, handleShiftUpdated);
+    window.addEventListener(CASH_MOVEMENTS_UPDATED_EVENT, handleCashMovementsUpdated);
+    window.addEventListener('storage', handleCashMovementsUpdated);
+    return () => {
+      window.removeEventListener(SHIFT_UPDATED_EVENT, handleShiftUpdated);
+      window.removeEventListener(CASH_MOVEMENTS_UPDATED_EVENT, handleCashMovementsUpdated);
+      window.removeEventListener('storage', handleCashMovementsUpdated);
+    };
   }, []);
 
   // Compute live numbers
@@ -101,6 +114,10 @@ export default function MainReadingModal({
     const countedUsd = parseFloat(countedCashInputUsd) || 0;
     const countedLbp = parseFloat(countedCashInputLbp) || 0;
 
+    const effectiveCashMovements = liveMovements.length > 0
+      ? liveMovements
+      : (paidInOutList && paidInOutList.length > 0 ? paidInOutList : getCashMovements());
+
     return computeMainReadingSummary({
       readingType,
       shift: {
@@ -109,7 +126,7 @@ export default function MainReadingModal({
         cashierName: cashierName || activeShift.cashierName
       },
       invoices,
-      paidInOutList: paidInOutList.length > 0 ? paidInOutList : getCashMovements(),
+      paidInOutList: effectiveCashMovements,
       customerReceipts,
       openingFloatUsd: openingUsd,
       openingFloatLbp: openingLbp,
@@ -122,6 +139,7 @@ export default function MainReadingModal({
     activeShift,
     invoices,
     paidInOutList,
+    liveMovements,
     customerReceipts,
     openingFloatInputUsd,
     openingFloatInputLbp,

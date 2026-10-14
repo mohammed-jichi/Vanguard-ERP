@@ -453,7 +453,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
               {section === 'delivery_providers' && 'Delivery Providers & Aggregators'}
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              Omega ERP System Setup & Operations Matrix • Southern Olive Oil Products S.A.R.L
+              Vanguard ERP System Setup & Operations Matrix • Southern Olive and Oil Products S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م)
             </p>
           </div>
         </div>
@@ -1707,7 +1707,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
       )}
 
       {/* =========================================================================
-          MODAL 6: PAYMENT BILLS / LEDGER PREVIEW (AUTHENTIC OMEGA FEATURE)
+          MODAL 6: PAYMENT BILLS / LEDGER PREVIEW (VANGUARD ERP)
           ========================================================================= */}
       {activeModal === 'ledger_preview' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
@@ -1715,7 +1715,7 @@ export default function OperationsSetupViews({ section }: OperationsSetupViewsPr
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 text-slate-900 flex items-center justify-between">
               <div className="flex items-center gap-2 text-cyan-400 font-bold">
                 <FileText className="w-5 h-5" />
-                <span>Payment Bills General Ledger Preview (Omega ERP Authentic View)</span>
+                <span>Payment Bills General Ledger Preview (Vanguard ERP)</span>
               </div>
               <button
                 onClick={() => setActiveModal(null)}

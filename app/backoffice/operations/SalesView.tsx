@@ -4,6 +4,21 @@ import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/doc
 import { printElementById } from '@/lib/utils/printDocument';
 import SalesOptionsModal from '@/components/modules/sales/SalesOptionsModal';
 import MainReadingModal from '@/components/modules/sales/MainReadingModal';
+import PaidInOutModal from '@/components/modules/sales/PaidInOutModal';
+import CustomerReceiptsModal from '@/components/modules/sales/CustomerReceiptsModal';
+import CustomerAgedModal from '@/components/modules/sales/CustomerAgedModal';
+import CustomerPricingModal from '@/components/modules/sales/CustomerPricingModal';
+import RecurringInvoicesModal from '@/components/modules/sales/RecurringInvoicesModal';
+import CreditNoteModal from '@/components/modules/sales/CreditNoteModal';
+import {
+  resolveItemPriceWaterfall,
+  getCustomerSpecialPrices,
+  getCustomerReceipts,
+  CustomerReceipt,
+  RecurringInvoiceTemplate,
+  CreditNoteRecord,
+  postCreditNote
+} from '@/lib/customerSalesService';
 import {
   SalesOptionsState,
   DEFAULT_SALES_OPTIONS,
@@ -13,6 +28,7 @@ import {
 import {
   PosShift,
   getActiveShift,
+  getCashMovements,
   recordCashMovement,
   POS_EXCHANGE_RATE_LBP
 } from '@/lib/posShiftService';
@@ -125,6 +141,10 @@ export interface InvoiceRecord {
   id: string;
   invoiceNumber: string;
   refCode?: string;
+  docType?: 'SALE' | 'CREDIT_NOTE';
+  doc_type?: 'SALE' | 'CREDIT_NOTE';
+  parentInvoiceNo?: string;
+  parent_invoice_id?: string;
   date: string;
   deliveryDate: string;
   branch: string;
@@ -154,8 +174,8 @@ export interface InvoiceRecord {
   createdAt: string;
 }
 
-// 100% Authentic Catalog Items from the Omega Screenshot
-export const OMEGA_SALES_ITEMS: SalesItem[] = [
+// 100% Authentic Vanguard ERP Catalog Items
+export const VANGUARD_SALES_ITEMS: SalesItem[] = [
   {
     id: 'CWV250MLB103',
     code: 'CWV250MLB103',
@@ -397,6 +417,9 @@ export const OMEGA_SALES_ITEMS: SalesItem[] = [
     cost: 0.12
   }
 ];
+
+export const VANGUARD_CATALOG_ITEMS = VANGUARD_SALES_ITEMS;
+export const OMEGA_SALES_ITEMS = VANGUARD_SALES_ITEMS;
 
 export const CATEGORIES_LIST = ['Retail', 'Wholesale', 'Promotions', 'Raw Materials'];
 
@@ -657,15 +680,15 @@ function generateUniqueInvoiceNumber(existingList?: { invoiceNumber?: string }[]
 
 export const DEFAULT_DELIVERY_PROVIDERS = DEFAULT_UNIFIED_DELIVERY_PROVIDERS;
 
-export default function AuthenticOmegaSalesWorkstation({
-  withOmegaSidebar = false
+export default function AuthenticVanguardSalesWorkstation({
+  withSidebar = false
 }: {
-  withOmegaSidebar?: boolean;
+  withSidebar?: boolean;
 }) {
   const { currentTenant } = useTenant();
   const profile = useActiveUser();
-  // --- Sidebar State (when running in Standalone Omega layout) ---
-  const [omegaSidebarCollapsed, setOmegaSidebarCollapsed] = useState(false);
+  // --- Sidebar State (when running in Standalone layout) ---
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
 
   // --- Header & Settings State ---
@@ -708,7 +731,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isInvoiceInfoModalOpen, setIsInvoiceInfoModalOpen] = useState(false);
 
-  // --- Invoice Info State (Exact Omega Replica from Screenshots) ---
+  // --- Invoice Info State ---
   const [invoiceRate, setInvoiceRate] = useState('90000');
   const [isEditingRate, setIsEditingRate] = useState(false);
   const [workstationId, setWorkstationId] = useState('W#: 2000');
@@ -901,6 +924,10 @@ export default function AuthenticOmegaSalesWorkstation({
   const [isCreditNoteModalOpen, setIsCreditNoteModalOpen] = useState(false);
   const [isStoreRecurringModalOpen, setIsStoreRecurringModalOpen] = useState(false);
   const [isRecallRecurringModalOpen, setIsRecallRecurringModalOpen] = useState(false);
+  const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
+  const [recurringModalMode, setRecurringModalMode] = useState<'STORE' | 'RECALL'>('STORE');
+  const [docType, setDocType] = useState<'SALE' | 'CREDIT_NOTE'>('SALE');
+  const [parentInvoiceNo, setParentInvoiceNo] = useState<string | null>(null);
   const [isCustomerPricingModalOpen, setIsCustomerPricingModalOpen] = useState(false);
   const [isCustomerAgedModalOpen, setIsCustomerAgedModalOpen] = useState(false);
   const [isCustomerReceiptsModalOpen, setIsCustomerReceiptsModalOpen] = useState(false);
@@ -1155,7 +1182,7 @@ export default function AuthenticOmegaSalesWorkstation({
   const [selectedPaymentType, setSelectedPaymentType] = useState('Cash USD');
   const [paymentAmountInput, setPaymentAmountInput] = useState('0.00');
 
-  // --- Preview Sales Filter States (Matching Omega Screenshots) ---
+  // --- Preview Sales Filter States ---
   const [previewBranchFilter, setPreviewBranchFilter] = useState('Zeit w zaytoun ljanoub');
   const [previewCustomerSearch, setPreviewCustomerSearch] = useState('');
   const [previewInvoiceSearch, setPreviewInvoiceSearch] = useState('');
@@ -1410,7 +1437,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
   // Filtered Catalog Items
   const filteredCatalogItems = useMemo(() => {
-    return OMEGA_SALES_ITEMS.filter((item) => {
+    return VANGUARD_SALES_ITEMS.filter((item) => {
       if (catalogSearch.trim()) {
         const q = catalogSearch.toLowerCase();
         return (
@@ -1534,6 +1561,8 @@ export default function AuthenticOmegaSalesWorkstation({
 
   const handleNewInvoice = () => {
     setCurrentInvoice(null);
+    setDocType('SALE');
+    setParentInvoiceNo(null);
     const nextNb = generateUniqueInvoiceNumber(invoicesDirectory);
     setInvoiceNumber(nextNb);
     setCartItems([]);
@@ -1558,6 +1587,13 @@ export default function AuthenticOmegaSalesWorkstation({
     setTimeout(() => setStatusNotice(null), 3000);
   };
 
+  const handleSwitchToDirectCreditNoteMode = () => {
+    setDocType('CREDIT_NOTE');
+    setInvoiceNumber(`CRN-2026-${Math.floor(10000 + Math.random() * 90000)}`);
+    setStatusNotice('Switched active workstation to Credit Note & Return Mode.');
+    setTimeout(() => setStatusNotice(null), 3500);
+  };
+
   const handleAddPayment = () => {
     const amt = parseFloat(paymentAmountInput);
     if (isNaN(amt) || amt <= 0) return;
@@ -1574,7 +1610,7 @@ export default function AuthenticOmegaSalesWorkstation({
     setPayments((prev) => prev.filter((p) => p.id !== payId));
   };
 
-  const handleSaveInvoice = (postImmediately = false) => {
+  const handleSaveInvoice = async (postImmediately = false) => {
     if (localStorage.getItem('vanguard_is_read_only') === 'true') {
       alert('Action disabled in Read-Only grace mode');
       return;
@@ -1588,7 +1624,7 @@ export default function AuthenticOmegaSalesWorkstation({
       return;
     }
 
-    if (salesOptions.verify_customer_credit_limit && selectedCustomer) {
+    if (salesOptions.verify_customer_credit_limit && selectedCustomer && docType !== 'CREDIT_NOTE') {
       const creditLimit = (selectedCustomer as any).creditLimit || 5000;
       const currentBalance = (selectedCustomer as any).balance || 0;
       if (currentBalance + grandTotal > creditLimit) {
@@ -1599,11 +1635,64 @@ export default function AuthenticOmegaSalesWorkstation({
     }
 
     const branchName =
-      BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Zeit w zaytoun ljanoub';
+      BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.';
+
+    // If active document is Credit Note, route to postCreditNote workflow
+    if (docType === 'CREDIT_NOTE') {
+      const isCashRefund = !transactionType.toLowerCase().includes('credit') && !transactionType.toLowerCase().includes('account');
+      const crnRecord: CreditNoteRecord = {
+        id: invoiceNumber,
+        invoiceNumber: invoiceNumber,
+        parentInvoiceNo: parentInvoiceNo || undefined,
+        docType: 'CREDIT_NOTE',
+        doc_type: 'CREDIT_NOTE',
+        date: invoiceDate,
+        customerId: selectedCustomer.id || 'CUST-001',
+        customerName: selectedCustomer.name || 'Miscellaneous / Cash Customer',
+        customerAddress: selectedCustomer.address || 'Local Branch',
+        settlementMethod: isCashRefund ? 'CASH_REFUND' : 'ON_ACCOUNT',
+        reason: creditNoteReason || 'Customer Return',
+        notes: invoiceNote || 'Direct Return',
+        branch: branchName,
+        currency: currency,
+        exchangeRate: POS_EXCHANGE_RATE_LBP,
+        items: cartItems.map((item) => ({
+          id: item.id,
+          code: item.code,
+          name: item.name,
+          unit: item.unit,
+          qty: item.qty,
+          unitPrice: item.unitPrice,
+          total: item.total,
+          location: (item as any).location || 'Main Store',
+          costPrice: item.unitPrice * 0.65
+        })),
+        subtotal: subtotal,
+        tax: tax,
+        grandTotal: grandTotal,
+        status: 'Posted',
+        posted: true,
+        is_posted: true,
+        createdAt: new Date().toISOString()
+      };
+
+      await postCreditNote(crnRecord, currentTenant?.id);
+      setInvoicesDirectory((prev) => [
+        crnRecord as any,
+        ...prev.filter((i) => i.id !== crnRecord.id && i.invoiceNumber !== crnRecord.invoiceNumber)
+      ]);
+      setStatusNotice(`Credit Note #${invoiceNumber} POSTED! Inventory restocked (+qty) and GL updated.`);
+      setTimeout(() => {
+        handleNewInvoice();
+      }, 1500);
+      return;
+    }
 
     const newRecord: InvoiceRecord = {
       id: invoiceNumber,
       invoiceNumber: invoiceNumber,
+      docType: 'SALE',
+      doc_type: 'SALE',
       date: invoiceDate,
       deliveryDate: deliveryDate,
       branch: branchName,
@@ -1790,8 +1879,31 @@ export default function AuthenticOmegaSalesWorkstation({
     setTimeout(() => setStatusNotice(null), 3500);
   };
 
-  const handleLoadRecurringTemplate = (tpl: (typeof recurringTemplates)[0]) => {
-    setCartItems(tpl.items.map((it) => ({ ...it, id: `cart-${Date.now()}-${Math.random()}` })));
+  const handleLoadRecurringTemplate = (tpl: RecurringInvoiceTemplate | any) => {
+    const mappedItems: CartItem[] = (tpl.items || []).map((it: any) => {
+      let finalPrice = it.unitPrice || (it as any).fixedUnitPrice || 0;
+      if (tpl.useLivePrice) {
+        const resolved = resolveItemPriceWaterfall({
+          itemCode: it.code,
+          customerId: tpl.customerId,
+          standardPrice: it.unitPrice || 0
+        });
+        if (resolved.resolvedPrice > 0) finalPrice = resolved.resolvedPrice;
+      }
+      return {
+        id: `cart-${Date.now()}-${Math.random()}`,
+        itemId: it.code || it.itemId || it.id,
+        code: it.code,
+        name: it.name,
+        unit: it.unit,
+        qty: it.qty,
+        unitPrice: finalPrice,
+        total: Number((it.qty * finalPrice).toFixed(2)),
+        location: it.location || 'Southern Olive and Oil Products - Main'
+      };
+    });
+
+    setCartItems(mappedItems);
     const cust = CUSTOMER_PRESETS.find((c) => c.id === tpl.customerId) || {
       id: tpl.customerId,
       name: tpl.customerName,
@@ -1799,8 +1911,13 @@ export default function AuthenticOmegaSalesWorkstation({
     };
     setSelectedCustomer(cust);
     setCustomerSearch(tpl.customerName);
+    if (tpl.currency) setCurrency(tpl.currency);
+    if (tpl.transactionType) setTransactionType(tpl.transactionType);
+    if (tpl.deliveredBy) setDeliveredBy(tpl.deliveredBy);
+    if (tpl.salesman) setInvoiceSalesman(tpl.salesman);
     setIsRecallRecurringModalOpen(false);
-    setStatusNotice(`Loaded recurring template: ${tpl.name}`);
+    setIsRecurringModalOpen(false);
+    setStatusNotice(`Loaded recurring template: ${tpl.name} (${tpl.useLivePrice ? 'Live Customer Pricing Applied' : 'Template Locked Prices'})`);
     setTimeout(() => setStatusNotice(null), 3500);
   };
 
@@ -1852,7 +1969,9 @@ export default function AuthenticOmegaSalesWorkstation({
     const activeShift = getActiveShift();
     recordCashMovement({
       shiftId: activeShift.id,
+      movementType: paidInOutType === 'in' ? 'PAID_IN' : 'PAID_OUT',
       type: paidInOutType === 'in' ? 'PAID_IN' : 'PAID_OUT',
+      amount: amt,
       category: paidInOutCategory,
       amountUsd: amt,
       amountLbp: amt * POS_EXCHANGE_RATE_LBP,
@@ -2380,7 +2499,7 @@ export default function AuthenticOmegaSalesWorkstation({
 
   const handleExecutePostAll = handleConfirmPost;
 
-  // --- UNPOST EXECUTION LOGIC (OMEGA POS LEDGER CONTROL PATTERN) ---
+  // --- UNPOST EXECUTION LOGIC (VANGUARD POS LEDGER CONTROL PATTERN) ---
   async function executeDatabaseUnpost(invoice: InvoiceRecord) {
     const isUUID = (val: string) =>
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
@@ -2531,25 +2650,25 @@ export default function AuthenticOmegaSalesWorkstation({
     <div className="flex h-screen w-full bg-background text-slate-800 font-sans select-none overflow-hidden">
       
       {/* ========================================================================= */}
-      {/* 0. AUTHENTIC OMEGA NAVIGATION SIDEBAR (Matching media_1788788432926.png)   */}
+      {/* 0. AUTHENTIC NAVIGATION SIDEBAR                                           */}
       {/* ========================================================================= */}
-      {withOmegaSidebar && (
+      {withSidebar && (
         <div
           className={`${
-            omegaSidebarCollapsed ? 'w-14' : 'w-56'
+            sidebarCollapsed ? 'w-14' : 'w-56'
           } bg-white border-r border-border flex flex-col shrink-0 h-full transition-all duration-150 z-30 select-none overflow-hidden`}
         >
           {/* Top Bar: Hamburger on left, Home on right */}
           <div className="h-9 border-b border-border flex items-center justify-between px-3 bg-white shrink-0">
             <button
               type="button"
-              onClick={() => setOmegaSidebarCollapsed(!omegaSidebarCollapsed)}
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className="p-1 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
               title="Toggle Sidebar"
             >
               <Menu className="w-4 h-4" />
             </button>
-            {!omegaSidebarCollapsed && (
+            {!sidebarCollapsed && (
               <a
                 href="/backoffice"
                 className="p-1 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
@@ -2561,7 +2680,7 @@ export default function AuthenticOmegaSalesWorkstation({
           </div>
 
           {/* Search Box */}
-          {!omegaSidebarCollapsed && (
+          {!sidebarCollapsed && (
             <div className="p-2 border-b border-border bg-white shrink-0">
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -2582,9 +2701,9 @@ export default function AuthenticOmegaSalesWorkstation({
             <div className="px-2.5 py-1.5 flex items-center justify-between text-slate-700 hover:bg-slate-50 cursor-pointer font-medium text-[11.5px]">
               <div className="flex items-center gap-2">
                 <Briefcase className="w-3.5 h-3.5 text-primary" />
-                {!omegaSidebarCollapsed && <span>Sales Control</span>}
+                {!sidebarCollapsed && <span>Sales Control</span>}
               </div>
-              {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
+              {!sidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
             </div>
 
             {/* Operations Center */}
@@ -2592,12 +2711,12 @@ export default function AuthenticOmegaSalesWorkstation({
               <div className="px-2.5 py-1.5 flex items-center justify-between text-slate-800 hover:bg-slate-50 cursor-pointer font-bold text-[11.5px]">
                 <div className="flex items-center gap-2">
                   <Building2 className="w-3.5 h-3.5 text-primary" />
-                  {!omegaSidebarCollapsed && <span>Operations Center</span>}
+                  {!sidebarCollapsed && <span>Operations Center</span>}
                 </div>
-                {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
+                {!sidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
               </div>
 
-              {!omegaSidebarCollapsed && (
+              {!sidebarCollapsed && (
                 <div className="pl-4 pr-1 space-y-0.5 mt-0.5 text-[11px]">
                   {/* Dashboard */}
                   <a
@@ -2743,9 +2862,9 @@ export default function AuthenticOmegaSalesWorkstation({
             <div className="px-2.5 py-1.5 flex items-center justify-between text-slate-700 hover:bg-slate-50 cursor-pointer font-medium text-[11.5px] mt-2">
               <div className="flex items-center gap-2">
                 <Users className="w-3.5 h-3.5 text-primary" />
-                {!omegaSidebarCollapsed && <span>Customer Management</span>}
+                {!sidebarCollapsed && <span>Customer Management</span>}
               </div>
-              {!omegaSidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
+              {!sidebarCollapsed && <ChevronDown className="w-3 h-3 text-primary" />}
             </div>
           </div>
         </div>
@@ -2767,7 +2886,7 @@ export default function AuthenticOmegaSalesWorkstation({
             href="#watchTutorial"
             onClick={(e) => {
               e.preventDefault();
-              alert('Omega Video Tutorial: Operations Center -> Sales Invoicing');
+              alert('Vanguard ERP Video Tutorial: Operations Center -> Sales Invoicing');
             }}
             className="text-[11px] font-medium text-blue-600 hover:text-blue-800 underline cursor-pointer"
           >
@@ -2903,7 +3022,7 @@ export default function AuthenticOmegaSalesWorkstation({
                         type="button"
                         onClick={() => {
                           setIsActionsDropdownOpen(false);
-                          handleOpenReportScreen();
+                          setIsPrintInvoiceModalOpen(true);
                         }}
                         className="w-full text-left px-3.5 py-1.5 hover:bg-slate-100 transition-colors cursor-pointer block text-slate-800"
                       >
@@ -2933,7 +3052,8 @@ export default function AuthenticOmegaSalesWorkstation({
                         type="button"
                         onClick={() => {
                           setIsActionsDropdownOpen(false);
-                          setIsStoreRecurringModalOpen(true);
+                          setRecurringModalMode('STORE');
+                          setIsRecurringModalOpen(true);
                         }}
                         className="w-full text-left px-3.5 py-1.5 hover:bg-slate-100 transition-colors cursor-pointer block text-slate-800"
                       >
@@ -2943,7 +3063,8 @@ export default function AuthenticOmegaSalesWorkstation({
                         type="button"
                         onClick={() => {
                           setIsActionsDropdownOpen(false);
-                          setIsRecallRecurringModalOpen(true);
+                          setRecurringModalMode('RECALL');
+                          setIsRecurringModalOpen(true);
                         }}
                         className="w-full text-left px-3.5 py-1.5 hover:bg-slate-100 transition-colors cursor-pointer block text-slate-800"
                       >
@@ -3195,12 +3316,45 @@ export default function AuthenticOmegaSalesWorkstation({
           {/* Customer & Metadata Block */}
           <div className="p-3 bg-white border-b border-border space-y-2 shrink-0">
             
+            {/* Credit Note / Direct Return Header Banner */}
+            {docType === 'CREDIT_NOTE' && (
+              <div className="bg-red-700 text-white px-3.5 py-2 rounded flex items-center justify-between text-xs font-bold shadow-xs mb-2 animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-red-200" />
+                  <span>CREDIT NOTE / RETURN — إشعار دائن / مرتجع مبيعات</span>
+                  {parentInvoiceNo && (
+                    <span className="bg-red-900 text-red-200 px-2 py-0.5 rounded text-[11px] font-mono">
+                      Ref: {parentInvoiceNo}
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDocType('SALE');
+                    setParentInvoiceNo(null);
+                    setInvoiceNumber(generateUniqueInvoiceNumber(invoicesDirectory));
+                    setStatusNotice('Switched back to standard Sales Invoice mode.');
+                    setTimeout(() => setStatusNotice(null), 2500);
+                  }}
+                  className="bg-white text-red-700 hover:bg-red-50 px-2.5 py-1 rounded text-[11px] font-bold cursor-pointer transition-colors shadow-2xs"
+                >
+                  Exit Credit Note Mode
+                </button>
+              </div>
+            )}
+
             {/* Invoice Number Header */}
             <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 text-xs">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-slate-800">
-                  Invoice #{invoiceNumber}
+                  {docType === 'CREDIT_NOTE' ? `Credit Note #${invoiceNumber}` : `Invoice #${invoiceNumber}`}
                 </span>
+                {docType === 'CREDIT_NOTE' && (
+                  <span className="bg-red-100 text-red-800 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                    CREDIT NOTE
+                  </span>
+                )}
               </div>
             </div>
             
@@ -3234,6 +3388,24 @@ export default function AuthenticOmegaSalesWorkstation({
                               setSelectedCustomer(cust);
                               setCustomerSearch('');
                               setIsCustomerDropdownOpen(false);
+
+                              // Apply dynamic Price Waterfall to cart items for this customer
+                              setCartItems((prev) =>
+                                prev.map((item) => {
+                                  const resolved = resolveItemPriceWaterfall({
+                                    itemCode: item.code,
+                                    customerId: cust.id,
+                                    standardPrice: item.unitPrice,
+                                    customerPriceTier: (cust as any).category || 'Retail Counter'
+                                  });
+                                  const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : item.unitPrice;
+                                  return {
+                                    ...item,
+                                    unitPrice,
+                                    total: Number((item.qty * unitPrice).toFixed(2))
+                                  };
+                                })
+                              );
                             }}
                             className="px-3 py-1.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between"
                           >
@@ -3595,7 +3767,7 @@ export default function AuthenticOmegaSalesWorkstation({
     </div>
 
       {/* ========================================================================= */}
-      {/* 3. AUTHENTIC OMEGA PAYMENT MODAL                                         */}
+      {/* 3. AUTHENTIC PAYMENT MODAL                                                */}
       {/* ========================================================================= */}
       {isPaymentModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -4212,7 +4384,7 @@ export default function AuthenticOmegaSalesWorkstation({
                 </button>
               </div>
 
-              {/* Row 2: 6 Searchable Dropdowns matching Omega Screenshots */}
+              {/* Row 2: 6 Searchable Dropdowns */}
               <div className="grid grid-cols-6 gap-3 w-full">
                 {/* 1. Transaction Type (Show All, Local, International, Online) */}
                 <div className="relative">
@@ -4644,7 +4816,7 @@ export default function AuthenticOmegaSalesWorkstation({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white">
-                  {/* Total Summary Row (Matching Omega Screenshot) */}
+                  {/* Total Summary Row */}
                   <tr className="bg-slate-50 font-bold border-b border-slate-200 text-xs text-slate-800">
                     <td colSpan={10} className="py-2.5 px-3">
                       Total:
@@ -4910,7 +5082,7 @@ export default function AuthenticOmegaSalesWorkstation({
       )}
 
       {/* ========================================================================= */}
-      {/* 5. INVOICE INFO MODAL (Exact Omega Replica from Screenshots 1 & 2)        */}
+      {/* 5. INVOICE INFO MODAL                                                     */}
       {/* ========================================================================= */}
       {isInvoiceInfoModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -5102,7 +5274,7 @@ export default function AuthenticOmegaSalesWorkstation({
       {/* 6. PENDING QUOTATIONS MODAL                                              */}
       {/* ========================================================================= */}
       {/* ========================================================================= */}
-      {/* 6. PENDING QUOTATIONS MODAL (Exact Omega Replica from Screenshot)         */}
+      {/* 6. PENDING QUOTATIONS MODAL                                              */}
       {/* ========================================================================= */}
       {isQuotationsModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -5767,823 +5939,132 @@ export default function AuthenticOmegaSalesWorkstation({
       )}
 
       {/* ========================================================================= */}
-      {/* 10. CREDIT NOTE MODAL                                                     */}
+      {/* 10. CREDIT NOTE MODAL (UNIFIED COMPONENT)                                 */}
       {/* ========================================================================= */}
-      {isCreditNoteModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <RotateCcw className="w-4 h-4 text-red-400" />
-                <h3 className="text-sm font-bold">Issue Credit Note (Sales Return)</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsCreditNoteModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-4 overflow-y-auto space-y-3.5 text-xs">
-              <div className="bg-red-50 border border-red-200 rounded p-3 text-red-900 flex items-center justify-between">
-                <div>
-                  <span className="font-bold block">Credit Note Generator</span>
-                  <span className="text-[11px] text-red-700">Creates a negative credit voucher and deducts from customer debt balance.</span>
-                </div>
-                <span className="text-xs font-mono font-bold bg-white px-2 py-1 rounded border border-red-200">
-                  Customer: {selectedCustomer.name}
-                </span>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Reason for Return</label>
-                <select
-                  value={creditNoteReason}
-                  onChange={(e) => setCreditNoteReason(e.target.value)}
-                  className="w-full bg-white border border-border rounded px-2.5 py-1.5 text-slate-800 shadow-2xs font-sans"
-                >
-                  <option value="Customer Return / Defective">Customer Return / Defective Goods</option>
-                  <option value="Damaged Goods in Transit">Damaged Goods in Transit</option>
-                  <option value="Incorrect Item Dispatched">Incorrect Item Dispatched</option>
-                  <option value="Quality Inspection Failure">Quality Inspection Failure / Taste Issue</option>
-                  <option value="Over-invoiced Quantity Correction">Over-invoiced Quantity Correction</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Select Items to Return & Quantity</label>
-                {cartItems.length === 0 ? (
-                  <div className="p-4 border border-dashed border-slate-300 rounded text-center text-slate-500">
-                    Cart is currently empty. Add products to cart first to specify return items, or load an invoice.
-                  </div>
-                ) : (
-                  <div className="border border-slate-200 rounded overflow-hidden">
-                    <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                        <tr>
-                          <th className="py-2 px-2.5">Item</th>
-                          <th className="py-2 px-2 text-center">Sold Qty</th>
-                          <th className="py-2 px-2 text-center">Return Qty</th>
-                          <th className="py-2 px-2 text-right">Refund Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {cartItems.map((it) => {
-                          const retQty = creditNoteReturnQty[it.id] !== undefined ? creditNoteReturnQty[it.id] : it.qty;
-                          const refAmt = (retQty * it.unitPrice).toFixed(2);
-                          return (
-                            <tr key={it.id} className="hover:bg-slate-50">
-                              <td className="py-2 px-2.5">
-                                <p className="font-semibold text-slate-800">{it.name}</p>
-                                <span className="text-[10px] text-slate-400 font-mono">{it.code}</span>
-                              </td>
-                              <td className="py-2 px-2 text-center text-slate-600">{it.qty} {it.unit}</td>
-                              <td className="py-2 px-2 text-center">
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max={it.qty}
-                                  value={retQty}
-                                  onChange={(e) => {
-                                    const val = Math.max(0, Math.min(it.qty, parseFloat(e.target.value) || 0));
-                                    setCreditNoteReturnQty((prev) => ({ ...prev, [it.id]: val }));
-                                  }}
-                                  className="w-16 text-center border border-slate-300 rounded px-1 py-0.5 font-bold text-red-700"
-                                />
-                              </td>
-                              <td className="py-2 px-2 text-right font-bold text-red-600 font-mono">${refAmt}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-slate-50 border border-slate-200 rounded p-3 flex justify-between items-center text-xs">
-                <span className="font-semibold text-slate-700">Total Credit to Issue:</span>
-                <span className="text-base font-mono font-bold text-red-600">
-                  -${(cartItems.length > 0 ? grandTotal : 0).toFixed(2)} USD
-                </span>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex justify-end gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsCreditNoteModalOpen(false)}
-                className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleIssueCreditNote}
-                className="bg-red-700 hover:bg-red-800 text-white px-4 py-1.5 rounded text-xs font-bold shadow-2xs cursor-pointer flex items-center gap-1.5"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Issue Credit Note</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreditNoteModal
+        isOpen={isCreditNoteModalOpen}
+        onClose={() => setIsCreditNoteModalOpen(false)}
+        invoices={invoicesDirectory}
+        activeCustomer={selectedCustomer}
+        currentCartItems={cartItems}
+        tenantId={currentTenant?.id}
+        onCreditNotePosted={(crn) => {
+          setInvoicesDirectory((prev) => [
+            crn as any,
+            ...prev.filter((i) => i.id !== crn.id && i.invoiceNumber !== crn.invoiceNumber)
+          ]);
+          setStatusNotice(`Credit Note ${crn.invoiceNumber} posted!`);
+          setTimeout(() => setStatusNotice(null), 3500);
+        }}
+        onSwitchToDirectMode={handleSwitchToDirectCreditNoteMode}
+      />
 
       {/* ========================================================================= */}
-      {/* 11. STORE RECURRING MODAL                                                 */}
+      {/* 11 & 12. RECURRING INVOICES MODAL (STORE & RECALL UNIFIED COMPONENT)      */}
       {/* ========================================================================= */}
-      {isStoreRecurringModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-md overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <Repeat className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Store Recurring Order</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsStoreRecurringModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-4 space-y-3 text-xs">
-              <div className="bg-blue-50 border border-blue-200 rounded p-2.5 text-blue-900 text-xs">
-                Save the current {cartItems.length} items in cart as a recurring template for <strong>{selectedCustomer.name}</strong>.
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Template Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Weekly Restock - Gourmet Market"
-                  value={recurringTemplateName}
-                  onChange={(e) => setRecurringTemplateName(e.target.value)}
-                  className="w-full border border-slate-300 rounded px-2.5 py-1.5 text-slate-800 font-sans"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 mb-1">Recurring Interval</label>
-                <select
-                  value={recurringFrequency}
-                  onChange={(e) => setRecurringFrequency(e.target.value)}
-                  className="w-full bg-white border border-border rounded px-2.5 py-1.5 text-slate-800"
-                >
-                  <option value="Daily">Daily</option>
-                  <option value="Weekly">Weekly</option>
-                  <option value="Bi-Weekly">Bi-Weekly</option>
-                  <option value="Monthly">Monthly</option>
-                </select>
-              </div>
-
-              <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-slate-700 flex justify-between items-center font-mono">
-                <span>Cart Items: {cartItems.length} items</span>
-                <span className="font-bold text-slate-900">Total: ${grandTotal.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex justify-end gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsStoreRecurringModalOpen(false)}
-                className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleStoreRecurring}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
-              >
-                <Save className="w-3.5 h-3.5" />
-                <span>Save Template</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <RecurringInvoicesModal
+        isOpen={isRecurringModalOpen || isStoreRecurringModalOpen || isRecallRecurringModalOpen}
+        onClose={() => {
+          setIsRecurringModalOpen(false);
+          setIsStoreRecurringModalOpen(false);
+          setIsRecallRecurringModalOpen(false);
+        }}
+        initialMode={isStoreRecurringModalOpen ? 'STORE' : isRecallRecurringModalOpen ? 'RECALL' : recurringModalMode}
+        activeCustomer={selectedCustomer}
+        currentCartItems={cartItems}
+        currency={currency}
+        transactionType={transactionType}
+        deliveredBy={deliveredBy}
+        salesman={invoiceSalesman}
+        tenantId={currentTenant?.id}
+        onLoadTemplate={handleLoadRecurringTemplate}
+      />
 
       {/* ========================================================================= */}
-      {/* 12. RECALL RECURRING MODAL                                                */}
+      {/* 13. CUSTOMER PRICING MODAL (UNIFIED COMPONENT)                            */}
       {/* ========================================================================= */}
-      {isRecallRecurringModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <Repeat className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Recall Recurring Invoices</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsRecallRecurringModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-4 overflow-y-auto space-y-3 text-xs">
-              <p className="text-slate-600 text-xs">
-                Select a recurring invoice template below to automatically populate the bill with its customer and item lines:
-              </p>
-
-              {recurringTemplates.length === 0 ? (
-                <div className="p-6 text-center text-slate-500 border border-dashed border-slate-300 rounded">
-                  No recurring templates found. Use &quot;Store Recurring&quot; to create one.
-                </div>
-              ) : (
-                recurringTemplates.map((tpl) => (
-                  <div key={tpl.id} className="border border-slate-200 rounded p-3 hover:border-slate-400 transition-colors bg-white flex flex-col gap-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <span className="inline-block bg-blue-50 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200 mb-1">
-                          {tpl.frequency}
-                        </span>
-                        <h4 className="font-bold text-slate-900 text-sm">{tpl.name}</h4>
-                        <p className="text-slate-500 text-xs">Customer: <strong className="text-slate-800">{tpl.customerName}</strong></p>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-mono font-bold text-slate-900 text-sm">
-                          ${tpl.items.reduce((s, i) => s + i.total, 0).toFixed(2)}
-                        </span>
-                        <span className="block text-[11px] text-slate-400">{tpl.items.length} items</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-slate-50 p-2 rounded border border-slate-100 text-[11px] text-slate-600 space-y-0.5">
-                      {tpl.items.slice(0, 3).map((it, i) => (
-                        <div key={i} className="flex justify-between">
-                          <span>• {it.name}</span>
-                          <span className="font-mono">{it.qty} {it.unit} @ ${it.unitPrice.toFixed(2)}</span>
-                        </div>
-                      ))}
-                      {tpl.items.length > 3 && (
-                        <span className="text-slate-400 italic">+{tpl.items.length - 3} more items...</span>
-                      )}
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-1 border-t border-slate-100">
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteRecurringTemplate(tpl.id)}
-                        className="text-red-600 hover:text-red-800 px-2 py-1 text-xs cursor-pointer"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleLoadRecurringTemplate(tpl)}
-                        className="bg-primary hover:bg-primary/90 text-white px-3 py-1 rounded text-xs font-bold cursor-pointer flex items-center gap-1"
-                      >
-                        <span>Load Into Bill</span>
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex justify-end shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsRecallRecurringModalOpen(false)}
-                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CustomerPricingModal
+        isOpen={isCustomerPricingModalOpen}
+        onClose={() => setIsCustomerPricingModalOpen(false)}
+        activeCustomer={selectedCustomer}
+        catalogItems={VANGUARD_SALES_ITEMS}
+        tenantId={currentTenant?.id}
+        onApplyRatesToCart={(rates: Record<string, number>) => {
+          setCartItems((prev) =>
+            prev.map((item) => {
+              if (rates[item.code] !== undefined) {
+                const p = rates[item.code];
+                return {
+                  ...item,
+                  unitPrice: p,
+                  total: Number((item.qty * p).toFixed(2))
+                };
+              }
+              return item;
+            })
+          );
+          setStatusNotice('Negotiated contract rates applied to active bill.');
+          setTimeout(() => setStatusNotice(null), 3000);
+        }}
+      />
 
       {/* ========================================================================= */}
-      {/* 13. CUSTOMER PRICING MODAL                                                */}
+      {/* 14. CUSTOMER AGED RECEIVABLES MODAL (UNIFIED COMPONENT)                   */}
       {/* ========================================================================= */}
-      {isCustomerPricingModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Customer Special Pricing</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsCustomerPricingModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-4 overflow-y-auto space-y-3.5 text-xs">
-              <div className="bg-amber-50 border border-amber-200 rounded p-3 text-amber-900 flex justify-between items-center">
-                <div>
-                  <span className="font-bold block text-sm">Contract Pricing Matrix</span>
-                  <span className="text-[11px] text-amber-700">Client: <strong>{selectedCustomer.name}</strong> ({selectedCustomer.id})</span>
-                </div>
-                <span className="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-1 rounded border border-amber-300">
-                  Negotiated Rates
-                </span>
-              </div>
-
-              <div className="border border-slate-200 rounded overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                    <tr>
-                      <th className="py-2 px-3">Item Description</th>
-                      <th className="py-2 px-2 text-center">Unit</th>
-                      <th className="py-2 px-2 text-right">Standard Price</th>
-                      <th className="py-2 px-2 text-center">Contract Price</th>
-                      <th className="py-2 px-3 text-right">Saving</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {OMEGA_SALES_ITEMS.slice(0, 8).map((it) => {
-                      const spec = customerSpecialPrices[it.code] !== undefined ? customerSpecialPrices[it.code] : it.price;
-                      const diff = it.price - spec;
-                      return (
-                        <tr key={it.id} className="hover:bg-slate-50">
-                          <td className="py-2 px-3">
-                            <p className="font-semibold text-slate-800">{it.name}</p>
-                            <span className="text-[10px] font-mono text-slate-400">{it.code}</span>
-                          </td>
-                          <td className="py-2 px-2 text-center text-slate-600">{it.unit}</td>
-                          <td className="py-2 px-2 text-right font-mono text-slate-500 line-through">
-                            ${it.price.toFixed(2)}
-                          </td>
-                          <td className="py-2 px-2 text-center">
-                            <div className="inline-flex items-center gap-1">
-                              <span className="text-slate-400 font-mono">$</span>
-                              <input
-                                type="number"
-                                step="0.01"
-                                value={spec}
-                                onChange={(e) => handleSaveCustomerSpecialPrice(it.code, parseFloat(e.target.value) || 0)}
-                                className="w-18 border border-slate-300 rounded px-1.5 py-0.5 font-bold font-mono text-slate-800 text-right bg-white"
-                              />
-                            </div>
-                          </td>
-                          <td className="py-2 px-3 text-right font-mono font-bold text-emerald-600">
-                            {diff > 0 ? `-$${diff.toFixed(2)}` : '0.00'}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex justify-between items-center shrink-0">
-              <span className="text-xs text-slate-500">Changes persist in active customer profile</span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsCustomerPricingModalOpen(false)}
-                  className="px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  onClick={handleApplyCustomerPricing}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded text-xs font-bold cursor-pointer shadow-2xs flex items-center gap-1.5"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Apply Contract to Cart</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <CustomerAgedModal
+        isOpen={isCustomerAgedModalOpen}
+        onClose={() => setIsCustomerAgedModalOpen(false)}
+        invoices={invoicesDirectory}
+        activeCustomer={selectedCustomer}
+        tenantId={currentTenant?.id}
+        onSelectCustomerForReceipt={(cust: any) => {
+          setSelectedCustomer(cust);
+          setIsCustomerReceiptsModalOpen(true);
+        }}
+      />
 
       {/* ========================================================================= */}
-      {/* 14. CUSTOMER AGED MODAL                                                   */}
+      {/* 15. CUSTOMER RECEIPTS & VOUCHERS MODAL (UNIFIED COMPONENT)                */}
       {/* ========================================================================= */}
-      {isCustomerAgedModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="w-4 h-4 text-blue-400" />
-                <h3 className="text-sm font-bold">Customer Aged Receivables</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsCustomerAgedModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto space-y-4 text-xs">
-              <div className="flex justify-between items-start border-b border-slate-200 pb-3">
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900">{selectedCustomer.name}</h4>
-                  <p className="text-slate-500 text-xs">Account ID: {selectedCustomer.id} | Limit: $2,500.00</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Total Outstanding Debt</span>
-                  <span className="text-lg font-mono font-extrabold text-red-600">
-                    ${customerAgingSummary.totalOutstanding.toFixed(2)} USD
-                  </span>
-                </div>
-              </div>
-
-              {/* 4 Aging Buckets */}
-              <div className="grid grid-cols-4 gap-2.5">
-                <div className="bg-emerald-50 border border-emerald-200 rounded p-2.5 text-center">
-                  <span className="text-[10px] text-emerald-800 font-semibold block uppercase">0 - 30 Days</span>
-                  <span className="text-sm font-mono font-bold text-emerald-900">${customerAgingSummary.b0_30.toFixed(2)}</span>
-                  <span className="text-[9px] text-emerald-600 block mt-0.5">Current / On Time</span>
-                </div>
-                <div className="bg-blue-50 border border-blue-200 rounded p-2.5 text-center">
-                  <span className="text-[10px] text-blue-800 font-semibold block uppercase">31 - 60 Days</span>
-                  <span className="text-sm font-mono font-bold text-blue-900">${customerAgingSummary.b31_60.toFixed(2)}</span>
-                  <span className="text-[9px] text-blue-600 block mt-0.5">Follow-up due</span>
-                </div>
-                <div className="bg-amber-50 border border-amber-200 rounded p-2.5 text-center">
-                  <span className="text-[10px] text-amber-800 font-semibold block uppercase">61 - 90 Days</span>
-                  <span className="text-sm font-mono font-bold text-amber-900">${customerAgingSummary.b61_90.toFixed(2)}</span>
-                  <span className="text-[9px] text-amber-600 block mt-0.5">Overdue Warning</span>
-                </div>
-                <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-center">
-                  <span className="text-[10px] text-slate-500 font-semibold block uppercase">&gt; 90 Days</span>
-                  <span className="text-sm font-mono font-bold text-slate-700">${customerAgingSummary.b90_plus.toFixed(2)}</span>
-                  <span className="text-[9px] text-slate-400 block mt-0.5">
-                    {customerAgingSummary.b90_plus > 0 ? 'Action Required' : 'No Bad Debts'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Outstanding Invoices Table */}
-              <div>
-                <h5 className="font-semibold text-slate-800 mb-1.5">Unpaid Invoices Breakdown</h5>
-                <div className="border border-slate-200 rounded overflow-hidden">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                      <tr>
-                        <th className="py-2 px-2.5">Invoice #</th>
-                        <th className="py-2 px-2">Date</th>
-                        <th className="py-2 px-2">Due Date</th>
-                        <th className="py-2 px-2 text-right">Total</th>
-                        <th className="py-2 px-2 text-right">Balance Due</th>
-                        <th className="py-2 px-2 text-center">Aging Days</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {customerInvoices.map((inv) => (
-                        <tr key={inv.id}>
-                          <td className="py-2 px-2.5 font-mono font-bold text-slate-800">{inv.id}</td>
-                          <td className="py-2 px-2 text-slate-600">{inv.date}</td>
-                          <td className="py-2 px-2 text-slate-600">{inv.dueDate}</td>
-                          <td className="py-2 px-2 text-right font-mono">${inv.total.toFixed(2)}</td>
-                          <td className="py-2 px-2 text-right font-mono font-bold text-slate-900">
-                            ${inv.balanceDue.toFixed(2)}
-                          </td>
-                          <td className="py-2 px-2 text-center">
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                              inv.balanceDue <= 0
-                                ? 'bg-slate-100 text-slate-500'
-                                : inv.agingDays <= 30
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : inv.agingDays <= 60
-                                ? 'bg-blue-100 text-blue-800'
-                                : 'bg-amber-100 text-amber-800'
-                            }`}>
-                              {inv.balanceDue <= 0 ? 'Settled' : `${inv.agingDays} days`}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex justify-between items-center shrink-0">
-              <button
-                type="button"
-                onClick={() => {
-                  window.print();
-                  setStatusNotice('Customer statement sent to printer.');
-                  setTimeout(() => setStatusNotice(null), 3000);
-                }}
-                className="text-slate-700 hover:text-slate-900 text-xs font-semibold flex items-center gap-1 cursor-pointer"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print Statement of Account</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsCustomerAgedModalOpen(false)}
-                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CustomerReceiptsModal
+        isOpen={isCustomerReceiptsModalOpen}
+        onClose={() => setIsCustomerReceiptsModalOpen(false)}
+        invoices={invoicesDirectory}
+        activeCustomer={selectedCustomer}
+        tenantId={currentTenant?.id}
+        onReceiptRecorded={(receipt) => {
+          setStatusNotice(`Customer receipt #${receipt.receiptNo} posted ($${receipt.amountReceived.toFixed(2)})`);
+          setTimeout(() => setStatusNotice(null), 3500);
+        }}
+      />
 
       {/* ========================================================================= */}
-      {/* 15. CUSTOMERS RECEIPTS MODAL                                              */}
+      {/* 16. PAID IN / OUT CASH MOVEMENTS MODAL (UNIFIED COMPONENT)                */}
       {/* ========================================================================= */}
-      {isCustomerReceiptsModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <Receipt className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Customer Receipts & Vouchers</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsCustomerReceiptsModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto space-y-4 text-xs">
-              {/* Quick Record New Receipt */}
-              <div className="bg-slate-50 border border-slate-200 rounded p-3 space-y-2.5">
-                <span className="font-bold text-slate-800 block">Record New Payment Receipt</span>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="block text-[10px] text-slate-500 font-semibold mb-0.5">Amount ($)</label>
-                    <input
-                      type="number"
-                      placeholder="0.00"
-                      value={newReceiptAmount}
-                      onChange={(e) => setNewReceiptAmount(e.target.value)}
-                      className="w-full border border-slate-300 rounded px-2 py-1 font-mono font-bold text-slate-800 bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] text-slate-500 font-semibold mb-0.5">Method</label>
-                    <select
-                      value={newReceiptMethod}
-                      onChange={(e) => setNewReceiptMethod(e.target.value)}
-                      className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-slate-800"
-                    >
-                      <option value="Cash USD">Cash USD</option>
-                      <option value="Cash LBP">Cash LBP</option>
-                      <option value="Visa / MasterCard">Visa / MasterCard</option>
-                      <option value="Bank Cheque (BLOM)">Bank Cheque (BLOM)</option>
-                      <option value="Whish Money">Whish Money</option>
-                    </select>
-                  </div>
-                  <div className="flex items-end">
-                    <button
-                      type="button"
-                      onClick={handleRecordCustomerReceipt}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-3 rounded cursor-pointer shadow-2xs text-xs flex items-center justify-center gap-1"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Post Receipt</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Receipts Ledger Table */}
-              <div>
-                <h5 className="font-semibold text-slate-800 mb-1.5">Previous Receipts History</h5>
-                <div className="border border-slate-200 rounded overflow-hidden">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                      <tr>
-                        <th className="py-2 px-2.5">Receipt #</th>
-                        <th className="py-2 px-2">Date</th>
-                        <th className="py-2 px-2">Customer</th>
-                        <th className="py-2 px-2">Method</th>
-                        <th className="py-2 px-2 text-right">Amount</th>
-                        <th className="py-2 px-2 text-center">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {customerReceipts.map((rct) => (
-                        <tr key={rct.id} className="hover:bg-slate-50">
-                          <td className="py-2 px-2.5 font-mono font-bold text-slate-800">{rct.id}</td>
-                          <td className="py-2 px-2 text-slate-600">{rct.date}</td>
-                          <td className="py-2 px-2 text-slate-800 font-medium">{rct.customerName}</td>
-                          <td className="py-2 px-2 text-slate-600">{rct.method}</td>
-                          <td className="py-2 px-2 text-right font-mono font-bold text-emerald-700">${rct.amount.toFixed(2)}</td>
-                          <td className="py-2 px-2 text-center">
-                            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">
-                              Cleared
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex justify-end shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsCustomerReceiptsModalOpen(false)}
-                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PaidInOutModal
+        isOpen={isPaidInOutModalOpen}
+        onClose={() => setIsPaidInOutModalOpen(false)}
+        tenantId={currentTenant?.id}
+        onMovementRecorded={(movement: any) => {
+          setDrawerCashBalance((prev) =>
+            movement.type === 'PAID_IN' ? prev + movement.amountUsd : Math.max(0, prev - movement.amountUsd)
+          );
+          setStatusNotice(
+            `Cash drawer ${movement.type === 'PAID_IN' ? 'Deposit' : 'Payout'} ($${movement.amountUsd.toFixed(2)}) recorded.`
+          );
+          setTimeout(() => setStatusNotice(null), 3500);
+        }}
+      />
 
       {/* ========================================================================= */}
-      {/* 16. PAID IN / OUT MODAL                                                   */}
-      {/* ========================================================================= */}
-      {isPaidInOutModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-lg shadow-2xl border-4 border-border w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="bg-primary text-white px-4 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold">Paid In / Out - Cash Drawer Movements</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsPaidInOutModalOpen(false)}
-                className="text-slate-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 overflow-y-auto space-y-4 text-xs">
-              {/* Current Drawer Cash Balance Banner */}
-              <div className="bg-slate-50 border border-slate-200 text-slate-800 rounded-lg p-4 flex justify-between items-center shadow-xs">
-                <div>
-                  <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold block">Active Cash Drawer Balance</span>
-                  <span className="text-2xl font-mono font-extrabold text-emerald-700">
-                    ${drawerCashBalance.toFixed(2)} USD
-                  </span>
-                </div>
-                <div className="text-right text-[11px] text-slate-500">
-                  <p>Register: POS-01</p>
-                  <p>Drawer Status: <span className="text-emerald-700 font-semibold">Active</span></p>
-                </div>
-              </div>
-
-              {/* Movement Form */}
-              <div className="border border-slate-200 rounded p-3.5 space-y-3 bg-white">
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setPaidInOutType('out')}
-                    className={`flex-1 py-1.5 rounded font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border ${
-                      paidInOutType === 'out'
-                        ? 'bg-red-600 text-white border-red-700'
-                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-                    }`}
-                  >
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                    <span>Paid Out (Cash Payout)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaidInOutType('in')}
-                    className={`flex-1 py-1.5 rounded font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border ${
-                      paidInOutType === 'in'
-                        ? 'bg-emerald-600 text-white border-emerald-700'
-                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
-                    }`}
-                  >
-                    <ArrowDownLeft className="w-3.5 h-3.5" />
-                    <span>Paid In (Cash Deposit)</span>
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Amount ($ USD)</label>
-                    <input
-                      type="number"
-                      placeholder="0.00"
-                      value={paidInOutAmount}
-                      onChange={(e) => setPaidInOutAmount(e.target.value)}
-                      className="w-full border border-slate-300 rounded px-2.5 py-1.5 font-mono font-bold text-slate-800 bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1">Category</label>
-                    <select
-                      value={paidInOutCategory}
-                      onChange={(e) => setPaidInOutCategory(e.target.value)}
-                      className="w-full bg-white border border-slate-300 rounded px-2 py-1.5 text-slate-800"
-                    >
-                      <option value="Delivery Driver Fuel">Delivery Driver Fuel</option>
-                      <option value="Packaging Supplies">Packaging Supplies</option>
-                      <option value="Petty Cash Expense">Petty Cash Expense</option>
-                      <option value="Office Refreshments">Office Refreshments</option>
-                      <option value="Opening Float">Opening Float</option>
-                      <option value="Owner Drawing">Owner Cash Drawing</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1">Notes & Justification</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Van #4 fuel receipt - Coral Station"
-                    value={paidInOutNotes}
-                    onChange={(e) => setPaidInOutNotes(e.target.value)}
-                    className="w-full border border-slate-300 rounded px-2.5 py-1 text-slate-800"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleRecordPaidInOut}
-                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded text-xs cursor-pointer shadow-2xs flex items-center justify-center gap-1.5"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Record Cash Movement</span>
-                </button>
-              </div>
-
-              {/* Movement History Log */}
-              <div>
-                <h5 className="font-semibold text-slate-800 mb-1.5">Today&apos;s Drawer Movements</h5>
-                <div className="border border-slate-200 rounded overflow-hidden">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                      <tr>
-                        <th className="py-2 px-2.5">Time</th>
-                        <th className="py-2 px-2">Type</th>
-                        <th className="py-2 px-2">Category & Note</th>
-                        <th className="py-2 px-2 text-right">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {paidInOutHistory.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50">
-                          <td className="py-2 px-2.5 font-mono text-slate-500">{item.time}</td>
-                          <td className="py-2 px-2">
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                              item.type === 'in' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
-                            }`}>
-                              {item.type === 'in' ? 'Paid In' : 'Paid Out'}
-                            </span>
-                          </td>
-                          <td className="py-2 px-2 text-slate-700">
-                            <p className="font-medium">{item.category}</p>
-                            <span className="text-[10px] text-slate-400">{item.notes}</span>
-                          </td>
-                          <td className={`py-2 px-2 text-right font-mono font-bold ${
-                            item.type === 'in' ? 'text-emerald-700' : 'text-red-600'
-                          }`}>
-                            {item.type === 'in' ? '+' : '-'}${item.amount.toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 border-t border-slate-200 px-4 py-2.5 flex justify-end shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsPaidInOutModalOpen(false)}
-                className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-semibold cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* 17. MAIN READING (X/Z READING) MODAL                                      */}
+      {/* 17. MAIN READING (X/Z READING) MODAL (UNIFIED COMPONENT)                  */}
       {/* ========================================================================= */}
       <MainReadingModal
         isOpen={isMainReadingModalOpen}
         onClose={() => setIsMainReadingModalOpen(false)}
         invoices={invoicesDirectory}
-        paidInOutList={paidInOutHistory}
-        customerReceipts={customerReceipts}
+        paidInOutList={getCashMovements()}
+        customerReceipts={getCustomerReceipts()}
         branchName={BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'}
         cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
         tenantId={currentTenant?.id}
