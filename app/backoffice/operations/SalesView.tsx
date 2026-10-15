@@ -1313,9 +1313,20 @@ export default function AuthenticVanguardSalesWorkstation({
     setIsCustomerDropdownOpen(false);
     setIsCustomerLookupModalOpen(false);
 
-    // Apply dynamic Price Waterfall to cart items for this customer
-    setCartItems((prev) =>
-      prev.map((item) => {
+    // Apply dynamic Price Waterfall to cart items for this customer ONLY if prices change
+    setCartItems((prev) => {
+      const needsUpdate = prev.some((item) => {
+        const resolved = resolveItemPriceWaterfall({
+          itemCode: item.code,
+          customerId: cust.id,
+          standardPrice: item.unitPrice,
+          customerPriceTier: (cust as any).category || 'Retail Counter'
+        });
+        const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : item.unitPrice;
+        return unitPrice !== item.unitPrice;
+      });
+      if (!needsUpdate) return prev;
+      return prev.map((item) => {
         const resolved = resolveItemPriceWaterfall({
           itemCode: item.code,
           customerId: cust.id,
@@ -1328,8 +1339,8 @@ export default function AuthenticVanguardSalesWorkstation({
           unitPrice,
           total: Number((item.qty * unitPrice).toFixed(2))
         };
-      })
-    );
+      });
+    });
 
     if (cust.salesman) {
       setInvoiceSalesman(cust.salesman);
@@ -1538,7 +1549,7 @@ export default function AuthenticVanguardSalesWorkstation({
     return () => {
       isMounted = false;
     };
-  }, [currentTenant?.id, invoiceNumber]);
+  }, [currentTenant?.id]);
 
   // Synchronize division options when category changes
   useEffect(() => {
@@ -3791,9 +3802,20 @@ export default function AuthenticVanguardSalesWorkstation({
                               setCustomerSearch('');
                               setIsCustomerDropdownOpen(false);
 
-                              // Apply dynamic Price Waterfall to cart items for this customer
-                              setCartItems((prev) =>
-                                prev.map((item) => {
+                              // Apply dynamic Price Waterfall to cart items for this customer ONLY if prices change
+                              setCartItems((prev) => {
+                                const needsUpdate = prev.some((item) => {
+                                  const resolved = resolveItemPriceWaterfall({
+                                    itemCode: item.code,
+                                    customerId: cust.id,
+                                    standardPrice: item.unitPrice,
+                                    customerPriceTier: (cust as any).category || 'Retail Counter'
+                                  });
+                                  const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : item.unitPrice;
+                                  return unitPrice !== item.unitPrice;
+                                });
+                                if (!needsUpdate) return prev;
+                                return prev.map((item) => {
                                   const resolved = resolveItemPriceWaterfall({
                                     itemCode: item.code,
                                     customerId: cust.id,
@@ -3806,8 +3828,8 @@ export default function AuthenticVanguardSalesWorkstation({
                                     unitPrice,
                                     total: Number((item.qty * unitPrice).toFixed(2))
                                   };
-                                })
-                              );
+                                });
+                              });
                             }}
                             className="px-3 py-1.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between"
                           >
@@ -6045,15 +6067,17 @@ export default function AuthenticVanguardSalesWorkstation({
       {/* ========================================================================= */}
       {/* 7. SETTINGS MODAL (FULL SALES OPTIONS & INVOICE SETUP)                   */}
       {/* ========================================================================= */}
-      <SalesOptionsModal
-        isOpen={isSettingsModalOpen}
-        onClose={() => setIsSettingsModalOpen(false)}
-        currentOptions={salesOptions}
-        onSaveSuccess={(updated) => setSalesOptions(updated)}
-        tenantId={currentTenant?.id}
-        branchOptions={BRANCH_OPTIONS}
-        paymentTypeOptions={PAYMENT_TYPES}
-      />
+      {isSettingsModalOpen && (
+        <SalesOptionsModal
+          isOpen={isSettingsModalOpen}
+          onClose={() => setIsSettingsModalOpen(false)}
+          currentOptions={salesOptions}
+          onSaveSuccess={(updated) => setSalesOptions(updated)}
+          tenantId={currentTenant?.id}
+          branchOptions={BRANCH_OPTIONS}
+          paymentTypeOptions={PAYMENT_TYPES}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* 8. PRINT INVOICE MODAL                                                    */}
@@ -6544,127 +6568,139 @@ export default function AuthenticVanguardSalesWorkstation({
       {/* ========================================================================= */}
       {/* 10. CREDIT NOTE MODAL (UNIFIED COMPONENT)                                 */}
       {/* ========================================================================= */}
-      <CreditNoteModal
-        isOpen={isCreditNoteModalOpen}
-        onClose={() => setIsCreditNoteModalOpen(false)}
-        invoices={invoicesDirectory}
-        activeCustomer={selectedCustomer}
-        currentCartItems={cartItems}
-        tenantId={currentTenant?.id}
-        onCreditNotePosted={(crn) => {
-          setInvoicesDirectory((prev) => [
-            crn as any,
-            ...prev.filter((i) => i.id !== crn.id && i.invoiceNumber !== crn.invoiceNumber)
-          ]);
-          setStatusNotice(`Credit Note ${crn.invoiceNumber} posted!`);
-          setTimeout(() => setStatusNotice(null), 3500);
-        }}
-        onSwitchToDirectMode={handleSwitchToDirectCreditNoteMode}
-      />
+      {isCreditNoteModalOpen && (
+        <CreditNoteModal
+          isOpen={isCreditNoteModalOpen}
+          onClose={() => setIsCreditNoteModalOpen(false)}
+          invoices={invoicesDirectory}
+          activeCustomer={selectedCustomer}
+          currentCartItems={cartItems}
+          tenantId={currentTenant?.id}
+          onCreditNotePosted={(crn) => {
+            setInvoicesDirectory((prev) => [
+              crn as any,
+              ...prev.filter((i) => i.id !== crn.id && i.invoiceNumber !== crn.invoiceNumber)
+            ]);
+            setStatusNotice(`Credit Note ${crn.invoiceNumber} posted!`);
+            setTimeout(() => setStatusNotice(null), 3500);
+          }}
+          onSwitchToDirectMode={handleSwitchToDirectCreditNoteMode}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* 11 & 12. RECURRING INVOICES MODAL (STORE & RECALL UNIFIED COMPONENT)      */}
       {/* ========================================================================= */}
-      <RecurringInvoicesModal
-        isOpen={isRecurringModalOpen || isStoreRecurringModalOpen || isRecallRecurringModalOpen}
-        onClose={() => {
-          setIsRecurringModalOpen(false);
-          setIsStoreRecurringModalOpen(false);
-          setIsRecallRecurringModalOpen(false);
-        }}
-        initialMode={isStoreRecurringModalOpen ? 'STORE' : isRecallRecurringModalOpen ? 'RECALL' : recurringModalMode}
-        activeCustomer={selectedCustomer}
-        currentCartItems={cartItems}
-        currency={currency}
-        transactionType={transactionType}
-        deliveredBy={deliveredBy}
-        salesman={invoiceSalesman}
-        tenantId={currentTenant?.id}
-        onLoadTemplate={handleLoadRecurringTemplate}
-      />
+      {(isRecurringModalOpen || isStoreRecurringModalOpen || isRecallRecurringModalOpen) && (
+        <RecurringInvoicesModal
+          isOpen={isRecurringModalOpen || isStoreRecurringModalOpen || isRecallRecurringModalOpen}
+          onClose={() => {
+            setIsRecurringModalOpen(false);
+            setIsStoreRecurringModalOpen(false);
+            setIsRecallRecurringModalOpen(false);
+          }}
+          initialMode={isStoreRecurringModalOpen ? 'STORE' : isRecallRecurringModalOpen ? 'RECALL' : recurringModalMode}
+          activeCustomer={selectedCustomer}
+          currentCartItems={cartItems}
+          currency={currency}
+          transactionType={transactionType}
+          deliveredBy={deliveredBy}
+          salesman={invoiceSalesman}
+          tenantId={currentTenant?.id}
+          onLoadTemplate={handleLoadRecurringTemplate}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* 13. CUSTOMER PRICING MODAL (UNIFIED COMPONENT)                            */}
       {/* ========================================================================= */}
-      <CustomerPricingModal
-        isOpen={isCustomerPricingModalOpen}
-        onClose={() => setIsCustomerPricingModalOpen(false)}
-        activeCustomer={selectedCustomer}
-        catalogItems={VANGUARD_SALES_ITEMS}
-        tenantId={currentTenant?.id}
-        onApplyRatesToCart={(rates: Record<string, number>) => {
-          setCartItems((prev) =>
-            prev.map((item) => {
-              if (rates[item.code] !== undefined) {
-                const p = rates[item.code];
-                return {
-                  ...item,
-                  unitPrice: p,
-                  total: Number((item.qty * p).toFixed(2))
-                };
-              }
-              return item;
-            })
-          );
-          setStatusNotice('Negotiated contract rates applied to active bill.');
-          setTimeout(() => setStatusNotice(null), 3000);
-        }}
-      />
+      {isCustomerPricingModalOpen && (
+        <CustomerPricingModal
+          isOpen={isCustomerPricingModalOpen}
+          onClose={() => setIsCustomerPricingModalOpen(false)}
+          activeCustomer={selectedCustomer}
+          catalogItems={VANGUARD_SALES_ITEMS}
+          tenantId={currentTenant?.id}
+          onApplyRatesToCart={(rates: Record<string, number>) => {
+            setCartItems((prev) =>
+              prev.map((item) => {
+                if (rates[item.code] !== undefined) {
+                  const p = rates[item.code];
+                  return {
+                    ...item,
+                    unitPrice: p,
+                    total: Number((item.qty * p).toFixed(2))
+                  };
+                }
+                return item;
+              })
+            );
+            setStatusNotice('Negotiated contract rates applied to active bill.');
+            setTimeout(() => setStatusNotice(null), 3000);
+          }}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* 14. CUSTOMER AGED RECEIVABLES MODAL (UNIFIED COMPONENT)                   */}
       {/* ========================================================================= */}
-      <CustomerAgedModal
-        isOpen={isCustomerAgedModalOpen}
-        onClose={() => setIsCustomerAgedModalOpen(false)}
-        invoices={invoicesDirectory}
-        activeCustomer={selectedCustomer}
-        tenantId={currentTenant?.id}
-        onSelectCustomerForReceipt={(cust: any) => {
-          setSelectedCustomer(cust);
-          setIsCustomerReceiptsModalOpen(true);
-        }}
-      />
+      {isCustomerAgedModalOpen && (
+        <CustomerAgedModal
+          isOpen={isCustomerAgedModalOpen}
+          onClose={() => setIsCustomerAgedModalOpen(false)}
+          invoices={invoicesDirectory}
+          activeCustomer={selectedCustomer}
+          tenantId={currentTenant?.id}
+          onSelectCustomerForReceipt={(cust: any) => {
+            setSelectedCustomer(cust);
+            setIsCustomerReceiptsModalOpen(true);
+          }}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* 15. CUSTOMER RECEIPTS & VOUCHERS MODAL (UNIFIED COMPONENT)                */}
       {/* ========================================================================= */}
-      <CustomerReceiptsModal
-        isOpen={isCustomerReceiptsModalOpen}
-        onClose={() => setIsCustomerReceiptsModalOpen(false)}
-        invoicesDirectory={invoicesDirectory}
-        activeCustomer={selectedCustomer}
-        customers={CUSTOMER_PRESETS.filter((c) => c.name)}
-        tenantId={currentTenant?.id}
-        cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
-        onInvoicesUpdated={(updated) => {
-          setInvoicesDirectory(updated);
-        }}
-        onReceiptRecorded={(receipt) => {
-          setStatusNotice(`Customer receipt #${receipt.receiptNo} posted ($${receipt.amountReceived.toFixed(2)})`);
-          setTimeout(() => setStatusNotice(null), 3500);
-        }}
-      />
+      {isCustomerReceiptsModalOpen && (
+        <CustomerReceiptsModal
+          isOpen={isCustomerReceiptsModalOpen}
+          onClose={() => setIsCustomerReceiptsModalOpen(false)}
+          invoicesDirectory={invoicesDirectory}
+          activeCustomer={selectedCustomer}
+          customers={CUSTOMER_PRESETS.filter((c) => c.name)}
+          tenantId={currentTenant?.id}
+          cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
+          onInvoicesUpdated={(updated) => {
+            setInvoicesDirectory(updated);
+          }}
+          onReceiptRecorded={(receipt) => {
+            setStatusNotice(`Customer receipt #${receipt.receiptNo} posted ($${receipt.amountReceived.toFixed(2)})`);
+            setTimeout(() => setStatusNotice(null), 3500);
+          }}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* 16. PAID IN / OUT CASH MOVEMENTS MODAL (UNIFIED COMPONENT)                */}
       {/* ========================================================================= */}
-      <PaidInOutModal
-        isOpen={isPaidInOutModalOpen}
-        onClose={() => setIsPaidInOutModalOpen(false)}
-        tenantId={currentTenant?.id}
-        cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
-        setPrintCashVoucherSnapshot={setPrintCashVoucherSnapshot}
-        onMovementRecorded={(movement: any) => {
-          setDrawerCashBalance((prev) =>
-            movement.type === 'PAID_IN' ? prev + movement.amountUsd : Math.max(0, prev - movement.amountUsd)
-          );
-          setStatusNotice(
-            `Cash drawer ${movement.type === 'PAID_IN' ? 'Deposit' : 'Payout'} ($${movement.amountUsd.toFixed(2)}) recorded.`
-          );
-          setTimeout(() => setStatusNotice(null), 3500);
-        }}
-      />
+      {isPaidInOutModalOpen && (
+        <PaidInOutModal
+          isOpen={isPaidInOutModalOpen}
+          onClose={() => setIsPaidInOutModalOpen(false)}
+          tenantId={currentTenant?.id}
+          cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
+          setPrintCashVoucherSnapshot={setPrintCashVoucherSnapshot}
+          onMovementRecorded={(movement: any) => {
+            setDrawerCashBalance((prev) =>
+              movement.type === 'PAID_IN' ? prev + movement.amountUsd : Math.max(0, prev - movement.amountUsd)
+            );
+            setStatusNotice(
+              `Cash drawer ${movement.type === 'PAID_IN' ? 'Deposit' : 'Payout'} ($${movement.amountUsd.toFixed(2)}) recorded.`
+            );
+            setTimeout(() => setStatusNotice(null), 3500);
+          }}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* ALWAYS-MOUNTED OFF-SCREEN CASH VOUCHER PRINT CONTAINER                    */}
@@ -6678,44 +6714,48 @@ export default function AuthenticVanguardSalesWorkstation({
       {/* ========================================================================= */}
       {/* 17. MAIN READING (X/Z READING) MODAL (UNIFIED COMPONENT)                  */}
       {/* ========================================================================= */}
-      <MainReadingModal
-        isOpen={isMainReadingModalOpen}
-        onClose={() => setIsMainReadingModalOpen(false)}
-        invoices={mainReadingInvoices}
-        paidInOutList={mainReadingPaidInOut}
-        customerReceipts={mainReadingReceipts}
-        workingDate={invoiceDate || getTodayFormatted()}
-        branchName={BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'}
-        cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
-        tenantId={currentTenant?.id}
-        printerType={salesOptions.printer_type}
-        onShiftClosed={(closedShift, newShift, closedIds) => {
-          setDrawerCashBalance(newShift.openingCashUsd);
-          if (closedIds && closedIds.length > 0) {
-            setInvoicesDirectory((prev) =>
-              prev.map((inv) =>
-                closedIds.includes(inv.id) || closedIds.includes(inv.invoiceNumber)
-                  ? { ...inv, closedInZReport: true, shiftClosed: true }
-                  : inv
-              )
+      {isMainReadingModalOpen && (
+        <MainReadingModal
+          isOpen={isMainReadingModalOpen}
+          onClose={() => setIsMainReadingModalOpen(false)}
+          invoices={mainReadingInvoices}
+          paidInOutList={mainReadingPaidInOut}
+          customerReceipts={mainReadingReceipts}
+          workingDate={invoiceDate || getTodayFormatted()}
+          branchName={BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'}
+          cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
+          tenantId={currentTenant?.id}
+          printerType={salesOptions.printer_type}
+          onShiftClosed={(closedShift, newShift, closedIds) => {
+            setDrawerCashBalance(newShift.openingCashUsd);
+            if (closedIds && closedIds.length > 0) {
+              setInvoicesDirectory((prev) =>
+                prev.map((inv) =>
+                  closedIds.includes(inv.id) || closedIds.includes(inv.invoiceNumber)
+                    ? { ...inv, closedInZReport: true, shiftClosed: true }
+                    : inv
+                )
+              );
+            }
+            setStatusNotice(
+              `Shift #${closedShift.shiftNumber} closed! Shift #${newShift.shiftNumber} opened with opening cash $${newShift.openingCashUsd.toFixed(2)}.`
             );
-          }
-          setStatusNotice(
-            `Shift #${closedShift.shiftNumber} closed! Shift #${newShift.shiftNumber} opened with opening cash $${newShift.openingCashUsd.toFixed(2)}.`
-          );
-        }}
-      />
+          }}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* 18. CUSTOMER LOOKUP DIRECTORY MODAL (ENTER KEY SHORTCUT)                  */}
       {/* ========================================================================= */}
-      <CustomerLookupModal
-        isOpen={isCustomerLookupModalOpen}
-        onClose={() => setIsCustomerLookupModalOpen(false)}
-        initialSearch={customerSearch}
-        customers={CUSTOMER_PRESETS.filter((c) => c.name)}
-        onSelectCustomer={handleSelectCustomerFromModal}
-      />
+      {isCustomerLookupModalOpen && (
+        <CustomerLookupModal
+          isOpen={isCustomerLookupModalOpen}
+          onClose={() => setIsCustomerLookupModalOpen(false)}
+          initialSearch={customerSearch}
+          customers={CUSTOMER_PRESETS.filter((c) => c.name)}
+          onSelectCustomer={handleSelectCustomerFromModal}
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* NO TRANSACTIONS EMPTY-STATE GUARD DIALOG                                  */}

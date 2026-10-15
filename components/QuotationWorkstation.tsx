@@ -5478,20 +5478,24 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
         </div>
       )}
       {/* Contact & Customer Directory Lookup Modals (Enter Key Shortcuts) */}
-      <ContactLookupModal
-        isOpen={isContactLookupModalOpen}
-        onClose={() => setIsContactLookupModalOpen(false)}
-        initialSearch={contactName}
-        contacts={crmContacts}
-        onSelectContact={handleSelectContactFromModal}
-      />
-      <CustomerLookupModal
-        isOpen={isCustomerLookupModalOpen}
-        onClose={() => setIsCustomerLookupModalOpen(false)}
-        initialSearch={customerSearch}
-        customers={SAMPLE_CUSTOMERS}
-        onSelectCustomer={handleSelectCustomerFromModal}
-      />
+      {isContactLookupModalOpen && (
+        <ContactLookupModal
+          isOpen={isContactLookupModalOpen}
+          onClose={() => setIsContactLookupModalOpen(false)}
+          initialSearch={contactName}
+          contacts={crmContacts}
+          onSelectContact={handleSelectContactFromModal}
+        />
+      )}
+      {isCustomerLookupModalOpen && (
+        <CustomerLookupModal
+          isOpen={isCustomerLookupModalOpen}
+          onClose={() => setIsCustomerLookupModalOpen(false)}
+          initialSearch={customerSearch}
+          customers={SAMPLE_CUSTOMERS}
+          onSelectCustomer={handleSelectCustomerFromModal}
+        />
+      )}
     </div>
   );
 }

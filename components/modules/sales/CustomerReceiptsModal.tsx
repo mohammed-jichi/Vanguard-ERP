@@ -216,10 +216,8 @@ export default function CustomerReceiptsModal({
       setReceiptsList(getCustomerReceipts());
     };
     window.addEventListener(CUSTOMER_RECEIPTS_UPDATED_EVENT, handleUpdated);
-    window.addEventListener('storage', handleUpdated);
     return () => {
       window.removeEventListener(CUSTOMER_RECEIPTS_UPDATED_EVENT, handleUpdated);
-      window.removeEventListener('storage', handleUpdated);
     };
   }, []);
 
