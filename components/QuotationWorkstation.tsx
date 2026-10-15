@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
+import { printElementById } from '@/lib/utils/printDocument';
 import {
   Search,
   Plus,
@@ -48,6 +49,25 @@ import DatePickerInput from './DatePickerInput';
 import { VANGUARD_SALES_ITEMS, SalesItem } from '@/app/backoffice/operations/SalesView';
 import { CRMContact, INITIAL_CONTACTS as INITIAL_CRM_CONTACTS } from './ContactsView';
 
+export const formatLiveTodayDate = (dateObj: Date = new Date()): string => {
+  const d = dateObj;
+  const day = String(d.getDate()).padStart(2, '0');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
+export const getMonthStartDate = (dateObj: Date = new Date()): string => {
+  const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+  return formatLiveTodayDate(d);
+};
+
+export const getMonthEndDate = (dateObj: Date = new Date()): string => {
+  const d = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0);
+  return formatLiveTodayDate(d);
+};
+
 export interface QuotationItem {
   id: string;
   item: SalesItem;
@@ -83,7 +103,7 @@ export interface QuotationRecord {
   createdAt: string;
 }
 
-// Initial sample quotations
+// Initial sample quotations (using dynamic current working date)
 export const INITIAL_QUOTATIONS: QuotationRecord[] = [
   {
     id: 'QT-001',
@@ -93,8 +113,8 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     customerId: '31',
     phone: '+961 70 123 456',
     branch: 'Zeit w zaytoun ljanoub',
-    date: '08-Sep-2026',
-    deliveryDate: '15-Sep-2026',
+    date: formatLiveTodayDate(),
+    deliveryDate: formatLiveTodayDate(),
     currency: 'USD',
     source: 'WhatsApp / Social CRM',
     notes: 'Payment within 15 days upon delivery. Special seasonal price offer.',
@@ -124,7 +144,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     isTaxEnabled: false,
     salesman: 'Hiba Aloulou',
     status: 'Sent',
-    createdAt: '08-Sep-2026 10:15 AM'
+    createdAt: `${formatLiveTodayDate()} 10:15 AM`
   },
   {
     id: 'QT-002',
@@ -134,8 +154,8 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     customerId: '14',
     phone: '+961 03 987 654',
     branch: 'Zeit w zaytoun ljanoub',
-    date: '05-Sep-2026',
-    deliveryDate: '12-Sep-2026',
+    date: formatLiveTodayDate(),
+    deliveryDate: formatLiveTodayDate(),
     currency: 'USD',
     source: 'Direct Walk-in',
     notes: 'Bulk retail quotation with wholesale discount.',
@@ -157,7 +177,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     isTaxEnabled: false,
     salesman: 'Mahdi',
     status: 'Approved',
-    createdAt: '05-Sep-2026 14:30 PM'
+    createdAt: `${formatLiveTodayDate()} 14:30 PM`
   }
 ];
 
@@ -299,71 +319,85 @@ export function downloadQuotationPdfFile(doc: QuotationRecord, customFilename?: 
   <title>${filename}</title>
   <style>
     @page { size: auto; margin: 8mm; } html, body { width: 100% !important; height: auto !important; }
-    .print-landscape { page-orientation: landscape; }
-    .print-portrait { page-orientation: portrait; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #0f172a; padding: 20px; line-height: 1.5; }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
-    .doc-title { font-size: 26px; font-weight: 800; letter-spacing: 1px; color: #0f172a; }
-    .branch-name { font-size: 13px; color: #64748b; font-weight: 600; margin-top: 4px; }
-    .meta-box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-    .meta-card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; background: #fafafa; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px; }
+    .company-title { font-size: 16px; font-weight: 800; color: #0f172a; }
+    .company-sub { font-size: 12px; color: #475569; font-weight: 600; }
+    .doc-title { font-size: 22px; font-weight: 900; letter-spacing: 1px; color: #0f172a; text-align: center; margin: 10px 0; }
+    .meta-box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .meta-card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; background: #fafafa; font-size: 12px; }
     .meta-card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 6px; letter-spacing: 0.5px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
-    th { background: #f1f5f9; border-bottom: 2px solid #0f172a; padding: 10px 8px; text-align: left; font-size: 12px; font-weight: 700; color: #0f172a; }
-    td { border-bottom: 1px solid #e2e8f0; padding: 10px 8px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
+    th { background: #f1f5f9; border-bottom: 2px solid #0f172a; padding: 8px 6px; text-align: left; font-weight: 700; color: #0f172a; }
+    td { border-bottom: 1px solid #e2e8f0; padding: 8px 6px; }
     .num { font-family: Consolas, monospace; }
-    .total-box { margin-left: auto; width: 280px; border: 2px solid #0f172a; border-radius: 8px; padding: 14px; background: #fafafa; }
-    .total-row { display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; color: #0f172a; }
-    .total-lbp { margin-top: 6px; font-size: 12px; color: #64748b; text-align: right; }
+    .total-box { margin-left: auto; width: 280px; border: 2px solid #0f172a; border-radius: 8px; padding: 12px; background: #fafafa; }
+    .total-row { display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: #0f172a; }
+    .total-lbp { margin-top: 6px; font-size: 12px; color: #166534; font-weight: 700; text-align: right; }
     @media print { body { padding: 0; } }
   </style>
 </head>
 <body>
   <div class="header">
     <div>
-      <div class="doc-title">{t('quotation', 'QUOTATION')}</div>
-      <div class="branch-name">${doc.branch || 'Zeit w zaytoun ljanoub'}</div>
+      <div class="company-title">Southern Olive and Oil Products S.A.R.L.</div>
+      <div class="company-sub">منتوجات زيت وزيتون الجنوب ش.م.م</div>
+      <div style="font-size: 11px; color: #64748b; font-family: monospace;">Tax ID / MOF #: MOF-4023778</div>
+      <div style="font-size: 11px; color: #64748b;">Old Saida Road, Choueifat, Lebanon • Tel: +961 05 430 000</div>
     </div>
-    <div style="text-align: right; font-size: 12px;">
-      <div><strong>{t('quotation', 'Quotation #:')}</strong> <span class="num">${doc.quotationNo}</span></div>
-      <div><strong>{t('date', 'Date:')}</strong> <span class="num">${doc.date}</span></div>
-      <div><strong>{t('currency', 'Currency:')}</strong> <strong>${doc.currency}</strong></div>
+    <div style="text-align: right; font-size: 11px; color: #475569;">
+      <div style="font-weight: 700; color: #0f172a;">Facility: [1300-01] Main</div>
+      <div>Industrial Zone, Old Saida Rd</div>
+      <div>Cell: +961 70 000 000</div>
+      <div>Email: sales@southernolive-lb.com</div>
+      <div style="font-family: monospace; margin-top: 4px;">Page 1 of 1</div>
     </div>
+  </div>
+
+  <div class="doc-title">QUOTATION</div>
+  <div style="text-align: center; margin-bottom: 15px; font-family: monospace; font-size: 13px; font-weight: 700;">
+    Quotation #: ${doc.quotationNo || '1002601'} • Date: ${doc.date || formatLiveTodayDate()}
   </div>
 
   <div class="meta-box-grid">
     <div class="meta-card">
-      <div class="meta-card-title">{t('quotation_to', 'Quotation To')}</div>
-      <div><strong>{t('customer', 'Customer:')}</strong> ${doc.customerName || 'N/A'}</div>
-      ${doc.phone ? `<div><strong>{t('phone', 'Phone:')}</strong> <span class="num">${doc.phone}</span></div>` : ''}
-      ${doc.contactPerson ? `<div><strong>{t('contact', 'Contact:')}</strong> ${doc.contactPerson}</div>` : ''}
+      <div class="meta-card-title">Customer Details</div>
+      <div><strong>Customer:</strong> ${doc.customerName || 'N/A'}</div>
+      ${doc.customerId ? `<div><strong>Acc #:</strong> <span class="num">${doc.customerId}</span></div>` : ''}
+      ${doc.phone ? `<div><strong>Phone:</strong> <span class="num">${doc.phone}</span></div>` : ''}
+      ${doc.contactPerson ? `<div><strong>Contact:</strong> ${doc.contactPerson}</div>` : ''}
     </div>
     <div class="meta-card">
-      <div class="meta-card-title">{t('order_information', 'Order Information')}</div>
-      <div><strong>{t('delivery_date', 'Delivery Date:')}</strong> ${doc.deliveryDate || 'N/A'}</div>
-      <div><strong>{t('source', 'Source:')}</strong> ${doc.source || 'N/A'}</div>
-      <div><strong>{t('salesman', 'Salesman:')}</strong> ${doc.salesman || 'Mahdi'}</div>
+      <div class="meta-card-title">Quotation & Terms</div>
+      <div><strong>Quotation Date:</strong> <span class="num">${doc.date || formatLiveTodayDate()}</span></div>
+      <div><strong>Delivery Date:</strong> <span class="num">${doc.deliveryDate || doc.date || formatLiveTodayDate()}</span></div>
+      <div><strong>Currency:</strong> <strong>${doc.currency || 'USD'}</strong></div>
+      <div><strong>Sales Rep:</strong> ${doc.salesman || 'Hiba Aloulou'}</div>
     </div>
   </div>
 
   <table>
     <thead>
       <tr>
-        <th style="width: 50px; text-align: center;">{t('qty', 'Qty')}</th>
-        <th>{t('description', 'Description')}</th>
-        <th style="width: 70px; text-align: center;">{t('unit', 'Unit')}</th>
-        <th style="width: 100px; text-align: right;">{t('unit_price', 'Unit Price')}</th>
-        <th style="width: 100px; text-align: right;">{t('total_price', 'Total Price')}</th>
+        <th style="width: 40px; text-align: center;">#</th>
+        <th style="width: 50px; text-align: center;">Qty</th>
+        <th>Description</th>
+        <th style="width: 60px; text-align: center;">Unit</th>
+        <th style="width: 90px; text-align: right;">Unit Price</th>
+        <th style="width: 60px; text-align: right;">Disc %</th>
+        <th style="width: 90px; text-align: right;">Total Price</th>
       </tr>
     </thead>
     <tbody>
-      ${doc.items.map(item => `
+      ${(doc.items || []).map((item, idx) => `
         <tr>
+          <td style="text-align: center;" class="num">${idx + 1}</td>
           <td style="text-align: center;" class="num"><strong>${item.qty}</strong></td>
-          <td>${item.item?.name || 'Item'} ${item.item?.code ? `<span style="color:#64748b;font-size:11px;">(${item.item.code})</span>` : ''}</td>
+          <td>${item.item?.name || 'Item'} ${item.item?.code ? `<span style="color:#64748b;font-size:10px;">(${item.item.code})</span>` : ''}</td>
           <td style="text-align: center;" class="num">${item.item?.unit || 'BOT'}</td>
-          <td style="text-align: right;" class="num">${item.unitPrice.toFixed(2)} $</td>
-          <td style="text-align: right;" class="num"><strong>${item.total.toFixed(2)} $</strong></td>
+          <td style="text-align: right;" class="num">${Number(item.unitPrice || 0).toFixed(2)} $</td>
+          <td style="text-align: right;" class="num">${Number(item.discountPercent || 0)}%</td>
+          <td style="text-align: right;" class="num"><strong>${Number(item.total || 0).toFixed(2)} $</strong></td>
         </tr>
       `).join('')}
     </tbody>
@@ -371,11 +405,11 @@ export function downloadQuotationPdfFile(doc: QuotationRecord, customFilename?: 
 
   <div class="total-box">
     <div class="total-row">
-      <span>{t('grand_total', 'Grand Total:')}</span>
-      <span class="num">${doc.grandTotalUSD.toFixed(2)} $</span>
+      <span>Grand Total (USD):</span>
+      <span class="num">${Number(doc.grandTotalUSD || 0).toFixed(2)} $</span>
     </div>
     <div class="total-lbp">
-      {t('equivalent_lbp', 'Equivalent LBP:')} <span class="num">${doc.grandTotalLL.toLocaleString()} L.L.</span>
+      Grand Total (LBP): <span class="num">${Math.round(doc.grandTotalLL || ((doc.grandTotalUSD || 0) * 89500)).toLocaleString()} LBP</span>
     </div>
   </div>
 </body>
@@ -827,7 +861,7 @@ export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
     totalLL: 1793580,
     isTaxEnabled: false,
     discountPercent: 0,
-    date: '08-Sep-2026'
+    date: formatLiveTodayDate()
   },
   {
     id: 'REC-002',
@@ -853,7 +887,7 @@ export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
     totalLL: 4718440,
     isTaxEnabled: false,
     discountPercent: 5,
-    date: '05-Sep-2026'
+    date: formatLiveTodayDate()
   }
 ];
 
@@ -893,10 +927,17 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
         setCustomerType('Customer');
         setLinkedEventName(evName ? decodeURIComponent(evName) : 'Chami House');
         setSelectedBranch('Zeit w zaytoun ljanoub');
-        setQuotationDate('11-Sep-2026');
-        setDeliveryDate('11-Sep-2026');
+        setQuotationDate(formatLiveTodayDate());
+        setDeliveryDate(formatLiveTodayDate());
       }
     }
+  }, []);
+
+  // Ensure quotation date and delivery date strictly default to today's live working date on mount
+  useEffect(() => {
+    const today = formatLiveTodayDate();
+    setQuotationDate(today);
+    setDeliveryDate(today);
   }, []);
 
   // Close customer dropdown on outside click
@@ -956,8 +997,8 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
   // Quotation From state
   const [selectedBranch, setSelectedBranch] = useState('Zeit w zaytoun ljanoub');
-  const [quotationDate, setQuotationDate] = useState('08-Sep-2026');
-  const [deliveryDate, setDeliveryDate] = useState('dd-----yyyy');
+  const [quotationDate, setQuotationDate] = useState<string>(() => formatLiveTodayDate());
+  const [deliveryDate, setDeliveryDate] = useState<string>(() => formatLiveTodayDate());
   const [currency, setCurrency] = useState<'USD' | 'EUR' | 'LBP'>('USD');
   const [selectedSource, setSelectedSource] = useState('Select Source');
   const [quotationNotes, setQuotationNotes] = useState('');
@@ -1053,8 +1094,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
   const [googleDriveAccount, setGoogleDriveAccount] = useState('mohammed.jichi@gmail.com');
   const [googleDriveName, setGoogleDriveName] = useState('mohammed jichi');
 
-  // 3. Chrome-Style Print Preview Fullscreen & Settings (Screenshot 3 & User Audio)
-  const [isChromePrintPreviewOpen, setIsChromePrintPreviewOpen] = useState(false);
+  // Chrome-Style Print Destination
   const [printDestination, setPrintDestination] = useState('HP LaserJet MFP M139-M142');
   const [printPages, setPrintPages] = useState('All');
   const [printPagesCustom, setPrintPagesCustom] = useState('1');
@@ -1150,8 +1190,8 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
   // Preview Quotations filters
   const [previewTab, setPreviewTab] = useState<'All Quotations' | 'Discounts' | 'Back Orders' | 'Layout' | 'All Salesman' | 'Branches'>('All Quotations');
-  const [previewFromDate, setPreviewFromDate] = useState('01-Sep-2026');
-  const [previewToDate, setPreviewToDate] = useState('30-Sep-2026');
+  const [previewFromDate, setPreviewFromDate] = useState<string>(() => getMonthStartDate());
+  const [previewToDate, setPreviewToDate] = useState<string>(() => getMonthEndDate());
   const [previewSearch, setPreviewSearch] = useState('');
   const [quotationsList, setQuotationsList] = useState<QuotationRecord[]>(INITIAL_QUOTATIONS);
 
@@ -1408,7 +1448,8 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
     setDiscountPercent(0);
     setDiscountAmountManual(0);
     setQuotationNotes('');
-    setDeliveryDate('dd-----yyyy');
+    setQuotationDate(formatLiveTodayDate());
+    setDeliveryDate(formatLiveTodayDate());
     setSelectedCustomer(null);
     setCustomerSearch('');
     setContactName('');
@@ -3917,375 +3958,6 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* 3. CHROME-STYLE PRINT PREVIEW FULLSCREEN & SETTINGS (Screenshot 3)        */}
-      {/* ========================================================================= */}
-      {isChromePrintPreviewOpen && (
-        <div className="fixed inset-0 bg-[#3c4043] z-[75] flex font-sans select-none overflow-hidden animate-fade-in">
-          {/* Left Canvas Document Preview */}
-          <div className="flex-1 overflow-auto p-8 flex justify-center items-start bg-[#525659]">
-            {(() => {
-              const doc = savedQuotationForPrint || quotationsList[0] || {
-                id: 'QT-DEFAULT',
-                quotationNo: '27',
-                customerName: 'Mr Jad Youssef',
-                phone: '0022236818688',
-                branch: 'Zeit w zaytoun ljanoub',
-                date: '08-Sep-26',
-                currency: 'USD',
-                notes: '',
-                items: quotationItems.length > 0 ? quotationItems : [
-                  {
-                    id: 'ITEM-DEMO',
-                    item: { code: 'VNG250ML', name: 'خل تفاح 250مل', price: 0.50, unit: 'BOT' } as any,
-                    qty: 1,
-                    unitPrice: 0.50,
-                    discountPercent: 0,
-                    total: 0.50
-                  }
-                ],
-                grandTotalUSD: 0.50,
-                grandTotalLL: 45000
-              };
-
-                return (
-                <div
-                  style={{
-                    filter: printColor === 'Black and white' ? 'grayscale(100%)' : 'none'
-                  }}
-                  className={`printable-document vanguard-printable bg-white shadow-2xl p-10 w-full text-slate-900 font-sans border border-slate-400 flex flex-col justify-between my-2 transition-all ${
-                    printLayout === 'Landscape' ? 'max-w-[1060px] min-h-[720px]' : 'max-w-[800px] min-h-[1050px]'
-                  }`}
-                >
-                  <div>
-                    {/* Standardized 3-Zone Corporate Header */}
-                    <Corporate3ZoneHeader
-                      documentTitle="QUOTATION"
-                      voucherCode={cleanDocumentNumber(doc.quotationNo || '1002601')}
-                      transactionDate={doc.date || '08-Sep-26'}
-                      status="ACTIVE"
-                      facilityName={doc.branch || 'Facility: Choueifat Main Plant'}
-                    />
-
-                    {/* Customer Info and Quotation Info Boxes */}
-                    <div className="grid grid-cols-2 gap-4 mt-6">
-                      <div className="border border-slate-700 rounded-xl p-3 min-h-[90px] text-xs space-y-1">
-                        <div className="font-bold text-slate-900">
-                          {t('contact', 'Contact:')} <span className="font-normal">{doc.customerName || 'Mr Jad Youssef'}</span>
-                        </div>
-                        <div className="font-bold text-slate-900">
-                          {t('mobile', 'Mobile:')} <span className="font-normal font-mono">{doc.phone || '0022236818688'}</span>
-                        </div>
-                        <div className="font-bold text-slate-900">
-                          {t('address', 'Address:')} <span className="font-normal">{t('saida_south_lebanon', 'Saida, South Lebanon')}</span>
-                        </div>
-                      </div>
-
-                      <div className="border border-slate-700 rounded-xl p-3 min-h-[90px] text-xs space-y-1">
-                        <div className="font-bold text-slate-900">
-                          {t('quotation', 'Quotation #:')} <span className="font-normal font-mono">{cleanDocumentNumber(doc.quotationNo || '1002601')}</span>
-                        </div>
-                        <div className="font-bold text-slate-900">
-                          {t('date', 'Date:')} <span className="font-normal">{doc.date || '08-Sep-26'}</span>
-                        </div>
-                        <div className="font-bold text-slate-900">
-                          {t('branch', 'Branch:')} <span className="font-normal">{doc.branch || 'Zeit w zaytoun ljanoub'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Items Table */}
-                    <table className="w-full mt-6 border-collapse text-xs">
-                      <thead>
-                        <tr className="border-b-2 border-slate-800 text-slate-800 font-bold">
-                          <th className="py-2 text-left w-12">{t('item', 'Item')}</th>
-                          <th className="py-2 text-left">{t('description', 'Description')}</th>
-                          <th className="py-2 text-center w-16">{t('unit', 'Unit')}</th>
-                          <th className="py-2 text-right w-16">{t('qty', 'Qty')}</th>
-                          <th className="py-2 text-right w-24">{t('unit_price', 'Unit Price $')}</th>
-                          <th className="py-2 text-right w-16">{t('disc', 'Disc %')}</th>
-                          <th className="py-2 text-right w-24">{t('total', 'Total $')}</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-300">
-                        {doc.items.map((row: any, idx: number) => (
-                          <tr key={row.id || idx} className="text-slate-800">
-                            <td className="py-2 font-mono text-slate-600">{idx + 1}</td>
-                            <td className="py-2 font-medium">{row.item?.name || 'خل تفاح 250مل'}</td>
-                            <td className="py-2 text-center text-slate-600">{row.item?.unit || 'BOT'}</td>
-                            <td className="py-2 text-right font-mono">{row.qty}</td>
-                            <td className="py-2 text-right font-mono">{row.unitPrice.toFixed(2)}</td>
-                            <td className="py-2 text-right font-mono">{row.discountPercent}%</td>
-                            <td className="py-2 text-right font-mono font-semibold">{row.total.toFixed(2)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-
-          {/* Right Sidebar: Chrome Print Controls */}
-          <div className="w-80 bg-[#202124] text-white flex flex-col justify-between border-l border-slate-700/80 p-5 overflow-y-auto text-xs shrink-0">
-            <div className="space-y-4">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-slate-700 pb-3">
-                <span className="text-sm font-semibold text-slate-100">{t('print', 'Print')}</span>
-                <span className="text-slate-400 text-[11px]">1 sheet of paper</span>
-              </div>
-
-              {/* Destination */}
-              <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">{t('destination', 'Destination')}</label>
-                <div className="relative">
-                  <select
-                    value={printDestination}
-                    onChange={(e) => setPrintDestination(e.target.value)}
-                    className="w-full bg-[#2d2e31] border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8"
-                  >
-                    <option value="HP LaserJet MFP M139-M142">{t('hp_laserjet_mfp_m139m142', 'HP LaserJet MFP M139-M142')}</option>
-                    <option value="Save as PDF">{t('save_as_pdf', 'Save as PDF')}</option>
-                    <option value="Microsoft Print to PDF">{t('microsoft_print_to_pdf', 'Microsoft Print to PDF')}</option>
-                    <option value="Save to Google Drive">{t('save_to_google_drive', 'Save to Google Drive')}</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Pages */}
-              <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">{t('pages', 'Pages')}</label>
-                <div className="relative">
-                  <select
-                    value={printPages}
-                    onChange={(e) => setPrintPages(e.target.value)}
-                    className="w-full bg-[#2d2e31] border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8"
-                  >
-                    <option value="All">{t('all', 'All')}</option>
-                    <option value="Custom">{t('custom', 'Custom')}</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
-                </div>
-                {printPages === 'Custom' && (
-                  <div className="pt-1">
-                    <input
-                      type="text"
-                      placeholder={t('eg_12', 'e.g. 1-2')}
-                      value={printPagesCustom}
-                      onChange={(e) => setPrintPagesCustom(e.target.value)}
-                      className="w-full bg-[#2d2e31] border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white placeholder:text-slate-500 focus:outline-none"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Copies */}
-              <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">{t('copies', 'Copies')}</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={printCopies}
-                  onChange={(e) => setPrintCopies(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-20 bg-[#2d2e31] border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none"
-                />
-              </div>
-
-              {/* Layout */}
-              <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">{t('layout', 'Layout')}</label>
-                <div className="relative">
-                  <select
-                    value={printLayout}
-                    onChange={(e) => setPrintLayout(e.target.value as any)}
-                    className="w-full bg-[#2d2e31] border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8"
-                  >
-                    <option value="Portrait">{t('portrait', 'Portrait')}</option>
-                    <option value="Landscape">{t('landscape', 'Landscape')}</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Color */}
-              <div className="space-y-1">
-                <label className="text-slate-300 text-[11px] block">{t('color', 'Color')}</label>
-                <div className="relative">
-                  <select
-                    value={printColor}
-                    onChange={(e) => setPrintColor(e.target.value as any)}
-                    className="w-full bg-[#2d2e31] border border-slate-600 rounded px-3 py-2 text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8"
-                  >
-                    <option value="Color">{t('color', 'Color')}</option>
-                    <option value="Black and white">{t('black_and_white', 'Black and white')}</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* More settings Accordion */}
-              <div className="pt-2 border-t border-slate-700">
-                <div
-                  onClick={() => setPrintMoreSettingsOpen(!printMoreSettingsOpen)}
-                  className="flex items-center justify-between text-slate-300 hover:text-white cursor-pointer py-1.5"
-                >
-                  <span className="font-medium text-xs">{t('more_settings', 'More settings')}</span>
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${printMoreSettingsOpen ? 'rotate-180' : ''}`} />
-                </div>
-
-                {printMoreSettingsOpen && (
-                  <div className="space-y-3.5 pt-2 animate-fade-in text-xs">
-                    {/* Paper size */}
-                    <div className="space-y-1">
-                      <label className="text-slate-400 text-[11px] block">{t('paper_size', 'Paper size')}</label>
-                      <select
-                        value={printPaperSize}
-                        onChange={(e) => setPrintPaperSize(e.target.value)}
-                        className="w-full bg-[#2d2e31] border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none cursor-pointer"
-                      >
-                        {PAPER_SIZE_OPTIONS.map((size) => (
-                          <option key={size} value={size}>{size}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Pages per sheet */}
-                    <div className="space-y-1">
-                      <label className="text-slate-400 text-[11px] block">{t('pages_per_sheet', 'Pages per sheet')}</label>
-                      <select
-                        value={printPagesPerSheet}
-                        onChange={(e) => setPrintPagesPerSheet(parseInt(e.target.value))}
-                        className="w-full bg-[#2d2e31] border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none cursor-pointer"
-                      >
-                        {PAGES_PER_SHEET_OPTIONS.map((p) => (
-                          <option key={p} value={p}>{p}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Scale */}
-                    <div className="space-y-1">
-                      <label className="text-slate-400 text-[11px] block">{t('scale', 'Scale')}</label>
-                      <select
-                        value={printScale}
-                        onChange={(e) => setPrintScale(e.target.value)}
-                        className="w-full bg-[#2d2e31] border border-slate-600 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none cursor-pointer"
-                      >
-                        {SCALE_OPTIONS.map((sc) => (
-                          <option key={sc} value={sc}>{sc}</option>
-                        ))}
-                      </select>
-                      {printScale === 'Custom' && (
-                        <div className="flex items-center gap-2 pt-1">
-                          <input
-                            type="number"
-                            value={printCustomScale}
-                            onChange={(e) => setPrintCustomScale(parseInt(e.target.value) || 100)}
-                            className="w-20 bg-[#2d2e31] border border-slate-600 rounded px-2 py-1 text-xs text-white"
-                          />
-                          <span className="text-slate-400 text-xs">%</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Two-sided */}
-                    <div className="space-y-1 pt-1">
-                      <label className="text-slate-400 text-[11px] block">{t('twosided', 'Two-sided')}</label>
-                      <label className="flex items-center gap-2 text-slate-200 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={printTwoSided}
-                          onChange={(e) => setPrintTwoSided(e.target.checked)}
-                          className="rounded border-slate-600 text-blue-500"
-                        />
-                        <span>{t('print_on_both_sides', 'Print on both sides')}</span>
-                      </label>
-                      {printTwoSided && (
-                        <div className="pl-6 space-y-1 pt-1 text-slate-300">
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="twoSidedFlip"
-                              checked={printTwoSidedFlip === 'long'}
-                              onChange={() => setPrintTwoSidedFlip('long')}
-                            />
-                            <span>{t('flip_on_long_edge', 'Flip on long edge')}</span>
-                          </label>
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="twoSidedFlip"
-                              checked={printTwoSidedFlip === 'short'}
-                              onChange={() => setPrintTwoSidedFlip('short')}
-                            />
-                            <span>{t('flip_on_short_edge', 'Flip on short edge')}</span>
-                          </label>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Print using system dialog link */}
-                    <div className="pt-3 border-t border-slate-700/80">
-                      <button
-                        type="button"
-                        onClick={() => setIsSystemPrintModalOpen(true)}
-                        className="text-[#8ab4f8] hover:underline flex items-center gap-1.5 cursor-pointer text-left"
-                      >
-                        <span>Print using system dialog... (Ctrl+Shift+P)</span>
-                        <ExternalLink className="w-3 h-3 shrink-0" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Bottom Actions */}
-            <div className="border-t border-slate-700 pt-4 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsChromePrintPreviewOpen(false)}
-                className="border border-slate-600 hover:bg-slate-700 text-slate-200 px-5 py-2 rounded-full text-xs font-medium cursor-pointer transition-colors"
-              >
-                {t('cancel', 'Cancel')}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const doc = savedQuotationForPrint || quotationsList[0];
-                  if (printDestination === 'Save as PDF' || printDestination === 'Microsoft Print to PDF') {
-                    if (doc) {
-                      downloadQuotationPdfFile(doc, `Quotation_${doc.quotationNo || '27'}.pdf`);
-                    }
-                    setIsChromePrintPreviewOpen(false);
-                    notify(`Saved Quotation_${doc?.quotationNo || '27'}.pdf to your computer Downloads!`);
-                  } else if (printDestination === 'Save to Google Drive') {
-                    if (doc) {
-                      downloadQuotationPdfFile(doc, 'Quotations.pdf');
-                    }
-                    window.open('https://drive.google.com/drive/my-drive', '_blank');
-                    setIsChromePrintPreviewOpen(false);
-                    notify('Quotations.pdf downloaded to computer and real Google Drive opened!');
-                  } else {
-                    window.print();
-                    setIsChromePrintPreviewOpen(false);
-                    notify(`Printed to ${printDestination} (${printPaperSize}, ${printCopies} copy)`);
-                  }
-                }}
-                className="bg-[#8ab4f8] hover:bg-[#aecbfa] text-[#202124] px-6 py-2 rounded-full text-xs font-bold shadow-sm cursor-pointer transition-colors"
-              >
-                {printDestination === 'Save as PDF' || printDestination === 'Microsoft Print to PDF'
-                  ? 'Save'
-                  : printDestination === 'Save to Google Drive'
-                  ? 'Save to Drive'
-                  : 'Print'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ========================================================================= */}
       {/* 4. WINDOWS CLASSIC SYSTEM PRINT DIALOG (Screenshot 4 & User Audio)        */}
@@ -4455,7 +4127,6 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 onClick={() => {
                   window.print();
                   setIsSystemPrintModalOpen(false);
-                  setIsChromePrintPreviewOpen(false);
                   notify(`Printed successfully to ${selectedSystemPrinter}`);
                 }}
                 className="bg-[#e1e1e1] hover:bg-[#e5f1fb] border border-[#0078d7] text-slate-900 px-5 py-1 rounded-xs text-xs font-normal cursor-pointer shadow-2xs"
@@ -4777,8 +4448,19 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
       {isPrintPreviewOpen && (
         <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-xs z-[60] flex flex-col font-sans select-none overflow-hidden animate-fade-in">
           {/* Top Action Bar (Above PDF toolbar) */}
-          <div className="bg-background border-b border-slate-300 px-4 py-2 flex items-center justify-between shadow-2xs">
+          <div className="bg-slate-100 dark:bg-slate-800 border-b border-slate-300 dark:border-slate-700 px-4 py-2 flex items-center justify-between shadow-xs">
             <div className="flex items-center gap-2">
+              {/* Print Button */}
+              <button
+                type="button"
+                onClick={() => printElementById('printable-quotation', 'Quotation')}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded shadow-sm text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                title={t('print_quotation', 'Print Quotation')}
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>{t('print', 'Print')}</span>
+              </button>
+
               {/* Export Button (Downloads quotation PDF directly to Downloads folder) */}
               <button
                 type="button"
@@ -4791,7 +4473,8 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     notify('No quotation selected to export.');
                   }
                 }}
-                className="bg-primary hover:bg-primary text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded shadow-sm text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                title={t('export_pdf', 'Export PDF')}
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>{t('export', 'Export')}</span>
@@ -4809,25 +4492,32 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   setFromEmailSearch('');
                   setIsSendEmailModalOpen(true);
                 }}
-                className="bg-primary hover:bg-primary text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="bg-slate-700 hover:bg-slate-800 text-white px-4 py-1.5 rounded shadow-sm text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                title={t('send_email', 'Send Email')}
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>{t('send_email', 'Send Email')}</span>
               </button>
 
-              {/* Close Button */}
+              {/* Close Button - Highly Visible with red contrast */}
               <button
                 type="button"
                 onClick={() => setIsPrintPreviewOpen(false)}
-                className="bg-destructive hover:bg-destructive text-white px-3 py-1 rounded text-xs font-semibold shadow-2xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-4 py-1.5 rounded shadow-sm flex items-center gap-1.5 text-xs cursor-pointer transition-colors"
+                title={t('close', 'Close')}
               >
-                <X className="w-3.5 h-3.5" />
-                <span>{t('close', 'Close')}</span>
+                <X className="w-4 h-4 stroke-[2.5]" />
+                <span>{t('close', '× Close')}</span>
               </button>
             </div>
 
-            <div className="text-xs text-blue-600 hover:underline cursor-pointer">
-              {t('watch_tutorial', 'Watch Tutorial')}
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-500 font-mono hidden sm:inline">
+                {savedQuotationForPrint?.quotationNo ? `Quotation #${cleanDocumentNumber(savedQuotationForPrint.quotationNo)}` : 'Quotation Preview'}
+              </span>
+              <div className="text-xs text-blue-600 hover:underline cursor-pointer">
+                {t('watch_tutorial', 'Watch Tutorial')}
+              </div>
             </div>
           </div>
 
@@ -4935,7 +4625,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     <div
                       onClick={() => {
                         setIsThreeDotsMenuOpen(false);
-                        alert(`Document Properties:\n\nQuotation: ${savedQuotationForPrint?.quotationNo || 'QT-2026-0043'}\nCreated: ${savedQuotationForPrint?.date || '08-Sep-2026'}\nCustomer: ${savedQuotationForPrint?.customerName || 'N/A'}\nSystem: Vanguard ERP - Southern Olive Oil`);
+                        alert(`Document Properties:\n\nQuotation: ${savedQuotationForPrint?.quotationNo || 'QT-2026-0043'}\nCreated: ${savedQuotationForPrint?.date || formatLiveTodayDate()}\nCustomer: ${savedQuotationForPrint?.customerName || 'N/A'}\nSystem: Vanguard ERP - Southern Olive Oil`);
                       }}
                       className="px-3 py-1.5 hover:bg-slate-700 cursor-pointer border-t border-slate-700"
                     >
@@ -4945,10 +4635,10 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                 )}
               </div>
 
-              {/* Print Button (Opens Chrome-Style Print Preview matching Screenshot 3) */}
+              {/* Print Button (Direct Native Document Print) */}
               <button
                 type="button"
-                onClick={() => setIsChromePrintPreviewOpen(true)}
+                onClick={() => printElementById('printable-quotation', 'Quotation')}
                 className="p-1.5 rounded hover:bg-slate-700 text-slate-300 hover:text-white cursor-pointer transition-colors"
                 title={t('print_quotation', 'Print Quotation')}
               >
@@ -5022,119 +4712,155 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
               {(() => {
                 const doc = savedQuotationForPrint || quotationsList[0] || {
                   id: 'QT-DEFAULT',
-                  quotationNo: '28',
-                  customerName: 'Mauritania Mauritania',
-                  phone: '0022236818688',
+                  quotationNo: '1002601',
+                  customerName: 'Abou Hamzeh Nuts',
+                  phone: '+961 70 123 456',
                   branch: 'Zeit w zaytoun ljanoub',
-                  date: '08-Sep-26',
+                  date: formatLiveTodayDate(),
+                  deliveryDate: formatLiveTodayDate(),
                   currency: 'USD',
                   notes: '',
                   items: quotationItems.length > 0 ? quotationItems : [
                     {
                       id: 'ITEM-DEMO',
-                      item: { code: 'AGT', name: 'حمص 1 كغ AGT', price: 2.22, unit: 'KG' } as any,
-                      qty: 1,
-                      unitPrice: 2.22,
+                      item: { code: 'CACV250MLB103-1', name: 'خل تفاح 250مل', price: 0.50, unit: 'BOT' } as any,
+                      qty: 24,
+                      unitPrice: 0.50,
                       discountPercent: 0,
-                      total: 2.22
+                      total: 12.00
                     }
                   ],
-                  grandTotalUSD: 2.22,
-                  grandTotalLL: 199800
+                  grandTotalUSD: 12.00,
+                  grandTotalLL: 1074000
                 };
+
+                const calcSubtotal = doc.subtotal !== undefined ? doc.subtotal : (doc.items ? doc.items.reduce((acc, it) => acc + (it.total || 0), 0) : 0);
+                const calcDiscount = doc.discountAmount !== undefined ? doc.discountAmount : 0;
+                const calcTax = doc.taxAmount !== undefined ? doc.taxAmount : 0;
+                const calcGrandTotalUSD = doc.grandTotalUSD !== undefined ? doc.grandTotalUSD : (calcSubtotal - calcDiscount + calcTax);
+                const calcGrandTotalLL = doc.grandTotalLL !== undefined ? doc.grandTotalLL : Math.round(calcGrandTotalUSD * 89500);
 
                 return (
                   <div
+                    id="printable-quotation"
                     style={{
                       transform: `scale(${pdfZoom / 100}) rotate(${pdfRotation}deg)`,
                       transformOrigin: 'top center',
                       transition: 'transform 0.15s ease'
                     }}
-                    className="bg-white shadow-2xl p-10 max-w-[840px] w-full min-h-[1120px] text-slate-900 font-sans border border-slate-300 flex flex-col justify-between relative my-4"
+                    className="bg-white shadow-2xl p-6 sm:p-7 max-w-[800px] w-full text-slate-900 font-sans border border-slate-300 flex flex-col justify-between relative mx-auto my-2 min-h-0 print:m-0 print:p-4 print:shadow-none print:border-none print:max-w-none"
                   >
-                    {/* Top Sheet Header */}
                     <div>
-                      {/* Logo and Quotation Title */}
-                      <div className="flex items-center justify-between pb-3 border-b-2 border-slate-800">
-                        <div className="flex flex-col">
-                          <span className="text-2xl font-black text-slate-900 tracking-wider uppercase">{t('quotation', 'QUOTATION')}</span>
-                          <span className="text-xs text-slate-600 font-medium">Branch: {doc.branch || 'Zeit w zaytoun ljanoub'}</span>
-                        </div>
+                      {/* Standardized 3-Zone Corporate Header with Southern Olive & Vanguard Branding */}
+                      <Corporate3ZoneHeader
+                        companyName="Southern Olive and Oil Products S.A.R.L."
+                        companyArabicName="منتوجات زيت وزيتون الجنوب ش.م.م"
+                        companyTaxNumber="MOF-4023778"
+                        hqAddress="Old Saida Road, Choueifat, Lebanon"
+                        companyWebsite="www.southernolive-lb.com"
+                        hqPhone="+961 05 430 000"
+                        facilityName="Facility: [1300-01] Main"
+                        facilityAddress="Industrial Zone, Old Saida Rd"
+                        facilityDirect="Cell: +961 70 000 000"
+                        facilityEmail="sales@southernolive-lb.com"
+                        pageInfo="Page 1 of 1"
+                        documentTitle="QUOTATION"
+                        voucherLabel="Quotation #"
+                        voucherCode={cleanDocumentNumber(doc.quotationNo || '1002601')}
+                        transactionDate={doc.date || formatLiveTodayDate()}
+                        refNumber={undefined}
+                        hideStatusBadge={true}
+                        className="mb-2 pb-1.5"
+                      />
 
-                        <div className="text-right">
-                          <div className="text-sm font-bold text-slate-900">No: #{cleanDocumentNumber(doc.quotationNo || '1002601')}</div>
-                          <div className="text-xs text-slate-600">Date: {doc.date || '08-Sep-26'}</div>
-                        </div>
-                      </div>
-
-                      {/* Customer & Quotation Details Boxes (Matching Screenshot 3 & 4) */}
-                      <div className="grid grid-cols-2 gap-4 mt-6">
+                      {/* Customer Info and Quotation Info Boxes */}
+                      <div className="grid grid-cols-2 gap-3 mb-3 text-xs">
                         {/* Left Customer Box */}
-                        <div className="border border-slate-800 rounded-2xl p-4 space-y-2 text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900">{t('customer', 'Customer:')}</span>
-                            <span className="text-slate-800 font-medium">{doc.customerName || 'Mauritania Mauritania'}</span>
+                        <div className="border border-slate-300 rounded-lg p-2.5 bg-slate-50/50 space-y-1">
+                          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                            {t('customer_details', 'Customer Details')}
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900">{t('mobile', 'Mobile:')}</span>
-                            <span className="text-slate-800 font-mono">{doc.phone || '0022236818688'}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-semibold text-slate-700 w-20 shrink-0">{t('customer', 'Customer:')}</span>
+                            <span className="font-bold text-slate-900 truncate">{doc.customerName || 'N/A'}</span>
                           </div>
+                          {doc.customerId && (
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-slate-700 w-20 shrink-0">{t('account_no', 'Acc #:')}</span>
+                              <span className="font-mono text-slate-800">{doc.customerId}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-semibold text-slate-700 w-20 shrink-0">{t('phone', 'Phone:')}</span>
+                            <span className="font-mono text-slate-800">{doc.phone || 'N/A'}</span>
+                          </div>
+                          {doc.contactPerson && (
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-slate-700 w-20 shrink-0">{t('contact', 'Contact:')}</span>
+                              <span className="text-slate-800 truncate">{doc.contactPerson}</span>
+                            </div>
+                          )}
                         </div>
 
-                        {/* Right Quotation Details Box */}
-                        <div className="border border-slate-800 rounded-2xl p-4 space-y-1.5 text-xs">
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-slate-900">{t('date', 'Date:')}</span>
-                            <span className="font-mono text-slate-800">{doc.date || '08-Sep-26'}</span>
+                        {/* Right Quotation & Terms Box */}
+                        <div className="border border-slate-300 rounded-lg p-2.5 bg-slate-50/50 space-y-1">
+                          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                            {t('order_logistics', 'Quotation & Terms')}
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-slate-900">{t('quotation', 'Quotation #:')}</span>
-                            <span className="font-mono text-slate-800">{cleanDocumentNumber(doc.quotationNo || '1002601')}</span>
+                            <span className="font-semibold text-slate-700">{t('quotation_date', 'Quotation Date:')}</span>
+                            <span className="font-mono font-medium text-slate-900">{doc.date || formatLiveTodayDate()}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-slate-900">{t('currency', 'Currency:')}</span>
-                            <span className="font-mono font-bold text-slate-800">{doc.currency || 'USD'}</span>
+                            <span className="font-semibold text-slate-700">{t('delivery_date', 'Delivery Date:')}</span>
+                            <span className="font-mono font-medium text-slate-900">{doc.deliveryDate || doc.date || formatLiveTodayDate()}</span>
                           </div>
-                          <div className="flex items-center justify-between pt-1">
-                            <span className="font-bold text-slate-900">{t('payment_type', 'Payment Type:')}</span>
-                            <span className="font-mono text-slate-800">{t('cash', 'CASH')}</span>
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-slate-700">{t('currency', 'Currency:')}</span>
+                            <span className="font-mono font-bold text-slate-900">{doc.currency || 'USD'}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-slate-700">{t('salesman', 'Sales Rep:')}</span>
+                            <span className="text-slate-800">{doc.salesman || 'Hiba Aloulou'}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Line Items Table */}
-                      <div className="mt-6 border-t-2 border-slate-800 pt-2">
+                      <div className="mb-3 border border-slate-300 rounded-lg overflow-hidden">
                         <table className="w-full text-xs">
-                          <thead>
-                            <tr className="border-b border-slate-800 text-[11px] font-bold text-slate-900">
-                              <th className="py-2 text-center w-12">{t('qty', 'Qty')}</th>
-                              <th className="py-2 text-left">{t('description', 'Description')}</th>
-                              <th className="py-2 text-center w-16">{t('unit', 'Unit')}</th>
-                              <th className="py-2 text-right w-20">{t('unit_price', 'Unit Price')}</th>
-                              <th className="py-2 text-right w-16">{t('tax', 'Tax')}</th>
-                              <th className="py-2 text-right w-24">{t('total_price', 'Total Price')}</th>
+                          <thead className="bg-slate-100 text-slate-800 font-bold border-b border-slate-300 text-[11px]">
+                            <tr>
+                              <th className="py-1 px-2 text-center w-8">#</th>
+                              <th className="py-1 px-2 text-center w-12">{t('qty', 'Qty')}</th>
+                              <th className="py-1 px-2 text-left">{t('description', 'Description')}</th>
+                              <th className="py-1 px-2 text-center w-14">{t('unit', 'Unit')}</th>
+                              <th className="py-1 px-2 text-right w-20">{t('unit_price', 'Price ($)')}</th>
+                              <th className="py-1 px-2 text-right w-14">{t('discount', 'Disc %')}</th>
+                              <th className="py-1 px-2 text-right w-24">{t('total', 'Total ($)')}</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+                          <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
                             {doc.items && doc.items.length > 0 ? (
                               doc.items.map((item, idx) => (
                                 <tr key={idx} className="hover:bg-slate-50/50">
-                                  <td className="py-2 text-center font-bold text-slate-800">{item.qty}</td>
-                                  <td className="py-2 text-left font-sans text-slate-800">
-                                    <span>{item.item?.name || 'Item'}</span>
+                                  <td className="py-1 px-2 text-center text-slate-500 font-sans">{idx + 1}</td>
+                                  <td className="py-1 px-2 text-center font-bold text-slate-900">{item.qty}</td>
+                                  <td className="py-1 px-2 text-left font-sans text-slate-800">
+                                    <span className="font-medium">{item.item?.name || 'Item'}</span>
                                     {item.item?.code && (
-                                      <span className="text-[10px] text-slate-400 font-mono ml-1.5">({item.item.code})</span>
+                                      <span className="text-[10px] text-slate-500 font-mono ml-1.5">[{item.item.code}]</span>
                                     )}
                                   </td>
-                                  <td className="py-2 text-center text-slate-600">{item.item?.unit || 'KG'}</td>
-                                  <td className="py-2 text-right text-slate-700">{item.unitPrice.toFixed(2)}</td>
-                                  <td className="py-2 text-right text-slate-400">0.00</td>
-                                  <td className="py-2 text-right font-bold text-slate-900">{item.total.toFixed(2)}</td>
+                                  <td className="py-1 px-2 text-center text-slate-600 font-sans">{item.item?.unit || 'BOT'}</td>
+                                  <td className="py-1 px-2 text-right text-slate-700">${Number(item.unitPrice || 0).toFixed(2)}</td>
+                                  <td className="py-1 px-2 text-right text-slate-500">{Number(item.discountPercent || 0) > 0 ? `${item.discountPercent}%` : '0%'}</td>
+                                  <td className="py-1 px-2 text-right font-bold text-slate-900">${Number(item.total || 0).toFixed(2)}</td>
                                 </tr>
                               ))
                             ) : (
                               <tr>
-                                <td colSpan={6} className="py-4 text-center text-slate-400 font-sans">
+                                <td colSpan={7} className="py-4 text-center text-slate-400 font-sans">
                                   {t('no_items_in_quotation', 'No items in quotation.')}
                                 </td>
                               </tr>
@@ -5143,35 +4869,63 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         </table>
                       </div>
 
-                      {/* Totals & Notes Section */}
-                      <div className="mt-6 flex items-start justify-between">
-                        {/* Notes and Words */}
-                        <div className="space-y-4 max-w-sm">
-                          <div className="text-xs">
-                            <span className="font-bold text-slate-900">{t('note', 'Note')}</span>
-                            <div className="text-slate-600 mt-0.5 text-[11px]">{doc.notes || ''}</div>
+                      {/* Bottom of Table: Notes + Signatures on Left, Financial Summary on Right */}
+                      <div className="grid grid-cols-12 gap-3 mb-2 pt-1 border-t border-slate-300">
+                        {/* Left: Notes & Signatures */}
+                        <div className="col-span-7 flex flex-col justify-between">
+                          {/* Notes */}
+                          <div className="space-y-1 text-xs">
+                            <span className="font-bold text-slate-800 text-[10.5px] uppercase tracking-wider">{t('quotation_notes', 'Quotation Notes & Terms:')}</span>
+                            <div className="bg-slate-50 border border-slate-200 rounded p-2 text-slate-700 text-[11px] min-h-[38px] leading-relaxed">
+                              {doc.notes || 'This quotation is valid for 15 days from issuance date. Payment terms as agreed upon delivery.'}
+                            </div>
+                            <div className="text-[9.5px] text-slate-500 italic">
+                              * Prices subject to change without prior notice after offer validity period.
+                            </div>
                           </div>
-                          <div className="text-xs font-mono text-slate-700">
-                            {`Only ${numberToEnglishWords(Math.round(doc.grandTotalLL || (doc.grandTotalUSD * 89500)))} LBP`}
-                          </div>
-                          <div className="text-xs font-bold text-slate-800">
-                            {t('credit_limit', 'Credit Limit :')} <span className="font-normal font-mono">0.00</span>
+
+                          {/* Dual Signatures */}
+                          <div className="grid grid-cols-2 gap-4 pt-3 mt-1">
+                            <div className="text-center">
+                              <div className="border-b border-slate-400 pb-4 mb-1" />
+                              <span className="text-[9.5px] font-semibold text-slate-600 uppercase tracking-wider">{t('authorized_signature', 'Authorized Signature')}</span>
+                            </div>
+                            <div className="text-center">
+                              <div className="border-b border-slate-400 pb-4 mb-1" />
+                              <span className="text-[9.5px] font-semibold text-slate-600 uppercase tracking-wider">{t('customer_acceptance', 'Customer Acceptance')}</span>
+                            </div>
                           </div>
                         </div>
 
-                        {/* Grand Total Box */}
-                        <div className="border border-slate-800 rounded-xl px-5 py-2.5 flex items-center gap-6 min-w-[240px] justify-between">
-                          <span className="font-bold text-xs text-slate-900">Grand Total &nbsp; $ &nbsp; :</span>
-                          <span className="font-mono font-bold text-sm text-slate-900">
-                            {doc.grandTotalUSD.toFixed(2)}
-                          </span>
+                        {/* Right: Financial Summary Box */}
+                        <div className="col-span-5 border border-slate-400 bg-slate-50/70 rounded-lg p-2.5 text-xs space-y-1 self-start">
+                          <div className="flex justify-between items-center text-slate-700">
+                            <span className="font-medium">{t('subtotal', 'SubTotal:')}</span>
+                            <span className="font-mono font-semibold">${calcSubtotal.toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-slate-700">
+                            <span className="font-medium">{t('discount', 'Discount:')}</span>
+                            <span className="font-mono font-semibold text-rose-600">-${calcDiscount.toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-slate-700">
+                            <span className="font-medium">{t('tax_vat', 'Tax (VAT):')}</span>
+                            <span className="font-mono font-semibold">${calcTax.toFixed(2)}</span>
+                          </div>
+                          <div className="border-t-2 border-slate-900 pt-1 mt-0.5 flex justify-between items-baseline">
+                            <span className="font-bold text-slate-950 text-xs">{t('grand_total_usd', 'Grand Total (USD):')}</span>
+                            <span className="font-mono font-black text-sm text-slate-950">${calcGrandTotalUSD.toFixed(2)}</span>
+                          </div>
+                          <div className="bg-emerald-50 border border-emerald-300 rounded px-2 py-0.5 flex justify-between items-baseline text-emerald-950 mt-0.5">
+                            <span className="font-bold text-[10.5px]">{t('grand_total_lbp', 'Grand Total (LBP):')}</span>
+                            <span className="font-mono font-bold text-xs">{Math.round(calcGrandTotalLL).toLocaleString()} LBP</span>
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Bottom Document Page Indicator */}
-                    <div className="mt-20 pt-4 border-t border-slate-400 flex items-center justify-between text-[11px] text-slate-500 font-mono">
-                      <span>null</span>
+                    <div className="mt-2 pt-2 border-t border-slate-300 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                      <span>Vanguard ERP • Southern Olive Oil Products S.A.R.L.</span>
                       <span>{t('page_1_of_1', 'Page 1 of 1')}</span>
                     </div>
                   </div>

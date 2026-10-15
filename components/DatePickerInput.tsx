@@ -37,9 +37,9 @@ export default function DatePickerInput({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parse current value or fallback to Sep 7, 2026
+  // Parse current value or fallback to today
   const parsedDate = useMemo(() => {
-    if (!value) return new Date(2026, 8, 7);
+    if (!value) return new Date();
     const parts = value.split(/[-/,\s]+/);
     if (parts.length >= 3) {
       const d = parseInt(parts[0], 10);
@@ -50,7 +50,7 @@ export default function DatePickerInput({
       }
     }
     const d = new Date(value);
-    return isNaN(d.getTime()) ? new Date(2026, 8, 7) : d;
+    return isNaN(d.getTime()) ? new Date() : d;
   }, [value]);
 
   const [viewYear, setViewYear] = useState(parsedDate.getFullYear());
@@ -238,10 +238,11 @@ export default function DatePickerInput({
                 parsedDate.getMonth() === cell.dateObj.getMonth() &&
                 parsedDate.getDate() === cell.dateObj.getDate();
 
+              const now = new Date();
               const isToday =
-                cell.dateObj.getFullYear() === 2026 &&
-                cell.dateObj.getMonth() === 8 &&
-                cell.dateObj.getDate() === 7;
+                cell.dateObj.getFullYear() === now.getFullYear() &&
+                cell.dateObj.getMonth() === now.getMonth() &&
+                cell.dateObj.getDate() === now.getDate();
 
               return (
                 <button
@@ -268,7 +269,7 @@ export default function DatePickerInput({
           <div className="flex items-center justify-between pt-2 mt-2 border-t border-slate-200">
             <button
               type="button"
-              onClick={() => selectDate(new Date(2026, 8, 7))}
+              onClick={() => selectDate(new Date())}
               className="text-[11px] text-blue-600 hover:underline font-semibold cursor-pointer"
             >
               Today
