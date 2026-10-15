@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Save, ChevronDown } from 'lucide-react';
 import { toast } from '@/lib/toast';
 import { printElementById } from '@/lib/utils/printDocument';
 import {
@@ -16,12 +16,12 @@ import {
 import { peekNextDocNumber } from '@/lib/utils/documentSequence';
 
 export const ACTIVE_STAFF_USERS = [
-  'Mahdi',
+  'Mohammed Jichi',
   'Hussein Jichi',
+  'Mahdi',
   'Hiba Aloulou',
   'Ricky',
   'Fadi Kassir',
-  'Mohammed Jichi',
   'Ahmad Dirani',
   'Ali Saad',
   'Hassan K.'
@@ -198,6 +198,112 @@ export function PrintableCashVoucher({ voucher }: PrintableCashVoucherProps) {
   );
 }
 
+interface SelectOrTypeInputProps {
+  value: string;
+  onChange: (val: string) => void;
+  options: string[];
+  placeholder?: string;
+  id?: string;
+}
+
+function SelectOrTypeInput({
+  value,
+  onChange,
+  options,
+  placeholder = 'Select user or type name...',
+  id
+}: SelectOrTypeInputProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const searchLower = value.trim().toLowerCase();
+  const filtered = options.filter((opt) => opt.toLowerCase().includes(searchLower));
+  // Show filtered options if search term matches any; otherwise show full list
+  const displayList = filtered.length > 0 ? filtered : options;
+
+  return (
+    <div ref={containerRef} className="relative w-full">
+      <div className="relative flex items-center">
+        <input
+          id={id}
+          type="text"
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setIsOpen(true);
+          }}
+          onClick={() => setIsOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setIsOpen(false);
+            }
+          }}
+          placeholder={placeholder}
+          autoComplete="off"
+          className="w-full border border-slate-300 rounded px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-[#2e6f40] focus:border-[#2e6f40] bg-white text-slate-800"
+        />
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded cursor-pointer transition-colors"
+          title="Toggle user list"
+        >
+          <ChevronDown className={`w-4 h-4 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-slate-200 rounded-lg shadow-xl py-1 text-sm">
+          <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 bg-slate-50/80">
+            Select Saved User or Type Custom
+          </div>
+          {displayList.map((user) => {
+            const isSelected = value.trim() === user;
+            return (
+              <button
+                key={user}
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  onChange(user);
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-3 py-2 text-xs font-medium hover:bg-emerald-50 hover:text-[#2e6f40] transition-colors cursor-pointer flex items-center justify-between ${
+                  isSelected ? 'bg-emerald-50 text-[#2e6f40] font-bold' : 'text-slate-700'
+                }`}
+              >
+                <span>{user}</span>
+                {isSelected && <span className="text-xs font-bold text-[#2e6f40]">✓</span>}
+              </button>
+            );
+          })}
+          {value.trim() && !options.includes(value.trim()) && (
+            <div className="px-3 py-2 border-t border-slate-100 bg-emerald-50/40 text-xs text-slate-600 flex items-center justify-between">
+              <span className="truncate">
+                Custom Name: <strong className="text-emerald-800 font-semibold">{value.trim()}</strong>
+              </span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-medium ml-2 shrink-0">
+                Unsaved
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export interface PaidInOutModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -248,11 +354,11 @@ export default function PaidInOutModal({
 
   const handleSave = async () => {
     if (!byUser.trim()) {
-      toast.error('Please select "By" user.');
+      toast.error('Please enter or select "By" user.');
       return;
     }
     if (!paidToUser.trim()) {
-      toast.error('Please select "Paid To" user.');
+      toast.error('Please enter or select "Paid To" user.');
       return;
     }
     if (!description.trim()) {
@@ -381,9 +487,9 @@ export default function PaidInOutModal({
 
       {isOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-lg flex flex-col overflow-hidden text-slate-800">
+          <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-lg flex flex-col text-slate-800">
             {/* Header: Title on left, close 'x' on right, separated by light border */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 rounded-t-xl bg-white">
               <h3 className="text-base font-bold text-slate-800">Paid In / Out</h3>
               <button
                 type="button"
@@ -426,41 +532,29 @@ export default function PaidInOutModal({
               {/* Form Fields: 2-column horizontal rows (bold label on left, input on right) */}
               <div className="space-y-3 pt-1">
                 {/* 1. By* */}
-                <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+                <div className="grid grid-cols-[100px_1fr] items-center gap-3 relative z-20">
                   <label className="font-bold text-slate-800 text-sm">By*</label>
-                  <select
+                  <SelectOrTypeInput
                     value={byUser}
-                    onChange={(e) => setByUser(e.target.value)}
-                    className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#2e6f40] focus:border-[#2e6f40] bg-white text-slate-800"
-                  >
-                    <option value="">Select User</option>
-                    {ACTIVE_STAFF_USERS.map((user) => (
-                      <option key={user} value={user}>
-                        {user}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setByUser}
+                    options={ACTIVE_STAFF_USERS}
+                    placeholder="Select user or type name..."
+                  />
                 </div>
 
                 {/* 2. Paid To* */}
-                <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+                <div className="grid grid-cols-[100px_1fr] items-center gap-3 relative z-10">
                   <label className="font-bold text-slate-800 text-sm">Paid To*</label>
-                  <select
+                  <SelectOrTypeInput
                     value={paidToUser}
-                    onChange={(e) => setPaidToUser(e.target.value)}
-                    className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#2e6f40] focus:border-[#2e6f40] bg-white text-slate-800"
-                  >
-                    <option value="">Select User</option>
-                    {ACTIVE_STAFF_USERS.map((user) => (
-                      <option key={user} value={user}>
-                        {user}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setPaidToUser}
+                    options={ACTIVE_STAFF_USERS}
+                    placeholder="Select user or type name..."
+                  />
                 </div>
 
                 {/* 3. Description* */}
-                <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+                <div className="grid grid-cols-[100px_1fr] items-center gap-3 relative z-0">
                   <label className="font-bold text-slate-800 text-sm">Description*</label>
                   <input
                     type="text"
@@ -472,12 +566,16 @@ export default function PaidInOutModal({
                 </div>
 
                 {/* 4. Amount* */}
-                <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+                <div className="grid grid-cols-[100px_1fr] items-center gap-3 relative z-0">
                   <label className="font-bold text-slate-800 text-sm">Amount*</label>
                   <div className="flex items-center">
-                    {movementType === 'PAID_OUT' && (
-                      <span className="text-red-600 font-bold text-base mr-2 select-none">-</span>
-                    )}
+                    <span
+                      className={`font-bold text-lg mr-2 select-none ${
+                        movementType === 'PAID_IN' ? 'text-emerald-600' : 'text-rose-600'
+                      }`}
+                    >
+                      {movementType === 'PAID_IN' ? '+' : '-'}
+                    </span>
                     <input
                       type="number"
                       step="any"
@@ -517,7 +615,7 @@ export default function PaidInOutModal({
             </div>
 
             {/* Footer: Single dark Save button aligned bottom right */}
-            <div className="flex items-center justify-end px-5 py-3 border-t border-slate-200 bg-slate-50/70">
+            <div className="flex items-center justify-end px-5 py-3 border-t border-slate-200 bg-slate-50/70 rounded-b-xl">
               <button
                 type="button"
                 onClick={handleSave}
