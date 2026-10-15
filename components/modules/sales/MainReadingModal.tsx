@@ -34,6 +34,7 @@ import {
   getCashMovements,
   closeShiftSession,
   computeMainReadingSummary,
+  formatMovementDisplay,
   MainReadingSummary,
   POS_EXCHANGE_RATE_LBP,
   SHIFT_UPDATED_EVENT,
@@ -69,10 +70,8 @@ export default function MainReadingModal({
 }: MainReadingModalProps) {
   const [readingType, setReadingType] = useState<'X' | 'Z'>('X');
   const [activeShift, setActiveShift] = useState<PosShift>(getActiveShift());
-  const [openingFloatInputUsd, setOpeningFloatInputUsd] = useState<string>('200.00');
-  const [openingFloatInputLbp, setOpeningFloatInputLbp] = useState<string>(
-    (200.0 * POS_EXCHANGE_RATE_LBP).toString()
-  );
+  const [openingFloatInputUsd, setOpeningFloatInputUsd] = useState<string>('0.00');
+  const [openingFloatInputLbp, setOpeningFloatInputLbp] = useState<string>('0');
   const [countedCashInputUsd, setCountedCashInputUsd] = useState<string>('');
   const [countedCashInputLbp, setCountedCashInputLbp] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'overview' | 'tenders' | 'cashflow' | 'divisions' | 'printPreview'>('overview');
@@ -85,8 +84,8 @@ export default function MainReadingModal({
     if (isOpen) {
       const shift = getActiveShift();
       setActiveShift(shift);
-      setOpeningFloatInputUsd(shift.openingCashUsd.toFixed(2));
-      setOpeningFloatInputLbp(shift.openingCashLbp.toString());
+      setOpeningFloatInputUsd(shift.openingCashUsd !== undefined ? shift.openingCashUsd.toFixed(2) : '0.00');
+      setOpeningFloatInputLbp(shift.openingCashLbp !== undefined ? shift.openingCashLbp.toString() : '0');
       setLiveMovements(getCashMovements());
     }
   }, [isOpen]);
@@ -115,8 +114,10 @@ export default function MainReadingModal({
   const summary: MainReadingSummary = useMemo(() => {
     const openingUsd = parseFloat(openingFloatInputUsd) || 0;
     const openingLbp = parseFloat(openingFloatInputLbp) || 0;
-    const countedUsd = parseFloat(countedCashInputUsd) || 0;
-    const countedLbp = parseFloat(countedCashInputLbp) || 0;
+    const hasCountedUsd = countedCashInputUsd.trim() !== '';
+    const hasCountedLbp = countedCashInputLbp.trim() !== '';
+    const countedUsd = hasCountedUsd ? parseFloat(countedCashInputUsd) : undefined;
+    const countedLbp = hasCountedLbp ? parseFloat(countedCashInputLbp) : undefined;
 
     const effectiveCashMovements = liveMovements.length > 0
       ? liveMovements
@@ -151,16 +152,9 @@ export default function MainReadingModal({
     countedCashInputUsd,
     countedCashInputLbp,
     branchName,
-    cashierName
+    cashierName,
+    workingDate
   ]);
-
-  // Set default counted cash to expected cash if empty
-  useEffect(() => {
-    if (!countedCashInputUsd && summary.expectedCashUsd > 0) {
-      setCountedCashInputUsd(summary.expectedCashUsd.toFixed(2));
-      setCountedCashInputLbp(summary.expectedCashLbp.toString());
-    }
-  }, [summary.expectedCashUsd, summary.expectedCashLbp, countedCashInputUsd]);
 
   const handlePrint = () => {
     commitNextDocNumber('MAIN_READING', readingSlipNumber, tenantId);
@@ -667,9 +661,15 @@ export default function MainReadingModal({
                       <span className="font-mono">{summary.paidInTotalLbp.toLocaleString()} LBP</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
-                      <span>(-) Cash Refunds / Paid Out:</span>
+                      <span>(-) Cash Refunds (Credit Notes):</span>
                       <span className="font-mono text-red-600">
-                        -{(summary.cashRefundsLbp + summary.paidOutTotalLbp).toLocaleString()} LBP
+                        -{summary.cashRefundsLbp.toLocaleString()} LBP
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-slate-600">
+                      <span>(-) Paid Out (Expenses):</span>
+                      <span className="font-mono text-red-600">
+                        -{summary.paidOutTotalLbp.toLocaleString()} LBP
                       </span>
                     </div>
                     <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1.5 bg-slate-50 p-1.5 rounded">
@@ -747,8 +747,10 @@ export default function MainReadingModal({
 
                   {/* Variance Status Card */}
                   <div
-                    className={`rounded-lg p-3.5 border flex flex-col justify-between ${
-                      summary.reconciliationStatus === 'BALANCED'
+                    className={`rounded-lg p-3.5 border flex flex-col justify-between transition-all ${
+                      summary.reconciliationStatus === 'PENDING'
+                        ? 'bg-amber-50/80 border-amber-300'
+                        : summary.reconciliationStatus === 'BALANCED'
                         ? 'bg-blue-50/80 border-blue-200'
                         : summary.reconciliationStatus === 'OVERAGE'
                         ? 'bg-emerald-50/80 border-emerald-300'
@@ -762,36 +764,56 @@ export default function MainReadingModal({
                         </span>
                         <span
                           className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                            summary.reconciliationStatus === 'BALANCED'
+                            summary.reconciliationStatus === 'PENDING'
+                              ? 'bg-amber-200 text-amber-900 border border-amber-300'
+                              : summary.reconciliationStatus === 'BALANCED'
                               ? 'bg-blue-200 text-blue-900'
                               : summary.reconciliationStatus === 'OVERAGE'
                               ? 'bg-emerald-200 text-emerald-950'
                               : 'bg-red-200 text-red-950'
                           }`}
                         >
-                          {summary.reconciliationStatus === 'BALANCED' && 'Balanced (متطابق)'}
+                          {summary.reconciliationStatus === 'PENDING' && 'Pending Physical Count'}
+                          {summary.reconciliationStatus === 'BALANCED' && 'Exact Match / متطابق'}
                           {summary.reconciliationStatus === 'OVERAGE' && 'Overage / زيادة (+) '}
                           {summary.reconciliationStatus === 'SHORTAGE' && 'Shortage / عجز (-) '}
                         </span>
                       </div>
-                      <div className="text-xl font-black font-mono mt-2">
-                        {summary.varianceUsd >= 0 ? '+' : ''}
-                        ${summary.varianceUsd.toFixed(2)} USD
-                      </div>
-                      <div className="text-xs font-mono text-slate-600 mt-0.5">
-                        {summary.varianceLbp >= 0 ? '+' : ''}
-                        {summary.varianceLbp.toLocaleString()} LBP
-                      </div>
+
+                      {summary.reconciliationStatus === 'PENDING' ? (
+                        <div className="mt-2.5 space-y-1">
+                          <div className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                            <span>Pending Physical Count — Enter Counted Cash in Drawer to reconcile</span>
+                          </div>
+                          <p className="text-[11px] text-amber-700">
+                            Enter the actual physical cash counted in your cash drawer above to calculate variance.
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="text-xl font-black font-mono mt-2 text-slate-900">
+                            {summary.varianceUsd >= 0 ? '+' : ''}
+                            ${summary.varianceUsd.toFixed(2)} USD
+                          </div>
+                          <div className="text-xs font-mono text-slate-600 mt-0.5">
+                            {summary.varianceLbp >= 0 ? '+' : ''}
+                            {summary.varianceLbp.toLocaleString()} LBP
+                          </div>
+                        </>
+                      )}
                     </div>
 
-                    <p className="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-200/60">
-                      {summary.reconciliationStatus === 'BALANCED' &&
-                        'Physical counted drawer cash matches expected ledger balance exactly.'}
-                      {summary.reconciliationStatus === 'OVERAGE' &&
-                        'There is surplus cash in drawer compared to system recorded sales and movements.'}
-                      {summary.reconciliationStatus === 'SHORTAGE' &&
-                        'Attention required: cash drawer is short compared to expected system receipts.'}
-                    </p>
+                    {summary.reconciliationStatus !== 'PENDING' && (
+                      <p className="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-200/60">
+                        {summary.reconciliationStatus === 'BALANCED' &&
+                          'Physical counted drawer cash matches expected ledger balance exactly.'}
+                        {summary.reconciliationStatus === 'OVERAGE' &&
+                          'There is surplus cash in drawer compared to system recorded sales and movements.'}
+                        {summary.reconciliationStatus === 'SHORTAGE' &&
+                          'Attention required: cash drawer is short compared to expected system receipts.'}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -804,10 +826,10 @@ export default function MainReadingModal({
                   </h5>
                   <div className="text-xs space-x-3 font-mono">
                     <span className="text-emerald-700 font-bold">
-                      In: +${summary.paidInTotalUsd.toFixed(2)}
+                      In: +${summary.paidInTotalUsd.toFixed(2)} USD {summary.paidInTotalLbp > 0 ? `(${summary.paidInTotalLbp.toLocaleString()} LBP)` : ''}
                     </span>
                     <span className="text-red-600 font-bold">
-                      Out: -${summary.paidOutTotalUsd.toFixed(2)}
+                      Out: -${summary.paidOutTotalUsd.toFixed(2)} USD {summary.paidOutTotalLbp > 0 ? `(${summary.paidOutTotalLbp.toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                 </div>
@@ -822,37 +844,44 @@ export default function MainReadingModal({
                         <tr>
                           <th className="py-1 px-2">Time</th>
                           <th className="py-1 px-2">Type</th>
-                          <th className="py-1 px-2">Category</th>
-                          <th className="py-1 px-2">Notes</th>
-                          <th className="py-1 px-2 text-right">Amount (USD)</th>
+                          <th className="py-1 px-2">By</th>
+                          <th className="py-1 px-2">Paid To</th>
+                          <th className="py-1 px-2">Payment Type</th>
+                          <th className="py-1 px-2">Description</th>
+                          <th className="py-1 px-2 text-right">Amount</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {summary.paidInOutList.map((m, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50">
-                            <td className="py-1.5 px-2 font-mono text-slate-500">{m.timestamp}</td>
-                            <td className="py-1.5 px-2">
-                              <span
-                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                                  m.type === 'PAID_IN'
-                                    ? 'bg-emerald-100 text-emerald-800'
-                                    : 'bg-red-100 text-red-800'
+                        {summary.paidInOutList.map((m, idx) => {
+                          const disp = formatMovementDisplay(m);
+                          return (
+                            <tr key={idx} className="hover:bg-slate-50">
+                              <td className="py-1.5 px-2 font-mono text-slate-500">{disp.time}</td>
+                              <td className="py-1.5 px-2">
+                                <span
+                                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                                    disp.isPaidIn
+                                      ? 'bg-emerald-100 text-emerald-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}
+                                >
+                                  {disp.typeDisplay} {disp.isPaidIn ? '(+)' : '(-)'}
+                                </span>
+                              </td>
+                              <td className="py-1.5 px-2 text-slate-700">{disp.by}</td>
+                              <td className="py-1.5 px-2 text-slate-700">{disp.paidTo}</td>
+                              <td className="py-1.5 px-2 font-medium text-slate-700">{disp.paymentType}</td>
+                              <td className="py-1.5 px-2 text-slate-600 truncate max-w-[200px]">{disp.description}</td>
+                              <td
+                                className={`py-1.5 px-2 text-right font-mono font-bold ${
+                                  disp.isPaidIn ? 'text-emerald-700' : 'text-red-600'
                                 }`}
                               >
-                                {m.type === 'PAID_IN' ? 'PAID IN (+)' : 'PAID OUT (-)'}
-                              </span>
-                            </td>
-                            <td className="py-1.5 px-2 font-medium text-slate-800">{m.category}</td>
-                            <td className="py-1.5 px-2 text-slate-600 truncate max-w-[200px]">{m.notes}</td>
-                            <td
-                              className={`py-1.5 px-2 text-right font-mono font-bold ${
-                                m.type === 'PAID_IN' ? 'text-emerald-700' : 'text-red-600'
-                              }`}
-                            >
-                              {m.type === 'PAID_IN' ? '+' : '-'}${m.amountUsd.toFixed(2)}
-                            </td>
-                          </tr>
-                        ))}
+                                {disp.amountStr}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   )}
@@ -1059,19 +1088,27 @@ export default function MainReadingModal({
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Opening Float:</span>
-                    <span className="font-mono font-bold">+${summary.openingFloatUsd.toFixed(2)} USD</span>
+                    <span className="font-mono font-bold">
+                      +${summary.openingFloatUsd.toFixed(2)} USD {summary.openingFloatLbp > 0 ? `(${summary.openingFloatLbp.toLocaleString()} LBP)` : ''}
+                    </span>
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Paid In:</span>
-                    <span className="font-mono font-bold">+${summary.paidInTotalUsd.toFixed(2)} USD</span>
+                    <span className="font-mono font-bold">
+                      +${summary.paidInTotalUsd.toFixed(2)} USD {summary.paidInTotalLbp > 0 ? `(${summary.paidInTotalLbp.toLocaleString()} LBP)` : ''}
+                    </span>
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Customer Receipts (مقبوضات تسديد ذمم سابقة):</span>
-                    <span className="font-mono font-bold">+${summary.customerReceiptsTotalUsd.toFixed(2)} USD</span>
+                    <span className="font-mono font-bold">
+                      +${summary.customerReceiptsTotalUsd.toFixed(2)} USD {summary.customerReceiptsTotalLbp > 0 ? `(${summary.customerReceiptsTotalLbp.toLocaleString()} LBP)` : ''}
+                    </span>
                   </div>
                   <div className="flex justify-between text-[11px] text-red-700">
                     <span>(-) Paid Out:</span>
-                    <span className="font-mono font-bold">-${summary.paidOutTotalUsd.toFixed(2)} USD</span>
+                    <span className="font-mono font-bold">
+                      -${summary.paidOutTotalUsd.toFixed(2)} USD {summary.paidOutTotalLbp > 0 ? `(${summary.paidOutTotalLbp.toLocaleString()} LBP)` : ''}
+                    </span>
                   </div>
                 </div>
 
@@ -1094,12 +1131,18 @@ export default function MainReadingModal({
                     </div>
                     <div className="flex justify-between border-t border-slate-200 pt-1 text-slate-700">
                       <span>Actual Counted Cash:</span>
-                      <span className="font-mono">${summary.actualCountedUsd.toFixed(2)} USD ({summary.actualCountedLbp.toLocaleString()} LBP)</span>
+                      <span className="font-mono">
+                        {summary.reconciliationStatus === 'PENDING'
+                          ? 'Pending Physical Count'
+                          : `$${summary.actualCountedUsd.toFixed(2)} USD (${summary.actualCountedLbp.toLocaleString()} LBP)`}
+                      </span>
                     </div>
                     <div className="flex justify-between font-black border-t border-slate-300 pt-1 text-slate-950">
                       <span>Variance (Short / Over):</span>
                       <span className="font-mono">
-                        {summary.varianceUsd >= 0 ? '+' : ''}${summary.varianceUsd.toFixed(2)} USD ({summary.varianceLbp >= 0 ? '+' : ''}{summary.varianceLbp.toLocaleString()} LBP)
+                        {summary.reconciliationStatus === 'PENDING'
+                          ? 'Pending Reconciliation'
+                          : `${summary.varianceUsd >= 0 ? '+' : ''}$${summary.varianceUsd.toFixed(2)} USD (${summary.varianceLbp >= 0 ? '+' : ''}${summary.varianceLbp.toLocaleString()} LBP)`}
                       </span>
                     </div>
                   </div>

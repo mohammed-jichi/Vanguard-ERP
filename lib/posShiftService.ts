@@ -236,7 +236,7 @@ export interface MainReadingSummary {
   actualCountedLbp: number;
   varianceUsd: number;
   varianceLbp: number;
-  reconciliationStatus: 'BALANCED' | 'SHORTAGE' | 'OVERAGE';
+  reconciliationStatus: 'PENDING' | 'BALANCED' | 'SHORTAGE' | 'OVERAGE';
 
   // 8. Category / Division Breakdown
   divisionBreakdown: DivisionBreakdown[];
@@ -260,8 +260,8 @@ export function getDefaultShift(): PosShift {
     cashierName: 'Active Cashier',
     openedAt: new Date(today.setHours(8, 0, 0, 0)).toISOString(),
     closedAt: null,
-    openingCashUsd: 200.0,
-    openingCashLbp: 200.0 * POS_EXCHANGE_RATE_LBP,
+    openingCashUsd: 0.0,
+    openingCashLbp: 0,
     status: 'OPEN',
     notes: 'Morning commercial operations shift'
   };
@@ -467,13 +467,30 @@ export function getCashMovements(): CashMovement[] {
     const raw = localStorage.getItem(CASH_MOVEMENTS_KEY);
     if (raw) {
       const parsed: any[] = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map((item, idx) => {
+      if (Array.isArray(parsed)) {
+        // Filter out legacy demo seed rows from localStorage
+        const DEMO_SEEDS = ['6002601', '6002602', '6002603'];
+        const cleanList = parsed.filter((item: any) =>
+          !DEMO_SEEDS.includes(String(item.id || '')) &&
+          !DEMO_SEEDS.includes(String(item.movementNo || '')) &&
+          item.notes !== 'Initial morning drawer float' &&
+          item.notes !== 'Van #4 fuel receipt - Coral Station' &&
+          item.notes !== 'Cardboard tape & packing markers for factory store'
+        );
+        if (cleanList.length !== parsed.length) {
+          try {
+            localStorage.setItem(CASH_MOVEMENTS_KEY, JSON.stringify(cleanList));
+          } catch {}
+        }
+        return cleanList.map((item, idx) => {
           const mType: 'PAID_IN' | 'PAID_OUT' =
             item.movementType ||
-            (item.type === 'in' || item.type === 'PAID_IN' ? 'PAID_IN' : 'PAID_OUT');
-          const amtUsd = Number(item.amountUsd || item.amount || 0);
-          const amtLbp = Number(item.amountLbp || amtUsd * POS_EXCHANGE_RATE_LBP);
+            (item.type === 'in' || item.type === 'PAID_IN' || String(item.type || '').toUpperCase().includes('IN')
+              ? 'PAID_IN'
+              : 'PAID_OUT');
+          const isUsd = (item.paymentType && item.paymentType.includes('USD')) || item.currencyCode === 'USD';
+          const amtUsd = Number(item.amountUsd ?? (isUsd ? item.amount : 0) ?? 0);
+          const amtLbp = Number(item.amountLbp ?? (!isUsd ? item.amount : 0) ?? 0);
           const code =
             item.movementNo ||
             `6${(2601 + idx).toString().padStart(6, '0')}`;
@@ -486,11 +503,15 @@ export function getCashMovements(): CashMovement[] {
             branchId: item.branchId || 'Southern Olive and Oil Products S.A.R.L.',
             shiftId: item.shiftId || 'SH-20261014-44',
             userId: item.userId,
+            byUser: item.byUser || item.cashierName,
+            paidToUser: item.paidToUser,
+            paymentType: item.paymentType || (isUsd ? 'CASH USD' : 'CASH'),
+            description: item.description || item.category || item.notes,
             cashierName: item.cashierName || 'Active Cashier',
             movementType: mType,
             type: mType,
-            currencyCode: item.currencyCode || 'USD',
-            amount: Number(item.amount || amtUsd),
+            currencyCode: item.currencyCode || (isUsd ? 'USD' : 'LBP'),
+            amount: Number(item.amount || (isUsd ? amtUsd : amtLbp)),
             amountUsd: amtUsd,
             amountLbp: amtLbp,
             exchangeRate: Number(item.exchangeRate || POS_EXCHANGE_RATE_LBP),
@@ -514,83 +535,7 @@ export function getCashMovements(): CashMovement[] {
     console.warn('Error reading cash movements from localStorage:', e);
   }
 
-  // Initial default seed movements
-  const defaults: CashMovement[] = [
-    {
-      id: '6002601',
-      movementNo: '6002601',
-      branchId: 'Southern Olive and Oil Products S.A.R.L.',
-      shiftId: 'SH-20261014-44',
-      cashierName: 'Active Cashier',
-      movementType: 'PAID_IN',
-      type: 'PAID_IN',
-      currencyCode: 'USD',
-      amount: 200.0,
-      amountUsd: 200.0,
-      amountLbp: 200.0 * POS_EXCHANGE_RATE_LBP,
-      exchangeRate: POS_EXCHANGE_RATE_LBP,
-      reasonCategory: 'OPENING_FLOAT',
-      category: 'Opening Float',
-      targetAccountId: 'acc-53000',
-      targetAccountNumber: '53000',
-      targetAccountName: 'Main Safe / الصندوق الرئيسي',
-      notes: 'Initial morning drawer float',
-      journalEntryId: 'jv-pos-seed-01',
-      createdAt: new Date().toISOString(),
-      timestamp: '08:00 AM',
-      isVoided: false
-    },
-    {
-      id: '6002602',
-      movementNo: '6002602',
-      branchId: 'Southern Olive and Oil Products S.A.R.L.',
-      shiftId: 'SH-20261014-44',
-      cashierName: 'Active Cashier',
-      movementType: 'PAID_OUT',
-      type: 'PAID_OUT',
-      currencyCode: 'USD',
-      amount: 25.0,
-      amountUsd: 25.0,
-      amountLbp: 25.0 * POS_EXCHANGE_RATE_LBP,
-      exchangeRate: POS_EXCHANGE_RATE_LBP,
-      reasonCategory: 'DELIVERY_EXPENSE',
-      category: 'Delivery Driver Fuel',
-      targetAccountId: 'acc-61300',
-      targetAccountNumber: '61300',
-      targetAccountName: 'Delivery & Dispatch Expense / مصاريف توصيل وشحن',
-      notes: 'Van #4 fuel receipt - Coral Station',
-      journalEntryId: 'jv-pos-seed-02',
-      createdAt: new Date().toISOString(),
-      timestamp: '11:30 AM',
-      isVoided: false
-    },
-    {
-      id: '6002603',
-      movementNo: '6002603',
-      branchId: 'Southern Olive and Oil Products S.A.R.L.',
-      shiftId: 'SH-20261014-44',
-      cashierName: 'Active Cashier',
-      movementType: 'PAID_OUT',
-      type: 'PAID_OUT',
-      currencyCode: 'USD',
-      amount: 15.0,
-      amountUsd: 15.0,
-      amountLbp: 15.0 * POS_EXCHANGE_RATE_LBP,
-      exchangeRate: POS_EXCHANGE_RATE_LBP,
-      reasonCategory: 'PETTY_EXPENSE',
-      category: 'Packaging Supplies',
-      targetAccountId: 'acc-61500',
-      targetAccountNumber: '61500',
-      targetAccountName: 'General & Petty Cash Expenses / مصاريف نثرية',
-      notes: 'Cardboard tape & packing markers for factory store',
-      journalEntryId: 'jv-pos-seed-03',
-      createdAt: new Date().toISOString(),
-      timestamp: '02:15 PM',
-      isVoided: false
-    }
-  ];
-  saveCashMovements(defaults);
-  return defaults;
+  return [];
 }
 
 export function saveCashMovements(movements: CashMovement[]): void {
@@ -755,20 +700,65 @@ export function getShiftHistory(): PosShift[] {
 }
 
 /**
- * Checks if a given date string or ISO timestamp matches the target YYYY-MM-DD date.
+ * Robust date parser and normalizer converting any date format
+ * ('2026-10-15', '15 Oct, 2026', '10/15/2026', '05-Sep-2026', ISO strings)
+ * into YYYY-MM-DD in local time.
  */
-export function isDateMatching(dateValue: any, targetDate: string): boolean {
-  if (!dateValue || !targetDate) return false;
-  if (typeof dateValue === 'string') {
-    if (dateValue === targetDate) return true;
-    if (dateValue.startsWith(targetDate)) return true;
-    const parsed = new Date(dateValue);
+export function normalizeDateToYMD(dateVal: any): string | null {
+  if (!dateVal) return null;
+  if (typeof dateVal === 'string') {
+    const trimmed = dateVal.trim();
+    // Fast match for YYYY-MM-DD
+    const ymdMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (ymdMatch) {
+      const y = ymdMatch[1];
+      const m = ymdMatch[2].padStart(2, '0');
+      const d = ymdMatch[3].padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    // Match DD-MMM-YYYY or DD MMM, YYYY or standard Date formats
+    const parsed = new Date(trimmed);
     if (!isNaN(parsed.getTime())) {
-      const isoDate = parsed.toISOString().split('T')[0];
-      if (isoDate === targetDate) return true;
+      const y = parsed.getFullYear();
+      const m = String(parsed.getMonth() + 1).padStart(2, '0');
+      const d = String(parsed.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+  } else if (typeof dateVal === 'number') {
+    const parsed = new Date(dateVal);
+    if (!isNaN(parsed.getTime())) {
+      const y = parsed.getFullYear();
+      const m = String(parsed.getMonth() + 1).padStart(2, '0');
+      const d = String(parsed.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+  } else if (dateVal instanceof Date) {
+    if (!isNaN(dateVal.getTime())) {
+      const y = dateVal.getFullYear();
+      const m = String(dateVal.getMonth() + 1).padStart(2, '0');
+      const d = String(dateVal.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
     }
   }
-  return false;
+  return null;
+}
+
+/**
+ * Compares two date values by normalizing them both to YYYY-MM-DD in local time.
+ */
+export function isSameWorkingDay(recordDateOrTimestamp: any, activeWorkingDate: any): boolean {
+  if (!recordDateOrTimestamp || !activeWorkingDate) return false;
+  const recYMD = normalizeDateToYMD(recordDateOrTimestamp);
+  const targetYMD = normalizeDateToYMD(activeWorkingDate);
+  if (!recYMD || !targetYMD) return false;
+  return recYMD === targetYMD;
+}
+
+/**
+ * Checks if a given date string or ISO timestamp matches the target working date.
+ */
+export function isDateMatching(dateValue: any, targetDate: string): boolean {
+  return isSameWorkingDay(dateValue, targetDate);
 }
 
 /**
@@ -776,21 +766,22 @@ export function isDateMatching(dateValue: any, targetDate: string): boolean {
  */
 export function isInvoicePostedToday(inv: any, activeWorkingDate: string): boolean {
   if (!inv) return false;
-  const statusStr = (inv.status || '').toUpperCase();
+  if (inv.closedInZReport === true || inv.shiftClosed === true) return false;
+
+  const statusStr = String(inv.status || '').toUpperCase();
   const isPosted =
-    (statusStr === 'POSTED' || inv.is_posted === true || inv.posted === true) &&
-    statusStr !== 'DRAFT' &&
-    statusStr !== 'HOLD';
+    statusStr === 'POSTED' ||
+    inv.is_posted === true ||
+    inv.posted === true ||
+    (statusStr !== 'DRAFT' && statusStr !== 'HOLD' && statusStr !== 'UNPOSTED' && statusStr !== 'VOID' && inv.grandTotal !== undefined);
   if (!isPosted) return false;
 
   const matchesDate =
-    isDateMatching(inv.date, activeWorkingDate) ||
-    isDateMatching(inv.createdAt, activeWorkingDate);
-  if (!matchesDate) return false;
+    isSameWorkingDay(inv.date, activeWorkingDate) ||
+    isSameWorkingDay(inv.createdAt, activeWorkingDate) ||
+    isSameWorkingDay(inv.timestamp, activeWorkingDate);
 
-  if (inv.closedInZReport === true || inv.shiftClosed === true) return false;
-
-  return true;
+  return matchesDate;
 }
 
 /**
@@ -798,17 +789,17 @@ export function isInvoicePostedToday(inv: any, activeWorkingDate: string): boole
  */
 export function isReceiptPostedToday(rct: any, activeWorkingDate: string): boolean {
   if (!rct || rct.isVoided === true) return false;
-  const statusStr = (rct.status || 'POSTED').toUpperCase();
-  if (statusStr === 'VOID' || statusStr === 'DRAFT') return false;
-
-  const matchesDate =
-    isDateMatching(rct.date, activeWorkingDate) ||
-    isDateMatching(rct.createdAt, activeWorkingDate);
-  if (!matchesDate) return false;
-
   if (rct.closedInZReport === true || rct.shiftClosed === true) return false;
 
-  return true;
+  const statusStr = String(rct.status || 'POSTED').toUpperCase();
+  if (statusStr === 'VOID' || statusStr === 'DRAFT' || statusStr === 'UNPOSTED') return false;
+
+  const matchesDate =
+    isSameWorkingDay(rct.date, activeWorkingDate) ||
+    isSameWorkingDay(rct.createdAt, activeWorkingDate) ||
+    isSameWorkingDay(rct.timestamp, activeWorkingDate);
+
+  return matchesDate;
 }
 
 /**
@@ -816,15 +807,61 @@ export function isReceiptPostedToday(rct: any, activeWorkingDate: string): boole
  */
 export function isCashMovementToday(m: any, activeWorkingDate: string): boolean {
   if (!m || m.isVoided === true) return false;
-
-  const matchesDate =
-    isDateMatching(m.date, activeWorkingDate) ||
-    isDateMatching(m.createdAt, activeWorkingDate);
-  if (!matchesDate) return false;
-
   if (m.closedInZReport === true || m.shiftClosed === true) return false;
 
-  return true;
+  const matchesDate =
+    isSameWorkingDay(m.date, activeWorkingDate) ||
+    isSameWorkingDay(m.createdAt, activeWorkingDate) ||
+    isSameWorkingDay(m.timestamp, activeWorkingDate);
+
+  return matchesDate;
+}
+
+/**
+ * Formats a cash movement cleanly for display in the itemized log table
+ */
+export function formatMovementDisplay(m: any) {
+  let by = m.byUser || m.cashierName || 'Cashier';
+  let paidTo = m.paidToUser || '—';
+  let pType = m.paymentType || (m.currencyCode === 'USD' ? 'CASH USD' : 'CASH');
+  let desc = m.description || m.category || m.notes || '—';
+
+  // Extract bracketed metadata if embedded in legacy note string
+  if (desc && desc.includes('[By:')) {
+    const match = desc.match(/^(.*?)\s*\[By:\s*([^,\]]+)?(?:,\s*Paid To:\s*([^,\]]+))?(?:,\s*Type:\s*([^\]]+))?\]/);
+    if (match) {
+      desc = match[1].trim() || m.category || '—';
+      if (!m.byUser && match[2]) by = match[2].trim();
+      if (!m.paidToUser && match[3]) paidTo = match[3].trim();
+      if (!m.paymentType && match[4]) pType = match[4].trim();
+    }
+  }
+
+  const pTypeStr = String(m.movementType || m.type || '').toUpperCase();
+  const isPaidIn = pTypeStr === 'PAID_IN' || pTypeStr === 'IN' || pTypeStr.includes('IN');
+
+  const methodUpper = String(pType).toUpperCase();
+  const isUsd = methodUpper.includes('USD') || m.currencyCode === 'USD' || (!methodUpper.includes('LBP') && Number(m.amountUsd || m.amount || 0) < 10000);
+
+  const amtUsd = Number(m.amountUsd ?? (isUsd ? m.amount : 0) ?? 0);
+  const amtLbp = Number(m.amountLbp ?? (!isUsd ? m.amount : 0) ?? 0);
+
+  const amountStr = isUsd
+    ? `${isPaidIn ? '+' : '-'}$${amtUsd.toFixed(2)} USD`
+    : `${isPaidIn ? '+' : '-'}${amtLbp.toLocaleString()} LBP`;
+
+  return {
+    time: m.timestamp || m.time || (m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'),
+    type: isPaidIn ? 'PAID IN' : 'PAID OUT',
+    typeDisplay: isPaidIn ? 'Paid In' : 'Paid Out',
+    isPaidIn,
+    by,
+    paidTo,
+    paymentType: pType,
+    description: desc,
+    amountStr,
+    isUsd
+  };
 }
 
 /**
@@ -987,19 +1024,22 @@ export function computeMainReadingSummary({
   customerReceipts: any[];
   openingFloatUsd: number;
   openingFloatLbp: number;
-  actualCountedUsd: number;
-  actualCountedLbp: number;
+  actualCountedUsd?: number | null;
+  actualCountedLbp?: number | null;
   exchangeRate?: number;
   workingDate?: string;
 }): MainReadingSummary {
-  // Filter invoices for active shift or today
-  // Standard invoices vs Credit notes
   let grossSalesUsd = 0;
   let discountsUsd = 0;
   let taxUsd = 0;
   let returnsCreditNotesUsd = 0;
   let creditNoteCount = 0;
   let invoiceCount = 0;
+
+  let cashSalesUsd = 0;
+  let cashSalesLbp = 0;
+  let cashRefundsUsd = 0;
+  let cashRefundsLbp = 0;
 
   const salesByTransactionType = {
     localUsd: 0,
@@ -1024,27 +1064,29 @@ export function computeMainReadingSummary({
     'Other': { amount: 0, count: 0 }
   };
 
-  let cashRefundsUsd = 0;
-  let cashRefundsLbp = 0;
-
+  // 1. Process Invoices (Sales Invoices vs. Credit Notes)
   invoices.forEach((inv) => {
     const isCreditNote =
+      inv.docType === 'CREDIT_NOTE' ||
+      inv.type === 'CREDIT_NOTE' ||
       inv.transactionType === 'Credit Note' ||
-      (inv.invoiceNumber && inv.invoiceNumber.startsWith('CRN-')) ||
-      inv.grandTotal < 0;
+      (inv.invoiceNumber && String(inv.invoiceNumber).startsWith('CRN-')) ||
+      (inv.grandTotal !== undefined && inv.grandTotal < 0);
 
     if (isCreditNote) {
-      const crVal = Math.abs(inv.grandTotal || inv.subtotal || 0);
+      const crVal = Math.abs(Number(inv.grandTotal || inv.subtotal || 0));
       returnsCreditNotesUsd += crVal;
       creditNoteCount += 1;
 
-      // If credit note was refunded via cash
-      if (inv.payments && Array.isArray(inv.payments)) {
+      // Detect if refund was paid out in cash from drawer
+      let wasCashRefund = false;
+      if (inv.payments && Array.isArray(inv.payments) && inv.payments.length > 0) {
         inv.payments.forEach((p: any) => {
-          const typeStr = (p.type || '').toLowerCase();
-          if (typeStr.includes('cash')) {
-            const amt = Math.abs(p.amount || 0);
-            if (typeStr.includes('lbp')) {
+          const pType = String(p.type || p.paymentMethod || '').toLowerCase();
+          if (pType.includes('cash') || pType.includes('نقدي')) {
+            wasCashRefund = true;
+            const amt = Math.abs(Number(p.amount || 0));
+            if (pType.includes('lbp') || pType.includes('ل.ل')) {
               cashRefundsLbp += amt;
             } else {
               cashRefundsUsd += amt;
@@ -1052,53 +1094,85 @@ export function computeMainReadingSummary({
           }
         });
       }
+      if (!wasCashRefund) {
+        const refundMethod = String(
+          inv.paymentMethod || inv.paymentType || inv.settlementMethod || inv.refundMethod || ''
+        ).toLowerCase();
+        if (refundMethod.includes('cash') || refundMethod.includes('نقدي')) {
+          if (refundMethod.includes('lbp') || refundMethod.includes('ل.ل')) {
+            cashRefundsLbp += crVal * exchangeRate;
+          } else {
+            cashRefundsUsd += crVal;
+          }
+        }
+      }
       return;
     }
 
-    // Normal Invoices
+    // Normal Sales Invoice
     invoiceCount += 1;
-    const invSubtotal = Math.abs(inv.subtotal || 0);
-    const invDiscount = Math.abs(inv.discount || 0);
-    const invTax = Math.abs(inv.tax || 0);
-    const invGrand = Math.abs(inv.grandTotal || invSubtotal - invDiscount + invTax);
+    const invSubtotal = Math.abs(Number(inv.subtotal || inv.grandTotal || 0));
+    const invDiscount = Math.abs(Number(inv.discount || 0));
+    const invTax = Math.abs(Number(inv.tax || inv.vat || 0));
+    const invGrand = Math.abs(Number(inv.grandTotal || (invSubtotal - invDiscount + invTax)));
 
     grossSalesUsd += invSubtotal;
     discountsUsd += invDiscount;
     taxUsd += invTax;
 
-    // Transaction Type breakdown
-    const txType = (inv.transactionType || '').toLowerCase();
-    const channel = (inv.salesChannel || '').toLowerCase();
+    // Transaction Type breakdown (Local, International, Online)
+    const txType = String(inv.transactionType || '').toLowerCase();
+    const channel = String(inv.salesChannel || '').toLowerCase();
     if (txType.includes('international') || channel.includes('international') || channel.includes('export')) {
       salesByTransactionType.internationalUsd += invGrand;
-    } else if (txType.includes('online') || channel.includes('online') || channel.includes('e-com')) {
+    } else if (
+      txType.includes('online') ||
+      channel.includes('online') ||
+      channel.includes('e-com') ||
+      channel.includes('delivery')
+    ) {
       salesByTransactionType.onlineUsd += invGrand;
     } else {
       salesByTransactionType.localUsd += invGrand;
     }
 
-    // Process payments / tender
+    // Payment / Tender method breakdown
+    let processedPayments = false;
     if (inv.payments && Array.isArray(inv.payments) && inv.payments.length > 0) {
       inv.payments.forEach((p: any) => {
-        const pType = (p.type || '').toLowerCase();
+        const pType = String(p.type || p.paymentMethod || p.method || '').toLowerCase();
         const pAmt = Number(p.amount || 0);
-        if (pType.includes('lbp')) {
+        if (pAmt <= 0) return;
+        processedPayments = true;
+
+        if (pType.includes('lbp') || pType.includes('ل.ل')) {
           tenderMap['cash_lbp'].lbp += pAmt;
           tenderMap['cash_lbp'].usd += pAmt / exchangeRate;
           tenderMap['cash_lbp'].count += 1;
+          cashSalesLbp += pAmt;
         } else if (pType.includes('card') || pType.includes('visa') || pType.includes('master')) {
           tenderMap['card'].usd += pAmt;
           tenderMap['card'].lbp += pAmt * exchangeRate;
           tenderMap['card'].count += 1;
-        } else if (pType.includes('account') || pType.includes('credit')) {
+        } else if (
+          pType.includes('account') ||
+          pType.includes('credit') ||
+          pType.includes('ذمم') ||
+          pType.includes('آجل')
+        ) {
           tenderMap['on_account'].usd += pAmt;
           tenderMap['on_account'].lbp += pAmt * exchangeRate;
           tenderMap['on_account'].count += 1;
-        } else if (pType.includes('transfer') || pType.includes('whish') || pType.includes('omt')) {
+        } else if (
+          pType.includes('transfer') ||
+          pType.includes('whish') ||
+          pType.includes('omt') ||
+          pType.includes('تحويل')
+        ) {
           tenderMap['bank_transfer'].usd += pAmt;
           tenderMap['bank_transfer'].lbp += pAmt * exchangeRate;
           tenderMap['bank_transfer'].count += 1;
-        } else if (pType.includes('check') || pType.includes('cheque')) {
+        } else if (pType.includes('check') || pType.includes('cheque') || pType.includes('شيك')) {
           tenderMap['check'].usd += pAmt;
           tenderMap['check'].lbp += pAmt * exchangeRate;
           tenderMap['check'].count += 1;
@@ -1107,52 +1181,144 @@ export function computeMainReadingSummary({
           tenderMap['cash_usd'].usd += pAmt;
           tenderMap['cash_usd'].lbp += pAmt * exchangeRate;
           tenderMap['cash_usd'].count += 1;
+          cashSalesUsd += pAmt;
         }
       });
-    } else {
-      // Single payment method on invoice header
-      const pMethod = (inv.transactionType || inv.currency || '').toLowerCase();
-      if (pMethod.includes('lbp')) {
-        tenderMap['cash_lbp'].usd += invGrand;
-        tenderMap['cash_lbp'].lbp += invGrand * exchangeRate;
+    }
+
+    if (!processedPayments) {
+      const pMethod = String(inv.paymentMethod || inv.paymentType || inv.currency || '').toLowerCase();
+      if (pMethod.includes('lbp') || pMethod.includes('ل.ل')) {
+        tenderMap['cash_lbp'].usd += invGrand / exchangeRate;
+        tenderMap['cash_lbp'].lbp += invGrand;
         tenderMap['cash_lbp'].count += 1;
-      } else if (pMethod.includes('account') || pMethod.includes('credit')) {
+        cashSalesLbp += invGrand;
+      } else if (
+        pMethod.includes('account') ||
+        pMethod.includes('credit') ||
+        pMethod.includes('ذمم') ||
+        pMethod.includes('آجل')
+      ) {
         tenderMap['on_account'].usd += invGrand;
         tenderMap['on_account'].lbp += invGrand * exchangeRate;
         tenderMap['on_account'].count += 1;
+      } else if (pMethod.includes('card') || pMethod.includes('visa') || pMethod.includes('master')) {
+        tenderMap['card'].usd += invGrand;
+        tenderMap['card'].lbp += invGrand * exchangeRate;
+        tenderMap['card'].count += 1;
+      } else if (pMethod.includes('transfer') || pMethod.includes('whish') || pMethod.includes('omt')) {
+        tenderMap['bank_transfer'].usd += invGrand;
+        tenderMap['bank_transfer'].lbp += invGrand * exchangeRate;
+        tenderMap['bank_transfer'].count += 1;
+      } else if (pMethod.includes('check') || pMethod.includes('cheque')) {
+        tenderMap['check'].usd += invGrand;
+        tenderMap['check'].lbp += invGrand * exchangeRate;
+        tenderMap['check'].count += 1;
       } else {
         tenderMap['cash_usd'].usd += invGrand;
         tenderMap['cash_usd'].lbp += invGrand * exchangeRate;
         tenderMap['cash_usd'].count += 1;
+        cashSalesUsd += invGrand;
       }
     }
 
-    // Process line items for Division / Department Breakdown
-    if (inv.items && Array.isArray(inv.items)) {
+    // Line items for Division / Department breakdown
+    let matchedLine = false;
+    if (inv.items && Array.isArray(inv.items) && inv.items.length > 0) {
       inv.items.forEach((it: any) => {
-        const itemDiv = it.division || it.category || 'Retail';
+        const itemDiv = String(it.division || it.category || 'Retail').toLowerCase();
         const itemTotal = Number(it.total || (it.qty || 1) * (it.unitPrice || 0));
-        let matched = false;
-        for (const divKey of Object.keys(divisionTotals)) {
-          if (itemDiv.toLowerCase().includes(divKey.toLowerCase())) {
-            divisionTotals[divKey].amount += itemTotal;
-            divisionTotals[divKey].count += (it.qty || 1);
-            matched = true;
-            break;
-          }
-        }
-        if (!matched) {
-          divisionTotals['Other'].amount += itemTotal;
-          divisionTotals['Other'].count += (it.qty || 1);
+        const qty = Number(it.qty || 1);
+
+        if (itemDiv.includes('wholesale') || itemDiv.includes('جملة')) {
+          divisionTotals['Wholesale'].amount += itemTotal;
+          divisionTotals['Wholesale'].count += qty;
+          matchedLine = true;
+        } else if (itemDiv.includes('promo') || itemDiv.includes('عروض') || itemDiv.includes('discount')) {
+          divisionTotals['Promotions'].amount += itemTotal;
+          divisionTotals['Promotions'].count += qty;
+          matchedLine = true;
+        } else if (itemDiv.includes('raw') || itemDiv.includes('bulk') || itemDiv.includes('أولية')) {
+          divisionTotals['Raw Materials'].amount += itemTotal;
+          divisionTotals['Raw Materials'].count += qty;
+          matchedLine = true;
+        } else {
+          divisionTotals['Retail'].amount += itemTotal;
+          divisionTotals['Retail'].count += qty;
+          matchedLine = true;
         }
       });
+    }
+    if (!matchedLine) {
+      divisionTotals['Retail'].amount += invGrand;
+      divisionTotals['Retail'].count += 1;
     }
   });
 
   const netSalesUsd = grossSalesUsd - discountsUsd + taxUsd;
   const finalTurnoverUsd = Math.max(0, netSalesUsd - returnsCreditNotesUsd);
 
-  // Collections array
+  // 2. Process Customer Receipts Stream
+  let customerReceiptsTotalUsd = 0;
+  let customerReceiptsTotalLbp = 0;
+  let cashCustomerReceiptsUsd = 0;
+  let cashCustomerReceiptsLbp = 0;
+  const receiptsList: Array<{ id: string; customerName: string; method: string; amountUsd: number; date: string }> = [];
+
+  customerReceipts.forEach((rct) => {
+    if (rct.isVoided) return;
+    const amt = Number(rct.amountReceivedUsd ?? rct.amountReceived ?? rct.amount ?? 0);
+    if (amt <= 0) return;
+
+    const methodStr = String(rct.paymentMethod || rct.method || rct.paymentType || 'CASH USD').toLowerCase();
+    const currStr = String(rct.currencyCode || rct.currency || (methodStr.includes('lbp') ? 'LBP' : 'USD')).toUpperCase();
+
+    let amtUsd = amt;
+    let amtLbp = amt * exchangeRate;
+    if (currStr === 'LBP') {
+      amtLbp = amt;
+      amtUsd = Number((amt / exchangeRate).toFixed(2));
+    }
+
+    customerReceiptsTotalUsd += amtUsd;
+    customerReceiptsTotalLbp += amtLbp;
+
+    if (methodStr.includes('cash') || methodStr.includes('نقدي')) {
+      if (currStr === 'LBP' || methodStr.includes('lbp') || methodStr.includes('ل.ل')) {
+        cashCustomerReceiptsLbp += amtLbp;
+        tenderMap['cash_lbp'].lbp += amtLbp;
+        tenderMap['cash_lbp'].usd += amtUsd;
+        tenderMap['cash_lbp'].count += 1;
+      } else {
+        cashCustomerReceiptsUsd += amtUsd;
+        tenderMap['cash_usd'].usd += amtUsd;
+        tenderMap['cash_usd'].lbp += amtLbp;
+        tenderMap['cash_usd'].count += 1;
+      }
+    } else if (methodStr.includes('card') || methodStr.includes('visa') || methodStr.includes('master')) {
+      tenderMap['card'].usd += amtUsd;
+      tenderMap['card'].lbp += amtLbp;
+      tenderMap['card'].count += 1;
+    } else if (methodStr.includes('check') || methodStr.includes('cheque') || methodStr.includes('شيك')) {
+      tenderMap['check'].usd += amtUsd;
+      tenderMap['check'].lbp += amtLbp;
+      tenderMap['check'].count += 1;
+    } else if (methodStr.includes('transfer') || methodStr.includes('whish') || methodStr.includes('omt')) {
+      tenderMap['bank_transfer'].usd += amtUsd;
+      tenderMap['bank_transfer'].lbp += amtLbp;
+      tenderMap['bank_transfer'].count += 1;
+    }
+
+    receiptsList.push({
+      id: rct.id || rct.receiptNo || `RCT-${Math.floor(Math.random() * 10000)}`,
+      customerName: rct.customerName || 'Customer',
+      method: rct.paymentMethod || rct.method || (currStr === 'LBP' ? 'Cash LBP' : 'Cash USD'),
+      amountUsd: amtUsd,
+      date: rct.date || (rct.createdAt ? String(rct.createdAt).split('T')[0] : new Date().toISOString().split('T')[0])
+    });
+  });
+
+  // Collections by Tender array
   const collectionsByTender: TenderCollection[] = Object.keys(tenderMap).map((key) => ({
     method: key,
     label: tenderMap[key].label,
@@ -1161,37 +1327,7 @@ export function computeMainReadingSummary({
     count: tenderMap[key].count
   }));
 
-  // Customer Receipts calculations
-  let customerReceiptsTotalUsd = 0;
-  let customerReceiptsTotalLbp = 0;
-  let cashCustomerReceiptsUsd = 0;
-  let cashCustomerReceiptsLbp = 0;
-  const receiptsList: Array<{ id: string; customerName: string; method: string; amountUsd: number; date: string }> = [];
-
-  customerReceipts.forEach((rct) => {
-    const amt = Number(rct.amount || 0);
-    const methodStr = (rct.method || '').toLowerCase();
-    customerReceiptsTotalUsd += amt;
-    customerReceiptsTotalLbp += amt * exchangeRate;
-
-    if (methodStr.includes('cash')) {
-      if (methodStr.includes('lbp')) {
-        cashCustomerReceiptsLbp += amt * exchangeRate;
-      } else {
-        cashCustomerReceiptsUsd += amt;
-      }
-    }
-
-    receiptsList.push({
-      id: rct.id || `RCT-${Math.floor(Math.random() * 10000)}`,
-      customerName: rct.customerName || 'Customer',
-      method: rct.method || 'Cash USD',
-      amountUsd: amt,
-      date: rct.date || new Date().toISOString().split('T')[0]
-    });
-  });
-
-  // Paid In / Paid Out calculations
+  // 3. Process Paid In / Paid Out Drawer Movements
   let paidInTotalUsd = 0;
   let paidInTotalLbp = 0;
   let paidOutTotalUsd = 0;
@@ -1199,52 +1335,90 @@ export function computeMainReadingSummary({
 
   paidInOutList.forEach((pio) => {
     if (pio.isVoided) return;
-    const amtUsd = Number(pio.amountUsd || pio.amount || 0);
-    const amtLbp = Number(pio.amountLbp || amtUsd * exchangeRate);
-    const pType = (pio.movementType || pio.type || '').toUpperCase();
+    if (pio.reasonCategory === 'OPENING_FLOAT' || pio.category === 'Opening Float') return;
 
-    // Ignore opening float in regular paid in total if it was already in opening float
-    if (pType === 'PAID_IN' || pType === 'IN') {
-      if (pio.category !== 'Opening Float' && pio.reasonCategory !== 'OPENING_FLOAT') {
+    const pTypeStr = String(pio.movementType || pio.type || '').toUpperCase();
+    const isPaidIn = pTypeStr === 'PAID_IN' || pTypeStr === 'IN' || pTypeStr.includes('IN');
+
+    const methodUpper = String(pio.paymentType || pio.currencyCode || pio.currency || '').toUpperCase();
+    const isUsd =
+      methodUpper.includes('USD') ||
+      pio.currencyCode === 'USD' ||
+      (!methodUpper.includes('LBP') && Number(pio.amountUsd || pio.amount || 0) < 10000);
+
+    if (isUsd) {
+      const amtUsd = Number(pio.amountUsd ?? pio.amount ?? 0);
+      if (isPaidIn) {
         paidInTotalUsd += amtUsd;
-        paidInTotalLbp += amtLbp;
+      } else {
+        paidOutTotalUsd += amtUsd;
       }
     } else {
-      paidOutTotalUsd += amtUsd;
-      paidOutTotalLbp += amtLbp;
+      const amtLbp = Number(pio.amountLbp ?? pio.amount ?? 0);
+      if (isPaidIn) {
+        paidInTotalLbp += amtLbp;
+      } else {
+        paidOutTotalLbp += amtLbp;
+      }
     }
   });
 
-  // Cash Sales collected in Cash USD and Cash LBP
-  const cashSalesUsd = tenderMap['cash_usd'].usd;
-  const cashSalesLbp = tenderMap['cash_lbp'].lbp;
-
-  // Expected Drawer Cash Formula:
-  // Expected Cash = Opening Float + Cash Sales + Cash Customer Receipts + Paid In - Cash Refunds - Paid Out
+  // 4. Expected Drawer Cash Calculations
   const expectedCashUsd = Number(
-    (openingFloatUsd + cashSalesUsd + cashCustomerReceiptsUsd + paidInTotalUsd - cashRefundsUsd - paidOutTotalUsd).toFixed(2)
+    (
+      openingFloatUsd +
+      cashSalesUsd +
+      cashCustomerReceiptsUsd +
+      paidInTotalUsd -
+      cashRefundsUsd -
+      paidOutTotalUsd
+    ).toFixed(2)
   );
 
   const expectedCashLbp = Math.round(
-    openingFloatLbp + cashSalesLbp + cashCustomerReceiptsLbp + paidInTotalLbp - cashRefundsLbp - paidOutTotalLbp
+    openingFloatLbp +
+      cashSalesLbp +
+      cashCustomerReceiptsLbp +
+      paidInTotalLbp -
+      cashRefundsLbp -
+      paidOutTotalLbp
   );
 
-  // Reconciliation Variance:
-  // Variance = Actual Counted Cash - Expected Cash
-  const varianceUsd = Number((actualCountedUsd - expectedCashUsd).toFixed(2));
-  const varianceLbp = Math.round(actualCountedLbp - expectedCashLbp);
+  // 5. Physical Count & Reconciliation Variance
+  const hasCountedUsd =
+    actualCountedUsd !== undefined && actualCountedUsd !== null && !isNaN(actualCountedUsd);
+  const hasCountedLbp =
+    actualCountedLbp !== undefined && actualCountedLbp !== null && !isNaN(actualCountedLbp);
 
-  let reconciliationStatus: 'BALANCED' | 'SHORTAGE' | 'OVERAGE' = 'BALANCED';
-  if (varianceUsd > 0.05 || varianceLbp > 1000) {
-    reconciliationStatus = 'OVERAGE';
-  } else if (varianceUsd < -0.05 || varianceLbp < -1000) {
-    reconciliationStatus = 'SHORTAGE';
+  let varianceUsd = 0;
+  let varianceLbp = 0;
+  let reconciliationStatus: 'PENDING' | 'BALANCED' | 'SHORTAGE' | 'OVERAGE' = 'PENDING';
+
+  if (hasCountedUsd || hasCountedLbp) {
+    const countUsd = hasCountedUsd ? (actualCountedUsd as number) : 0;
+    const countLbp = hasCountedLbp ? (actualCountedLbp as number) : 0;
+    varianceUsd = Number((countUsd - expectedCashUsd).toFixed(2));
+    varianceLbp = Math.round(countLbp - expectedCashLbp);
+
+    if (Math.abs(varianceUsd) <= 0.05 && Math.abs(varianceLbp) <= 1000) {
+      reconciliationStatus = 'BALANCED';
+    } else if (varianceUsd > 0.05 || varianceLbp > 1000) {
+      reconciliationStatus = 'OVERAGE';
+    } else {
+      reconciliationStatus = 'SHORTAGE';
+    }
   }
 
-  // Division Breakdown calculations
+  // 6. Division Breakdown
   const totalDivisionsAmount = Object.values(divisionTotals).reduce((sum, d) => sum + d.amount, 0) || 1;
   const divisionBreakdown: DivisionBreakdown[] = Object.keys(divisionTotals)
-    .filter((k) => divisionTotals[k].amount > 0 || divisionTotals[k].count > 0 || k === 'Retail' || k === 'Wholesale')
+    .filter(
+      (k) =>
+        divisionTotals[k].amount > 0 ||
+        divisionTotals[k].count > 0 ||
+        k === 'Retail' ||
+        k === 'Wholesale'
+    )
     .map((k) => ({
       division: k,
       amountUsd: Number(divisionTotals[k].amount.toFixed(2)),
@@ -1253,15 +1427,21 @@ export function computeMainReadingSummary({
     }))
     .sort((a, b) => b.amountUsd - a.amountUsd);
 
-  // Invoice range calculation
+  // 7. Invoice Range Summary
   const standardInvoices = invoices.filter(
     (inv) =>
+      inv.docType !== 'CREDIT_NOTE' &&
+      inv.type !== 'CREDIT_NOTE' &&
       inv.transactionType !== 'Credit Note' &&
-      !inv.invoiceNumber?.startsWith('CRN-') &&
+      !String(inv.invoiceNumber || '').startsWith('CRN-') &&
       (inv.grandTotal === undefined || inv.grandTotal >= 0)
   );
   const sortedInvoices = [...standardInvoices].sort((a, b) =>
-    (a.invoiceNumber || a.id || '').localeCompare(b.invoiceNumber || b.id || '')
+    String(a.invoiceNumber || a.id || '').localeCompare(
+      String(b.invoiceNumber || b.id || ''),
+      undefined,
+      { numeric: true }
+    )
   );
   const firstInvoiceNo = sortedInvoices[0]?.invoiceNumber || sortedInvoices[0]?.id || '';
   const lastInvoiceNo =
@@ -1337,8 +1517,8 @@ export function computeMainReadingSummary({
     expectedCashUsd,
     expectedCashLbp,
 
-    actualCountedUsd: Number(actualCountedUsd.toFixed(2)),
-    actualCountedLbp: Math.round(actualCountedLbp),
+    actualCountedUsd: Number((actualCountedUsd || 0).toFixed(2)),
+    actualCountedLbp: Math.round(actualCountedLbp || 0),
     varianceUsd,
     varianceLbp,
     reconciliationStatus,

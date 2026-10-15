@@ -1026,16 +1026,12 @@ export default function AuthenticVanguardSalesWorkstation({
   });
 
   // --- Paid In / Out Drawer State ---
-  const [drawerCashBalance, setDrawerCashBalance] = useState(1250.00);
+  const [drawerCashBalance, setDrawerCashBalance] = useState(0);
   const [paidInOutType, setPaidInOutType] = useState<'in' | 'out'>('out');
   const [paidInOutAmount, setPaidInOutAmount] = useState('');
   const [paidInOutCategory, setPaidInOutCategory] = useState('Delivery Driver Fuel');
   const [paidInOutNotes, setPaidInOutNotes] = useState('');
-  const [paidInOutHistory, setPaidInOutHistory] = useState([
-    { id: 'PIO-01', time: '09:15 AM', type: 'in', category: 'Opening Float', amount: 200.00, notes: 'Cash drawer morning float' },
-    { id: 'PIO-02', time: '11:30 AM', type: 'out', category: 'Delivery Driver Fuel', amount: 25.00, notes: 'Van #4 fuel receipt' },
-    { id: 'PIO-03', time: '02:15 PM', type: 'out', category: 'Packaging Supplies', amount: 15.00, notes: 'Cardboard tape & markers' }
-  ]);
+  const [paidInOutHistory, setPaidInOutHistory] = useState<any[]>([]);
 
   // --- Customer Receipts History State ---
   const [customerReceipts, setCustomerReceipts] = useState([
@@ -3214,7 +3210,15 @@ export default function AuthenticVanguardSalesWorkstation({
                           const postedTodayInvoices = invoicesDirectory.filter((inv) =>
                             isInvoicePostedToday(inv, activeWorkingDate)
                           );
-                          const postedTodayReceipts = getCustomerReceipts().filter((rct) =>
+                          const allReceipts = Array.from(
+                            new Map(
+                              [...customerReceipts, ...getCustomerReceipts()].map((r: any) => [
+                                r.id || r.receiptNo || JSON.stringify(r),
+                                r
+                              ])
+                            ).values()
+                          );
+                          const postedTodayReceipts = allReceipts.filter((rct) =>
                             isReceiptPostedToday(rct, activeWorkingDate)
                           );
                           const todayCashMovements = getCashMovements().filter(
@@ -6227,7 +6231,14 @@ export default function AuthenticVanguardSalesWorkstation({
         paidInOutList={getCashMovements().filter((m) =>
           isCashMovementToday(m, invoiceDate || getTodayFormatted())
         )}
-        customerReceipts={getCustomerReceipts().filter((rct) =>
+        customerReceipts={Array.from(
+          new Map(
+            [...customerReceipts, ...getCustomerReceipts()].map((r: any) => [
+              r.id || r.receiptNo || JSON.stringify(r),
+              r
+            ])
+          ).values()
+        ).filter((rct) =>
           isReceiptPostedToday(rct, invoiceDate || getTodayFormatted())
         )}
         workingDate={invoiceDate || getTodayFormatted()}
