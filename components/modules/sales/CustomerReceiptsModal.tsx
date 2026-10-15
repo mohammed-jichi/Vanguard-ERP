@@ -684,7 +684,7 @@ export default function CustomerReceiptsModal({
               <span className="text-base font-mono font-extrabold text-red-600 flex items-center gap-1">
                 ${(Number(totalOutstandingCustomerDebt) || 0).toFixed(2)} USD
                 <span className="text-[11px] font-normal text-slate-500">
-                  ({(totalOutstandingCustomerDebt * exchangeRate).toLocaleString()} LBP)
+                  ({(Number(totalOutstandingCustomerDebt * exchangeRate) || 0).toLocaleString()} LBP)
                 </span>
               </span>
             </div>
@@ -708,7 +708,7 @@ export default function CustomerReceiptsModal({
                 <span>Record Payment & Settlement (بيانات القبض والتسوية)</span>
               </div>
               <span className="text-[11px] text-slate-500 font-mono">
-                Exchange Rate: 1 USD = {exchangeRate.toLocaleString()} LBP
+                Exchange Rate: 1 USD = {(Number(exchangeRate) || 0).toLocaleString()} LBP
               </span>
             </h4>
 
@@ -1594,7 +1594,7 @@ export default function CustomerReceiptsModal({
                         ${(Number(printingReceipt.amountReceivedUsd) || 0).toFixed(2)} USD
                       </div>
                       <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#64748b' }}>
-                        {printingReceipt.amountReceivedLbp.toLocaleString()} LBP
+                        {(Number(printingReceipt.amountReceivedLbp) || 0).toLocaleString()} LBP
                       </div>
                     </div>
 
@@ -1627,7 +1627,7 @@ export default function CustomerReceiptsModal({
                         Exchange Rate
                       </span>
                       <div style={{ fontSize: '18px', fontWeight: '900', fontFamily: 'monospace', color: '#0f172a', marginTop: '2px' }}>
-                        {printingReceipt.exchangeRate.toLocaleString()}
+                        {(Number(printingReceipt.exchangeRate) || 0).toLocaleString()}
                       </div>
                       <div style={{ fontSize: '10.5px', color: '#64748b' }}>
                         LBP per 1 USD
@@ -1889,7 +1889,7 @@ export default function CustomerReceiptsModal({
                     ${(Number(printingReceipt.amountReceivedUsd) || 0).toFixed(2)} USD
                   </div>
                   <div style={{ fontSize: '10px', fontFamily: 'monospace', color: '#333' }}>
-                    {printingReceipt.amountReceivedLbp.toLocaleString()} LBP
+                    {(Number(printingReceipt.amountReceivedLbp) || 0).toLocaleString()} LBP
                   </div>
                   {printingReceipt.discountGiven > 0 && (
                     <div style={{ fontSize: '9px', color: '#047857', marginTop: '3px', fontWeight: 'bold' }}>

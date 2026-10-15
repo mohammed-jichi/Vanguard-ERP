@@ -251,47 +251,47 @@ function OperationsCenterComponent() {
         {activeSection === 'transfers' && <TransfersView />}
 
         {/* =========================================================================
-            VIEW 8: PURCHASE ORDERS (100% AUTHENTIC OMEGA CLONE)
+            VIEW 8: PURCHASE ORDERS (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'purchase_orders' && <PurchaseOrderView />}
 
         {/* =========================================================================
-            VIEW 9: REORDER GUIDE (100% AUTHENTIC OMEGA CLONE)
+            VIEW 9: REORDER GUIDE (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'reorder_guide' && <ReorderGuideView />}
 
         {/* =========================================================================
-            VIEW 10: LOST GOODS (100% AUTHENTIC OMEGA CLONE)
+            VIEW 10: LOST GOODS (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'lost_goods' && <LostGoodsView />}
 
         {/* =========================================================================
-            VIEW 11: ITEM ASSEMBLY (100% AUTHENTIC OMEGA CLONE)
+            VIEW 11: ITEM ASSEMBLY (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'item_assembly' && <ItemAssemblyView />}
 
         {/* =========================================================================
-            VIEW 12: ADJUSTMENTS (100% AUTHENTIC OMEGA CLONE)
+            VIEW 12: ADJUSTMENTS (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'adjustments' && <AdjustmentsView />}
 
         {/* =========================================================================
-            VIEW 13: PRODUCT REQUEST (100% AUTHENTIC OMEGA CLONE)
+            VIEW 13: PRODUCT REQUEST (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'product_request' && <ProductRequestView />}
 
         {/* =========================================================================
-            VIEW 14: MANAGE PRODUCT REQUESTS (100% AUTHENTIC OMEGA CLONE)
+            VIEW 14: MANAGE PRODUCT REQUESTS (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'manage_product_requests' && <ManageProductRequestsView />}
 
         {/* =========================================================================
-            VIEW 15: PRODUCT REQ. PREPARATION (100% AUTHENTIC OMEGA CLONE)
+            VIEW 15: PRODUCT REQ. PREPARATION (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'product_req_prep' && <ProductReqPreparationView />}
 
         {/* =========================================================================
-            VIEW 16: RECEIVING OF GOODS (100% AUTHENTIC OMEGA CLONE)
+            VIEW 16: RECEIVING OF GOODS (AUTHENTIC VANGUARD OPERATIONS)
             ========================================================================= */}
         {activeSection === 'receiving_goods' && <ReceivingOfGoodsView />}
 

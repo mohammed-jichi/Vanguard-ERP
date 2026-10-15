@@ -307,8 +307,8 @@ export default function CreditNoteModal({
                     <h4 className="font-bold text-sm">Credit Note {postedCrn.invoiceNumber} Successfully Posted!</h4>
                     <p className="text-xs text-emerald-700">
                       {postedCrn.settlementMethod === 'CASH_REFUND'
-                        ? `Cash refund of $${postedCrn.grandTotal.toFixed(2)} deducted from active drawer balance.`
-                        : `Customer balance credited with $${postedCrn.grandTotal.toFixed(2)} on account.`}
+                        ? `Cash refund of $${(Number(postedCrn.grandTotal) || 0).toFixed(2)} deducted from active drawer balance.`
+                        : `Customer balance credited with $${(Number(postedCrn.grandTotal) || 0).toFixed(2)} on account.`}
                       {' • Inventory restocked (+qty) in '}{returnLocation}.
                     </p>
                   </div>
@@ -373,8 +373,8 @@ export default function CreditNoteModal({
                         </td>
                         <td className="py-2 px-2 text-center text-slate-600">{item.unit}</td>
                         <td className="py-2 px-2 text-right font-bold text-red-700 font-mono">{item.qty}</td>
-                        <td className="py-2 px-2 text-right text-slate-600 font-mono">${item.unitPrice.toFixed(2)}</td>
-                        <td className="py-2 px-2.5 text-right font-bold text-red-600 font-mono">${item.total.toFixed(2)}</td>
+                        <td className="py-2 px-2 text-right text-slate-600 font-mono">${(Number(item.unitPrice) || 0).toFixed(2)}</td>
+                        <td className="py-2 px-2.5 text-right font-bold text-red-600 font-mono">${(Number(item.total) || 0).toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -393,10 +393,10 @@ export default function CreditNoteModal({
                     </div>
                     <div className="flex justify-between text-sm font-bold text-red-700 border-t border-slate-300 pt-1.5">
                       <span>Total Credit Issued:</span>
-                      <span className="font-mono">${postedCrn.grandTotal.toFixed(2)} USD</span>
+                      <span className="font-mono">${(Number(postedCrn.grandTotal) || 0).toFixed(2)} USD</span>
                     </div>
                     <div className="text-[11px] font-mono text-slate-500">
-                      ≈ {postedCrn.grandTotal * POS_EXCHANGE_RATE_LBP > 0 ? (postedCrn.grandTotal * POS_EXCHANGE_RATE_LBP).toLocaleString() : '0'} LBP
+                      ≈ {(Number(postedCrn.grandTotal) || 0) * POS_EXCHANGE_RATE_LBP > 0 ? ((Number(postedCrn.grandTotal) || 0) * POS_EXCHANGE_RATE_LBP).toLocaleString() : '0'} LBP
                     </div>
                   </div>
                 </div>
@@ -569,7 +569,7 @@ export default function CreditNoteModal({
                             <span className="text-[10px] font-mono text-slate-400">{item.code}</span>
                           </td>
                           <td className="py-2.5 px-2 text-center text-slate-600">{item.unit}</td>
-                          <td className="py-2.5 px-2 text-right font-mono text-slate-700">${item.unitPrice.toFixed(2)}</td>
+                          <td className="py-2.5 px-2 text-right font-mono text-slate-700">${(Number(item.unitPrice) || 0).toFixed(2)}</td>
                           <td className="py-2.5 px-2 text-center">
                             <input
                               type="number"
@@ -580,7 +580,7 @@ export default function CreditNoteModal({
                             />
                           </td>
                           <td className="py-2.5 px-3 text-right font-mono font-bold text-red-600">
-                            ${item.total.toFixed(2)}
+                            ${(Number(item.total) || 0).toFixed(2)}
                           </td>
                           <td className="py-2.5 px-2 text-center">
                             <button
@@ -604,9 +604,9 @@ export default function CreditNoteModal({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-red-900 text-sm">Settlement Total:</span>
-                    <span className="font-mono text-xl font-extrabold text-red-700">${grandTotal.toFixed(2)} USD</span>
+                    <span className="font-mono text-xl font-extrabold text-red-700">${(Number(grandTotal) || 0).toFixed(2)} USD</span>
                     <span className="text-slate-500 font-mono text-xs">
-                      (≈ {grandTotalLbp.toLocaleString()} LBP)
+                      (≈ {(Number(grandTotalLbp) || 0).toLocaleString()} LBP)
                     </span>
                   </div>
                   <p className="text-[11px] text-red-800">

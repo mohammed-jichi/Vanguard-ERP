@@ -268,16 +268,65 @@ export interface CalculatedDocumentTotals {
   lines: CalculatedDocumentLineItem[];
   itemsCount: number;
   totalQuantity: number;
+
+  // Subtotal aliases
+  subtotal: number;
+  subtotalUsd: number;
+  subtotalLbp: number;
   grossSubtotal: number;
-  lineDiscountsTotal: number;
-  documentDiscountTotal: number;
+  grossSubtotalUsd: number;
+  grossSubtotalLbp: number;
+  subtotalPrimary: number;
+  subtotalSecondary: number;
+
+  // Discount aliases
+  discount: number;
+  discountAmount: number;
+  discountUsd: number;
+  discountLbp: number;
   totalDiscount: number;
+  totalDiscountUsd: number;
+  totalDiscountLbp: number;
+  lineDiscountsTotal: number;
+  lineDiscountTotal: number;
+  documentDiscountTotal: number;
+  invoiceDiscountAmount: number;
+
+  // Taxable aliases
   taxableAmount: number;
-  taxRate: number;
-  isTaxExempt: boolean;
+  taxableAmountUsd: number;
+  taxableAmountLbp: number;
+
+  // Tax / VAT aliases
+  tax: number;
   taxAmount: number;
+  taxUsd: number;
+  taxLbp: number;
+  totalTax: number;
+  totalTaxUsd: number;
+  totalTaxLbp: number;
+  vatAmount: number;
+  vatUsd: number;
+  vatLbp: number;
+  taxRate: number;
+  effectiveTaxRate: number;
+  isTaxExempt: boolean;
+
+  // Grand / Net Total aliases
+  grandTotal: number;
+  grandTotalUsd: number;
+  grandTotalLbp: number;
+  netTotal: number;
+  netTotalUsd: number;
+  netTotalLbp: number;
+  totalUsd: number;
+  totalLbp: number;
   grandTotalPrimary: number;
   grandTotalSecondary: number;
+
+  // Change Due & Currencies
+  changeDueUsd: number;
+  changeDueLbp: number;
   primaryCurrency: string;
   secondaryCurrency: string;
   exchangeRate: number;
@@ -306,7 +355,7 @@ export function calculateDocumentTotals(options: DocumentTotalsOptions): Calcula
   let grossSubtotal = 0;
   let lineDiscountsTotal = 0;
 
-  const lines: CalculatedDocumentLineItem[] = items.map((it) => {
+  const lines: CalculatedDocumentLineItem[] = (items || []).map((it) => {
     const qty = Math.max(0, Number(it.qty || 0));
     const price = Math.max(0, Number(it.unitPrice || 0));
     const lineGross = Number((qty * price).toFixed(2));
@@ -374,20 +423,68 @@ export function calculateDocumentTotals(options: DocumentTotalsOptions): Calcula
     ? Math.round(rawSecondary)
     : Number(rawSecondary.toFixed(secondaryDecimalPlaces));
 
+  const grossSubtotalLbp = Math.round(grossSubtotal * exchangeRate);
+  const totalDiscountLbp = Math.round(totalDiscount * exchangeRate);
+  const taxableAmountLbp = Math.round(taxableAmount * exchangeRate);
+  const taxAmountLbp = Math.round(taxAmount * exchangeRate);
+
   return {
-    lines,
+    lines: lines || [],
     itemsCount: lines.length,
-    totalQuantity,
+    totalQuantity: Number(totalQuantity) || 0,
+
+    subtotal: grossSubtotal,
+    subtotalUsd: grossSubtotal,
+    subtotalLbp: grossSubtotalLbp,
     grossSubtotal,
-    lineDiscountsTotal,
-    documentDiscountTotal,
+    grossSubtotalUsd: grossSubtotal,
+    grossSubtotalLbp,
+    subtotalPrimary: grossSubtotal,
+    subtotalSecondary: grossSubtotalLbp,
+
+    discount: totalDiscount,
+    discountAmount: totalDiscount,
+    discountUsd: totalDiscount,
+    discountLbp: totalDiscountLbp,
     totalDiscount,
+    totalDiscountUsd: totalDiscount,
+    totalDiscountLbp,
+    lineDiscountsTotal,
+    lineDiscountTotal: lineDiscountsTotal,
+    documentDiscountTotal,
+    invoiceDiscountAmount: documentDiscountTotal,
+
     taxableAmount,
-    taxRate: effectiveTaxRate,
-    isTaxExempt,
+    taxableAmountUsd: taxableAmount,
+    taxableAmountLbp,
+
+    tax: taxAmount,
     taxAmount,
+    taxUsd: taxAmount,
+    taxLbp: taxAmountLbp,
+    totalTax: taxAmount,
+    totalTaxUsd: taxAmount,
+    totalTaxLbp: taxAmountLbp,
+    vatAmount: taxAmount,
+    vatUsd: taxAmount,
+    vatLbp: taxAmountLbp,
+    taxRate: effectiveTaxRate,
+    effectiveTaxRate,
+    isTaxExempt,
+
+    grandTotal: grandTotalPrimary,
+    grandTotalUsd: grandTotalPrimary,
+    grandTotalLbp: grandTotalSecondary,
+    netTotal: grandTotalPrimary,
+    netTotalUsd: grandTotalPrimary,
+    netTotalLbp: grandTotalSecondary,
+    totalUsd: grandTotalPrimary,
+    totalLbp: grandTotalSecondary,
     grandTotalPrimary,
     grandTotalSecondary,
+
+    changeDueUsd: 0,
+    changeDueLbp: 0,
     primaryCurrency,
     secondaryCurrency,
     exchangeRate
@@ -519,6 +616,8 @@ export interface MainReadingSummaryResult {
   cashSalesLbp: number;
   cashReceiptsUsd: number;
   cashReceiptsLbp: number;
+  cashCustomerReceiptsUsd: number;
+  cashCustomerReceiptsLbp: number;
   paidInUsd: number;
   paidInLbp: number;
   cashRefundsUsd: number;
@@ -531,10 +630,10 @@ export interface MainReadingSummaryResult {
   expectedCashLbp: number;
 
   // Counted Reconciliation
-  actualCountedUsd: number | null;
-  actualCountedLbp: number | null;
-  varianceUsd: number | null;
-  varianceLbp: number | null;
+  actualCountedUsd: number;
+  actualCountedLbp: number;
+  varianceUsd: number;
+  varianceLbp: number;
   reconciliationStatusUsd: 'PENDING' | 'EXACT' | 'OVERAGE' | 'SHORTAGE';
   reconciliationStatusLbp: 'PENDING' | 'EXACT' | 'OVERAGE' | 'SHORTAGE';
   reconciliationStatus: 'PENDING' | 'BALANCED' | 'OVERAGE' | 'SHORTAGE';
@@ -1143,26 +1242,28 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
     qualifyingReceipts,
     qualifyingMovements,
 
-    openingFloatUsd: Number(openingFloatUsd.toFixed(2)),
-    openingFloatLbp: Math.round(openingFloatLbp),
-    cashSalesUsd: Number(cashSalesUsd.toFixed(2)),
-    cashSalesLbp: Math.round(cashSalesLbp),
-    cashReceiptsUsd: Number(cashCustomerReceiptsUsd.toFixed(2)),
-    cashReceiptsLbp: Math.round(cashCustomerReceiptsLbp),
-    paidInUsd: Number(paidInUsd.toFixed(2)),
-    paidInLbp: Math.round(paidInLbp),
-    cashRefundsUsd: Number(cashRefundsUsd.toFixed(2)),
-    cashRefundsLbp: Math.round(cashRefundsLbp),
-    paidOutUsd: Number(paidOutUsd.toFixed(2)),
-    paidOutLbp: Math.round(paidOutLbp),
+    openingFloatUsd: Number(openingFloatUsd.toFixed(2)) || 0,
+    openingFloatLbp: Math.round(openingFloatLbp) || 0,
+    cashSalesUsd: Number(cashSalesUsd.toFixed(2)) || 0,
+    cashSalesLbp: Math.round(cashSalesLbp) || 0,
+    cashReceiptsUsd: Number(cashCustomerReceiptsUsd.toFixed(2)) || 0,
+    cashReceiptsLbp: Math.round(cashCustomerReceiptsLbp) || 0,
+    cashCustomerReceiptsUsd: Number(cashCustomerReceiptsUsd.toFixed(2)) || 0,
+    cashCustomerReceiptsLbp: Math.round(cashCustomerReceiptsLbp) || 0,
+    paidInUsd: Number(paidInUsd.toFixed(2)) || 0,
+    paidInLbp: Math.round(paidInLbp) || 0,
+    cashRefundsUsd: Number(cashRefundsUsd.toFixed(2)) || 0,
+    cashRefundsLbp: Math.round(cashRefundsLbp) || 0,
+    paidOutUsd: Number(paidOutUsd.toFixed(2)) || 0,
+    paidOutLbp: Math.round(paidOutLbp) || 0,
 
-    expectedCashUsd,
-    expectedCashLbp,
+    expectedCashUsd: Number(expectedCashUsd) || 0,
+    expectedCashLbp: Math.round(expectedCashLbp) || 0,
 
-    actualCountedUsd: parsedCountedUsd,
-    actualCountedLbp: parsedCountedLbp,
-    varianceUsd,
-    varianceLbp,
+    actualCountedUsd: parsedCountedUsd ?? 0,
+    actualCountedLbp: parsedCountedLbp ?? 0,
+    varianceUsd: varianceUsd ?? 0,
+    varianceLbp: varianceLbp ?? 0,
     reconciliationStatusUsd,
     reconciliationStatusLbp,
     reconciliationStatus
@@ -1200,6 +1301,9 @@ export interface CustomerReceivablesSummary {
   totalPaidOrAllocated: number;
   totalCredits: number;
   currentOpenBalance: number;
+  openBalance: number;
+  balance: number;
+  totalOutstanding: number;
   projectedBalance: number;
   isCreditLimitExceeded: boolean;
   creditRemaining: number;
@@ -1330,19 +1434,22 @@ export function calculateCustomerReceivables(input: CustomerReceivablesInput): C
   buckets.totalDue = Number(buckets.totalDue.toFixed(2));
 
   return {
-    customerId,
-    customerName,
-    creditLimit,
-    totalInvoiced: Number(totalInvoiced.toFixed(2)),
-    totalPaidOrAllocated: Number(totalPaidOrAllocated.toFixed(2)),
-    totalCredits: Number(totalCredits.toFixed(2)),
-    currentOpenBalance,
-    projectedBalance,
-    isCreditLimitExceeded,
-    creditRemaining,
+    customerId: customerId || 'CUST',
+    customerName: customerName || 'Customer',
+    creditLimit: Number(creditLimit) || 0,
+    totalInvoiced: Number(totalInvoiced.toFixed(2)) || 0,
+    totalPaidOrAllocated: Number(totalPaidOrAllocated.toFixed(2)) || 0,
+    totalCredits: Number(totalCredits.toFixed(2)) || 0,
+    currentOpenBalance: Number(currentOpenBalance) || 0,
+    openBalance: Number(currentOpenBalance) || 0,
+    balance: Number(currentOpenBalance) || 0,
+    totalOutstanding: Number(currentOpenBalance) || 0,
+    projectedBalance: Number(projectedBalance) || 0,
+    isCreditLimitExceeded: Boolean(isCreditLimitExceeded),
+    creditRemaining: Number(creditRemaining) || 0,
     agingBuckets: buckets,
     buckets,
-    unpaidInvoices
+    unpaidInvoices: unpaidInvoices || []
   };
 }
 

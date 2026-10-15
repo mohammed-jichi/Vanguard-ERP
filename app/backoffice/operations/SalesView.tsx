@@ -1890,7 +1890,7 @@ export default function AuthenticVanguardSalesWorkstation({
         ? (selectedCustomer as any).balance
         : (Number((selectedCustomer as any)?.balance ?? (selectedCustomer as any)?.openBalance ?? (selectedCustomer as any)?.outstandingBalance ?? 0) || 0);
       if (currentBalance + grandTotal > creditLimit) {
-        if (!confirm(`Warning: Customer credit limit ($${creditLimit.toLocaleString()}) will be exceeded by $${(currentBalance + grandTotal - creditLimit).toLocaleString()}. Do you wish to proceed?`)) {
+        if (!confirm(`Warning: Customer credit limit ($${(Number(creditLimit) || 0).toLocaleString()}) will be exceeded by $${(Number(currentBalance + grandTotal - creditLimit) || 0).toLocaleString()}. Do you wish to proceed?`)) {
           return;
         }
       }
@@ -4650,10 +4650,10 @@ export default function AuthenticVanguardSalesWorkstation({
                       <td className="py-2 px-2.5 border border-slate-300 text-right font-mono font-semibold">{item.qty || item.quantity || 1}</td>
                       <td className="py-2 px-2.5 border border-slate-300">{item.unit || 'PCS'}</td>
                       <td className="py-2 px-2.5 border border-slate-300 text-right font-mono font-semibold">
-                        {(item.unitPrice || item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {(Number(item.unitPrice || item.price || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                       <td className="py-2 px-2.5 border border-slate-300 text-right font-mono font-bold text-blue-950">
-                        {(item.total || (item.qty || 1) * (item.unitPrice || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {(Number(item.total || (item.qty || 1) * (item.unitPrice || 0))).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                     </tr>
                   ))}
@@ -4662,7 +4662,7 @@ export default function AuthenticVanguardSalesWorkstation({
                   <tr>
                     <td colSpan={6} className="py-2 px-3 text-right border border-slate-300">Subtotal ({currency}):</td>
                     <td className="py-2 px-3 text-right border border-slate-300 font-mono">
-                      {subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {(Number(subtotal) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                   </tr>
                   <tr>
@@ -4670,13 +4670,13 @@ export default function AuthenticVanguardSalesWorkstation({
                       {isTaxExempt ? 'Tax (Exempt 0%):' : 'Tax (11% VAT):'}
                     </td>
                     <td className="py-2 px-3 text-right border border-slate-300 font-mono">
-                      {tax.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {(Number(tax) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                   </tr>
                   <tr className="bg-slate-100 text-sm font-black">
                     <td colSpan={6} className="py-2 px-3 text-right border border-slate-300 text-blue-900">Grand Total ({currency}):</td>
                     <td className="py-2 px-3 text-right border border-slate-300 font-mono text-blue-900 font-bold">
-                      {grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {currency}
+                      {(Number(grandTotal) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {currency}
                     </td>
                   </tr>
                 </tfoot>
@@ -5450,7 +5450,7 @@ export default function AuthenticVanguardSalesWorkstation({
                       {(Number(previewTotals?.taxTotal) || 0).toFixed(2)}
                     </td>
                     <td className="py-2.5 px-2 text-right font-bold text-slate-900 whitespace-nowrap">
-                      {previewTotals.netLL.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {(Number(previewTotals?.netLL) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className="py-2.5 px-2 text-slate-700">
                       LL
@@ -6707,7 +6707,7 @@ export default function AuthenticVanguardSalesWorkstation({
             setInvoicesDirectory(updated);
           }}
           onReceiptRecorded={(receipt) => {
-            setStatusNotice(`Customer receipt #${receipt.receiptNo} posted ($${receipt.amountReceived.toFixed(2)})`);
+            setStatusNotice(`Customer receipt #${receipt.receiptNo} posted ($${(Number(receipt.amountReceived) || 0).toFixed(2)})`);
             setTimeout(() => setStatusNotice(null), 3500);
           }}
         />
@@ -6728,7 +6728,7 @@ export default function AuthenticVanguardSalesWorkstation({
               movement.type === 'PAID_IN' ? prev + movement.amountUsd : Math.max(0, prev - movement.amountUsd)
             );
             setStatusNotice(
-              `Cash drawer ${movement.type === 'PAID_IN' ? 'Deposit' : 'Payout'} ($${movement.amountUsd.toFixed(2)}) recorded.`
+              `Cash drawer ${movement.type === 'PAID_IN' ? 'Deposit' : 'Payout'} ($${(Number(movement.amountUsd) || 0).toFixed(2)}) recorded.`
             );
             setTimeout(() => setStatusNotice(null), 3500);
           }}
@@ -6771,7 +6771,7 @@ export default function AuthenticVanguardSalesWorkstation({
               );
             }
             setStatusNotice(
-              `Shift #${closedShift.shiftNumber} closed! Shift #${newShift.shiftNumber} opened with opening cash $${newShift.openingCashUsd.toFixed(2)}.`
+              `Shift #${closedShift.shiftNumber} closed! Shift #${newShift.shiftNumber} opened with opening cash $${(Number(newShift.openingCashUsd) || 0).toFixed(2)}.`
             );
           }}
         />

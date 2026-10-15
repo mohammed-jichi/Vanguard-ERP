@@ -373,7 +373,7 @@ export default function MainReadingModal({
             <div className="text-right sm:text-left">
               <span className="text-[10px] text-slate-500 uppercase font-bold block">Exchange Rate</span>
               <p className="font-bold text-emerald-700 font-mono">
-                1 USD = {POS_EXCHANGE_RATE_LBP.toLocaleString()} LBP
+                1 USD = {(Number(POS_EXCHANGE_RATE_LBP) || 0).toLocaleString()} LBP
               </p>
               <p className="text-[10px] text-slate-500">Official POS Reference</p>
             </div>
@@ -527,7 +527,7 @@ export default function MainReadingModal({
                           ${(Number(tender.usd) || 0).toFixed(2)}
                         </td>
                         <td className="py-2.5 px-3 text-right font-mono text-slate-600">
-                          {tender.lbp.toLocaleString()} LBP
+                          {(Number(tender.lbp) || 0).toLocaleString()} LBP
                         </td>
                       </tr>
                     ))}
@@ -551,7 +551,7 @@ export default function MainReadingModal({
                       ${(Number(summary?.customerReceiptsTotalUsd) || 0).toFixed(2)} USD
                     </span>
                     <span className="block text-[10px] text-slate-500 font-mono">
-                      {summary.customerReceiptsTotalLbp.toLocaleString()} LBP
+                      {(Number(summary?.customerReceiptsTotalLbp) || 0).toLocaleString()} LBP
                     </span>
                   </div>
                 </div>
@@ -657,35 +657,35 @@ export default function MainReadingModal({
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(+) Opening Float:</span>
-                      <span className="font-mono">{summary.openingFloatLbp.toLocaleString()} LBP</span>
+                      <span className="font-mono">{(Number(summary?.openingFloatLbp) || 0).toLocaleString()} LBP</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(+) Cash Invoiced Sales:</span>
-                      <span className="font-mono">{summary.cashSalesLbp.toLocaleString()} LBP</span>
+                      <span className="font-mono">{(Number(summary?.cashSalesLbp) || 0).toLocaleString()} LBP</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(+) Cash Customer Receipts:</span>
-                      <span className="font-mono">{summary.cashCustomerReceiptsLbp.toLocaleString()} LBP</span>
+                      <span className="font-mono">{(Number(summary?.cashCustomerReceiptsLbp) || 0).toLocaleString()} LBP</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(+) Paid In:</span>
-                      <span className="font-mono">{summary.paidInTotalLbp.toLocaleString()} LBP</span>
+                      <span className="font-mono">{(Number(summary?.paidInTotalLbp) || 0).toLocaleString()} LBP</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(-) Cash Refunds (Credit Notes):</span>
                       <span className="font-mono text-red-600">
-                        -{summary.cashRefundsLbp.toLocaleString()} LBP
+                        -{(Number(summary?.cashRefundsLbp) || 0).toLocaleString()} LBP
                       </span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(-) Paid Out (Expenses):</span>
                       <span className="font-mono text-red-600">
-                        -{summary.paidOutTotalLbp.toLocaleString()} LBP
+                        -{(Number(summary?.paidOutTotalLbp) || 0).toLocaleString()} LBP
                       </span>
                     </div>
                     <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1.5 bg-slate-50 p-1.5 rounded">
                       <span>Expected Cash in Drawer:</span>
-                      <span className="font-mono text-emerald-700">{summary.expectedCashLbp.toLocaleString()} LBP</span>
+                      <span className="font-mono text-emerald-700">{(Number(summary?.expectedCashLbp) || 0).toLocaleString()} LBP</span>
                     </div>
                   </div>
                 </div>
@@ -804,12 +804,12 @@ export default function MainReadingModal({
                       ) : (
                         <>
                           <div className="text-xl font-black font-mono mt-2 text-slate-900">
-                            {summary.varianceUsd >= 0 ? '+' : ''}
+                            {(Number(summary?.varianceUsd) || 0) >= 0 ? '+' : ''}
                             ${(Number(summary?.varianceUsd) || 0).toFixed(2)} USD
                           </div>
                           <div className="text-xs font-mono text-slate-600 mt-0.5">
-                            {summary.varianceLbp >= 0 ? '+' : ''}
-                            {summary.varianceLbp.toLocaleString()} LBP
+                            {(Number(summary?.varianceLbp) || 0) >= 0 ? '+' : ''}
+                            {(Number(summary?.varianceLbp) || 0).toLocaleString()} LBP
                           </div>
                         </>
                       )}
@@ -837,10 +837,10 @@ export default function MainReadingModal({
                   </h5>
                   <div className="text-xs space-x-3 font-mono">
                     <span className="text-emerald-700 font-bold">
-                      In: +${(Number(summary?.paidInTotalUsd) || 0).toFixed(2)} USD {summary.paidInTotalLbp > 0 ? `(${summary.paidInTotalLbp.toLocaleString()} LBP)` : ''}
+                      In: +${(Number(summary?.paidInTotalUsd) || 0).toFixed(2)} USD {(Number(summary?.paidInTotalLbp) || 0) > 0 ? `(${Number(summary?.paidInTotalLbp).toLocaleString()} LBP)` : ''}
                     </span>
                     <span className="text-red-600 font-bold">
-                      Out: -${(Number(summary?.paidOutTotalUsd) || 0).toFixed(2)} USD {summary.paidOutTotalLbp > 0 ? `(${summary.paidOutTotalLbp.toLocaleString()} LBP)` : ''}
+                      Out: -${(Number(summary?.paidOutTotalUsd) || 0).toFixed(2)} USD {(Number(summary?.paidOutTotalLbp) || 0) > 0 ? `(${Number(summary?.paidOutTotalLbp).toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                 </div>
@@ -1100,25 +1100,25 @@ export default function MainReadingModal({
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Opening Float:</span>
                     <span className="font-mono font-bold">
-                      +${(Number(summary?.openingFloatUsd) || 0).toFixed(2)} USD {summary.openingFloatLbp > 0 ? `(${summary.openingFloatLbp.toLocaleString()} LBP)` : ''}
+                      +${(Number(summary?.openingFloatUsd) || 0).toFixed(2)} USD {(Number(summary?.openingFloatLbp) || 0) > 0 ? `(${Number(summary?.openingFloatLbp).toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Paid In:</span>
                     <span className="font-mono font-bold">
-                      +${(Number(summary?.paidInTotalUsd) || 0).toFixed(2)} USD {summary.paidInTotalLbp > 0 ? `(${summary.paidInTotalLbp.toLocaleString()} LBP)` : ''}
+                      +${(Number(summary?.paidInTotalUsd) || 0).toFixed(2)} USD {(Number(summary?.paidInTotalLbp) || 0) > 0 ? `(${Number(summary?.paidInTotalLbp).toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Customer Receipts (مقبوضات تسديد ذمم سابقة):</span>
                     <span className="font-mono font-bold">
-                      +${(Number(summary?.customerReceiptsTotalUsd) || 0).toFixed(2)} USD {summary.customerReceiptsTotalLbp > 0 ? `(${summary.customerReceiptsTotalLbp.toLocaleString()} LBP)` : ''}
+                      +${(Number(summary?.customerReceiptsTotalUsd) || 0).toFixed(2)} USD {(Number(summary?.customerReceiptsTotalLbp) || 0) > 0 ? `(${Number(summary?.customerReceiptsTotalLbp).toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                   <div className="flex justify-between text-[11px] text-red-700">
                     <span>(-) Paid Out:</span>
                     <span className="font-mono font-bold">
-                      -${(Number(summary?.paidOutTotalUsd) || 0).toFixed(2)} USD {summary.paidOutTotalLbp > 0 ? `(${summary.paidOutTotalLbp.toLocaleString()} LBP)` : ''}
+                      -${(Number(summary?.paidOutTotalUsd) || 0).toFixed(2)} USD {(Number(summary?.paidOutTotalLbp) || 0) > 0 ? `(${Number(summary?.paidOutTotalLbp).toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                 </div>
@@ -1138,14 +1138,14 @@ export default function MainReadingModal({
                     </div>
                     <div className="flex justify-between font-bold text-slate-950 text-xs">
                       <span>Net Cash LBP in Drawer:</span>
-                      <span className="font-mono text-sm">{summary.expectedCashLbp.toLocaleString()} LBP</span>
+                      <span className="font-mono text-sm">{(Number(summary?.expectedCashLbp) || 0).toLocaleString()} LBP</span>
                     </div>
                     <div className="flex justify-between border-t border-slate-200 pt-1 text-slate-700">
                       <span>Actual Counted Cash:</span>
                       <span className="font-mono">
                         {summary.reconciliationStatus === 'PENDING'
                           ? 'Pending Physical Count'
-                          : `$${summary.actualCountedUsd.toFixed(2)} USD (${summary.actualCountedLbp.toLocaleString()} LBP)`}
+                          : `$${(Number(summary?.actualCountedUsd) || 0).toFixed(2)} USD (${(Number(summary?.actualCountedLbp) || 0).toLocaleString()} LBP)`}
                       </span>
                     </div>
                     <div className="flex justify-between font-black border-t border-slate-300 pt-1 text-slate-950">
@@ -1153,7 +1153,7 @@ export default function MainReadingModal({
                       <span className="font-mono">
                         {summary.reconciliationStatus === 'PENDING'
                           ? 'Pending Reconciliation'
-                          : `${summary.varianceUsd >= 0 ? '+' : ''}$${summary.varianceUsd.toFixed(2)} USD (${summary.varianceLbp >= 0 ? '+' : ''}${summary.varianceLbp.toLocaleString()} LBP)`}
+                          : `${(Number(summary?.varianceUsd) || 0) >= 0 ? '+' : ''}$${(Number(summary?.varianceUsd) || 0).toFixed(2)} USD (${(Number(summary?.varianceLbp) || 0) >= 0 ? '+' : ''}${(Number(summary?.varianceLbp) || 0).toLocaleString()} LBP)`}
                       </span>
                     </div>
                   </div>

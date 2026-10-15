@@ -418,7 +418,7 @@ export function downloadQuotationPdfFile(doc: QuotationRecord, customFilename?: 
       <span class="num">${Number(doc.grandTotalUSD || 0).toFixed(2)} $</span>
     </div>
     <div class="total-lbp">
-      Grand Total (LBP): <span class="num">${Math.round(doc.grandTotalLL || ((doc.grandTotalUSD || 0) * 89500)).toLocaleString()} LBP</span>
+      Grand Total (LBP): <span class="num">${Math.round(Number(doc.grandTotalLL || ((doc.grandTotalUSD || 0) * 89500)) || 0).toLocaleString()} LBP</span>
     </div>
   </div>
 </body>
@@ -2682,7 +2682,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                   <div className="flex items-center justify-between pt-1 border-t border-slate-200">
                     <span className="font-bold text-red-600 text-xs">{t('grand_total_ll', 'Grand Total LL:')}</span>
                     <span className="font-mono font-extrabold text-red-600 text-sm">
-                      {grandTotalLL.toLocaleString()} LL
+                      {(Number(grandTotalLL) || 0).toLocaleString()} LL
                     </span>
                   </div>
 
@@ -2824,7 +2824,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                         <td className="p-2 text-slate-600">{q.branch}</td>
                         <td className="p-2 text-slate-600">{q.salesman}</td>
                         <td className="p-2 text-right font-mono font-bold">{(Number(q.grandTotalUSD) || 0).toFixed(2)} $</td>
-                        <td className="p-2 text-right font-mono text-slate-600">{q.grandTotalLL.toLocaleString()} LL</td>
+                        <td className="p-2 text-right font-mono text-slate-600">{(Number(q.grandTotalLL) || 0).toLocaleString()} LL</td>
                         <td className="p-2 text-center">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
@@ -3425,7 +3425,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                         <span><strong>{t('date', 'Date:')}</strong> {item.date}</span>
                         <span><strong>{t('items', 'Items:')}</strong> {item.items?.length || 0}</span>
                         <span className="text-emerald-700 font-semibold font-mono">
-                          {(Number(item.totalUSD) || 0).toFixed(2)} $ / {item.totalLL.toLocaleString()} L.L
+                          {(Number(item.totalUSD) || 0).toFixed(2)} $ / {(Number(item.totalLL) || 0).toLocaleString()} L.L
                         </span>
                       </div>
                     </div>
@@ -4999,7 +4999,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                           </div>
                           <div className="bg-emerald-50 border border-emerald-300 rounded px-2 py-0.5 flex justify-between items-baseline text-emerald-950 mt-0.5">
                             <span className="font-bold text-[10.5px]">{t('grand_total_lbp', 'Grand Total (LBP):')}</span>
-                            <span className="font-mono font-bold text-xs">{Math.round(calcGrandTotalLL).toLocaleString()} LBP</span>
+                            <span className="font-mono font-bold text-xs">{Math.round(Number(calcGrandTotalLL) || 0).toLocaleString()} LBP</span>
                           </div>
                         </div>
                       </div>
