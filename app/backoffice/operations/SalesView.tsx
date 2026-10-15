@@ -1671,7 +1671,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
   useEffect(() => {
     if (isPaymentModalOpen) {
-      setPaymentAmountInput(remainingBalance.toFixed(2));
+      setPaymentAmountInput((Number(remainingBalance) || 0).toFixed(2));
     }
   }, [isPaymentModalOpen, remainingBalance]);
 
@@ -1854,8 +1854,12 @@ export default function AuthenticVanguardSalesWorkstation({
     }
 
     if (salesOptions.verify_customer_credit_limit && selectedCustomer && docType !== 'CREDIT_NOTE') {
-      const creditLimit = (selectedCustomer as any).creditLimit || 5000;
-      const currentBalance = (selectedCustomer as any).balance || 0;
+      const creditLimit = typeof (selectedCustomer as any)?.creditLimit === 'number'
+        ? (selectedCustomer as any).creditLimit
+        : (Number((selectedCustomer as any)?.creditLimit ?? 5000) || 5000);
+      const currentBalance = typeof (selectedCustomer as any)?.balance === 'number'
+        ? (selectedCustomer as any).balance
+        : (Number((selectedCustomer as any)?.balance ?? (selectedCustomer as any)?.openBalance ?? (selectedCustomer as any)?.outstandingBalance ?? 0) || 0);
       if (currentBalance + grandTotal > creditLimit) {
         if (!confirm(`Warning: Customer credit limit ($${creditLimit.toLocaleString()}) will be exceeded by $${(currentBalance + grandTotal - creditLimit).toLocaleString()}. Do you wish to proceed?`)) {
           return;
@@ -2356,7 +2360,7 @@ export default function AuthenticVanguardSalesWorkstation({
     setPaidInOutAmount('');
     setPaidInOutNotes('');
     setIsPaidInOutModalOpen(false);
-    setStatusNotice(`Cash drawer ${paidInOutType === 'in' ? 'Paid In' : 'Paid Out'} ($${amt.toFixed(2)}) recorded.`);
+    setStatusNotice(`Cash drawer ${paidInOutType === 'in' ? 'Paid In' : 'Paid Out'} ($${(Number(amt) || 0).toFixed(2)}) recorded.`);
     setTimeout(() => setStatusNotice(null), 3500);
   };
 
@@ -2396,7 +2400,7 @@ export default function AuthenticVanguardSalesWorkstation({
     };
     setInvoicesDirectory((prev) => [crnRecord, ...prev]);
     setIsCreditNoteModalOpen(false);
-    setStatusNotice(`Credit Note ${crnNumber} posted! $${grandTotal.toFixed(2)} credited.`);
+    setStatusNotice(`Credit Note ${crnNumber} posted! $${(Number(grandTotal) || 0).toFixed(2)} credited.`);
     setTimeout(() => setStatusNotice(null), 4000);
   };
 
@@ -2484,7 +2488,7 @@ export default function AuthenticVanguardSalesWorkstation({
     setCustomerReceipts((prev) => [newRct, ...prev]);
     setNewReceiptAmount('');
     setNewReceiptNotes('');
-    setStatusNotice(`Payment Receipt ${rctNum} recorded ($${amt.toFixed(2)}) & aging balance cleared for ${selectedCustomer.name}`);
+    setStatusNotice(`Payment Receipt ${rctNum} recorded ($${(Number(amt) || 0).toFixed(2)}) & aging balance cleared for ${selectedCustomer.name}`);
     setTimeout(() => setStatusNotice(null), 3500);
   };
 
@@ -2521,7 +2525,7 @@ export default function AuthenticVanguardSalesWorkstation({
     setCartItems(quote.items.map((it) => ({ ...it, id: `cart-${Date.now()}-${Math.random()}` })));
     setIsQuotationsModalOpen(false);
     setSelectedQuotationId(null);
-    setStatusNotice(`Quotation ${quote.quotationNumber} ($${quote.amount.toFixed(2)}) loaded into active bill!`);
+    setStatusNotice(`Quotation ${quote.quotationNumber} ($${(Number(quote.amount) || 0).toFixed(2)}) loaded into active bill!`);
     setTimeout(() => setStatusNotice(null), 3500);
   };
 
@@ -2610,10 +2614,10 @@ export default function AuthenticVanguardSalesWorkstation({
 
   // Preview Totals
   const previewTotals = useMemo(() => {
-    const netUSD = filteredPreviewInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0);
+    const netUSD = filteredPreviewInvoices.reduce((sum, inv) => sum + (Number(inv.grandTotal) || 0), 0);
     const netLL = netUSD * 89500;
-    const discountTotal = filteredPreviewInvoices.reduce((sum, inv) => sum + inv.discount, 0);
-    const taxTotal = filteredPreviewInvoices.reduce((sum, inv) => sum + inv.tax, 0);
+    const discountTotal = filteredPreviewInvoices.reduce((sum, inv) => sum + (Number(inv.discount) || 0), 0);
+    const taxTotal = filteredPreviewInvoices.reduce((sum, inv) => sum + (Number(inv.tax) || 0), 0);
     return {
       netUSD,
       netLL,
@@ -3693,7 +3697,7 @@ export default function AuthenticVanguardSalesWorkstation({
                         {item.stockQty}
                       </td>
                       <td className="py-2 px-4 text-right font-normal text-slate-800 text-xs">
-                        {item.price.toFixed(2)} $
+                        {(Number(item.price) || 0).toFixed(2)} $
                       </td>
                       <td className="py-2 px-3 text-center w-8">
                         <span className="text-slate-400 group-hover:text-slate-800 text-base font-bold select-none cursor-pointer">
@@ -4049,7 +4053,7 @@ export default function AuthenticVanguardSalesWorkstation({
                         </div>
                       </td>
                       <td className="py-2 px-3 text-right font-semibold text-slate-900">
-                        {item.total.toFixed(2)} $
+                        {(Number(item.total) || 0).toFixed(2)} $
                       </td>
                       {salesOptions.show_location_in_details && (
                         <td className="py-2 px-2 text-left">
@@ -4239,7 +4243,7 @@ export default function AuthenticVanguardSalesWorkstation({
               <div className="md:col-span-7 border border-slate-200 rounded p-3 space-y-3 bg-background">
                 <div className="flex items-center justify-between pb-1.5 border-b border-slate-200 font-semibold">
                   <span className="text-slate-700">Invoice Amount:</span>
-                  <span className="text-slate-900 font-bold">{grandTotal.toFixed(2)} USD</span>
+                  <span className="text-slate-900 font-bold">{(Number(grandTotal) || 0).toFixed(2)} USD</span>
                 </div>
 
                 <div className="space-y-1.5">
@@ -4270,7 +4274,7 @@ export default function AuthenticVanguardSalesWorkstation({
                             )}
                           </div>
                           <div className="flex items-center gap-2 font-semibold text-slate-900">
-                            <span>{p.amount.toFixed(2)} USD</span>
+                            <span>{(Number(p.amount) || 0).toFixed(2)} USD</span>
                             <button
                               type="button"
                               onClick={() => handleRemovePayment(p.id)}
@@ -4461,7 +4465,7 @@ export default function AuthenticVanguardSalesWorkstation({
                       <button
                         key={amt}
                         type="button"
-                        onClick={() => setPaymentAmountInput(amt.toFixed(2))}
+                        onClick={() => setPaymentAmountInput((Number(amt) || 0).toFixed(2))}
                         className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-2 py-0.5 rounded text-[11px] shadow-2xs cursor-pointer"
                       >
                         ${amt}
@@ -4469,7 +4473,7 @@ export default function AuthenticVanguardSalesWorkstation({
                     ))}
                     <button
                       type="button"
-                      onClick={() => setPaymentAmountInput(remainingBalance.toFixed(2))}
+                      onClick={() => setPaymentAmountInput((Number(remainingBalance) || 0).toFixed(2))}
                       className="bg-blue-50 border border-blue-200 hover:bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[11px] font-semibold shadow-2xs cursor-pointer"
                     >
                       Exact
@@ -4480,17 +4484,17 @@ export default function AuthenticVanguardSalesWorkstation({
                 <div className="pt-2 border-t border-slate-200 space-y-1">
                   <div className="flex items-center justify-between font-semibold">
                     <span className="text-slate-700">Total Payments:</span>
-                    <span className="text-slate-900">{totalPaid.toFixed(2)} USD</span>
+                    <span className="text-slate-900">{(Number(totalPaid) || 0).toFixed(2)} USD</span>
                   </div>
                   {remainingBalance > 0 ? (
                     <div className="flex items-center justify-between font-bold text-red-600">
                       <span>Remaining Amount:</span>
-                      <span>{remainingBalance.toFixed(2)} USD</span>
+                      <span>{(Number(remainingBalance) || 0).toFixed(2)} USD</span>
                     </div>
                   ) : (
                     <div className="flex items-center justify-between font-bold text-emerald-600">
                       <span>Change:</span>
-                      <span>{changeDue.toFixed(2)} USD</span>
+                      <span>{(Number(changeDue) || 0).toFixed(2)} USD</span>
                     </div>
                   )}
                 </div>
@@ -5411,10 +5415,10 @@ export default function AuthenticVanguardSalesWorkstation({
                       Total:
                     </td>
                     <td className="py-2.5 px-2 text-right font-bold text-slate-800">
-                      {previewTotals.discountTotal.toFixed(2)}
+                      {(Number(previewTotals?.discountTotal) || 0).toFixed(2)}
                     </td>
                     <td className="py-2.5 px-2 text-right font-bold text-slate-800">
-                      {previewTotals.taxTotal.toFixed(2)}
+                      {(Number(previewTotals?.taxTotal) || 0).toFixed(2)}
                     </td>
                     <td className="py-2.5 px-2 text-right font-bold text-slate-900 whitespace-nowrap">
                       {previewTotals.netLL.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -5476,13 +5480,13 @@ export default function AuthenticVanguardSalesWorkstation({
                         {inv.refNumber || ''}
                       </td>
                       <td className="py-2.5 px-2 text-right text-slate-700">
-                        {inv.discount.toFixed(2)}
+                        {(Number(inv.discount) || 0).toFixed(2)}
                       </td>
                       <td className="py-2.5 px-2 text-right text-slate-700">
-                        {inv.tax.toFixed(2)}
+                        {(Number(inv.tax) || 0).toFixed(2)}
                       </td>
                       <td className="py-2.5 px-2 text-right font-bold text-primary">
-                        {inv.grandTotal.toFixed(2)}
+                        {(Number(inv.grandTotal) || 0).toFixed(2)}
                       </td>
                       <td className="py-2.5 px-2 text-slate-700">
                         {inv.currency}
@@ -5615,7 +5619,7 @@ export default function AuthenticVanguardSalesWorkstation({
                       {invoiceToPost ? (
                         <p className="text-xs text-slate-500 mt-1">
                           Customer: <span className="font-medium text-slate-700">{invoiceToPost.customerName}</span> • Total:{' '}
-                          <span className="font-semibold text-primary">${invoiceToPost.grandTotal.toFixed(2)} {invoiceToPost.currency}</span>
+                          <span className="font-semibold text-primary">${(Number(invoiceToPost.grandTotal) || 0).toFixed(2)} {invoiceToPost.currency}</span>
                         </p>
                       ) : (
                         <p className="text-xs text-slate-500 mt-1">
@@ -6032,7 +6036,7 @@ export default function AuthenticVanguardSalesWorkstation({
                               <td className="py-2 px-3 font-mono font-semibold text-slate-800">{q.quotationNumber}</td>
                               <td className="py-2 px-3">{q.customerName}</td>
                               <td className="py-2 px-3 font-mono text-slate-500">{q.customerId}</td>
-                              <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">${q.amount.toFixed(2)}</td>
+                              <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">${(Number(q.amount) || 0).toFixed(2)}</td>
                               <td className="py-2 px-3 text-slate-600">{q.createdBy}</td>
                               <td className="py-2 px-3 text-slate-500 font-mono">{q.date}</td>
                             </tr>
@@ -6829,7 +6833,7 @@ export default function AuthenticVanguardSalesWorkstation({
                 <div className="flex justify-between text-slate-600">
                   <span>Total Amount:</span>
                   <span className="font-mono font-bold text-primary">
-                    ${(invoiceToUnpost || currentInvoice)?.grandTotal.toFixed(2)}{' '}
+                    ${(Number((invoiceToUnpost || currentInvoice)?.grandTotal) || 0).toFixed(2)}{' '}
                     {(invoiceToUnpost || currentInvoice)?.currency}
                   </span>
                 </div>

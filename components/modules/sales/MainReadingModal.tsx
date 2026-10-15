@@ -87,7 +87,7 @@ export default function MainReadingModal({
     if (isOpen) {
       const shift = getActiveShift();
       setActiveShift(shift);
-      setOpeningFloatInputUsd(shift.openingCashUsd !== undefined ? shift.openingCashUsd.toFixed(2) : '0.00');
+      setOpeningFloatInputUsd(shift.openingCashUsd !== undefined ? (Number(shift.openingCashUsd) || 0).toFixed(2) : '0.00');
       setOpeningFloatInputLbp(shift.openingCashLbp !== undefined ? shift.openingCashLbp.toString() : '0');
       setLiveMovements(getCashMovements());
     }
@@ -178,9 +178,9 @@ export default function MainReadingModal({
     if (
       !window.confirm(
         `Are you sure you want to CLOSE Shift #${activeShift.shiftNumber} (Z-Report)?\n\n` +
-          `Expected Drawer: $${summary.expectedCashUsd.toFixed(2)} USD\n` +
-          `Counted Cash: $${countedUsd.toFixed(2)} USD\n` +
-          `Variance: $${summary.varianceUsd >= 0 ? '+' : ''}${summary.varianceUsd.toFixed(2)} USD\n\n` +
+          `Expected Drawer: $${(Number(summary?.expectedCashUsd) || 0).toFixed(2)} USD\n` +
+          `Counted Cash: $${(Number(countedUsd) || 0).toFixed(2)} USD\n` +
+          `Variance: $${summary.varianceUsd >= 0 ? '+' : ''}${(Number(summary?.varianceUsd) || 0).toFixed(2)} USD\n\n` +
           `This will archive daily totals and open Shift #${activeShift.shiftNumber + 1}.`
       )
     ) {
@@ -389,7 +389,7 @@ export default function MainReadingModal({
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <span className="text-[10px] font-bold text-blue-700 uppercase block">Gross Invoiced Sales</span>
                   <div className="text-lg font-black text-blue-950 font-mono mt-0.5">
-                    ${summary.grossSalesUsd.toFixed(2)}
+                    ${(Number(summary?.grossSalesUsd) || 0).toFixed(2)}
                   </div>
                   <span className="text-[10px] text-blue-600 font-medium block truncate">
                     {summary.invoiceRangeText}
@@ -398,7 +398,7 @@ export default function MainReadingModal({
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                   <span className="text-[10px] font-bold text-red-700 uppercase block">Discounts & Returns</span>
                   <div className="text-lg font-black text-red-700 font-mono mt-0.5">
-                    -${(summary.discountsUsd + summary.returnsCreditNotesUsd).toFixed(2)}
+                    -${((Number(summary?.discountsUsd) || 0) + (Number(summary?.returnsCreditNotesUsd) || 0)).toFixed(2)}
                   </div>
                   <span className="text-[10px] text-red-600 font-medium">
                     {summary.creditNoteCount} credit note(s)
@@ -407,17 +407,17 @@ export default function MainReadingModal({
                 <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
                   <span className="text-[10px] font-bold text-emerald-700 uppercase block">Net Sales Turnover</span>
                   <div className="text-lg font-black text-emerald-800 font-mono mt-0.5">
-                    ${summary.finalTurnoverUsd.toFixed(2)}
+                    ${(Number(summary?.finalTurnoverUsd) || 0).toFixed(2)}
                   </div>
                   <span className="text-[10px] text-emerald-600 font-medium">Net commercial revenue</span>
                 </div>
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                   <span className="text-[10px] font-bold text-amber-700 uppercase block">Expected Cash Drawer</span>
                   <div className="text-lg font-black text-amber-900 font-mono mt-0.5">
-                    ${summary.expectedCashUsd.toFixed(2)}
+                    ${(Number(summary?.expectedCashUsd) || 0).toFixed(2)}
                   </div>
                   <span className="text-[10px] text-amber-700 font-medium font-mono">
-                    ≈ {(summary.expectedCashLbp / 1_000_000).toFixed(1)}M LBP
+                    ≈ {((Number(summary?.expectedCashLbp) || 0) / 1_000_000).toFixed(1)}M LBP
                   </span>
                 </div>
               </div>
@@ -431,23 +431,23 @@ export default function MainReadingModal({
                 <div className="divide-y divide-slate-100 text-xs">
                   <div className="py-2 flex justify-between text-slate-700">
                     <span>Gross Sales (Invoiced Items Subtotal):</span>
-                    <span className="font-mono font-bold">${summary.grossSalesUsd.toFixed(2)} USD</span>
+                    <span className="font-mono font-bold">${(Number(summary?.grossSalesUsd) || 0).toFixed(2)} USD</span>
                   </div>
                   <div className="py-2 flex justify-between text-slate-700">
                     <span>Discounts Allowed:</span>
-                    <span className="font-mono text-red-600">-${summary.discountsUsd.toFixed(2)} USD</span>
+                    <span className="font-mono text-red-600">-${(Number(summary?.discountsUsd) || 0).toFixed(2)} USD</span>
                   </div>
                   <div className="py-2 flex justify-between text-slate-700">
                     <span>Sales Tax (11% VAT / ضريبة القيمة المضافة):</span>
-                    <span className="font-mono text-slate-700">+${summary.taxUsd.toFixed(2)} USD</span>
+                    <span className="font-mono text-slate-700">+${(Number(summary?.taxUsd) || 0).toFixed(2)} USD</span>
                   </div>
                   <div className="py-2 flex justify-between text-slate-700">
                     <span>Returns & Credit Notes (مردودات المبيعات):</span>
-                    <span className="font-mono text-red-600">-${summary.returnsCreditNotesUsd.toFixed(2)} USD</span>
+                    <span className="font-mono text-red-600">-${(Number(summary?.returnsCreditNotesUsd) || 0).toFixed(2)} USD</span>
                   </div>
                   <div className="py-2.5 flex justify-between font-bold text-slate-900 bg-slate-50 px-2 rounded-md">
                     <span className="text-sm">Final Net Turnover (صافي الدخل التجاري):</span>
-                    <span className="font-mono text-base text-emerald-700">${summary.finalTurnoverUsd.toFixed(2)} USD</span>
+                    <span className="font-mono text-base text-emerald-700">${(Number(summary?.finalTurnoverUsd) || 0).toFixed(2)} USD</span>
                   </div>
                 </div>
               </div>
@@ -461,19 +461,19 @@ export default function MainReadingModal({
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                     <div className="text-slate-500 text-[11px] font-semibold">Local Direct Sales</div>
                     <div className="text-base font-bold font-mono text-slate-900 mt-1">
-                      ${summary.salesByTransactionType.localUsd.toFixed(2)}
+                      ${(Number(summary?.salesByTransactionType?.localUsd) || 0).toFixed(2)}
                     </div>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                     <div className="text-slate-500 text-[11px] font-semibold">International / Export Sales</div>
                     <div className="text-base font-bold font-mono text-slate-900 mt-1">
-                      ${summary.salesByTransactionType.internationalUsd.toFixed(2)}
+                      ${(Number(summary?.salesByTransactionType?.internationalUsd) || 0).toFixed(2)}
                     </div>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                     <div className="text-slate-500 text-[11px] font-semibold">Online & Direct Dispatch</div>
                     <div className="text-base font-bold font-mono text-slate-900 mt-1">
-                      ${summary.salesByTransactionType.onlineUsd.toFixed(2)}
+                      ${(Number(summary?.salesByTransactionType?.onlineUsd) || 0).toFixed(2)}
                     </div>
                   </div>
                 </div>
@@ -493,7 +493,7 @@ export default function MainReadingModal({
                     Collections by Payment Method (تفصيل المقبوضات حسب وسيلة الدفع)
                   </h5>
                   <span className="text-[11px] text-slate-500 font-mono">
-                    Total: ${summary.collectionsByTender.reduce((s, t) => s + t.usd, 0).toFixed(2)} USD
+                    Total: ${(Number(summary?.collectionsByTender?.reduce((s, t) => s + (Number(t?.usd) || 0), 0)) || 0).toFixed(2)} USD
                   </span>
                 </div>
                 <table className="w-full text-left text-xs border-collapse">
@@ -524,7 +524,7 @@ export default function MainReadingModal({
                         </td>
                         <td className="py-2.5 px-3 text-center font-mono text-slate-600">{tender.count}</td>
                         <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                          ${tender.usd.toFixed(2)}
+                          ${(Number(tender.usd) || 0).toFixed(2)}
                         </td>
                         <td className="py-2.5 px-3 text-right font-mono text-slate-600">
                           {tender.lbp.toLocaleString()} LBP
@@ -548,7 +548,7 @@ export default function MainReadingModal({
                   </div>
                   <div className="text-right">
                     <span className="text-xs font-mono font-bold text-emerald-700">
-                      ${summary.customerReceiptsTotalUsd.toFixed(2)} USD
+                      ${(Number(summary?.customerReceiptsTotalUsd) || 0).toFixed(2)} USD
                     </span>
                     <span className="block text-[10px] text-slate-500 font-mono">
                       {summary.customerReceiptsTotalLbp.toLocaleString()} LBP
@@ -578,7 +578,7 @@ export default function MainReadingModal({
                             <td className="py-1.5 px-2 font-medium text-slate-900">{rct.customerName}</td>
                             <td className="py-1.5 px-2 text-slate-600">{rct.method}</td>
                             <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-700">
-                              ${rct.amountUsd.toFixed(2)}
+                              ${(Number(rct.amountUsd) || 0).toFixed(2)}
                             </td>
                           </tr>
                         ))}
@@ -622,31 +622,31 @@ export default function MainReadingModal({
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(+) Opening Float:</span>
-                      <span className="font-mono font-semibold">${summary.openingFloatUsd.toFixed(2)}</span>
+                      <span className="font-mono font-semibold">${(Number(summary?.openingFloatUsd) || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(+) Cash Invoiced Sales:</span>
-                      <span className="font-mono font-semibold">${summary.cashSalesUsd.toFixed(2)}</span>
+                      <span className="font-mono font-semibold">${(Number(summary?.cashSalesUsd) || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(+) Cash Customer Receipts:</span>
-                      <span className="font-mono font-semibold">${summary.cashCustomerReceiptsUsd.toFixed(2)}</span>
+                      <span className="font-mono font-semibold">${(Number(summary?.cashCustomerReceiptsUsd) || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(+) Paid In (Petty Cash Added):</span>
-                      <span className="font-mono font-semibold">${summary.paidInTotalUsd.toFixed(2)}</span>
+                      <span className="font-mono font-semibold">${(Number(summary?.paidInTotalUsd) || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(-) Cash Refunds (Credit Notes):</span>
-                      <span className="font-mono text-red-600">-${summary.cashRefundsUsd.toFixed(2)}</span>
+                      <span className="font-mono text-red-600">-${(Number(summary?.cashRefundsUsd) || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>(-) Paid Out (Expenses):</span>
-                      <span className="font-mono text-red-600">-${summary.paidOutTotalUsd.toFixed(2)}</span>
+                      <span className="font-mono text-red-600">-${(Number(summary?.paidOutTotalUsd) || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1.5 bg-slate-50 p-1.5 rounded">
                       <span>Expected Cash in Drawer:</span>
-                      <span className="font-mono text-emerald-700">${summary.expectedCashUsd.toFixed(2)} USD</span>
+                      <span className="font-mono text-emerald-700">${(Number(summary?.expectedCashUsd) || 0).toFixed(2)} USD</span>
                     </div>
                   </div>
 
@@ -805,7 +805,7 @@ export default function MainReadingModal({
                         <>
                           <div className="text-xl font-black font-mono mt-2 text-slate-900">
                             {summary.varianceUsd >= 0 ? '+' : ''}
-                            ${summary.varianceUsd.toFixed(2)} USD
+                            ${(Number(summary?.varianceUsd) || 0).toFixed(2)} USD
                           </div>
                           <div className="text-xs font-mono text-slate-600 mt-0.5">
                             {summary.varianceLbp >= 0 ? '+' : ''}
@@ -837,10 +837,10 @@ export default function MainReadingModal({
                   </h5>
                   <div className="text-xs space-x-3 font-mono">
                     <span className="text-emerald-700 font-bold">
-                      In: +${summary.paidInTotalUsd.toFixed(2)} USD {summary.paidInTotalLbp > 0 ? `(${summary.paidInTotalLbp.toLocaleString()} LBP)` : ''}
+                      In: +${(Number(summary?.paidInTotalUsd) || 0).toFixed(2)} USD {summary.paidInTotalLbp > 0 ? `(${summary.paidInTotalLbp.toLocaleString()} LBP)` : ''}
                     </span>
                     <span className="text-red-600 font-bold">
-                      Out: -${summary.paidOutTotalUsd.toFixed(2)} USD {summary.paidOutTotalLbp > 0 ? `(${summary.paidOutTotalLbp.toLocaleString()} LBP)` : ''}
+                      Out: -${(Number(summary?.paidOutTotalUsd) || 0).toFixed(2)} USD {summary.paidOutTotalLbp > 0 ? `(${summary.paidOutTotalLbp.toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                 </div>
@@ -931,7 +931,7 @@ export default function MainReadingModal({
                         </td>
                         <td className="py-2.5 px-3 text-center font-mono">{div.itemCount}</td>
                         <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
-                          ${div.amountUsd.toFixed(2)}
+                          ${(Number(div.amountUsd) || 0).toFixed(2)}
                         </td>
                         <td className="py-2.5 px-3 text-right">
                           <div className="flex items-center justify-end gap-2">
@@ -1006,23 +1006,23 @@ export default function MainReadingModal({
                   </div>
                   <div className="flex justify-between">
                     <span>Gross Sales:</span>
-                    <span className="font-mono font-bold">${summary.grossSalesUsd.toFixed(2)} USD</span>
+                    <span className="font-mono font-bold">${(Number(summary?.grossSalesUsd) || 0).toFixed(2)} USD</span>
                   </div>
                   <div className="flex justify-between text-red-700">
                     <span>(-) Total Discounts:</span>
-                    <span className="font-mono">-${summary.discountsUsd.toFixed(2)} USD</span>
+                    <span className="font-mono">-${(Number(summary?.discountsUsd) || 0).toFixed(2)} USD</span>
                   </div>
                   <div className="flex justify-between text-red-700">
                     <span>(-) Credit Notes / Returns:</span>
-                    <span className="font-mono">-${summary.returnsCreditNotesUsd.toFixed(2)} USD</span>
+                    <span className="font-mono">-${(Number(summary?.returnsCreditNotesUsd) || 0).toFixed(2)} USD</span>
                   </div>
                   <div className="flex justify-between">
                     <span>(+) Tax / VAT:</span>
-                    <span className="font-mono">+${summary.taxUsd.toFixed(2)} USD</span>
+                    <span className="font-mono">+${(Number(summary?.taxUsd) || 0).toFixed(2)} USD</span>
                   </div>
                   <div className="flex justify-between font-bold border-t border-slate-400 pt-1 text-sm text-slate-950">
                     <span>= Net Sales (صافي المبيعات الفعلية):</span>
-                    <span className="font-mono">${summary.finalTurnoverUsd.toFixed(2)} USD</span>
+                    <span className="font-mono">${(Number(summary?.finalTurnoverUsd) || 0).toFixed(2)} USD</span>
                   </div>
                 </div>
 
@@ -1036,15 +1036,15 @@ export default function MainReadingModal({
                     <div className="font-semibold text-slate-700 text-[10px] uppercase">By Transaction Type:</div>
                     <div className="flex justify-between">
                       <span>Local Sales:</span>
-                      <span className="font-mono font-bold">${summary.salesByTransactionType.localUsd.toFixed(2)} USD</span>
+                      <span className="font-mono font-bold">${(Number(summary?.salesByTransactionType?.localUsd) || 0).toFixed(2)} USD</span>
                     </div>
                     <div className="flex justify-between">
                       <span>International / Export:</span>
-                      <span className="font-mono font-bold">${summary.salesByTransactionType.internationalUsd.toFixed(2)} USD</span>
+                      <span className="font-mono font-bold">${(Number(summary?.salesByTransactionType?.internationalUsd) || 0).toFixed(2)} USD</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Online / Delivery:</span>
-                      <span className="font-mono font-bold">${summary.salesByTransactionType.onlineUsd.toFixed(2)} USD</span>
+                      <span className="font-mono font-bold">${(Number(summary?.salesByTransactionType?.onlineUsd) || 0).toFixed(2)} USD</span>
                     </div>
                   </div>
 
@@ -1054,7 +1054,7 @@ export default function MainReadingModal({
                     {summary.divisionBreakdown.map((div, i) => (
                       <div key={i} className="flex justify-between">
                         <span>{div.division} ({div.itemCount} items):</span>
-                        <span className="font-mono font-bold">${div.amountUsd.toFixed(2)} USD ({div.percentage}%)</span>
+                        <span className="font-mono font-bold">${(Number(div.amountUsd) || 0).toFixed(2)} USD ({div.percentage}%)</span>
                       </div>
                     ))}
                   </div>
@@ -1064,16 +1064,16 @@ export default function MainReadingModal({
                     <div className="font-semibold text-slate-700 text-[10px] uppercase">By Settlement Mode:</div>
                     <div className="flex justify-between">
                       <span>Cash Sales:</span>
-                      <span className="font-mono font-bold">${summary.settlementMode.cashSalesUsd.toFixed(2)} USD</span>
+                      <span className="font-mono font-bold">${(Number(summary?.settlementMode?.cashSalesUsd) || 0).toFixed(2)} USD</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Credit / On Account Sales (ذمم):</span>
-                      <span className="font-mono font-bold">${summary.settlementMode.creditSalesUsd.toFixed(2)} USD</span>
+                      <span className="font-mono font-bold">${(Number(summary?.settlementMode?.creditSalesUsd) || 0).toFixed(2)} USD</span>
                     </div>
                     {summary.settlementMode.cardSalesUsd > 0 && (
                       <div className="flex justify-between">
                         <span>Credit Card Sales:</span>
-                        <span className="font-mono font-bold">${summary.settlementMode.cardSalesUsd.toFixed(2)} USD</span>
+                        <span className="font-mono font-bold">${(Number(summary?.settlementMode?.cardSalesUsd) || 0).toFixed(2)} USD</span>
                       </div>
                     )}
                   </div>
@@ -1087,7 +1087,7 @@ export default function MainReadingModal({
                   {summary.collectionsByTender.map((t, idx) => (
                     <div key={idx} className="flex justify-between text-[11px]">
                       <span>{t.label} ({t.count}):</span>
-                      <span className="font-mono font-bold">${t.usd.toFixed(2)} USD</span>
+                      <span className="font-mono font-bold">${(Number(t.usd) || 0).toFixed(2)} USD</span>
                     </div>
                   ))}
                 </div>
@@ -1100,25 +1100,25 @@ export default function MainReadingModal({
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Opening Float:</span>
                     <span className="font-mono font-bold">
-                      +${summary.openingFloatUsd.toFixed(2)} USD {summary.openingFloatLbp > 0 ? `(${summary.openingFloatLbp.toLocaleString()} LBP)` : ''}
+                      +${(Number(summary?.openingFloatUsd) || 0).toFixed(2)} USD {summary.openingFloatLbp > 0 ? `(${summary.openingFloatLbp.toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Paid In:</span>
                     <span className="font-mono font-bold">
-                      +${summary.paidInTotalUsd.toFixed(2)} USD {summary.paidInTotalLbp > 0 ? `(${summary.paidInTotalLbp.toLocaleString()} LBP)` : ''}
+                      +${(Number(summary?.paidInTotalUsd) || 0).toFixed(2)} USD {summary.paidInTotalLbp > 0 ? `(${summary.paidInTotalLbp.toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span>(+) Customer Receipts (مقبوضات تسديد ذمم سابقة):</span>
                     <span className="font-mono font-bold">
-                      +${summary.customerReceiptsTotalUsd.toFixed(2)} USD {summary.customerReceiptsTotalLbp > 0 ? `(${summary.customerReceiptsTotalLbp.toLocaleString()} LBP)` : ''}
+                      +${(Number(summary?.customerReceiptsTotalUsd) || 0).toFixed(2)} USD {summary.customerReceiptsTotalLbp > 0 ? `(${summary.customerReceiptsTotalLbp.toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                   <div className="flex justify-between text-[11px] text-red-700">
                     <span>(-) Paid Out:</span>
                     <span className="font-mono font-bold">
-                      -${summary.paidOutTotalUsd.toFixed(2)} USD {summary.paidOutTotalLbp > 0 ? `(${summary.paidOutTotalLbp.toLocaleString()} LBP)` : ''}
+                      -${(Number(summary?.paidOutTotalUsd) || 0).toFixed(2)} USD {summary.paidOutTotalLbp > 0 ? `(${summary.paidOutTotalLbp.toLocaleString()} LBP)` : ''}
                     </span>
                   </div>
                 </div>
@@ -1134,7 +1134,7 @@ export default function MainReadingModal({
                     </div>
                     <div className="flex justify-between font-bold text-slate-950 text-xs">
                       <span>Net Cash USD in Drawer:</span>
-                      <span className="font-mono text-sm">${summary.expectedCashUsd.toFixed(2)} USD</span>
+                      <span className="font-mono text-sm">${(Number(summary?.expectedCashUsd) || 0).toFixed(2)} USD</span>
                     </div>
                     <div className="flex justify-between font-bold text-slate-950 text-xs">
                       <span>Net Cash LBP in Drawer:</span>

@@ -1,11 +1,11 @@
 // ============================================================
 // VANGUARD ERP: FIELD APPS SERVICE WORKER (PWA & OFFLINE SHELL)
-// Supports: V-Driver Mobile App & Sales Rep Mobile App
+// Supports: V-Driver Mobile App & Sales Rep Mobile App ONLY
+// Version: v2 (Strictly isolated from Backoffice & Core ERP)
 // ============================================================
 
-const CACHE_NAME = 'vanguard-field-apps-v1';
+const CACHE_NAME = 'vanguard-field-apps-v2';
 const STATIC_ASSETS = [
-  '/',
   '/v-driver',
   '/sales-rep',
   '/supersonic/driver',
@@ -17,7 +17,7 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching Field Apps Shell & Static Assets');
+      console.log('[Service Worker v2] Caching Field Apps Shell & Static Assets');
       return cache.addAll(STATIC_ASSETS).catch((err) => {
         console.warn('[Service Worker] Non-fatal cache addAll warning:', err);
       });
@@ -42,59 +42,73 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-First for API requests, Cache-First for static assets
+// Network-First strictly for designated field app routes
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  const url = new URL(request.url);
 
-  // For API mutations, allow network and let client-side localStorage offline queue handle fallbacks
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(request).catch(() => {
-        return new Response(
-          JSON.stringify({
-            offline: true,
-            message: 'Network offline. Action queued in local shell queue.'
-          }),
-          {
-            headers: { 'Content-Type': 'application/json' },
-            status: 503
-          }
-        );
-      })
-    );
+  // Ignore non-http/https schemes
+  if (!request.url.startsWith('http://') && !request.url.startsWith('https://')) {
     return;
   }
 
-  // For navigational and static requests: Network first with Cache fallback
+  const url = new URL(request.url);
+
+  // CRITICAL: NEVER intercept or block Backoffice, POS, Contacts, My Sales, Next.js bundles, or APIs
+  if (
+    url.pathname.startsWith('/backoffice') ||
+    url.pathname.startsWith('/contacts') ||
+    url.pathname.startsWith('/my-sales') ||
+    url.pathname.startsWith('/pos') ||
+    url.pathname.startsWith('/_next') ||
+    url.pathname.startsWith('/api') ||
+    url.pathname.startsWith('/workspace') ||
+    url.pathname.startsWith('/accounting') ||
+    url.pathname.startsWith('/inventory') ||
+    url.pathname.startsWith('/pressing-mill') ||
+    url.searchParams.has('section')
+  ) {
+    return; // Pass through natively to browser networking without calling event.respondWith
+  }
+
+  // Only handle explicit field apps scope
+  const isFieldAppRoute =
+    url.pathname === '/v-driver' ||
+    url.pathname === '/sales-rep' ||
+    url.pathname.startsWith('/supersonic/driver') ||
+    url.pathname === '/manifest-driver.json' ||
+    url.pathname === '/manifest-sales.json' ||
+    url.pathname === '/vanguard.jpg';
+
+  if (!isFieldAppRoute) {
+    return; // Let browser handle natively
+  }
+
+  // Field Apps offline caching
   event.respondWith(
     fetch(request)
       .then((response) => {
         if (response && response.status === 200 && request.method === 'GET') {
-          // Strict URL scheme validation to prevent 'chrome-extension:' or 'data:' cache put errors
-          if (request.url.startsWith('http://') || request.url.startsWith('https://')) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              try {
-                cache.put(request, responseClone).catch((err) => {
-                  console.warn('[Service Worker] Async cache put warning:', err);
-                });
-              } catch (err) {
-                console.warn('[Service Worker] Sync cache put warning:', err);
-              }
-            }).catch((err) => {
-              console.warn('[Service Worker] Cache open warning:', err);
-            });
-          }
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            try {
+              cache.put(request, responseClone).catch(() => {});
+            } catch (err) {}
+          }).catch(() => {});
         }
         return response;
       })
       .catch(async () => {
-        const cached = await caches.match(request);
-        if (cached) return cached;
-        if (request.mode === 'navigate') {
-          return caches.match('/v-driver') || caches.match('/sales-rep') || caches.match('/');
-        }
+        try {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          if (request.mode === 'navigate') {
+            const fallback =
+              (await caches.match('/v-driver')) ||
+              (await caches.match('/sales-rep')) ||
+              (await caches.match('/'));
+            if (fallback) return fallback;
+          }
+        } catch (e) {}
         return new Response('Offline', { status: 503, statusText: 'Offline' });
       })
   );

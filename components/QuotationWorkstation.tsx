@@ -1616,7 +1616,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
       setDiscountAmountManual(val);
       setDiscountPercent(0);
       setIsDiscountModalOpen(false);
-      notify(`Applied $${val.toFixed(2)} discount.`);
+      notify(`Applied $${(Number(val) || 0).toFixed(2)} discount.`);
     }
   };
 
@@ -2403,7 +2403,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
 
                       {/* Price */}
                       <div className="w-16 text-right font-mono font-medium text-slate-700 text-xs">
-                        {prod.price.toFixed(2)} $
+                        {(Number(prod.price) || 0).toFixed(2)} $
                       </div>
 
                       {/* Add Button */}
@@ -2630,7 +2630,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                         {/* Line Total & Remove */}
                         <div className="col-span-2 flex items-center justify-end gap-1.5">
                           <span className="font-mono font-bold text-slate-900">
-                            {qItem.total.toFixed(2)} $
+                            {(Number(qItem.total) || 0).toFixed(2)} $
                           </span>
                           <button
                             type="button"
@@ -2652,7 +2652,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-slate-700">{t('subtotal', 'Subtotal:')}</span>
                     <span className="font-mono text-slate-800">
-                      {Math.round(subtotalUSD * LBP_RATE).toLocaleString()} LL ({subtotalUSD.toFixed(2)} $)
+                      {Math.round(subtotalUSD * LBP_RATE).toLocaleString()} LL ({(Number(subtotalUSD) || 0).toFixed(2)} $)
                     </span>
                   </div>
 
@@ -2666,7 +2666,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                       {t('discount', 'Discount')}
                     </button>
                     <span className="font-mono text-emerald-700">
-                      {Math.round(calculatedDiscount * LBP_RATE).toLocaleString()} LL ({calculatedDiscount.toFixed(2)} $)
+                      {Math.round(calculatedDiscount * LBP_RATE).toLocaleString()} LL ({(Number(calculatedDiscount) || 0).toFixed(2)} $)
                     </span>
                   </div>
 
@@ -2674,7 +2674,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-slate-700">{t('total_tax', 'Total Tax:')}</span>
                     <span className="font-mono text-slate-800">
-                      {Math.round(taxAmountUSD * LBP_RATE).toLocaleString()} LL ({taxAmountUSD.toFixed(2)} $)
+                      {Math.round(taxAmountUSD * LBP_RATE).toLocaleString()} LL ({(Number(taxAmountUSD) || 0).toFixed(2)} $)
                     </span>
                   </div>
 
@@ -2690,7 +2690,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-800 text-xs">{t('grand_total', 'Grand Total $:')}</span>
                     <span className="font-mono font-extrabold text-slate-900 text-sm">
-                      {grandTotalUSD.toFixed(2)} $
+                      {(Number(grandTotalUSD) || 0).toFixed(2)} $
                     </span>
                   </div>
 
@@ -2823,7 +2823,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                         <td className="p-2 font-bold text-slate-800">{q.customerName}</td>
                         <td className="p-2 text-slate-600">{q.branch}</td>
                         <td className="p-2 text-slate-600">{q.salesman}</td>
-                        <td className="p-2 text-right font-mono font-bold">{q.grandTotalUSD.toFixed(2)} $</td>
+                        <td className="p-2 text-right font-mono font-bold">{(Number(q.grandTotalUSD) || 0).toFixed(2)} $</td>
                         <td className="p-2 text-right font-mono text-slate-600">{q.grandTotalLL.toLocaleString()} LL</td>
                         <td className="p-2 text-center">
                           <span
@@ -3425,7 +3425,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                         <span><strong>{t('date', 'Date:')}</strong> {item.date}</span>
                         <span><strong>{t('items', 'Items:')}</strong> {item.items?.length || 0}</span>
                         <span className="text-emerald-700 font-semibold font-mono">
-                          {item.totalUSD.toFixed(2)} $ / {item.totalLL.toLocaleString()} L.L
+                          {(Number(item.totalUSD) || 0).toFixed(2)} $ / {item.totalLL.toLocaleString()} L.L
                         </span>
                       </div>
                     </div>
@@ -4983,19 +4983,19 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                         <div className="col-span-5 border border-slate-400 bg-slate-50/70 rounded-lg p-2.5 text-xs space-y-1 self-start">
                           <div className="flex justify-between items-center text-slate-700">
                             <span className="font-medium">{t('subtotal', 'SubTotal:')}</span>
-                            <span className="font-mono font-semibold">${calcSubtotal.toFixed(2)}</span>
+                            <span className="font-mono font-semibold">${(Number(calcSubtotal) || 0).toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between items-center text-slate-700">
                             <span className="font-medium">{t('discount', 'Discount:')}</span>
-                            <span className="font-mono font-semibold text-rose-600">-${calcDiscount.toFixed(2)}</span>
+                            <span className="font-mono font-semibold text-rose-600">-${(Number(calcDiscount) || 0).toFixed(2)}</span>
                           </div>
                           <div className="flex justify-between items-center text-slate-700">
                             <span className="font-medium">{t('tax_vat', 'Tax (VAT):')}</span>
-                            <span className="font-mono font-semibold">${calcTax.toFixed(2)}</span>
+                            <span className="font-mono font-semibold">${(Number(calcTax) || 0).toFixed(2)}</span>
                           </div>
                           <div className="border-t-2 border-slate-900 pt-1 mt-0.5 flex justify-between items-baseline">
                             <span className="font-bold text-slate-950 text-xs">{t('grand_total_usd', 'Grand Total (USD):')}</span>
-                            <span className="font-mono font-black text-sm text-slate-950">${calcGrandTotalUSD.toFixed(2)}</span>
+                            <span className="font-mono font-black text-sm text-slate-950">${(Number(calcGrandTotalUSD) || 0).toFixed(2)}</span>
                           </div>
                           <div className="bg-emerald-50 border border-emerald-300 rounded px-2 py-0.5 flex justify-between items-baseline text-emerald-950 mt-0.5">
                             <span className="font-bold text-[10.5px]">{t('grand_total_lbp', 'Grand Total (LBP):')}</span>

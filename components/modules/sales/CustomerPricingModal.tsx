@@ -300,7 +300,7 @@ export default function CustomerPricingModal({
                     >
                       {effectiveCatalog.map((p) => (
                         <option key={p.code} value={p.code}>
-                          {p.name} — Std: ${p.price.toFixed(2)} / {p.unit}
+                          {p.name} — Std: ${(Number(p.price) || 0).toFixed(2)} / {p.unit}
                         </option>
                       ))}
                     </select>
@@ -371,13 +371,13 @@ export default function CustomerPricingModal({
                               </td>
                               <td className="py-2 px-2 text-center text-slate-600">{rule.unit}</td>
                               <td className="py-2 px-2 text-right font-mono text-slate-500 line-through">
-                                ${stdPrice.toFixed(2)}
+                                ${(Number(stdPrice) || 0).toFixed(2)}
                               </td>
                               <td className="py-2 px-2 text-right font-mono font-bold text-primary text-sm">
-                                ${rule.specialPrice.toFixed(2)}
+                                ${(Number(rule.specialPrice) || 0).toFixed(2)}
                               </td>
                               <td className="py-2 px-2 text-right font-mono font-bold text-emerald-600">
-                                {saving > 0 ? `-$${saving.toFixed(2)}` : '0.00'}
+                                {saving > 0 ? `-$${(Number(saving) || 0).toFixed(2)}` : '0.00'}
                               </td>
                               <td className="py-2 px-3 text-right">
                                 <button
@@ -432,7 +432,7 @@ export default function CustomerPricingModal({
                           <td className="py-2 px-2 text-center text-slate-600">{h.unit}</td>
                           <td className="py-2 px-2 text-right font-mono">{h.qty}</td>
                           <td className="py-2 px-3 text-right font-mono font-bold text-emerald-700">
-                            ${h.unitPrice.toFixed(2)}
+                            ${(Number(h.unitPrice) || 0).toFixed(2)}
                           </td>
                         </tr>
                       ))

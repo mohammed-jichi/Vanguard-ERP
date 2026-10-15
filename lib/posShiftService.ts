@@ -844,7 +844,7 @@ export function formatMovementDisplay(m: any) {
   const amtLbp = Number(m.amountLbp ?? (!isUsd ? m.amount : 0) ?? 0);
 
   const amountStr = isUsd
-    ? `${isPaidIn ? '+' : '-'}$${amtUsd.toFixed(2)} USD`
+    ? `${isPaidIn ? '+' : '-'}$${(Number(amtUsd) || 0).toFixed(2)} USD`
     : `${isPaidIn ? '+' : '-'}${amtLbp.toLocaleString()} LBP`;
 
   return {

@@ -89,11 +89,11 @@ export default function CustomerAgedModal({
     const rows = filteredRows.map((r) => [
       `"${r.customerId}"`,
       `"${r.customerName}"`,
-      r.buckets.current30.toFixed(2),
-      r.buckets.days31to60.toFixed(2),
-      r.buckets.days61to90.toFixed(2),
-      r.buckets.over90.toFixed(2),
-      r.buckets.totalDue.toFixed(2)
+      (Number(r.buckets?.current30) || 0).toFixed(2),
+      (Number(r.buckets?.days31to60) || 0).toFixed(2),
+      (Number(r.buckets?.days61to90) || 0).toFixed(2),
+      (Number(r.buckets?.over90) || 0).toFixed(2),
+      (Number(r.buckets?.totalDue) || 0).toFixed(2)
     ]);
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
@@ -205,26 +205,26 @@ export default function CustomerAgedModal({
         <div className="bg-white border-b border-slate-200 px-5 py-3 grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs shrink-0">
           <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5">
             <span className="text-[10px] text-emerald-700 font-bold uppercase block">Current (0–30 Days)</span>
-            <span className="text-base font-mono font-extrabold text-emerald-800">${grandTotals.current30.toFixed(2)}</span>
+            <span className="text-base font-mono font-extrabold text-emerald-800">${(Number(grandTotals?.current30) || 0).toFixed(2)}</span>
           </div>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5">
             <span className="text-[10px] text-blue-700 font-bold uppercase block">31–60 Days</span>
-            <span className="text-base font-mono font-extrabold text-blue-800">${grandTotals.days31to60.toFixed(2)}</span>
+            <span className="text-base font-mono font-extrabold text-blue-800">${(Number(grandTotals?.days31to60) || 0).toFixed(2)}</span>
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5">
             <span className="text-[10px] text-amber-700 font-bold uppercase block">61–90 Days</span>
-            <span className="text-base font-mono font-extrabold text-amber-800">${grandTotals.days61to90.toFixed(2)}</span>
+            <span className="text-base font-mono font-extrabold text-amber-800">${(Number(grandTotals?.days61to90) || 0).toFixed(2)}</span>
           </div>
           <div className="bg-red-50 border border-red-200 rounded-lg p-2.5">
             <span className="text-[10px] text-red-700 font-bold uppercase block flex items-center gap-1">
               <AlertTriangle className="w-3 h-3 text-red-600" />
               <span>90+ Days (Overdue)</span>
             </span>
-            <span className="text-base font-mono font-extrabold text-red-700">${grandTotals.over90.toFixed(2)}</span>
+            <span className="text-base font-mono font-extrabold text-red-700">${(Number(grandTotals?.over90) || 0).toFixed(2)}</span>
           </div>
           <div className="bg-slate-100 border border-slate-300 rounded-lg p-2.5">
             <span className="text-[10px] text-slate-600 font-bold uppercase block">Total Balance Due</span>
-            <span className="text-lg font-mono font-extrabold text-slate-900">${grandTotals.totalDue.toFixed(2)}</span>
+            <span className="text-lg font-mono font-extrabold text-slate-900">${(Number(grandTotals?.totalDue) || 0).toFixed(2)}</span>
           </div>
         </div>
 
@@ -271,19 +271,19 @@ export default function CustomerAgedModal({
                             </div>
                           </td>
                           <td className="py-2.5 px-2 text-right font-mono text-slate-600">
-                            ${r.buckets.current30.toFixed(2)}
+                            ${(Number(r.buckets?.current30) || 0).toFixed(2)}
                           </td>
                           <td className="py-2.5 px-2 text-right font-mono text-slate-600">
-                            ${r.buckets.days31to60.toFixed(2)}
+                            ${(Number(r.buckets?.days31to60) || 0).toFixed(2)}
                           </td>
                           <td className="py-2.5 px-2 text-right font-mono text-amber-700 font-semibold">
-                            ${r.buckets.days61to90.toFixed(2)}
+                            ${(Number(r.buckets?.days61to90) || 0).toFixed(2)}
                           </td>
                           <td className="py-2.5 px-2 text-right font-mono text-red-600 font-bold">
-                            ${r.buckets.over90.toFixed(2)}
+                            ${(Number(r.buckets?.over90) || 0).toFixed(2)}
                           </td>
                           <td className="py-2.5 px-2 text-right font-mono font-extrabold text-slate-900">
-                            ${r.buckets.totalDue.toFixed(2)}
+                            ${(Number(r.buckets?.totalDue) || 0).toFixed(2)}
                           </td>
                           <td className="py-2.5 px-3 text-right" onClick={(e) => e.stopPropagation()}>
                             <button
@@ -335,9 +335,9 @@ export default function CustomerAgedModal({
                                             {inv.daysOld} d
                                           </span>
                                         </td>
-                                        <td className="py-1.5 px-2 text-right font-mono text-slate-600">${inv.grandTotal.toFixed(2)}</td>
-                                        <td className="py-1.5 px-2 text-right font-mono text-slate-500">${inv.amountPaid.toFixed(2)}</td>
-                                        <td className="py-1.5 px-2 text-right font-mono font-bold text-red-600">${inv.balanceDue.toFixed(2)}</td>
+                                        <td className="py-1.5 px-2 text-right font-mono text-slate-600">${(Number(inv.grandTotal) || 0).toFixed(2)}</td>
+                                        <td className="py-1.5 px-2 text-right font-mono text-slate-500">${(Number(inv.amountPaid) || 0).toFixed(2)}</td>
+                                        <td className="py-1.5 px-2 text-right font-mono font-bold text-red-600">${(Number(inv.balanceDue) || 0).toFixed(2)}</td>
                                       </tr>
                                     ))}
                                   </tbody>
@@ -400,7 +400,7 @@ export default function CustomerAgedModal({
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '11px' }}>
             <span><strong>Date Generated:</strong> {new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}</span>
             <span><strong>Filter:</strong> {filterMode === 'ALL' ? 'All Trade Customers' : 'Selected Account'}</span>
-            <span><strong>Total Receivables:</strong> ${grandTotals.totalDue.toFixed(2)} USD</span>
+            <span><strong>Total Receivables:</strong> ${(Number(grandTotals?.totalDue) || 0).toFixed(2)} USD</span>
           </div>
 
           {/* Table */}
@@ -419,14 +419,14 @@ export default function CustomerAgedModal({
               {filteredRows.map((r, i) => (
                 <tr key={i} style={{ borderBottom: '1px solid #ddd' }}>
                   <td style={{ padding: '5px 4px', fontWeight: 'bold' }}>{r.customerName} ({r.customerId})</td>
-                  <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${r.buckets.current30.toFixed(2)}</td>
-                  <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${r.buckets.days31to60.toFixed(2)}</td>
-                  <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${r.buckets.days61to90.toFixed(2)}</td>
-                  <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 'bold', color: r.buckets.over90 > 0 ? '#b91c1c' : '#000' }}>
-                    ${r.buckets.over90.toFixed(2)}
+                  <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${(Number(r.buckets?.current30) || 0).toFixed(2)}</td>
+                  <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${(Number(r.buckets?.days31to60) || 0).toFixed(2)}</td>
+                  <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${(Number(r.buckets?.days61to90) || 0).toFixed(2)}</td>
+                  <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 'bold', color: (Number(r.buckets?.over90) || 0) > 0 ? '#b91c1c' : '#000' }}>
+                    ${(Number(r.buckets?.over90) || 0).toFixed(2)}
                   </td>
                   <td style={{ padding: '5px 4px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 'bold' }}>
-                    ${r.buckets.totalDue.toFixed(2)}
+                    ${(Number(r.buckets?.totalDue) || 0).toFixed(2)}
                   </td>
                 </tr>
               ))}
@@ -434,11 +434,11 @@ export default function CustomerAgedModal({
             <tfoot>
               <tr style={{ borderTop: '2px solid #000', fontWeight: 'bold', backgroundColor: '#f9f9f9' }}>
                 <td style={{ padding: '6px 4px' }}>Grand Totals</td>
-                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${grandTotals.current30.toFixed(2)}</td>
-                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${grandTotals.days31to60.toFixed(2)}</td>
-                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${grandTotals.days61to90.toFixed(2)}</td>
-                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace', color: '#b91c1c' }}>${grandTotals.over90.toFixed(2)}</td>
-                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace', fontSize: '11px' }}>${grandTotals.totalDue.toFixed(2)}</td>
+                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${(Number(grandTotals?.current30) || 0).toFixed(2)}</td>
+                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${(Number(grandTotals?.days31to60) || 0).toFixed(2)}</td>
+                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace' }}>${(Number(grandTotals?.days61to90) || 0).toFixed(2)}</td>
+                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace', color: '#b91c1c' }}>${(Number(grandTotals?.over90) || 0).toFixed(2)}</td>
+                <td style={{ padding: '6px 4px', textAlign: 'right', fontFamily: 'monospace', fontSize: '11px' }}>${(Number(grandTotals?.totalDue) || 0).toFixed(2)}</td>
               </tr>
             </tfoot>
           </table>

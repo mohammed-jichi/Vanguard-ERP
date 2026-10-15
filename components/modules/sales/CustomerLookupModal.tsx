@@ -13,8 +13,10 @@ export interface CustomerLookupItem {
   priceTier?: string;
   balance?: number;
   openBalance?: number;
+  outstandingBalance?: number;
   creditLimit?: number;
   salesman?: string;
+  [key: string]: any;
 }
 
 interface CustomerLookupModalProps {
@@ -200,7 +202,9 @@ export default function CustomerLookupModal({
                 {filteredCustomers.map((cust, idx) => {
                   const isHighlighted = idx === selectedIndex;
                   const priceTier = cust.category || cust.priceTier || 'Retail Counter';
-                  const openBal = cust.balance ?? cust.openBalance ?? 0;
+                  const openBal = typeof cust?.balance === 'number'
+                    ? cust.balance
+                    : (Number(cust?.balance ?? cust?.openBalance ?? cust?.outstandingBalance ?? 0) || 0);
                   return (
                     <tr
                       key={cust.id || idx}
@@ -235,7 +239,7 @@ export default function CustomerLookupModal({
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold">
                         <span className={openBal > 0 ? 'text-amber-600' : 'text-emerald-700'}>
-                          ${openBal.toFixed(2)}
+                          ${(Number(openBal) || 0).toFixed(2)}
                         </span>
                       </td>
                       <td className="py-2.5 px-3 text-right">

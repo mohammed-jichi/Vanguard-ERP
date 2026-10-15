@@ -806,7 +806,7 @@ export async function createJournalEntryForCreditNote(
   });
 
   // 4. Perpetual Inventory Reversal (Debit Inventory, Credit COGS)
-  const estimatedCogs = Number((crn.subtotal * 0.65).toFixed(2));
+  const estimatedCogs = Number(((Number(crn.subtotal) || 0) * 0.65).toFixed(2));
   if (estimatedCogs > 0) {
     lines.push({
       id: `line-${Date.now()}-4`,

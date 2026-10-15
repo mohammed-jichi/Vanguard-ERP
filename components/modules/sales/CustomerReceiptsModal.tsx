@@ -682,7 +682,7 @@ export default function CustomerReceiptsModal({
                 Current Open Debt (الرصيد المستحق)
               </span>
               <span className="text-base font-mono font-extrabold text-red-600 flex items-center gap-1">
-                ${totalOutstandingCustomerDebt.toFixed(2)} USD
+                ${(Number(totalOutstandingCustomerDebt) || 0).toFixed(2)} USD
                 <span className="text-[11px] font-normal text-slate-500">
                   ({(totalOutstandingCustomerDebt * exchangeRate).toLocaleString()} LBP)
                 </span>
@@ -813,7 +813,7 @@ export default function CustomerReceiptsModal({
                   <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     {discountMode === 'PERCENT' && settlementCalculation.discountAmountUsd > 0 && (
                       <span className="text-[10px] font-mono font-bold text-emerald-600 bg-emerald-50 px-1 rounded border border-emerald-200">
-                        -${settlementCalculation.discountAmountUsd.toFixed(2)}
+                        -${(Number(settlementCalculation?.discountAmountUsd) || 0).toFixed(2)}
                       </span>
                     )}
                     <span className="text-[10px] font-bold text-slate-400">
@@ -1099,14 +1099,14 @@ export default function CustomerReceiptsModal({
               <div>
                 <span className="text-[10px] text-emerald-800 font-bold uppercase block">Total Net Settled</span>
                 <span className="text-sm font-mono font-extrabold text-emerald-800">
-                  ${settlementCalculation.totalSettledBaseUsd.toFixed(2)} USD
+                  ${(Number(settlementCalculation?.totalSettledBaseUsd) || 0).toFixed(2)} USD
                 </span>
               </div>
               <div className="h-6 w-px bg-emerald-200 hidden sm:block" />
               <div>
                 <span className="text-[10px] text-emerald-800 font-bold uppercase block">Allocated to Invoices</span>
                 <span className="text-sm font-mono font-extrabold text-slate-900">
-                  ${settlementCalculation.totalAllocatedToInvoicesUsd.toFixed(2)} USD
+                  ${(Number(settlementCalculation?.totalAllocatedToInvoicesUsd) || 0).toFixed(2)} USD
                 </span>
               </div>
               <div className="h-6 w-px bg-emerald-200 hidden sm:block" />
@@ -1117,7 +1117,7 @@ export default function CustomerReceiptsModal({
                 <span className={`text-sm font-mono font-extrabold ${
                   settlementCalculation.unallocatedCreditUsd > 0 ? 'text-blue-700 font-black' : 'text-slate-500'
                 }`}>
-                  ${settlementCalculation.unallocatedCreditUsd.toFixed(2)} USD
+                  ${(Number(settlementCalculation?.unallocatedCreditUsd) || 0).toFixed(2)} USD
                 </span>
               </div>
             </div>
@@ -1247,13 +1247,13 @@ export default function CustomerReceiptsModal({
                             {inv.date}
                           </td>
                           <td className="py-2 px-2.5 text-right font-mono text-slate-700">
-                            ${inv.grandTotalUsd.toFixed(2)}
+                            ${(Number(inv.grandTotalUsd) || 0).toFixed(2)}
                           </td>
                           <td className="py-2 px-2.5 text-right font-mono text-slate-500">
-                            ${inv.paidAmountUsd.toFixed(2)}
+                            ${(Number(inv.paidAmountUsd) || 0).toFixed(2)}
                           </td>
                           <td className="py-2 px-2.5 text-right font-mono font-bold text-red-600">
-                            ${inv.balanceDue.toFixed(2)}
+                            ${(Number(inv.balanceDue) || 0).toFixed(2)}
                           </td>
                           <td className="py-2 px-4 text-right">
                             {isFifo ? (
@@ -1262,7 +1262,7 @@ export default function CustomerReceiptsModal({
                                   isFunded ? 'text-emerald-700 text-xs' : 'text-slate-300'
                                 }`}
                               >
-                                {isFunded ? `$${allocatedAmt.toFixed(2)}` : '—'}
+                                {isFunded ? `$${(Number(allocatedAmt) || 0).toFixed(2)}` : '—'}
                               </span>
                             ) : (
                               <div className="flex items-center justify-end gap-1">
@@ -1348,7 +1348,7 @@ export default function CustomerReceiptsModal({
                       <td className="py-2 px-2 font-medium text-slate-800">{rct.customerName}</td>
                       <td className="py-2 px-2 text-slate-600">{rct.paymentMethod}</td>
                       <td className="py-2 px-2 text-right font-mono font-bold text-emerald-700">
-                        ${rct.amountReceivedUsd.toFixed(2)}
+                        ${(Number(rct.amountReceivedUsd) || 0).toFixed(2)}
                       </td>
                       <td className="py-2 px-2 text-center">
                         <span className="bg-blue-50 text-blue-700 text-[10px] font-mono px-1.5 py-0.5 rounded border border-blue-200">
@@ -1591,7 +1591,7 @@ export default function CustomerReceiptsModal({
                         Amount Received
                       </span>
                       <div style={{ fontSize: '18px', fontWeight: '900', fontFamily: 'monospace', color: '#0f172a', marginTop: '2px' }}>
-                        ${printingReceipt.amountReceivedUsd.toFixed(2)} USD
+                        ${(Number(printingReceipt.amountReceivedUsd) || 0).toFixed(2)} USD
                       </div>
                       <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#64748b' }}>
                         {printingReceipt.amountReceivedLbp.toLocaleString()} LBP
@@ -1603,7 +1603,7 @@ export default function CustomerReceiptsModal({
                         Settlement Discount
                       </span>
                       <div style={{ fontSize: '18px', fontWeight: '900', fontFamily: 'monospace', color: '#047857', marginTop: '2px' }}>
-                        ${printingReceipt.discountGiven.toFixed(2)} USD
+                        ${(Number(printingReceipt.discountGiven) || 0).toFixed(2)} USD
                       </div>
                       <div style={{ fontSize: '10.5px', color: '#047857' }}>
                         {printingReceipt.discountPercent ? `${printingReceipt.discountPercent}% Granted` : 'Fixed Discount'}
@@ -1615,7 +1615,7 @@ export default function CustomerReceiptsModal({
                         Net Credited to Account
                       </span>
                       <div style={{ fontSize: '18px', fontWeight: '900', fontFamily: 'monospace', color: '#15803d', marginTop: '2px' }}>
-                        ${((printingReceipt.amountReceivedUsd || 0) + (printingReceipt.discountGiven || 0)).toFixed(2)} USD
+                        ${((Number(printingReceipt.amountReceivedUsd) || 0) + (Number(printingReceipt.discountGiven) || 0)).toFixed(2)} USD
                       </div>
                       <div style={{ fontSize: '10.5px', color: '#15803d' }}>
                         صافي المحسوم من الذمة
@@ -1664,16 +1664,16 @@ export default function CustomerReceiptsModal({
                               {a.invoiceDate || '—'}
                             </td>
                             <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace' }}>
-                              ${a.totalInvoiceAmountUsd.toFixed(2)}
+                              ${(Number(a.totalInvoiceAmountUsd) || 0).toFixed(2)}
                             </td>
                             <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace' }}>
-                              ${a.previousBalanceDueUsd.toFixed(2)}
+                              ${(Number(a.previousBalanceDueUsd) || 0).toFixed(2)}
                             </td>
                             <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 'bold', color: '#166534' }}>
-                              ${a.allocatedAmountUsd.toFixed(2)}
+                              ${(Number(a.allocatedAmountUsd) || 0).toFixed(2)}
                             </td>
                             <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace', color: a.remainingBalanceDueUsd <= 0.01 ? '#047857' : '#dc2626' }}>
-                              ${a.remainingBalanceDueUsd.toFixed(2)}
+                              ${(Number(a.remainingBalanceDueUsd) || 0).toFixed(2)}
                             </td>
                             <td style={{ padding: '6px 8px', textAlign: 'center' }}>
                               <span
@@ -1706,7 +1706,7 @@ export default function CustomerReceiptsModal({
                             Advance Credit on Account (دفعة على الحساب فائضة عن الفواتير المفتوحة):
                           </td>
                           <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'monospace', color: '#1e40af' }}>
-                            ${printingReceipt.unallocatedCreditUsd.toFixed(2)}
+                            ${(Number(printingReceipt.unallocatedCreditUsd) || 0).toFixed(2)}
                           </td>
                           <td colSpan={2} style={{ padding: '6px 8px', textAlign: 'center', color: '#1e40af' }}>
                             Held as Customer Credit Balance
@@ -1886,14 +1886,14 @@ export default function CustomerReceiptsModal({
                     Total Amount Received
                   </span>
                   <div style={{ fontSize: '18px', fontWeight: 'extrabold', fontFamily: 'monospace', margin: '3px 0' }}>
-                    ${printingReceipt.amountReceivedUsd.toFixed(2)} USD
+                    ${(Number(printingReceipt.amountReceivedUsd) || 0).toFixed(2)} USD
                   </div>
                   <div style={{ fontSize: '10px', fontFamily: 'monospace', color: '#333' }}>
                     {printingReceipt.amountReceivedLbp.toLocaleString()} LBP
                   </div>
                   {printingReceipt.discountGiven > 0 && (
                     <div style={{ fontSize: '9px', color: '#047857', marginTop: '3px', fontWeight: 'bold' }}>
-                      Settlement Discount: ${printingReceipt.discountGiven.toFixed(2)} USD
+                      Settlement Discount: ${(Number(printingReceipt.discountGiven) || 0).toFixed(2)} USD
                     </div>
                   )}
                 </div>
@@ -1917,9 +1917,9 @@ export default function CustomerReceiptsModal({
                         {printingReceipt.allocations.map((a, i) => (
                           <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
                             <td style={{ padding: '2px 4px' }}>#{a.invoiceNo}</td>
-                            <td style={{ padding: '2px 4px', textAlign: 'right' }}>${a.totalInvoiceAmountUsd.toFixed(2)}</td>
-                            <td style={{ padding: '2px 4px', textAlign: 'right', fontWeight: 'bold' }}>${a.allocatedAmountUsd.toFixed(2)}</td>
-                            <td style={{ padding: '2px 4px', textAlign: 'right' }}>${a.remainingBalanceDueUsd.toFixed(2)}</td>
+                            <td style={{ padding: '2px 4px', textAlign: 'right' }}>${(Number(a.totalInvoiceAmountUsd) || 0).toFixed(2)}</td>
+                            <td style={{ padding: '2px 4px', textAlign: 'right', fontWeight: 'bold' }}>${(Number(a.allocatedAmountUsd) || 0).toFixed(2)}</td>
+                            <td style={{ padding: '2px 4px', textAlign: 'right' }}>${(Number(a.remainingBalanceDueUsd) || 0).toFixed(2)}</td>
                           </tr>
                         ))}
                       </tbody>
