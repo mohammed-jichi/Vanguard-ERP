@@ -1375,3 +1375,200 @@ export function calculateAllCustomersAging(
 
   return results.sort((a, b) => b.currentOpenBalance - a.currentOpenBalance);
 }
+
+// ============================================================================
+// 6. CUSTOMER RECEIPT & INVOICE ALLOCATION ENGINE
+// ============================================================================
+
+export interface UnsettledInvoiceItem {
+  id: string;
+  invoiceNumber: string;
+  date: string;
+  grandTotal: number;
+  balanceDue: number;
+}
+
+export interface ReceiptSettlementCalculationInput {
+  amountReceived: number;
+  currencyCode?: 'USD' | 'LBP' | 'EUR' | 'GBP' | string;
+  exchangeRate?: number;
+  discountMode?: 'PERCENT' | 'AMOUNT';
+  discountInput?: number;
+  unsettledInvoices: UnsettledInvoiceItem[];
+  allocationMode?: 'FIFO' | 'SPECIFIC' | 'MANUAL';
+  manualAllocations?: Record<string, number>;
+}
+
+export interface AllocatedInvoiceResult {
+  invoiceId: string;
+  invoiceNo: string;
+  invoiceDate: string;
+  totalInvoiceAmountUsd: number;
+  previousBalanceDueUsd: number;
+  allocatedAmountUsd: number;
+  remainingBalanceDueUsd: number;
+  isFullyPaid: boolean;
+}
+
+export interface ReceiptSettlementResult {
+  amountReceivedInBaseUsd: number;
+  amountReceivedInSecondary: number;
+  discountAmountUsd: number;
+  discountPercentageEquivalent: number;
+  totalSettledBaseUsd: number;
+  totalAllocatedToInvoicesUsd: number;
+  unallocatedCreditUsd: number;
+  allocatedInvoices: AllocatedInvoiceResult[];
+  allocationsMap: Record<string, number>;
+}
+
+/**
+ * Deterministic Customer Receipt & Invoice Allocation Calculation Engine:
+ * - Dynamic Currency conversion (USD / LBP)
+ * - Flexible Settlement Discount (% percentage vs. fixed amount)
+ * - Strict debt settled formula: totalSettledBase = amountReceivedInBase + discountAmountInBase
+ * - Live FIFO distribution (chronological date ASC) vs. Manual capped allocation
+ */
+export function calculateReceiptSettlement(
+  input: ReceiptSettlementCalculationInput
+): ReceiptSettlementResult {
+  const currency = input.currencyCode || 'USD';
+  const rate = input.exchangeRate && input.exchangeRate > 0 ? input.exchangeRate : 89500;
+  const rawAmt = Math.max(0, Number(input.amountReceived) || 0);
+
+  // 1. Amount Received in Base USD and Secondary Currency
+  let amountReceivedInBaseUsd = rawAmt;
+  let amountReceivedInSecondary = rawAmt * rate;
+  if (currency === 'LBP') {
+    amountReceivedInSecondary = rawAmt;
+    amountReceivedInBaseUsd = Number((rawAmt / rate).toFixed(2));
+  }
+
+  // 2. Settlement Discount Calculation
+  const discInput = Math.max(0, Number(input.discountInput) || 0);
+  const discountMode = input.discountMode || 'AMOUNT';
+  let discountAmountUsd = 0;
+  let discountPercentageEquivalent = 0;
+
+  if (discountMode === 'PERCENT') {
+    discountPercentageEquivalent = discInput;
+    discountAmountUsd = Number(((amountReceivedInBaseUsd * discInput) / 100).toFixed(2));
+  } else {
+    // Fixed amount mode
+    if (currency === 'LBP') {
+      discountAmountUsd = Number((discInput / rate).toFixed(2));
+    } else {
+      discountAmountUsd = discInput;
+    }
+    discountPercentageEquivalent =
+      amountReceivedInBaseUsd > 0
+        ? Number(((discountAmountUsd / amountReceivedInBaseUsd) * 100).toFixed(2))
+        : 0;
+  }
+
+  // Total debt settled on customer's account:
+  const totalSettledBaseUsd = Number((amountReceivedInBaseUsd + discountAmountUsd).toFixed(2));
+
+  // 3. Invoice Allocation (FIFO vs. Manual)
+  const allocationMode = input.allocationMode || 'SPECIFIC';
+  const allocatedInvoices: AllocatedInvoiceResult[] = [];
+  const allocationsMap: Record<string, number> = {};
+
+  if (allocationMode === 'FIFO') {
+    // Chronological date ASC (oldest first)
+    const sortedInvoices = [...input.unsettledInvoices].sort((a, b) => {
+      const timeA = new Date(a.date).getTime();
+      const timeB = new Date(b.date).getTime();
+      if (isNaN(timeA) || isNaN(timeB)) {
+        return String(a.invoiceNumber || a.id).localeCompare(String(b.invoiceNumber || b.id), undefined, { numeric: true });
+      }
+      return timeA - timeB;
+    });
+
+    let remainingToAllocate = totalSettledBaseUsd;
+    for (const inv of sortedInvoices) {
+      if (remainingToAllocate <= 0) break;
+      const due = Math.max(0, Number(inv.balanceDue || 0));
+      if (due <= 0.001) continue;
+
+      const toAlloc = Number(Math.min(due, remainingToAllocate).toFixed(2));
+      const newRemaining = Math.max(0, Number((due - toAlloc).toFixed(2)));
+      const invId = inv.id || inv.invoiceNumber;
+
+      allocatedInvoices.push({
+        invoiceId: invId,
+        invoiceNo: inv.invoiceNumber || invId,
+        invoiceDate: inv.date,
+        totalInvoiceAmountUsd: Number((inv.grandTotal || due).toFixed(2)),
+        previousBalanceDueUsd: due,
+        allocatedAmountUsd: toAlloc,
+        remainingBalanceDueUsd: newRemaining,
+        isFullyPaid: newRemaining <= 0.01
+      });
+
+      allocationsMap[invId] = toAlloc;
+      remainingToAllocate = Number((remainingToAllocate - toAlloc).toFixed(2));
+    }
+
+    const totalAllocatedToInvoicesUsd = Number((totalSettledBaseUsd - remainingToAllocate).toFixed(2));
+    const unallocatedCreditUsd = Math.max(0, remainingToAllocate);
+
+    return {
+      amountReceivedInBaseUsd,
+      amountReceivedInSecondary,
+      discountAmountUsd,
+      discountPercentageEquivalent,
+      totalSettledBaseUsd,
+      totalAllocatedToInvoicesUsd,
+      unallocatedCreditUsd,
+      allocatedInvoices,
+      allocationsMap
+    };
+  } else {
+    // MANUAL / SPECIFIC Selection Mode
+    const manualMap = input.manualAllocations || {};
+    let totalAllocatedToInvoicesUsd = 0;
+
+    for (const inv of input.unsettledInvoices) {
+      const invId = inv.id || inv.invoiceNumber;
+      if (manualMap[invId] !== undefined && manualMap[invId] > 0) {
+        const due = Math.max(0, Number(inv.balanceDue || 0));
+        const rawAlloc = Number(manualMap[invId] || 0);
+        const toAlloc = Number(Math.min(due, rawAlloc).toFixed(2));
+        const newRemaining = Math.max(0, Number((due - toAlloc).toFixed(2)));
+
+        allocatedInvoices.push({
+          invoiceId: invId,
+          invoiceNo: inv.invoiceNumber || invId,
+          invoiceDate: inv.date,
+          totalInvoiceAmountUsd: Number((inv.grandTotal || due).toFixed(2)),
+          previousBalanceDueUsd: due,
+          allocatedAmountUsd: toAlloc,
+          remainingBalanceDueUsd: newRemaining,
+          isFullyPaid: newRemaining <= 0.01
+        });
+
+        allocationsMap[invId] = toAlloc;
+        totalAllocatedToInvoicesUsd = Number((totalAllocatedToInvoicesUsd + toAlloc).toFixed(2));
+      }
+    }
+
+    const unallocatedCreditUsd = Math.max(
+      0,
+      Number((totalSettledBaseUsd - totalAllocatedToInvoicesUsd).toFixed(2))
+    );
+
+    return {
+      amountReceivedInBaseUsd,
+      amountReceivedInSecondary,
+      discountAmountUsd,
+      discountPercentageEquivalent,
+      totalSettledBaseUsd,
+      totalAllocatedToInvoicesUsd,
+      unallocatedCreditUsd,
+      allocatedInvoices,
+      allocationsMap
+    };
+  }
+}
+

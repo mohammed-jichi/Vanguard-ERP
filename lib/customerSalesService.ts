@@ -47,10 +47,16 @@ export interface CustomerReceipt {
   customerName: string;
   paymentMethod: string; // 'CASH USD' | 'CASH LBP' | 'BANK TRANSFER' | 'CHECK' | 'CARD'
   currencyCode: 'USD' | 'LBP' | 'EUR' | 'GBP';
+  bankAccountName?: string;
+  bankAccountNumber?: string;
   amountReceived: number;
   amountReceivedUsd: number;
   amountReceivedLbp: number;
   discountGiven: number; // Settlement discount / حسم تعجيل دفع
+  discountMode?: 'PERCENT' | 'AMOUNT';
+  discountPercent?: number;
+  totalSettledUsd?: number;
+  unallocatedCreditUsd?: number;
   exchangeRate: number;
   notes: string;
   allocations: ReceiptInvoiceAllocation[];

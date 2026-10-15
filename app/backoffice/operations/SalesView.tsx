@@ -6193,9 +6193,14 @@ export default function AuthenticVanguardSalesWorkstation({
       <CustomerReceiptsModal
         isOpen={isCustomerReceiptsModalOpen}
         onClose={() => setIsCustomerReceiptsModalOpen(false)}
-        invoices={invoicesDirectory}
+        invoicesDirectory={invoicesDirectory}
         activeCustomer={selectedCustomer}
+        customers={CUSTOMER_PRESETS.filter((c) => c.name)}
         tenantId={currentTenant?.id}
+        cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
+        onInvoicesUpdated={(updated) => {
+          setInvoicesDirectory(updated);
+        }}
         onReceiptRecorded={(receipt) => {
           setStatusNotice(`Customer receipt #${receipt.receiptNo} posted ($${receipt.amountReceived.toFixed(2)})`);
           setTimeout(() => setStatusNotice(null), 3500);
