@@ -701,9 +701,13 @@ function generateUniqueInvoiceNumber(existingList?: { invoiceNumber?: string }[]
 export const DEFAULT_DELIVERY_PROVIDERS = DEFAULT_UNIFIED_DELIVERY_PROVIDERS;
 
 export default function AuthenticVanguardSalesWorkstation({
-  withSidebar = false
+  withSidebar = false,
+  initialDocType,
+  initialReceiptsOpen
 }: {
   withSidebar?: boolean;
+  initialDocType?: 'SALE' | 'CREDIT_NOTE';
+  initialReceiptsOpen?: boolean;
 }) {
   const { currentTenant } = useTenant();
   const profile = useActiveUser();
@@ -994,11 +998,36 @@ export default function AuthenticVanguardSalesWorkstation({
   const [isRecallRecurringModalOpen, setIsRecallRecurringModalOpen] = useState(false);
   const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
   const [recurringModalMode, setRecurringModalMode] = useState<'STORE' | 'RECALL'>('STORE');
-  const [docType, setDocType] = useState<'SALE' | 'CREDIT_NOTE'>('SALE');
+  const [docType, setDocType] = useState<'SALE' | 'CREDIT_NOTE'>(initialDocType || 'SALE');
   const [parentInvoiceNo, setParentInvoiceNo] = useState<string | null>(null);
   const [isCustomerPricingModalOpen, setIsCustomerPricingModalOpen] = useState(false);
   const [isCustomerAgedModalOpen, setIsCustomerAgedModalOpen] = useState(false);
-  const [isCustomerReceiptsModalOpen, setIsCustomerReceiptsModalOpen] = useState(false);
+  const [isCustomerReceiptsModalOpen, setIsCustomerReceiptsModalOpen] = useState(Boolean(initialReceiptsOpen));
+
+  // Sync initial docType and receipts modal states from props or URL
+  useEffect(() => {
+    if (initialDocType) {
+      setDocType(initialDocType);
+    }
+  }, [initialDocType]);
+
+  useEffect(() => {
+    if (initialReceiptsOpen) {
+      setIsCustomerReceiptsModalOpen(true);
+    }
+  }, [initialReceiptsOpen]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const s = sp.get('section');
+      if (s === 'credit_notes') {
+        setDocType('CREDIT_NOTE');
+      } else if (s === 'customer_receipts') {
+        setIsCustomerReceiptsModalOpen(true);
+      }
+    }
+  }, []);
   const [isPaidInOutModalOpen, setIsPaidInOutModalOpen] = useState(false);
   const [printCashVoucherSnapshot, setPrintCashVoucherSnapshot] = useState<any | null>(null);
   const [isMainReadingModalOpen, setIsMainReadingModalOpen] = useState(false);

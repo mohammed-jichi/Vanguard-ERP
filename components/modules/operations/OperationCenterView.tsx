@@ -41,12 +41,36 @@ interface Batch {
   production_date: string;
 }
 
-export function OperationCenterView() {
+export interface OperationCenterViewProps {
+  initialTab?: 'materials' | 'production' | 'qc';
+}
+
+export function OperationCenterView({ initialTab = 'materials' }: OperationCenterViewProps = {}) {
   const { currentTenant } = useTenant();
   const tenantId = currentTenant?.id || 'default-tenant';
 
-  const [activeTab, setActiveTab] = useState<'materials' | 'production' | 'qc'>('materials');
+  const [activeTab, setActiveTab] = useState<'materials' | 'production' | 'qc'>(initialTab);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const tab = sp.get('tab') || sp.get('section');
+      if (tab === 'materials' || tab === 'raw_materials') {
+        setActiveTab('materials');
+      } else if (tab === 'production' || tab === 'batches' || tab === 'lines_batches') {
+        setActiveTab('production');
+      } else if (tab === 'qc' || tab === 'quality' || tab === 'quality_control') {
+        setActiveTab('qc');
+      }
+    }
+  }, []);
 
   // Data State
   const [units, setUnits] = useState<Unit[]>([]);
@@ -186,8 +210,8 @@ export function OperationCenterView() {
       {/* Tabs */}
       <div className="flex space-x-1 bg-slate-100 p-1 rounded-xl w-max">
         {[
-          { id: 'materials', label: 'Materials & Units', icon: Box },
-          { id: 'production', label: 'Production & Batches', icon: Package },
+          { id: 'materials', label: 'Raw Materials & BOM', icon: Box },
+          { id: 'production', label: 'Lines & Batches', icon: Package },
           { id: 'qc', label: 'Quality Control', icon: Beaker },
         ].map(t => (
           <button
@@ -210,7 +234,7 @@ export function OperationCenterView() {
             {activeTab === 'materials' && (
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold text-slate-800">Raw Materials Inventory</h2>
+                  <h2 className="text-lg font-semibold text-slate-800">Raw Materials Inventory & Recipes (BOM)</h2>
                   <div className="flex gap-2">
                     <button onClick={() => setShowUnitModal(true)} className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200 flex items-center gap-2">
                       <Settings className="w-4 h-4" /> Manage Units

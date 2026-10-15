@@ -53,6 +53,8 @@ import {
   UserCog,
   Search,
   ArrowRightLeft,
+  LayoutDashboard,
+  BarChart3,
   BookOpen,
   ShieldCheck,
   Coins,
@@ -431,17 +433,16 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['op'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link prefetch={false} href="/operations-center?tab=materials" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
-                <img src="/icons/inv_setup_invitems.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('materials_units', 'Materials & Units')}</span>
+              {/* 1. Dashboard */}
+              <Link prefetch={false} href="/backoffice/operations?section=dashboard" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+                <LayoutDashboard strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('dashboard', 'Dashboard')}</span>
               </Link>
-              <Link prefetch={false} href="/operations-center?tab=batches" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
-                <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('batches', 'Batches')}</span>
-              </Link>
-              <Link prefetch={false} href="/operations-center?tab=quality" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
-                <Wrench strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span>{t('quality_control', 'Quality Control')}</span>
+
+              {/* 2. Reports */}
+              <Link prefetch={false} href="/backoffice/operations?section=reports" className="flex items-center gap-2 p-1.5 hover:text-slate-900 hover:bg-slate-50 rounded font-semibold text-slate-800">
+                <BarChart3 strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span>{t('reports', 'Reports')}</span>
               </Link>
 
               {/* Actions */}
@@ -465,6 +466,14 @@ export default function Sidebar({
                     <Link prefetch={false} href="/backoffice/operations?section=quotations" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                       <FileText strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span>{t('quotations', 'Quotations')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=credit_notes" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <FileCheck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('credit_notes', 'Credit Notes')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=customer_receipts" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <Receipt strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('customer_receipts', 'Customer Receipts')}</span>
                     </Link>
                     <Link prefetch={false} href="/backoffice/operations?section=delivery_goods" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
                       <Truck strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -580,6 +589,36 @@ export default function Sidebar({
                         </div>
                       )}
                     </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Production & Quality */}
+              <div className="pt-0.5">
+                <button
+                  onClick={() => toggleGroup('op_production')}
+                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Factory strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <span>{t('production_quality', 'Production & Quality')}</span>
+                  </div>
+                  <span className="text-[9px]">{expandedGroups['op_production'] ? '▲' : '▼'}</span>
+                </button>
+                {expandedGroups['op_production'] && (
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    <Link prefetch={false} href="/backoffice/operations?section=raw_materials" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <Box strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('raw_materials_bom', 'Raw Materials & BOM')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=batches" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <Layers strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('lines_batches', 'Lines & Batches')}</span>
+                    </Link>
+                    <Link prefetch={false} href="/backoffice/operations?section=quality_control" className="flex items-center gap-2 p-1 hover:text-slate-900 hover:bg-slate-50 rounded">
+                      <Wrench strokeWidth={1.5} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>{t('quality_control', 'Quality Control')}</span>
+                    </Link>
                   </div>
                 )}
               </div>

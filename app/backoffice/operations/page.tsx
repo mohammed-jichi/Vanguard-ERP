@@ -27,12 +27,14 @@ import OperationsSetupViews from './OperationsSetupViews';
 import StandardUnderDevelopmentPlaceholder from '@/components/StandardUnderDevelopmentPlaceholder';
 import PressingMillPage from '@/components/PressingMillConsole';
 import CrmSubModulesView from '@/components/modules/customers/CrmSubModulesView';
+import { OperationCenterView } from '@/components/modules/operations/OperationCenterView';
 
 const HANDLED_OPS_SECTIONS = new Set([
-  'dashboard', 'reports', 'sales', 'quotations', 'delivery_goods', 'purchases',
+  'dashboard', 'reports', 'sales', 'quotations', 'credit_notes', 'customer_receipts', 'delivery_goods', 'purchases',
   'purchase_orders', 'reorder_guide', 'lost_goods', 'item_assembly', 'transfers',
   'adjustments', 'product_request', 'manage_product_requests', 'product_req_prep',
-  'receiving_goods', 'product_req_reports', 'request_reject_reasons', 'pressing', 'olive_pressing', 'events',
+  'receiving_goods', 'product_req_reports', 'request_reject_reasons', 'pressing', 'olive_pressing',
+  'raw_materials', 'materials', 'batches', 'lines_batches', 'quality_control', 'quality', 'qc', 'events',
   'event_venues', 'event_resources', 'event_types', 'quick_setup', 'products_services',
   'groups', 'divisions', 'categories', 'units', 'locations', 'suppliers',
   'departments', 'lost_goods_reason', 'sizes_groups', 'sizes', 'colors',
@@ -51,6 +53,8 @@ export type OpsSectionKey =
   // 3. Action Sections
   | 'sales'
   | 'quotations'
+  | 'credit_notes'
+  | 'customer_receipts'
   | 'delivery_goods'
   | 'purchases'
   | 'purchase_orders'
@@ -61,6 +65,14 @@ export type OpsSectionKey =
   | 'adjustments'
   | 'pressing'
   | 'olive_pressing'
+  // 3.5 Production & Quality Control Sections
+  | 'raw_materials'
+  | 'materials'
+  | 'batches'
+  | 'lines_batches'
+  | 'quality_control'
+  | 'quality'
+  | 'qc'
   // 4. Product Request Sections
   | 'product_request'
   | 'manage_product_requests'
@@ -125,13 +137,16 @@ function OperationsCenterComponent() {
   });
 
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const sp = new URLSearchParams(window.location.search);
-      const s = sp.get('section') as OpsSectionKey | null;
-      if (s && s !== urlSection) {
+    const syncFromUrl = () => {
+      if (typeof window !== 'undefined') {
+        const sp = new URLSearchParams(window.location.search);
+        const s = sp.get('section') as OpsSectionKey | null;
         setUrlSection(s);
       }
-    }
+    };
+    syncFromUrl();
+    window.addEventListener('popstate', syncFromUrl);
+    return () => window.removeEventListener('popstate', syncFromUrl);
   }, [searchParams]);
 
   const activeSectionParam = (searchParams.get('section') as OpsSectionKey | null) || urlSection;
@@ -144,6 +159,15 @@ function OperationsCenterComponent() {
     'reports',
     'sales',
     'quotations',
+    'credit_notes',
+    'customer_receipts',
+    'raw_materials',
+    'materials',
+    'batches',
+    'lines_batches',
+    'quality_control',
+    'quality',
+    'qc',
     'delivery_goods',
     'purchases',
     'purchase_orders',
@@ -191,6 +215,20 @@ function OperationsCenterComponent() {
             VIEW 3: SALES
             ========================================================================= */}
         {activeSection === 'sales' && <AuthenticVanguardSalesWorkstation />}
+
+        {/* =========================================================================
+            VIEW 3.1: CREDIT NOTES
+            ========================================================================= */}
+        {activeSection === 'credit_notes' && (
+          <AuthenticVanguardSalesWorkstation initialDocType="CREDIT_NOTE" />
+        )}
+
+        {/* =========================================================================
+            VIEW 3.2: CUSTOMER RECEIPTS
+            ========================================================================= */}
+        {activeSection === 'customer_receipts' && (
+          <AuthenticVanguardSalesWorkstation initialReceiptsOpen={true} />
+        )}
 
         {/* =========================================================================
             VIEW 4: QUOTATIONS
@@ -262,6 +300,19 @@ function OperationsCenterComponent() {
             ========================================================================= */}
         {(activeSection === 'pressing' || activeSection === 'olive_pressing') && (
           <PressingMillPage />
+        )}
+
+        {/* =========================================================================
+            VIEW 18: PRODUCTION & QUALITY CONTROL (RAW MATERIALS & BOM, BATCHES, QC)
+            ========================================================================= */}
+        {(activeSection === 'raw_materials' || activeSection === 'materials') && (
+          <OperationCenterView initialTab="materials" />
+        )}
+        {(activeSection === 'batches' || activeSection === 'lines_batches') && (
+          <OperationCenterView initialTab="production" />
+        )}
+        {(activeSection === 'quality_control' || activeSection === 'quality' || activeSection === 'qc') && (
+          <OperationCenterView initialTab="qc" />
         )}
 
         {/* =========================================================================
