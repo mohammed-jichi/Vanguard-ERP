@@ -103,11 +103,9 @@ export default function MainReadingModal({
     };
     window.addEventListener(SHIFT_UPDATED_EVENT, handleShiftUpdated);
     window.addEventListener(CASH_MOVEMENTS_UPDATED_EVENT, handleCashMovementsUpdated);
-    window.addEventListener('storage', handleCashMovementsUpdated);
     return () => {
       window.removeEventListener(SHIFT_UPDATED_EVENT, handleShiftUpdated);
       window.removeEventListener(CASH_MOVEMENTS_UPDATED_EVENT, handleCashMovementsUpdated);
-      window.removeEventListener('storage', handleCashMovementsUpdated);
     };
   }, []);
 

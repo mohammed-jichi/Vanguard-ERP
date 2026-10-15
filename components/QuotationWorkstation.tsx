@@ -49,6 +49,9 @@ import Link from 'next/link';
 import DatePickerInput from './DatePickerInput';
 import { VANGUARD_SALES_ITEMS, SalesItem } from '@/app/backoffice/operations/SalesView';
 import { CRMContact, INITIAL_CONTACTS as INITIAL_CRM_CONTACTS } from './ContactsView';
+import ContactLookupModal from '@/components/modules/sales/ContactLookupModal';
+import CustomerLookupModal from '@/components/modules/sales/CustomerLookupModal';
+import { resolveItemPriceWaterfall } from '@/lib/customerSalesService';
 
 export const formatLiveTodayDate = (dateObj: Date = new Date()): string => {
   const d = dateObj;
@@ -183,11 +186,16 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
 ];
 
 export const SAMPLE_CUSTOMERS = [
-  { id: '9', name: 'Mohammed Chami', phone: '78851503', address: 'Lebanon' },
-  { id: '31', name: 'Abou Hamzeh Nuts', phone: '+961 70 123 456', address: 'Saida, Lebanon' },
-  { id: '14', name: 'Supermarket Al-Nour', phone: '+961 03 987 654', address: 'Nabatieh, Lebanon' },
-  { id: '88', name: 'Beirut Gourmet Co.', phone: '+961 01 234 567', address: 'Achrafieh, Beirut' },
-  { id: '05', name: 'Jabal Amel Co-op', phone: '+961 07 765 432', address: 'Tyre, South Lebanon' }
+  { id: '9', name: 'Mohammed Chami', phone: '78851503', address: 'Nabatieh, South Lebanon', category: 'Standard Retail', balance: 0.00 },
+  { id: '31', name: 'Abou Hamzeh Nuts', company: 'Abou Hamzeh Nuts', phone: '+961 70 123 456', address: 'Saida Main Road, Abou Hamza Center', category: 'Wholesale Tier A', balance: 250.00 },
+  { id: '14', name: 'Supermarket Al-Nour', phone: '+961 03 987 654', address: 'Nabatieh, Lebanon', category: 'Wholesale Tier B', balance: 640.00 },
+  { id: '88', name: 'Beirut Gourmet Co.', phone: '+961 01 234 567', address: 'Achrafieh, Beirut', category: 'Wholesale Tier A', balance: 120.00 },
+  { id: '05', name: 'Jabal Amel Co-op', phone: '+961 07 765 432', address: 'Tyre, South Lebanon', category: 'Distributor Special', balance: 350.00 },
+  { id: 'CUST-001', name: 'Walk-in Cash Customer', phone: '+961 07 720 100', address: 'Local Branch Outlet', category: 'Retail Counter', balance: 0.00 },
+  { id: 'CUST-002', name: 'Beirut Gourmet Market', phone: '+961 01 345 678', address: 'Hamra Street, Bloc B, Beirut', category: 'Wholesale Tier A', balance: 420.50 },
+  { id: 'CUST-003', name: 'Al-Janoub Mart Supermarket', phone: '+961 07 760 300', address: 'Main Highway, Nabatieh', category: 'Wholesale Tier B', balance: 1150.00 },
+  { id: 'CUST-004', name: 'Tyre Regional Co-op', phone: '+961 07 740 220', address: 'Port Road, Tyre', category: 'Distributor Special', balance: 890.00 },
+  { id: 'CUST-005', name: 'Cedar Valley Organics', phone: '+961 01 200 450', address: 'Ashrafieh, Tabaris, Beirut', category: 'Wholesale Tier A', balance: 0.00 }
 ];
 
 export const BRANCH_OPTIONS = [
@@ -967,6 +975,47 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
   const [crmContacts, setCrmContacts] = useState<CRMContact[]>(INITIAL_CRM_CONTACTS);
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false);
   const contactDropdownRef = useRef<HTMLDivElement>(null);
+  // Lookup Modals for Enter key navigation
+  const [isContactLookupModalOpen, setIsContactLookupModalOpen] = useState(false);
+  const [isCustomerLookupModalOpen, setIsCustomerLookupModalOpen] = useState(false);
+
+  const handleSelectContactFromModal = (c: CRMContact) => {
+    const fullName = `${c.firstName || ''} ${c.lastName || ''}`.trim();
+    setContactName(fullName);
+    if (c.phone) setContactPhone(c.phone);
+    if (c.company) setContactCompany(c.company);
+    setIsContactLookupModalOpen(false);
+    setIsContactDropdownOpen(false);
+    setValidationErrors((prev) => ({ ...prev, customer: false }));
+  };
+
+  const handleSelectCustomerFromModal = (cust: any) => {
+    setSelectedCustomer(cust);
+    setCustomerSearch(cust.name);
+    setIsCustomerLookupModalOpen(false);
+    setIsCustomerDropdownOpen(false);
+    setValidationErrors((prev) => ({ ...prev, customer: false }));
+
+    if (quotationItems.length > 0) {
+      setQuotationItems((prev) =>
+        prev.map((qi) => {
+          const standardPrice = qi.unitPrice || qi.item.price || 0;
+          const resolved = resolveItemPriceWaterfall({
+            itemCode: qi.item.code,
+            customerId: cust.id,
+            standardPrice,
+            customerPriceTier: cust.category || 'Retail Counter'
+          });
+          const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : standardPrice;
+          return {
+            ...qi,
+            unitPrice,
+            total: Number((qi.qty * unitPrice * (1 - (qi.discountPercent || 0) / 100)).toFixed(2))
+          };
+        })
+      );
+    }
+  };
 
   // Sync CRM contacts from localStorage
   useEffect(() => {
@@ -2007,6 +2056,13 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                             setIsCustomerDropdownOpen(true);
                           }
                         }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            setIsCustomerDropdownOpen(false);
+                            setIsCustomerLookupModalOpen(true);
+                          }
+                        }}
                         className={`w-full bg-white border rounded pl-3 pr-14 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none shadow-2xs ${
                           validationErrors.customer
                             ? 'border-rose-500 ring-1 ring-rose-500 bg-rose-50/20'
@@ -2109,6 +2165,13 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                           onFocus={() => {
                             if (contactName.trim().length > 0) {
                               setIsContactDropdownOpen(true);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              setIsContactDropdownOpen(false);
+                              setIsContactLookupModalOpen(true);
                             }
                           }}
                           className={`w-full border rounded px-2.5 py-1.5 text-xs bg-white text-slate-800 focus:outline-none shadow-2xs ${
@@ -5414,6 +5477,21 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
           </div>
         </div>
       )}
+      {/* Contact & Customer Directory Lookup Modals (Enter Key Shortcuts) */}
+      <ContactLookupModal
+        isOpen={isContactLookupModalOpen}
+        onClose={() => setIsContactLookupModalOpen(false)}
+        initialSearch={contactName}
+        contacts={crmContacts}
+        onSelectContact={handleSelectContactFromModal}
+      />
+      <CustomerLookupModal
+        isOpen={isCustomerLookupModalOpen}
+        onClose={() => setIsCustomerLookupModalOpen(false)}
+        initialSearch={customerSearch}
+        customers={SAMPLE_CUSTOMERS}
+        onSelectCustomer={handleSelectCustomerFromModal}
+      />
     </div>
   );
 }

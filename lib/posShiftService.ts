@@ -287,7 +287,6 @@ export function getActiveShift(): PosShift {
     console.warn('Error reading active shift from localStorage:', e);
   }
   const fallback = getDefaultShift();
-  saveActiveShift(fallback);
   return fallback;
 }
 
@@ -480,11 +479,6 @@ export function getCashMovements(): CashMovement[] {
           item.notes !== 'Van #4 fuel receipt - Coral Station' &&
           item.notes !== 'Cardboard tape & packing markers for factory store'
         );
-        if (cleanList.length !== parsed.length) {
-          try {
-            localStorage.setItem(CASH_MOVEMENTS_KEY, JSON.stringify(cleanList));
-          } catch {}
-        }
         return cleanList.map((item, idx) => {
           const mType: 'PAID_IN' | 'PAID_OUT' =
             item.movementType ||

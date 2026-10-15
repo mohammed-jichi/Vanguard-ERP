@@ -5,6 +5,7 @@ import { printElementById } from '@/lib/utils/printDocument';
 import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber, formatDocLabel } from '@/lib/utils/documentSequence';
 import SalesOptionsModal from '@/components/modules/sales/SalesOptionsModal';
 import MainReadingModal from '@/components/modules/sales/MainReadingModal';
+import CustomerLookupModal, { CustomerLookupItem } from '@/components/modules/sales/CustomerLookupModal';
 import PaidInOutModal, { PrintableCashVoucher } from '@/components/modules/sales/PaidInOutModal';
 import CustomerReceiptsModal from '@/components/modules/sales/CustomerReceiptsModal';
 import CustomerAgedModal from '@/components/modules/sales/CustomerAgedModal';
@@ -934,6 +935,7 @@ export default function AuthenticVanguardSalesWorkstation({
   const [isPaidInOutModalOpen, setIsPaidInOutModalOpen] = useState(false);
   const [printCashVoucherSnapshot, setPrintCashVoucherSnapshot] = useState<any | null>(null);
   const [isMainReadingModalOpen, setIsMainReadingModalOpen] = useState(false);
+  const [isCustomerLookupModalOpen, setIsCustomerLookupModalOpen] = useState(false);
   const [isNoTransactionsModalOpen, setIsNoTransactionsModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [salesOptions, setSalesOptions] = useState<SalesOptionsState>(DEFAULT_SALES_OPTIONS);
@@ -1212,6 +1214,60 @@ export default function AuthenticVanguardSalesWorkstation({
 
   // Existing Invoices Directory (initialized with static seeds, then hydrated from persistent store)
   const [invoicesDirectory, setInvoicesDirectory] = useState<InvoiceRecord[]>(INITIAL_INVOICES_DIRECTORY);
+
+  // Memoized data slices for Main Reading modal (calculated strictly on demand when modal is open)
+  const mainReadingInvoices = useMemo(() => {
+    if (!isMainReadingModalOpen) return [];
+    const activeWorkingDate = invoiceDate || getTodayFormatted();
+    return invoicesDirectory.filter((inv) => isInvoicePostedToday(inv, activeWorkingDate));
+  }, [isMainReadingModalOpen, invoicesDirectory, invoiceDate]);
+
+  const mainReadingPaidInOut = useMemo(() => {
+    if (!isMainReadingModalOpen) return [];
+    const activeWorkingDate = invoiceDate || getTodayFormatted();
+    return getCashMovements().filter((m) => isCashMovementToday(m, activeWorkingDate));
+  }, [isMainReadingModalOpen, invoiceDate]);
+
+  const mainReadingReceipts = useMemo(() => {
+    if (!isMainReadingModalOpen) return [];
+    const activeWorkingDate = invoiceDate || getTodayFormatted();
+    const all = [...customerReceipts, ...getCustomerReceipts()];
+    const uniqueMap = new Map();
+    for (const r of all) {
+      const key = (r as any).id || (r as any).receiptNo || JSON.stringify(r);
+      uniqueMap.set(key, r);
+    }
+    return Array.from(uniqueMap.values()).filter((rct: any) => isReceiptPostedToday(rct, activeWorkingDate));
+  }, [isMainReadingModalOpen, customerReceipts, invoiceDate]);
+
+  const handleSelectCustomerFromModal = (cust: any) => {
+    setSelectedCustomer(cust);
+    setCustomerSearch('');
+    setIsCustomerDropdownOpen(false);
+    setIsCustomerLookupModalOpen(false);
+
+    // Apply dynamic Price Waterfall to cart items for this customer
+    setCartItems((prev) =>
+      prev.map((item) => {
+        const resolved = resolveItemPriceWaterfall({
+          itemCode: item.code,
+          customerId: cust.id,
+          standardPrice: item.unitPrice,
+          customerPriceTier: (cust as any).category || 'Retail Counter'
+        });
+        const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : item.unitPrice;
+        return {
+          ...item,
+          unitPrice,
+          total: Number((item.qty * unitPrice).toFixed(2))
+        };
+      })
+    );
+
+    if (cust.salesman) {
+      setInvoiceSalesman(cust.salesman);
+    }
+  };
 
   // Hydrate Delivery Providers from unified persistent store & listen to real-time sync
   useEffect(() => {
@@ -3504,6 +3560,13 @@ export default function AuthenticVanguardSalesWorkstation({
                       onChange={(e) => {
                         setCustomerSearch(e.target.value);
                         setIsCustomerDropdownOpen(true);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          setIsCustomerDropdownOpen(false);
+                          setIsCustomerLookupModalOpen(true);
+                        }
                       }}
                       className="w-full bg-white border border-border rounded px-2.5 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
                     />
@@ -6242,22 +6305,9 @@ export default function AuthenticVanguardSalesWorkstation({
       <MainReadingModal
         isOpen={isMainReadingModalOpen}
         onClose={() => setIsMainReadingModalOpen(false)}
-        invoices={invoicesDirectory.filter((inv) =>
-          isInvoicePostedToday(inv, invoiceDate || getTodayFormatted())
-        )}
-        paidInOutList={getCashMovements().filter((m) =>
-          isCashMovementToday(m, invoiceDate || getTodayFormatted())
-        )}
-        customerReceipts={Array.from(
-          new Map(
-            [...customerReceipts, ...getCustomerReceipts()].map((r: any) => [
-              r.id || r.receiptNo || JSON.stringify(r),
-              r
-            ])
-          ).values()
-        ).filter((rct) =>
-          isReceiptPostedToday(rct, invoiceDate || getTodayFormatted())
-        )}
+        invoices={mainReadingInvoices}
+        paidInOutList={mainReadingPaidInOut}
+        customerReceipts={mainReadingReceipts}
         workingDate={invoiceDate || getTodayFormatted()}
         branchName={BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'}
         cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
@@ -6277,8 +6327,18 @@ export default function AuthenticVanguardSalesWorkstation({
           setStatusNotice(
             `Shift #${closedShift.shiftNumber} closed! Shift #${newShift.shiftNumber} opened with opening cash $${newShift.openingCashUsd.toFixed(2)}.`
           );
-          setTimeout(() => setStatusNotice(null), 4000);
         }}
+      />
+
+      {/* ========================================================================= */}
+      {/* 18. CUSTOMER LOOKUP DIRECTORY MODAL (ENTER KEY SHORTCUT)                  */}
+      {/* ========================================================================= */}
+      <CustomerLookupModal
+        isOpen={isCustomerLookupModalOpen}
+        onClose={() => setIsCustomerLookupModalOpen(false)}
+        initialSearch={customerSearch}
+        customers={CUSTOMER_PRESETS.filter((c) => c.name)}
+        onSelectCustomer={handleSelectCustomerFromModal}
       />
 
       {/* ========================================================================= */}

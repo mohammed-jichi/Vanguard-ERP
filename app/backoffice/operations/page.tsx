@@ -114,7 +114,27 @@ export type OpsSectionKey =
 function OperationsCenterComponent() {
   const searchParams = useSearchParams();
 
-  const activeSectionParam = searchParams.get('section') as OpsSectionKey | null;
+  // Read section param from Next.js useSearchParams, with fallback to window.location.search for instant hydration persistence
+  const [urlSection, setUrlSection] = React.useState<OpsSectionKey | null>(() => {
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const s = sp.get('section') as OpsSectionKey | null;
+      if (s) return s;
+    }
+    return null;
+  });
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const s = sp.get('section') as OpsSectionKey | null;
+      if (s && s !== urlSection) {
+        setUrlSection(s);
+      }
+    }
+  }, [searchParams]);
+
+  const activeSectionParam = (searchParams.get('section') as OpsSectionKey | null) || urlSection;
   const activeSection: OpsSectionKey = activeSectionParam || 'dashboard';
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);

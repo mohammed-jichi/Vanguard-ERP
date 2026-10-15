@@ -29,6 +29,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import Link from 'next/link';
+import Sidebar from '@/components/Sidebar';
 
 export interface CRMContact {
   id: string;
@@ -135,7 +136,7 @@ export const INITIAL_CONTACTS: CRMContact[] = [
   {
     id: 'cnt-37',
     leadNumber: 37,
-    brand: 'Zeit w zaytoun ljanoub',
+    brand: 'Southern Olive and Oil Products S.A.R.L.',
     firstName: 'Mr Jad',
     lastName: 'Youssef',
     phone: '70569641',
@@ -164,7 +165,7 @@ export default function ContactsView() {
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedBrand, setSelectedBrand] = useState('Zeit w zaytoun ljanoub');
+  const [selectedBrand, setSelectedBrand] = useState('Southern Olive and Oil Products S.A.R.L.');
   const [selectedCountry, setSelectedCountry] = useState('All Countries');
   const [selectedSalesOwner, setSelectedSalesOwner] = useState('Mohammed Jichi');
   const [selectedDateFilter, setSelectedDateFilter] = useState('All Dates');
@@ -176,7 +177,7 @@ export default function ContactsView() {
 
   // Form Fields
   const [formData, setFormData] = useState({
-    brand: 'Zeit w zaytoun ljanoub',
+    brand: 'Southern Olive and Oil Products S.A.R.L.',
     firstName: '',
     lastName: '',
     phone: '',
@@ -234,7 +235,7 @@ export default function ContactsView() {
     setModalMode('create');
     setEditingContactId(null);
     setFormData({
-      brand: 'Zeit w zaytoun ljanoub',
+      brand: 'Southern Olive and Oil Products S.A.R.L.',
       firstName: '',
       lastName: '',
       phone: '',
@@ -259,7 +260,7 @@ export default function ContactsView() {
     setModalMode('edit');
     setEditingContactId(contact.id);
     setFormData({
-      brand: contact.brand || 'Zeit w zaytoun ljanoub',
+      brand: contact.brand || 'Southern Olive and Oil Products S.A.R.L.',
       firstName: contact.firstName || '',
       lastName: contact.lastName || '',
       phone: contact.phone || '',
@@ -398,77 +399,85 @@ export default function ContactsView() {
   return (
     <div className="min-h-screen bg-background text-slate-800 flex flex-col font-sans">
       {/* ========================================================================= */}
-      {/* 1. OMEGA HEADER (Matching Screenshot 1 exactly)                           */}
+      {/* 1. VANGUARD ERP MASTER TOP GLOBAL HEADER                                  */}
       {/* ========================================================================= */}
-      <header className="bg-black text-white h-12 px-4 flex items-center justify-between text-xs border-b border-zinc-800 select-none">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 font-bold tracking-wider text-sm">
-            <span className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-black font-extrabold text-xs">
-              Ω
-            </span>
-            <span className="text-white tracking-widest font-semibold text-xs uppercase">{t('omega_software', 'Omega Software')}</span>
-          </div>
-        </div>
-
-        <div className="text-zinc-300 text-xs font-medium">
-          22901 - Zeit w zaytoun ljanoub
-        </div>
-
-        <div className="flex items-center gap-3 text-zinc-300">
-          <Link prefetch={false} href="/" title={t('home', 'Home')} className="hover:text-white p-1">
-            <Home className="w-3.5 h-3.5" />
+      <header className="h-[68px] bg-white border-b-2 border-border px-5 flex items-center justify-between print:hidden shrink-0 text-slate-800 z-40 relative shadow-xs">
+        {/* Left Side: Vanguard Logo & Title */}
+        <div className="flex items-center gap-3.5 shrink-0">
+          <Link prefetch={false} href="/backoffice" className="flex items-center gap-3 group cursor-pointer">
+            <div className="w-[50px] h-[50px] rounded-full overflow-hidden border-2 border-primary shadow-md bg-black shrink-0 group-hover:scale-105 transition-all duration-300">
+              <img
+                src="/vanguard.jpg"
+                alt="Vanguard ERP Circular Emblem"
+                className="w-full h-full object-cover scale-105"
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-extrabold text-[18px] tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
+                Vanguard ERP
+              </span>
+              <span className="text-[10px] font-mono text-muted-foreground -mt-0.5 tracking-wider uppercase font-semibold">
+                {t('enterprise_operations_system', 'Enterprise Operations System')}
+              </span>
+            </div>
           </Link>
-          <button type="button" title={t('messages', 'Messages')} className="hover:text-white p-1">
-            <Mail className="w-3.5 h-3.5" />
-          </button>
-          <button type="button" title={t('settings', 'Settings')} className="hover:text-white p-1">
-            <Settings className="w-3.5 h-3.5" />
-          </button>
-          <button type="button" title={t('help', 'Help')} className="hover:text-white p-1">
-            <HelpCircle className="w-3.5 h-3.5" />
-          </button>
-          <div className="flex items-center gap-1.5 pl-2 border-l border-zinc-700 cursor-pointer hover:text-white">
-            <User className="w-3.5 h-3.5" />
-            <span className="text-xs">{t('mohammed_jichi', 'Mohammed Jichi')}</span>
-            <ChevronDown className="w-3 h-3 text-zinc-400" />
+        </div>
+
+        {/* Center: Designated Slots for Enterprise Brand Context & Active Facility Switcher */}
+        <div className="flex-1 flex flex-wrap justify-center items-center gap-2.5 px-3">
+          {/* Slot 1: Enterprise Brand Context */}
+          <div className="flex items-center px-4 py-1.5 rounded-full bg-slate-100 border border-slate-300 shadow-2xs shrink-0">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-xs animate-pulse"></span>
+            <span className="text-xs font-black tracking-wide text-slate-900">
+              Southern Olive and Oil Products S.A.R.L. (منتوجات زيت وزيتون الجنوب ش.م.م)
+            </span>
+            <span className="text-[10px] font-mono font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded-full mx-1.5">
+              #1300
+            </span>
           </div>
-          <button type="button" title={t('apps', 'Apps')} className="hover:text-white p-1 ml-1">
-            <Grid className="w-3.5 h-3.5" />
-          </button>
+
+          {/* Slot 2: Facility / Branch */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-300/80 text-amber-950 font-bold text-xs shadow-2xs shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+            <span className="truncate max-w-[220px] font-bold">[1300-01] Main</span>
+          </div>
+        </div>
+
+        {/* Right side navigation buttons */}
+        <div className="flex items-center gap-2 text-xs shrink-0">
+          <Link
+            prefetch={false}
+            href="/backoffice"
+            className="px-3 py-1.5 rounded-md font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+          >
+            Backoffice Hub
+          </Link>
+          <Link
+            prefetch={false}
+            href="/quotations"
+            className="px-3 py-1.5 rounded-md font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+          >
+            Quotations
+          </Link>
+          <Link
+            prefetch={false}
+            href="/my-sales"
+            className="px-3 py-1.5 rounded-md font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>My Sales</span>
+          </Link>
         </div>
       </header>
 
       {/* ========================================================================= */}
-      {/* 2. BODY WITH SLIM ICON SIDEBAR & MAIN CONTENT                             */}
+      {/* 2. BODY WITH OFFICIAL VANGUARD SIDEBAR & MAIN CONTENT                     */}
       {/* ========================================================================= */}
-      <div className="flex-1 flex">
-        {/* Slim Omega Sidebar (Matching Left Bar in Screenshot 1) */}
-        <aside className="w-12 bg-white border-r border-slate-200 flex flex-col items-center py-3 gap-4 text-slate-500 shadow-2xs select-none">
-          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('navigation_menu', 'Navigation Menu')}>
-            <span className="text-base font-bold">≡</span>
-          </button>
-          <Link prefetch={false} href="/" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded text-slate-700" title={t('home', 'Home')}>
-            <Home className="w-4 h-4" />
-          </Link>
-          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('cart_orders', 'Cart / Orders')}>
-            <span className="text-xs font-bold text-amber-600">🛒</span>
-          </button>
-          <button type="button" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('forms', 'Forms')}>
-            <span className="text-xs font-bold text-slate-600">📋</span>
-          </button>
-          <Link prefetch={false} href="/contacts" className="p-2 bg-blue-50 text-blue-600 rounded" title={t('contacts_crm', 'Contacts / CRM')}>
-            <User className="w-4 h-4" />
-          </Link>
-          <Link prefetch={false} href="/quotations" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('quotations_workstation', 'Quotations Workstation')}>
-            <span className="text-xs font-bold text-slate-600">📄</span>
-          </Link>
-          <Link prefetch={false} href="/my-sales" className="p-2 hover:text-blue-600 hover:bg-slate-100 rounded" title={t('my_sales_dashboard', 'My Sales Dashboard')}>
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
-          </Link>
-        </aside>
+      <div className="flex-1 flex overflow-hidden">
+        <Sidebar activeScreen="contacts" />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-5 overflow-y-auto">
+        <main className="flex-1 p-5 overflow-y-auto bg-slate-50/50">
           {/* Notice Toast */}
           {notice && (
             <div className="mb-4 bg-emerald-600 text-white text-xs px-4 py-2.5 rounded shadow-lg flex items-center justify-between transition-all">
@@ -544,9 +553,10 @@ export default function ContactsView() {
                   onChange={(e) => setSelectedBrand(e.target.value)}
                   className="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-700 shadow-2xs focus:outline-none focus:border-blue-500 cursor-pointer"
                 >
-                  <option value="Zeit w zaytoun ljanoub">{t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}</option>
+                  <option value="Southern Olive and Oil Products S.A.R.L.">[1300-01] Main — Southern Olive and Oil Products S.A.R.L.</option>
                   <option value="Beirut Main Branch">{t('beirut_main_branch', 'Beirut Main Branch')}</option>
                   <option value="Sidon Regional Hub">{t('sidon_regional_hub', 'Sidon Regional Hub')}</option>
+                  <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub (Legacy)</option>
                 </select>
               </div>
 

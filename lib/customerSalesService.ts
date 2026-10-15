@@ -152,7 +152,6 @@ export function getCustomerReceipts(): CustomerReceipt[] {
       isVoided: false
     }
   ];
-  saveCustomerReceipts(defaults);
   return defaults;
 }
 
@@ -435,7 +434,6 @@ export function getCustomerSpecialPrices(): CustomerSpecialPrice[] {
       updatedAt: new Date().toISOString()
     }
   ];
-  saveCustomerSpecialPrices(defaults);
   return defaults;
 }
 
@@ -571,7 +569,6 @@ export function getRecurringTemplates(): RecurringInvoiceTemplate[] {
       ]
     }
   ];
-  saveRecurringTemplates(defaults);
   return defaults;
 }
 
@@ -683,7 +680,6 @@ export function getCreditNotes(): CreditNoteRecord[] {
       createdAt: new Date(Date.now() - 86400000 * 2).toISOString()
     }
   ];
-  saveCreditNotes(defaults);
   return defaults;
 }
 
