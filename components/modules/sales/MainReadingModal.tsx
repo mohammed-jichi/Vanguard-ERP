@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { toast } from '@/lib/toast';
 import { printElementById } from '@/lib/utils/printDocument';
+import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 import {
   PosShift,
   CashMovement,
@@ -75,6 +76,7 @@ export default function MainReadingModal({
   const [activeTab, setActiveTab] = useState<'overview' | 'tenders' | 'cashflow' | 'divisions' | 'printPreview'>('overview');
   const [isClosingShift, setIsClosingShift] = useState(false);
   const [liveMovements, setLiveMovements] = useState<CashMovement[]>([]);
+  const readingSlipNumber = useMemo(() => peekNextDocNumber('MAIN_READING'), [isOpen, readingType, activeShift]);
 
   // Sync shift state on mount and update
   useEffect(() => {
@@ -158,15 +160,16 @@ export default function MainReadingModal({
   }, [summary.expectedCashUsd, summary.expectedCashLbp, countedCashInputUsd]);
 
   const handlePrint = () => {
+    commitNextDocNumber('MAIN_READING', readingSlipNumber, tenantId);
     const title =
       readingType === 'X'
-        ? `Vanguard X-Reading Shift #${activeShift.shiftNumber}`
-        : `Vanguard Z-Reading End-of-Day Shift #${activeShift.shiftNumber}`;
+        ? `Vanguard X-Reading Slip #${readingSlipNumber} Shift #${activeShift.shiftNumber}`
+        : `Vanguard Z-Reading Slip #${readingSlipNumber} End-of-Day Shift #${activeShift.shiftNumber}`;
     printElementById('printable-main-reading', title);
     toast.success(
       readingType === 'X'
-        ? 'Mid-shift X-Reading sent to printer'
-        : 'Z-Reading End-of-Day report sent to printer'
+        ? `Mid-shift X-Reading #${readingSlipNumber} sent to printer`
+        : `Z-Reading #${readingSlipNumber} End-of-Day report sent to printer`
     );
   };
 
@@ -941,6 +944,7 @@ export default function MainReadingModal({
                     <p>Cashier: <strong className="font-bold">{summary.cashierName}</strong></p>
                   </div>
                   <div className="text-right">
+                    <p>Reading Slip #: <strong className="font-mono font-bold text-slate-900">{readingSlipNumber}</strong></p>
                     <p>Shift #: <strong className="font-mono font-bold">{summary.shiftNumber}</strong></p>
                     <p>Shift ID: <span className="font-mono">{summary.shiftId}</span></p>
                     <p>Printed: <span className="font-mono">{summary.generatedAt}</span></p>

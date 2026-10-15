@@ -6,6 +6,7 @@
 
 import { supabase } from '@/lib/supabaseClient';
 import { POS_EXCHANGE_RATE_LBP, getActiveShift, recordCashMovement } from '@/lib/posShiftService';
+import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 
 export const CUSTOMER_RECEIPTS_KEY = 'vanguard_customer_receipts_v1';
 export const CUSTOMER_SPECIAL_PRICES_KEY = 'vanguard_customer_special_prices_v1';
@@ -60,18 +61,7 @@ export interface CustomerReceipt {
 
 export function generateNextReceiptNumber(): string {
   const receipts = getCustomerReceipts();
-  let maxSeq = 500;
-  for (const r of receipts) {
-    const code = r.receiptNo || '';
-    if (code.startsWith('RV-')) {
-      const numPart = parseInt(code.replace('RV-', ''), 10);
-      if (!isNaN(numPart) && numPart > maxSeq) {
-        maxSeq = numPart;
-      }
-    }
-  }
-  const nextSeq = maxSeq + 1;
-  return `RV-${nextSeq.toString().padStart(5, '0')}`;
+  return peekNextDocNumber('CUSTOMER_RECEIPT', receipts);
 }
 
 export function getCustomerReceipts(): CustomerReceipt[] {
@@ -91,8 +81,8 @@ export function getCustomerReceipts(): CustomerReceipt[] {
   // Seed default receipts
   const defaults: CustomerReceipt[] = [
     {
-      id: 'RCT-2026-0048',
-      receiptNo: 'RV-00501',
+      id: '5002601',
+      receiptNo: '5002601',
       branchId: 'Southern Olive and Oil Products S.A.R.L.',
       shiftId: 'SH-20261014-44',
       customerId: 'CUST-002',
@@ -104,11 +94,11 @@ export function getCustomerReceipts(): CustomerReceipt[] {
       amountReceivedLbp: 450.0 * POS_EXCHANGE_RATE_LBP,
       discountGiven: 10.0,
       exchangeRate: POS_EXCHANGE_RATE_LBP,
-      notes: 'Settlement for Invoice INV-2026-08920 (partial settlement)',
+      notes: 'Settlement for Invoice 0002602 (partial settlement)',
       allocations: [
         {
-          invoiceId: 'INV-2026-08920',
-          invoiceNo: 'INV-2026-08920',
+          invoiceId: '0002602',
+          invoiceNo: '0002602',
           totalInvoiceAmountUsd: 850.0,
           previousBalanceDueUsd: 850.0,
           allocatedAmountUsd: 450.0,
@@ -121,8 +111,8 @@ export function getCustomerReceipts(): CustomerReceipt[] {
       isVoided: false
     },
     {
-      id: 'RCT-2026-0049',
-      receiptNo: 'RV-00502',
+      id: '5002602',
+      receiptNo: '5002602',
       branchId: 'Southern Olive and Oil Products S.A.R.L.',
       shiftId: 'SH-20261014-44',
       customerId: 'CUST-003',
@@ -134,11 +124,11 @@ export function getCustomerReceipts(): CustomerReceipt[] {
       amountReceivedLbp: 1200.0 * POS_EXCHANGE_RATE_LBP,
       discountGiven: 0,
       exchangeRate: POS_EXCHANGE_RATE_LBP,
-      notes: 'Wire transfer settle INV-2026-08915 in full',
+      notes: 'Wire transfer settle 0002601 in full',
       allocations: [
         {
-          invoiceId: 'INV-2026-08915',
-          invoiceNo: 'INV-2026-08915',
+          invoiceId: '0002601',
+          invoiceNo: '0002601',
           totalInvoiceAmountUsd: 1200.0,
           previousBalanceDueUsd: 1200.0,
           allocatedAmountUsd: 1200.0,
@@ -290,11 +280,12 @@ export async function recordCustomerReceipt(
 ): Promise<CustomerReceipt> {
   const current = getCustomerReceipts();
   const nextNo = receiptData.receiptNo || generateNextReceiptNumber();
+  commitNextDocNumber('CUSTOMER_RECEIPT', nextNo, tenantId);
   const nowIso = new Date().toISOString();
 
   const newReceipt: CustomerReceipt = {
     ...receiptData,
-    id: `RCT-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    id: nextNo,
     receiptNo: nextNo,
     createdAt: nowIso,
     isVoided: false
@@ -709,9 +700,9 @@ export function getCreditNotes(): CreditNoteRecord[] {
 
   const defaults: CreditNoteRecord[] = [
     {
-      id: 'CRN-2026-0101',
-      invoiceNumber: 'CRN-2026-0101',
-      parentInvoiceNo: 'INV-2026-0002',
+      id: '4002601',
+      invoiceNumber: '4002601',
+      parentInvoiceNo: '0002602',
       docType: 'CREDIT_NOTE',
       doc_type: 'CREDIT_NOTE',
       date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0],
@@ -913,6 +904,9 @@ export async function postCreditNote(
   crn: CreditNoteRecord,
   tenantId?: string
 ): Promise<{ success: boolean; jvNumber: string }> {
+  // Advance document sequence
+  commitNextDocNumber('CREDIT_NOTE', crn.invoiceNumber, tenantId);
+
   // 1. Save to credit notes store
   const existingCrns = getCreditNotes();
   const updatedCrns = [crn, ...existingCrns.filter(c => c.id !== crn.id && c.invoiceNumber !== crn.invoiceNumber)];

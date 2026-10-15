@@ -11,6 +11,7 @@
  */
 
 import { supabase } from '@/lib/supabaseClient';
+import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 
 export const POS_EXCHANGE_RATE_LBP = 89500;
 
@@ -307,23 +308,11 @@ export async function saveActiveShift(shift: PosShift, tenantId?: string): Promi
 }
 
 /**
- * Generates next sequential movement voucher number (e.g. PI-00101, PO-00101)
+ * Generates next sequential movement voucher number in unified 7-digit format (6002601, 6002602...)
  */
-export function generateNextMovementNumber(movementType: 'PAID_IN' | 'PAID_OUT'): string {
-  const prefix = movementType === 'PAID_IN' ? 'PI' : 'PO';
+export function generateNextMovementNumber(movementType?: 'PAID_IN' | 'PAID_OUT'): string {
   const movements = getCashMovements();
-  let maxSeq = 100;
-  for (const m of movements) {
-    const code = m.movementNo || '';
-    if (code.startsWith(`${prefix}-`)) {
-      const numPart = parseInt(code.replace(`${prefix}-`, ''), 10);
-      if (!isNaN(numPart) && numPart > maxSeq) {
-        maxSeq = numPart;
-      }
-    }
-  }
-  const nextSeq = maxSeq + 1;
-  return `${prefix}-${nextSeq.toString().padStart(5, '0')}`;
+  return peekNextDocNumber('CASH_VOUCHER', movements);
 }
 
 /**
@@ -469,7 +458,7 @@ export function getCashMovements(): CashMovement[] {
           const amtLbp = Number(item.amountLbp || amtUsd * POS_EXCHANGE_RATE_LBP);
           const code =
             item.movementNo ||
-            `${mType === 'PAID_IN' ? 'PI' : 'PO'}-${(101 + idx).toString().padStart(5, '0')}`;
+            `6${(2601 + idx).toString().padStart(6, '0')}`;
           const cat = item.reasonCategory || (mType === 'PAID_IN' ? 'OPENING_FLOAT' : 'PETTY_EXPENSE');
           const catConfig = REASON_CATEGORIES.find((c) => c.code === cat);
 
@@ -510,8 +499,8 @@ export function getCashMovements(): CashMovement[] {
   // Initial default seed movements
   const defaults: CashMovement[] = [
     {
-      id: 'PIO-01',
-      movementNo: 'PI-00101',
+      id: '6002601',
+      movementNo: '6002601',
       branchId: 'Southern Olive and Oil Products S.A.R.L.',
       shiftId: 'SH-20261014-44',
       cashierName: 'Active Cashier',
@@ -534,8 +523,8 @@ export function getCashMovements(): CashMovement[] {
       isVoided: false
     },
     {
-      id: 'PIO-02',
-      movementNo: 'PO-00101',
+      id: '6002602',
+      movementNo: '6002602',
       branchId: 'Southern Olive and Oil Products S.A.R.L.',
       shiftId: 'SH-20261014-44',
       cashierName: 'Active Cashier',
@@ -558,8 +547,8 @@ export function getCashMovements(): CashMovement[] {
       isVoided: false
     },
     {
-      id: 'PIO-03',
-      movementNo: 'PO-00102',
+      id: '6002603',
+      movementNo: '6002603',
       branchId: 'Southern Olive and Oil Products S.A.R.L.',
       shiftId: 'SH-20261014-44',
       cashierName: 'Active Cashier',
@@ -627,6 +616,7 @@ export async function recordCashMovement(
   }
 
   const movNo = movement.movementNo || generateNextMovementNumber(mType);
+  commitNextDocNumber('CASH_VOUCHER', movNo, tenantId);
   const nowIso = new Date().toISOString();
   const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 

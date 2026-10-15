@@ -485,8 +485,8 @@ export const SEED_ADJUSTMENT_ITEMS: AdjustmentItemRecord[] = [
 // Pre-seeded Historical Adjustments (Authentic Omega Registry)
 export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
   {
-    ADJUSTID: 41,
-    ID: 1735,
+    ADJUSTID: 8002604,
+    ID: 8002604,
     ADATE: '2026-09-11',
     BRANCHID: 1,
     BARANCHNAME: 'Zeit w zaytoun ljanoub',
@@ -528,8 +528,8 @@ export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
     ]
   },
   {
-    ADJUSTID: 40,
-    ID: 1732,
+    ADJUSTID: 8002603,
+    ID: 8002603,
     ADATE: '2026-08-01',
     BRANCHID: 1,
     BARANCHNAME: 'Zeit w zaytoun ljanoub',
@@ -558,8 +558,8 @@ export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
     ]
   },
   {
-    ADJUSTID: 39,
-    ID: 1730,
+    ADJUSTID: 8002602,
+    ID: 8002602,
     ADATE: '2026-08-01',
     BRANCHID: 1,
     BARANCHNAME: 'Zeit w zaytoun ljanoub',
@@ -588,8 +588,8 @@ export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
     ]
   },
   {
-    ADJUSTID: 38,
-    ID: 1728,
+    ADJUSTID: 8002601,
+    ID: 8002601,
     ADATE: '2026-07-15',
     BRANCHID: 1,
     BARANCHNAME: 'Zeit w zaytoun ljanoub',

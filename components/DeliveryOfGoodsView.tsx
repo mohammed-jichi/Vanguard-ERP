@@ -8,6 +8,7 @@ import DatePickerInput from './DatePickerInput';
 import { toggleDocumentPosting } from '@/lib/dataGateway';
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { printElementById } from '@/lib/utils/printDocument';
+import { peekNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 
 
 export interface DeliveryItem {
@@ -42,8 +43,8 @@ export default function DeliveryOfGoodsView() {
   const [activeDropdown, setActiveDropdown] = useState<'branch' | 'status' | 'dateType' | null>(null);
   const [dropdownSearch, setDropdownSearch] = useState('');
 
-  // Expanded rows set (invoice 4000035 expanded by default as in Screenshot 2)
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(['4000035']));
+  // Expanded rows set (invoice 0002601 expanded by default)
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(['0002601']));
 
   // Edit Delivery Date Modal state (as described in the voice audio)
   const [editingRecord, setEditingRecord] = useState<DeliveryRecord | null>(null);
@@ -55,11 +56,11 @@ export default function DeliveryOfGoodsView() {
   // Comprehensive sample records representing all 3 statuses (No Delivery, Pending Delivery, Delivered)
   const [deliveryRecords, setDeliveryRecords] = useState<DeliveryRecord[]>([
     {
-      id: 'DEL-4000035',
+      id: 'DEL-0002601',
       companyName: 'Abou Hamzeh Nuts',
       customerName: 'Abou Hamza Abou Hamza',
       customerId: '31',
-      invoiceNumber: '4000035',
+      invoiceNumber: '0002601',
       balance: 0,
       branch: 'Main Branch',
       invoiceDate: '04 Sep, 2026',
@@ -77,11 +78,11 @@ export default function DeliveryOfGoodsView() {
       ],
     },
     {
-      id: 'DEL-4000038',
+      id: 'DEL-0002602',
       companyName: 'شركة الأرز للتجارة الغذائية',
       customerName: 'Al Arz Trading Co.',
       customerId: '45',
-      invoiceNumber: '4000038',
+      invoiceNumber: '0002602',
       balance: 120.0,
       branch: 'Main Branch',
       invoiceDate: '06 Sep, 2026',
@@ -94,11 +95,11 @@ export default function DeliveryOfGoodsView() {
       ],
     },
     {
-      id: 'DEL-4000029',
+      id: 'DEL-0002603',
       companyName: 'مؤسسة بيروت غورميه',
       customerName: 'Beirut Gourmet Market',
       customerId: '18',
-      invoiceNumber: '4000029',
+      invoiceNumber: '0002603',
       balance: 0,
       branch: 'Main Branch',
       invoiceDate: '02 Sep, 2026',
@@ -989,7 +990,11 @@ export default function DeliveryOfGoodsView() {
               <div id="printable-delivery-note" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
                 <Corporate3ZoneHeader
                   documentTitle="DELIVERY NOTE"
-                  voucherCode={`DN-${printingDeliveryRecord.invoiceNumber}`}
+                  voucherCode={
+                    cleanDocumentNumber(printingDeliveryRecord.invoiceNumber).startsWith('0') && cleanDocumentNumber(printingDeliveryRecord.invoiceNumber).length === 7
+                      ? '2' + cleanDocumentNumber(printingDeliveryRecord.invoiceNumber).slice(1)
+                      : peekNextDocNumber('DELIVERY_NOTE')
+                  }
                   transactionDate={printingDeliveryRecord.deliveryDate || printingDeliveryRecord.invoiceDate}
                   status={printingDeliveryRecord.status === 'Delivered' ? 'DELIVERED' : 'DISPATCHED'}
                   facilityName={`Facility: ${printingDeliveryRecord.branch || 'Main Branch'}`}
@@ -1048,7 +1053,13 @@ export default function DeliveryOfGoodsView() {
                   </div>
                 </div>
 
-                <CorporatePrintableFooter voucherCode={`DN-${printingDeliveryRecord.invoiceNumber}`} />
+                <CorporatePrintableFooter
+                  voucherCode={
+                    cleanDocumentNumber(printingDeliveryRecord.invoiceNumber).startsWith('0') && cleanDocumentNumber(printingDeliveryRecord.invoiceNumber).length === 7
+                      ? '2' + cleanDocumentNumber(printingDeliveryRecord.invoiceNumber).slice(1)
+                      : peekNextDocNumber('DELIVERY_NOTE')
+                  }
+                />
               </div>
             </div>
 

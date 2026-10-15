@@ -22,6 +22,7 @@ import {
   getCreditNotes
 } from '@/lib/customerSalesService';
 import { POS_EXCHANGE_RATE_LBP } from '@/lib/posShiftService';
+import { peekNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 
 interface CreditNoteModalProps {
   isOpen: boolean;
@@ -173,7 +174,7 @@ export default function CreditNoteModal({
 
     setIsPosting(true);
     try {
-      const crnNumber = `CRN-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+      const crnNumber = peekNextDocNumber('CREDIT_NOTE', getCreditNotes());
       const crnRecord: CreditNoteRecord = {
         id: crnNumber,
         invoiceNumber: crnNumber,
@@ -326,9 +327,9 @@ export default function CreditNoteModal({
               <div id="printable-credit-note" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
                 <Corporate3ZoneHeader
                   documentTitle="CREDIT NOTE / إشعار دائن"
-                  voucherCode={postedCrn.invoiceNumber}
+                  voucherCode={cleanDocumentNumber(postedCrn.invoiceNumber)}
                   transactionDate={postedCrn.date}
-                  refNumber={postedCrn.parentInvoiceNo ? `REF: ${postedCrn.parentInvoiceNo}` : 'DIRECT RETURN'}
+                  refNumber={postedCrn.parentInvoiceNo ? `REF: ${cleanDocumentNumber(postedCrn.parentInvoiceNo)}` : 'DIRECT RETURN'}
                   facilityName="Facility: [1300-01] Main"
                   status="RETURN"
                 />
@@ -416,7 +417,7 @@ export default function CreditNoteModal({
                   </div>
                 </div>
 
-                <CorporatePrintableFooter voucherCode={postedCrn.invoiceNumber} />
+                <CorporatePrintableFooter voucherCode={cleanDocumentNumber(postedCrn.invoiceNumber)} />
               </div>
             </div>
           ) : (
@@ -433,7 +434,7 @@ export default function CreditNoteModal({
                       <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
-                        placeholder="Search invoice by # (e.g. INV-2026-0001) or customer name..."
+                        placeholder="Search invoice by # (e.g. 0002601) or customer name..."
                         value={invoiceSearchQuery}
                         onChange={(e) => setInvoiceSearchQuery(e.target.value)}
                         className="w-full bg-slate-50 border border-slate-300 rounded pl-8 pr-3 py-1.5 text-xs text-slate-800"

@@ -5,6 +5,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTenant } from '@/lib/TenantContext';
 import { useTenantFacilities, CANONICAL_FACILITY_1300 } from '@/lib/tenantFacilities';
 import { supabase } from '@/lib/supabaseClient';
+import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 import {
   Plus,
   Search,
@@ -146,8 +147,8 @@ const INITIAL_TRANSFER_ITEMS: TransferItem[] = [
 
 const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
   {
-    id: 'TRN-201',
-    reqNo: 'REQ-2026-201',
+    id: '7002601',
+    reqNo: '7002601',
     reqDate: '2026-09-05',
     fromFacilityId: '1300-01',
     toFacilityId: '1300-01',
@@ -181,8 +182,8 @@ const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
     totalCostUsd: 4680.00
   },
   {
-    id: 'TRN-202',
-    reqNo: 'REQ-2026-202',
+    id: '7002602',
+    reqNo: '7002602',
     reqDate: '2026-09-06',
     fromFacilityId: '1300-01',
     toFacilityId: '1300-01',
@@ -216,8 +217,8 @@ const INITIAL_SAVED_TRANSFERS: SavedTransferRecord[] = [
     totalCostUsd: 345.00
   },
   {
-    id: 'TRN-203',
-    reqNo: 'REQ-2026-203',
+    id: '7002603',
+    reqNo: '7002603',
     reqDate: '2026-09-09',
     fromFacilityId: '1300-01',
     toFacilityId: '1300-02',
@@ -285,7 +286,7 @@ export default function TransfersView() {
 
   // Form State
   const [transferDate, setTransferDate] = useState('2026-09-10');
-  const [transferNumber, setTransferNumber] = useState<string>(() => 'TRN-2026-0204');
+  const [transferNumber, setTransferNumber] = useState<string>(() => peekNextDocNumber('STOCK_TRANSFER', INITIAL_SAVED_TRANSFERS));
   const [fromReqNo, setFromReqNo] = useState('');
   const { facilities, activeFacility } = useTenantFacilities();
   const [isReversed, setIsReversed] = useState(false);
@@ -432,8 +433,8 @@ export default function TransfersView() {
   // New Transfer Form Reset
   const handleNewTransfer = () => {
     setPreviewReq(false);
-    const nextSeq = Math.floor(205 + Math.random() * 800);
-    setTransferNumber(`TRN-2026-${String(nextSeq).padStart(4, '0')}`);
+    const nextSeq = peekNextDocNumber('STOCK_TRANSFER', savedTransfers);
+    setTransferNumber(nextSeq);
     setTransferDate(new Date().toISOString().split('T')[0]);
     setFromReqNo('');
     setIsReversed(false);
@@ -647,6 +648,7 @@ export default function TransfersView() {
     }
 
     setSavedTransfers(updated);
+    commitNextDocNumber('STOCK_TRANSFER', transferNumber);
     setPreviewReq(true);
     showToast(
       postImmediately
@@ -1314,7 +1316,7 @@ export default function TransfersView() {
                     <button
                       type="button"
                       onClick={() => {
-                        const newNum = `TRN-2026-${String(Math.floor(205 + Math.random() * 800)).padStart(4, '0')}`;
+                        const newNum = peekNextDocNumber('STOCK_TRANSFER', savedTransfers);
                         setTransferNumber(newNum);
                         showToast(`Regenerated Transfer #: ${newNum}`);
                       }}

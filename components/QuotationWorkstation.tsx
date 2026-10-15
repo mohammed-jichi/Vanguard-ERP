@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
+import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 import {
   Search,
   Plus,
@@ -86,7 +87,7 @@ export interface QuotationRecord {
 export const INITIAL_QUOTATIONS: QuotationRecord[] = [
   {
     id: 'QT-001',
-    quotationNo: 'QT-2026-0042',
+    quotationNo: '1002601',
     customerType: 'Customer',
     customerName: 'Abou Hamzeh Nuts',
     customerId: '31',
@@ -127,7 +128,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
   },
   {
     id: 'QT-002',
-    quotationNo: 'QT-2026-0041',
+    quotationNo: '1002602',
     customerType: 'Customer',
     customerName: 'Supermarket Al-Nour',
     customerId: '14',
@@ -863,7 +864,7 @@ interface QuotationWorkstationProps {
 export default function QuotationWorkstation({ withOmegaSidebar = false }: QuotationWorkstationProps) {
   const { t, dir } = useLanguage();
   // Quotation header state
-  const [quotationNo, setQuotationNo] = useState('QT-2026-0043');
+  const [quotationNo, setQuotationNo] = useState(() => peekNextDocNumber('QUOTATION', INITIAL_QUOTATIONS));
   const [customerType, setCustomerType] = useState<'Contact' | 'Customer'>('Customer');
   const [customerSearch, setCustomerSearch] = useState('Abou Hamzeh Nuts');
   const [selectedCustomer, setSelectedCustomer] = useState<{ id: string; name: string; phone: string; address: string } | null>(SAMPLE_CUSTOMERS[0]);
@@ -1402,7 +1403,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
   // Start New Quotation
   const handleNewQuotation = () => {
-    setQuotationNo(`QT-2026-${Math.floor(1000 + Math.random() * 9000)}`);
+    setQuotationNo(peekNextDocNumber('QUOTATION', quotationsList));
     setQuotationItems([]);
     setDiscountPercent(0);
     setDiscountAmountManual(0);
@@ -1585,6 +1586,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
   const handleConfirmSave = () => {
     setIsSaveConfirmModalOpen(false);
     const savedNo = quotationNo;
+    commitNextDocNumber('QUOTATION', savedNo);
     const newRecord: QuotationRecord = {
       id: `QT-${Date.now()}`,
       quotationNo: savedNo,
@@ -3959,7 +3961,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                     {/* Standardized 3-Zone Corporate Header */}
                     <Corporate3ZoneHeader
                       documentTitle="QUOTATION"
-                      voucherCode={`QUOT-${doc.quotationNo || '27'}`}
+                      voucherCode={cleanDocumentNumber(doc.quotationNo || '1002601')}
                       transactionDate={doc.date || '08-Sep-26'}
                       status="ACTIVE"
                       facilityName={doc.branch || 'Facility: Choueifat Main Plant'}
@@ -3981,7 +3983,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
 
                       <div className="border border-slate-700 rounded-xl p-3 min-h-[90px] text-xs space-y-1">
                         <div className="font-bold text-slate-900">
-                          {t('quotation', 'Quotation #:')} <span className="font-normal">{doc.quotationNo || '27'}</span>
+                          {t('quotation', 'Quotation #:')} <span className="font-normal font-mono">{cleanDocumentNumber(doc.quotationNo || '1002601')}</span>
                         </div>
                         <div className="font-bold text-slate-900">
                           {t('date', 'Date:')} <span className="font-normal">{doc.date || '08-Sep-26'}</span>
@@ -5060,7 +5062,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                         </div>
 
                         <div className="text-right">
-                          <div className="text-sm font-bold text-slate-900">No: #{doc.quotationNo || '28'}</div>
+                          <div className="text-sm font-bold text-slate-900">No: #{cleanDocumentNumber(doc.quotationNo || '1002601')}</div>
                           <div className="text-xs text-slate-600">Date: {doc.date || '08-Sep-26'}</div>
                         </div>
                       </div>
@@ -5087,7 +5089,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-slate-900">{t('quotation', 'Quotation #:')}</span>
-                            <span className="font-mono text-slate-800">{doc.quotationNo.replace('QT-2026-', '') || '28'}</span>
+                            <span className="font-mono text-slate-800">{cleanDocumentNumber(doc.quotationNo || '1002601')}</span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-slate-900">{t('currency', 'Currency:')}</span>

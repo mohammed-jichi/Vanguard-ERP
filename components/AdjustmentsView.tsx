@@ -46,6 +46,7 @@ import {
 } from '@/lib/adjustmentsData';
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { getDefaultInitialDateRange } from '@/lib/dateRangeEngine';
+import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 
 export default function AdjustmentsView() {
   const { t, dir } = useLanguage();
@@ -351,13 +352,14 @@ export default function AdjustmentsView() {
 
   // Save as Draft
   const handleSaveAdjustment = () => {
-    const newId = adjustmentId || Math.floor(Math.random() * 900) + 50;
+    const newId = adjustmentId || parseInt(peekNextDocNumber('INVENTORY_ADJUSTMENT', savedList), 10);
+    commitNextDocNumber('INVENTORY_ADJUSTMENT', String(newId));
     const branchName = branches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
     const locName = locations.find(l => l.LOCATIONID === selectedLocationId)?.LOCATIONDESCRIPTION || 'Main Store';
 
     const savedRecord: AdjustmentHeaderRecord = {
       ADJUSTID: newId,
-      ID: 2000 + newId,
+      ID: newId,
       ADATE: adjustmentDate,
       BRANCHID: selectedBranchId,
       BARANCHNAME: branchName,
@@ -381,14 +383,15 @@ export default function AdjustmentsView() {
 
   // Save & Post immediately
   const handleSaveAndPostAdjustment = () => {
-    const newId = adjustmentId || Math.floor(Math.random() * 900) + 50;
+    const newId = adjustmentId || parseInt(peekNextDocNumber('INVENTORY_ADJUSTMENT', savedList), 10);
+    commitNextDocNumber('INVENTORY_ADJUSTMENT', String(newId));
     const branchName = branches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
     const locName = locations.find(l => l.LOCATIONID === selectedLocationId)?.LOCATIONDESCRIPTION || 'Main Store';
     const vId = `JV-2026-${String(newId).padStart(3, '0')}`;
 
     const postedRecord: AdjustmentHeaderRecord = {
       ADJUSTID: newId,
-      ID: 2000 + newId,
+      ID: newId,
       ADATE: adjustmentDate,
       BRANCHID: selectedBranchId,
       BARANCHNAME: branchName,

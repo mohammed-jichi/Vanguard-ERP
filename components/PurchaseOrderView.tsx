@@ -5,6 +5,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabase';
+import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 
 // Interfaces for Purchase Order
 export interface PurchaseOrderItem {
@@ -62,7 +63,7 @@ export interface PurchaseOrderRecord {
 const INITIAL_PURCHASE_ORDERS: PurchaseOrderRecord[] = [
   {
     id: 'PO-REC-01',
-    poNumber: 'PO-2026-601',
+    poNumber: '3002601',
     branch: 'Main Branch',
     location: 'Southern Olive and Oil Products - Main',
     shipmentType: 'Local Delivery',
@@ -108,7 +109,7 @@ const INITIAL_PURCHASE_ORDERS: PurchaseOrderRecord[] = [
   },
   {
     id: 'PO-REC-02',
-    poNumber: 'PO-2026-602',
+    poNumber: '3002602',
     branch: 'Main Branch',
     location: 'Southern Olive and Oil Products - Main',
     shipmentType: 'Land Transport',
@@ -362,7 +363,7 @@ export default function PurchaseOrderView() {
   const [hasAppliedFilter, setHasAppliedFilter] = useState(false);
 
   // Form State (when showPreviewList == false)
-  const [formPoNumber, setFormPoNumber] = useState('PO-2026-603');
+  const [formPoNumber, setFormPoNumber] = useState(() => peekNextDocNumber('PURCHASE_ORDER', INITIAL_PURCHASE_ORDERS));
   const [formBranch, setFormBranch] = useState('Main Branch');
   const [formLocation, setFormLocation] = useState('Southern Olive and Oil Products - Main');
   const [formShipment, setFormShipment] = useState('Local Delivery');
@@ -440,8 +441,7 @@ export default function PurchaseOrderView() {
 
   // Helper: Open New Purchase Order
   const handleNewBtnClick = () => {
-    const nextSeq = orders.length + 601;
-    const nextPoNum = `PO-2026-${nextSeq}`;
+    const nextPoNum = peekNextDocNumber('PURCHASE_ORDER', orders);
     setFormPoNumber(nextPoNum);
     setFormBranch('Marjeyoun Press Mill & Silos');
     setFormLocation('Southern Olive and Oil Products - Main');
@@ -650,6 +650,7 @@ export default function PurchaseOrderView() {
     }
 
     setOrders(updated);
+    commitNextDocNumber('PURCHASE_ORDER', formPoNumber);
     triggerToast(activeOrder ? `Purchase Order #${formPoNumber} updated in database.` : `Purchase Order #${formPoNumber} created in database.`);
     setShowPreviewList(true);
   };
@@ -2389,7 +2390,7 @@ export default function PurchaseOrderView() {
           <div className="bg-white text-slate-900 border border-slate-300 rounded-xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
             <div className="px-5 py-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between print:hidden">
               <span className="font-bold text-xs uppercase text-slate-700 tracking-wider">
-                Purchase Order &mdash; {formPoNumber}
+                Purchase Order &mdash; #{cleanDocumentNumber(formPoNumber)}
               </span>
               <div className="flex items-center gap-2">
                 <button
@@ -2413,7 +2414,7 @@ export default function PurchaseOrderView() {
             <div className="printable-document vanguard-printable p-8 overflow-y-auto flex-1 bg-white font-sans text-xs">
               <Corporate3ZoneHeader
                 documentTitle="PURCHASE ORDER"
-                voucherCode={formPoNumber}
+                voucherCode={cleanDocumentNumber(formPoNumber)}
                 transactionDate={formOrderDate}
                 status={formStatus}
                 facilityName={formBranch}

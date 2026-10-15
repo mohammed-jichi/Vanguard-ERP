@@ -2,6 +2,7 @@
 
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { printElementById } from '@/lib/utils/printDocument';
+import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber, formatDocLabel } from '@/lib/utils/documentSequence';
 import SalesOptionsModal from '@/components/modules/sales/SalesOptionsModal';
 import MainReadingModal from '@/components/modules/sales/MainReadingModal';
 import PaidInOutModal from '@/components/modules/sales/PaidInOutModal';
@@ -490,8 +491,8 @@ export const PAYMENT_TYPES = [
 
 export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
   {
-    id: '4000035',
-    invoiceNumber: '4000035',
+    id: '0002601',
+    invoiceNumber: '0002601',
     refCode: '3SO538A0D9',
     date: '04 Sep, 2026',
     deliveryDate: '04 Sep, 2026',
@@ -544,8 +545,8 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     createdAt: '2026-09-04 11:20'
   },
   {
-    id: 'INV-2026-08940',
-    invoiceNumber: 'INV-2026-08940',
+    id: '0002602',
+    invoiceNumber: '0002602',
     refCode: '3SO538B12F',
     date: '05 Sep, 2026',
     deliveryDate: '06 Sep, 2026',
@@ -575,8 +576,8 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     createdAt: '2026-09-05 14:30'
   },
   {
-    id: 'INV-2026-08942',
-    invoiceNumber: 'INV-2026-08942',
+    id: '0002603',
+    invoiceNumber: '0002603',
     refCode: '3SO538C44A',
     date: '06 Sep, 2026',
     deliveryDate: '07 Sep, 2026',
@@ -606,8 +607,8 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     createdAt: '2026-09-06 16:45'
   },
   {
-    id: 'INV-2026-08870',
-    invoiceNumber: 'INV-2026-08870',
+    id: '0002604',
+    invoiceNumber: '0002604',
     refCode: '3SO538D98C',
     date: '07 Sep, 2026',
     deliveryDate: '07 Sep, 2026',
@@ -637,8 +638,8 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     createdAt: '2026-09-07 09:15'
   },
   {
-    id: 'INV-2026-08795',
-    invoiceNumber: 'INV-2026-08795',
+    id: '0002605',
+    invoiceNumber: '0002605',
     refCode: '3SO538E55B',
     date: '07 Sep, 2026',
     deliveryDate: '08 Sep, 2026',
@@ -670,12 +671,7 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
 ];
 
 function generateUniqueInvoiceNumber(existingList?: { invoiceNumber?: string }[]): string {
-  const existingSet = new Set((existingList || []).map((i) => i.invoiceNumber));
-  let num = `INV-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-  while (existingSet.has(num)) {
-    num = `INV-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-  }
-  return num;
+  return peekNextDocNumber('SALES_INVOICE', existingList);
 }
 
 export const DEFAULT_DELIVERY_PROVIDERS = DEFAULT_UNIFIED_DELIVERY_PROVIDERS;
@@ -1639,7 +1635,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
   const handleSwitchToDirectCreditNoteMode = () => {
     setDocType('CREDIT_NOTE');
-    setInvoiceNumber(`CRN-2026-${Math.floor(10000 + Math.random() * 90000)}`);
+    setInvoiceNumber(peekNextDocNumber('CREDIT_NOTE', invoicesDirectory));
     setStatusNotice('Switched active workstation to Credit Note & Return Mode.');
     setTimeout(() => setStatusNotice(null), 3500);
   };
@@ -1799,6 +1795,9 @@ export default function AuthenticVanguardSalesWorkstation({
       }
       return [newRecord, ...prev];
     });
+
+    // Advance and persist sequence counter
+    commitNextDocNumber('SALES_INVOICE', newRecord.invoiceNumber, currentTenant?.id);
 
     if (postImmediately) {
       executeDatabasePost([newRecord]);
@@ -2075,7 +2074,8 @@ export default function AuthenticVanguardSalesWorkstation({
       alert('Cart is empty. Please select items or load an invoice to issue a Credit Note.');
       return;
     }
-    const crnNumber = `CRN-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    const crnNumber = peekNextDocNumber('CREDIT_NOTE', invoicesDirectory);
+    commitNextDocNumber('CREDIT_NOTE', crnNumber, currentTenant?.id);
     const crnRecord: InvoiceRecord = {
       id: crnNumber,
       invoiceNumber: crnNumber,
@@ -2115,14 +2115,15 @@ export default function AuthenticVanguardSalesWorkstation({
       alert('Please enter a valid receipt amount.');
       return;
     }
-    const rctNum = `RCT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const rctNum = peekNextDocNumber('CUSTOMER_RECEIPT');
+    commitNextDocNumber('CUSTOMER_RECEIPT', rctNum, currentTenant?.id);
     const newRct = {
       id: rctNum,
       date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
       customerName: selectedCustomer.name || 'Miscellaneous Customer',
       customerId: selectedCustomer.id || 'CUST-001',
       method: newReceiptMethod,
-      invoiceRef: invoiceNumber || 'INV-2026-0001',
+      invoiceRef: cleanDocumentNumber(invoiceNumber) || '0002601',
       amount: amt,
       cleared: true
     };
@@ -5808,14 +5809,20 @@ export default function AuthenticVanguardSalesWorkstation({
           <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
             <div id="printable-delivery-note" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
               {/* Standardized 3-Zone Corporate Header */}
-              <Corporate3ZoneHeader
-                documentTitle="DELIVERY NOTE"
-                voucherCode={`DN-${(targetPrintInvoice?.invoiceNumber || invoiceNumber).replace(/^INV-/i, '')}`}
-                transactionDate={targetPrintInvoice?.deliveryDate || targetPrintInvoice?.date || deliveryDate}
-                refNumber={targetPrintInvoice?.refNumber || targetPrintInvoice?.reference || currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
-                status="DISPATCHED"
-                facilityName={targetPrintInvoice?.branch || BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Facility: [1300-01] Main'}
-              />
+              {(() => {
+                const cleanInv = cleanDocumentNumber(targetPrintInvoice?.invoiceNumber || invoiceNumber);
+                const delivCode = cleanInv.startsWith('0') && cleanInv.length === 7 ? '2' + cleanInv.slice(1) : peekNextDocNumber('DELIVERY_NOTE');
+                return (
+                  <Corporate3ZoneHeader
+                    documentTitle="DELIVERY NOTE"
+                    voucherCode={delivCode}
+                    transactionDate={targetPrintInvoice?.deliveryDate || targetPrintInvoice?.date || deliveryDate}
+                    refNumber={targetPrintInvoice?.refNumber || targetPrintInvoice?.reference || currentInvoice?.refNumber || currentInvoice?.reference || invoiceReferenceNumber || '—'}
+                    status="DISPATCHED"
+                    facilityName={targetPrintInvoice?.branch || BRANCH_OPTIONS.find(b => b.id === selectedBranch)?.name || 'Facility: [1300-01] Main'}
+                  />
+                );
+              })()}
 
               <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
                 <div>
@@ -5875,7 +5882,11 @@ export default function AuthenticVanguardSalesWorkstation({
               </div>
 
               {/* Standardized Corporate Footer */}
-              <CorporatePrintableFooter voucherCode={`DN-${(targetPrintInvoice?.invoiceNumber || invoiceNumber).replace(/^INV-/i, '')}`} />
+              {(() => {
+                const cleanInv = cleanDocumentNumber(targetPrintInvoice?.invoiceNumber || invoiceNumber);
+                const delivCode = cleanInv.startsWith('0') && cleanInv.length === 7 ? '2' + cleanInv.slice(1) : peekNextDocNumber('DELIVERY_NOTE');
+                return <CorporatePrintableFooter voucherCode={delivCode} />;
+              })()}
             </div>
           </div>
 
@@ -5894,7 +5905,9 @@ export default function AuthenticVanguardSalesWorkstation({
                 onClick={() => {
                   printElementById('printable-delivery-note', 'Delivery Note');
                   setIsDeliveryNoteModalOpen(false);
-                  setStatusNotice(`Delivery Note DN-${(targetPrintInvoice?.invoiceNumber || invoiceNumber).replace(/^INV-/i, '')} printed.`);
+                  const cleanInv = cleanDocumentNumber(targetPrintInvoice?.invoiceNumber || invoiceNumber);
+                  const delivCode = cleanInv.startsWith('0') && cleanInv.length === 7 ? '2' + cleanInv.slice(1) : peekNextDocNumber('DELIVERY_NOTE');
+                  setStatusNotice(`Delivery Note #${delivCode} printed.`);
                   setTimeout(() => setStatusNotice(null), 3000);
                 }}
                 className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
