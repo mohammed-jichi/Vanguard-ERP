@@ -46,39 +46,16 @@ import {
 import { cleanDocumentNumber } from '@/lib/utils/documentSequence';
 import { POS_EXCHANGE_RATE_LBP } from '@/lib/posShiftService';
 
-export interface CompanyBankAccount {
-  id: string;
-  name: string;
-  accountNumber: string;
-  currency: 'USD' | 'LBP' | 'ANY';
-}
-
-export const COMPANY_BANK_ACCOUNTS: CompanyBankAccount[] = [
-  {
-    id: 'blom_usd',
-    name: 'BLOM Bank S.A.L. - Commercial (USD)',
-    accountNumber: 'LB12 0014 0000 0000 5122 0002 01',
-    currency: 'USD'
-  },
-  {
-    id: 'audi_usd',
-    name: 'Bank Audi S.A.L. - Corporate Settlement (USD)',
-    accountNumber: 'LB28 0002 0000 0000 5123 0003 01',
-    currency: 'USD'
-  },
-  {
-    id: 'bob_lbp',
-    name: 'Bank of Beirut (BOB) - Operations (LBP)',
-    accountNumber: 'LB44 0075 0000 0000 5121 0001 01',
-    currency: 'LBP'
-  },
-  {
-    id: 'custom',
-    name: 'Other / Custom Bank Account',
-    accountNumber: '',
-    currency: 'ANY'
-  }
-];
+import {
+  getCompanyBankAccounts,
+  updateCompanyBankAccountNumber,
+  getCompanyWhishAccounts,
+  updateCompanyWhishAccountNumber,
+  CompanyBankAccount,
+  CompanyWhishAccount,
+  SETTLEMENT_ACCOUNTS_UPDATED_EVENT
+} from '@/lib/companySettlementAccounts';
+export type { CompanyBankAccount, CompanyWhishAccount };
 
 interface CustomerReceiptsModalProps {
   isOpen: boolean;
@@ -168,14 +145,60 @@ export default function CustomerReceiptsModal({
   );
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  // Configurable Settlement Accounts
+  const [companyBankAccounts, setCompanyBankAccounts] = useState<CompanyBankAccount[]>(getCompanyBankAccounts());
+  const [companyWhishAccounts, setCompanyWhishAccounts] = useState<CompanyWhishAccount[]>(getCompanyWhishAccounts());
+
+  // Card Payment Details
+  const [cardholderName, setCardholderName] = useState<string>('');
+  const [cardNumber, setCardNumber] = useState<string>('');
+  const [cardBank, setCardBank] = useState<string>('BLOM Bank S.A.L.');
+  const [selectedCardCompanyBankId, setSelectedCardCompanyBankId] = useState<string>(
+    companyBankAccounts[0]?.id || 'blom_usd'
+  );
+  const [cardCompanyAccountNumber, setCardCompanyAccountNumber] = useState<string>(
+    companyBankAccounts[0]?.accountNumber || ''
+  );
+
+  // Whish Payment Details
+  const [whishSenderPhone, setWhishSenderPhone] = useState<string>('');
+  const [selectedWhishCompanyAccountId, setSelectedWhishCompanyAccountId] = useState<string>(
+    companyWhishAccounts[0]?.id || 'whish_primary'
+  );
+  const [whishCompanyAccountNumber, setWhishCompanyAccountNumber] = useState<string>(
+    companyWhishAccounts[0]?.accountNumber || ''
+  );
+
   // Bank Account State (for Bank Transfer & Check)
-  const [selectedBankId, setSelectedBankId] = useState<string>('blom_usd');
-  const [bankAccountName, setBankAccountName] = useState<string>('BLOM Bank S.A.L. - Commercial (USD)');
-  const [bankAccountNumber, setBankAccountNumber] = useState<string>('LB12 0014 0000 0000 5122 0002 01');
+  const [selectedBankId, setSelectedBankId] = useState<string>(
+    companyBankAccounts[0]?.id || 'blom_usd'
+  );
+  const [bankAccountName, setBankAccountName] = useState<string>(
+    companyBankAccounts[0]?.accountName || 'BLOM Bank S.A.L. - Commercial (USD)'
+  );
+  const [bankAccountNumber, setBankAccountNumber] = useState<string>(
+    companyBankAccounts[0]?.accountNumber || 'LB12 0014 0000 0000 5122 0002 01'
+  );
+  const [senderBank, setSenderBank] = useState<string>('');
+  const [checkNumber, setCheckNumber] = useState<string>('');
 
   // History & Print
   const [receiptsList, setReceiptsList] = useState<CustomerReceipt[]>([]);
   const [printingReceipt, setPrintingReceipt] = useState<CustomerReceipt | null>(null);
+
+  // Sync settlement accounts across windows/tabs
+  useEffect(() => {
+    const handleAccountsUpdate = () => {
+      const banks = getCompanyBankAccounts();
+      const whish = getCompanyWhishAccounts();
+      setCompanyBankAccounts(banks);
+      setCompanyWhishAccounts(whish);
+    };
+    window.addEventListener(SETTLEMENT_ACCOUNTS_UPDATED_EVENT, handleAccountsUpdate);
+    return () => {
+      window.removeEventListener(SETTLEMENT_ACCOUNTS_UPDATED_EVENT, handleAccountsUpdate);
+    };
+  }, []);
 
   // On open or initial customer change
   useEffect(() => {
@@ -338,18 +361,29 @@ export default function CustomerReceiptsModal({
   // Synchronize Bank Account Selection
   const handleBankSelect = (bankId: string) => {
     setSelectedBankId(bankId);
-    const found = COMPANY_BANK_ACCOUNTS.find((b) => b.id === bankId);
+    const found = companyBankAccounts.find((b) => b.id === bankId);
     if (found) {
-      if (bankId !== 'custom') {
-        setBankAccountName(found.name);
-        setBankAccountNumber(found.accountNumber);
-        if (found.currency === 'LBP' && currencyCode !== 'LBP') {
-          handleCurrencyChange('LBP');
-        } else if (found.currency === 'USD' && currencyCode !== 'USD') {
-          handleCurrencyChange('USD');
-        }
+      setBankAccountName(found.accountName);
+      setBankAccountNumber(found.accountNumber);
+      if (found.currency === 'LBP' && currencyCode !== 'LBP') {
+        handleCurrencyChange('LBP');
+      } else if (found.currency === 'USD' && currencyCode !== 'USD') {
+        handleCurrencyChange('USD');
       }
     }
+  };
+
+  const handleUpdateBankAccountNumber = (bankId: string, newNumber: string) => {
+    setBankAccountNumber(newNumber);
+    setCardCompanyAccountNumber(newNumber);
+    updateCompanyBankAccountNumber(bankId, newNumber);
+    toast.success('Company Bank Account / IBAN updated globally');
+  };
+
+  const handleUpdateWhishAccountNumber = (whishId: string, newNumber: string) => {
+    setWhishCompanyAccountNumber(newNumber);
+    updateCompanyWhishAccountNumber(whishId, newNumber);
+    toast.success('Company Whish Account # updated globally');
   };
 
   // Manual Selection & Partial Allocation Handler
@@ -440,7 +474,29 @@ export default function CustomerReceiptsModal({
         return inv;
       });
 
+      const isCard = paymentMethod.startsWith('CARD');
+      const isWhish = paymentMethod === 'WHISH';
       const isBankOrCheck = paymentMethod === 'BANK TRANSFER' || paymentMethod === 'CHECK';
+
+      let targetCompanyAccountId: string | undefined = undefined;
+      let targetCompanyAccountName: string | undefined = undefined;
+      let targetCompanyAccountNumber: string | undefined = undefined;
+
+      if (isCard) {
+        targetCompanyAccountId = selectedCardCompanyBankId;
+        const b = companyBankAccounts.find((x) => x.id === selectedCardCompanyBankId) || companyBankAccounts[0];
+        targetCompanyAccountName = b?.accountName;
+        targetCompanyAccountNumber = cardCompanyAccountNumber || b?.accountNumber;
+      } else if (isWhish) {
+        targetCompanyAccountId = selectedWhishCompanyAccountId;
+        const w = companyWhishAccounts.find((x) => x.id === selectedWhishCompanyAccountId) || companyWhishAccounts[0];
+        targetCompanyAccountName = w?.walletName;
+        targetCompanyAccountNumber = whishCompanyAccountNumber || w?.accountNumber;
+      } else if (isBankOrCheck) {
+        targetCompanyAccountId = selectedBankId;
+        targetCompanyAccountName = bankAccountName;
+        targetCompanyAccountNumber = bankAccountNumber;
+      }
 
       // Record Customer Receipt
       const receipt = await recordCustomerReceipt(
@@ -451,8 +507,22 @@ export default function CustomerReceiptsModal({
           customerName: activeCustomer.name,
           paymentMethod,
           currencyCode,
-          bankAccountName: isBankOrCheck ? bankAccountName : undefined,
-          bankAccountNumber: isBankOrCheck ? bankAccountNumber : undefined,
+          // Card Details
+          cardholderName: isCard ? cardholderName.trim() : undefined,
+          cardNumber: isCard ? cardNumber.trim() : undefined,
+          cardBank: isCard ? cardBank.trim() : undefined,
+          // Whish Details
+          whishSenderPhone: isWhish ? whishSenderPhone.trim() : undefined,
+          whishAccountNumber: isWhish ? (whishCompanyAccountNumber || targetCompanyAccountNumber) : undefined,
+          // Company Account Details
+          companyAccountId: targetCompanyAccountId,
+          companyAccountName: targetCompanyAccountName,
+          companyAccountNumber: targetCompanyAccountNumber,
+          // Bank / Check details
+          bankAccountName: isBankOrCheck ? bankAccountName : (isCard ? targetCompanyAccountName : undefined),
+          bankAccountNumber: isBankOrCheck ? bankAccountNumber : (isCard ? targetCompanyAccountNumber : undefined),
+          senderBank: (isBankOrCheck || isCard) ? senderBank.trim() : undefined,
+          checkNumber: paymentMethod === 'CHECK' ? checkNumber.trim() : undefined,
           amountReceived: rawAmt,
           amountReceivedUsd: amtUsd,
           amountReceivedLbp: amtLbp,
@@ -756,54 +826,256 @@ export default function CustomerReceiptsModal({
               </div>
             </div>
 
-            {/* Conditional Bank Account Details Row */}
-            {isBankOrCheckActive && (
-              <div className="bg-blue-50/60 border border-blue-200 rounded-md p-3 space-y-2 animate-fade-in">
-                <div className="flex items-center gap-1.5 text-blue-900 font-bold text-[11px]">
-                  <Landmark className="w-3.5 h-3.5 text-blue-700" />
-                  <span>Company Bank Account Details (تفاصيل الحساب المصرفي)</span>
+            {/* Conditional Card & Merchant Settlement Details Row */}
+            {paymentMethod.startsWith('CARD') && (
+              <div className="bg-amber-50/70 border border-amber-200 rounded-md p-3 space-y-2.5 animate-fade-in">
+                <div className="flex items-center justify-between text-amber-950 font-bold text-[11px]">
+                  <div className="flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Card & Merchant Settlement Details (بيانات البطاقة والتحصيل المصرفي)</span>
+                  </div>
+                  <span className="text-[10px] text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded font-mono">
+                    POS Card Merchant Settlement
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                  <div>
+                    <label className="block text-[10px] font-semibold text-amber-900 mb-0.5">
+                      Cardholder Name (اسم حامل البطاقة)
+                    </label>
+                    <input
+                      type="text"
+                      value={cardholderName}
+                      onChange={(e) => setCardholderName(e.target.value)}
+                      placeholder="e.g. John Doe / زبون البطاقة"
+                      className="w-full bg-white border border-amber-200 rounded px-2 py-1 text-xs text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-amber-900 mb-0.5">
+                      Card Number / Digits (رقم البطاقة)
+                    </label>
+                    <input
+                      type="text"
+                      value={cardNumber}
+                      onChange={(e) => setCardNumber(e.target.value)}
+                      placeholder="e.g. •••• 4242 or 16 digits"
+                      className="w-full bg-white border border-amber-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-amber-900 mb-0.5">
+                      Issuing / Acquiring Bank (المصرف المصدر)
+                    </label>
+                    <input
+                      type="text"
+                      value={cardBank}
+                      onChange={(e) => setCardBank(e.target.value)}
+                      placeholder="e.g. BLOM Bank / Bank Audi"
+                      className="w-full bg-white border border-amber-200 rounded px-2 py-1 text-xs text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-amber-900 mb-0.5">
+                      Receiving Company Bank Account (حساب التحصيل)
+                    </label>
+                    <select
+                      value={selectedCardCompanyBankId}
+                      onChange={(e) => {
+                        setSelectedCardCompanyBankId(e.target.value);
+                        const b = companyBankAccounts.find((x) => x.id === e.target.value);
+                        if (b) setCardCompanyAccountNumber(b.accountNumber);
+                      }}
+                      className="w-full bg-white border border-amber-200 rounded px-2 py-1 text-xs text-slate-800 font-medium"
+                    >
+                      {companyBankAccounts.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.accountName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {/* Inline editable Account / IBAN field with global persistence */}
+                <div className="flex items-center gap-2 pt-1 border-t border-amber-200/60">
+                  <span className="text-[10px] font-semibold text-amber-900 shrink-0">Company Receiving IBAN / Account #:</span>
+                  <input
+                    type="text"
+                    value={cardCompanyAccountNumber}
+                    onChange={(e) => setCardCompanyAccountNumber(e.target.value)}
+                    onBlur={() => handleUpdateBankAccountNumber(selectedCardCompanyBankId, cardCompanyAccountNumber)}
+                    className="flex-1 bg-white border border-amber-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
+                    placeholder="Edit account number..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateBankAccountNumber(selectedCardCompanyBankId, cardCompanyAccountNumber)}
+                    className="px-2.5 py-1 bg-amber-700 hover:bg-amber-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
+                    title="Save updated Account / IBAN globally for all future transactions"
+                  >
+                    Save Account #
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Conditional Whish Account Settlement Details Row */}
+            {paymentMethod === 'WHISH' && (
+              <div className="bg-purple-50/70 border border-purple-200 rounded-md p-3 space-y-2.5 animate-fade-in">
+                <div className="flex items-center justify-between text-purple-950 font-bold text-[11px]">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-700" />
+                    <span>Whish Account Settlement Details (تفاصيل تحصيل ويش موني)</span>
+                  </div>
+                  <span className="text-[10px] text-purple-800 bg-purple-100 px-2 py-0.5 rounded font-mono">
+                    Whish Money Digital Settlement
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-semibold text-purple-900 mb-0.5">
+                      Sender Name / Whish Phone (اسم المسدد / رقم ويش الزبون)
+                    </label>
+                    <input
+                      type="text"
+                      value={whishSenderPhone}
+                      onChange={(e) => setWhishSenderPhone(e.target.value)}
+                      placeholder="e.g. 03-123456 / 70-987654 (Customer Phone)"
+                      className="w-full bg-white border border-purple-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-purple-900 mb-0.5">
+                      Our Receiving Whish Account (محفظة الشركة المستلمة)
+                    </label>
+                    <select
+                      value={selectedWhishCompanyAccountId}
+                      onChange={(e) => {
+                        setSelectedWhishCompanyAccountId(e.target.value);
+                        const w = companyWhishAccounts.find((x) => x.id === e.target.value);
+                        if (w) setWhishCompanyAccountNumber(w.accountNumber);
+                      }}
+                      className="w-full bg-white border border-purple-200 rounded px-2 py-1 text-xs text-slate-800 font-medium"
+                    >
+                      {companyWhishAccounts.map((w) => (
+                        <option key={w.id} value={w.id}>
+                          {w.walletName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {/* Inline editable Whish Account / Wallet Number with global persistence */}
+                <div className="flex items-center gap-2 pt-1 border-t border-purple-200/60">
+                  <span className="text-[10px] font-semibold text-purple-900 shrink-0">Company Whish Wallet / Phone #:</span>
+                  <input
+                    type="text"
+                    value={whishCompanyAccountNumber}
+                    onChange={(e) => setWhishCompanyAccountNumber(e.target.value)}
+                    onBlur={() => handleUpdateWhishAccountNumber(selectedWhishCompanyAccountId, whishCompanyAccountNumber)}
+                    className="flex-1 bg-white border border-purple-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
+                    placeholder="Edit Whish wallet number..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateWhishAccountNumber(selectedWhishCompanyAccountId, whishCompanyAccountNumber)}
+                    className="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
+                    title="Save updated Whish Wallet number globally for all future transactions"
+                  >
+                    Save Whish #
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Conditional Bank Account & Cheque Details Row */}
+            {(paymentMethod === 'BANK TRANSFER' || paymentMethod === 'CHECK') && (
+              <div className="bg-blue-50/60 border border-blue-200 rounded-md p-3 space-y-2.5 animate-fade-in">
+                <div className="flex items-center justify-between text-blue-900 font-bold text-[11px]">
+                  <div className="flex items-center gap-1.5">
+                    <Landmark className="w-3.5 h-3.5 text-blue-700" />
+                    <span>Bank Account & Transfer Details (تفاصيل الحساب المصرفي والشيك)</span>
+                  </div>
+                  <span className="text-[10px] text-blue-800 bg-blue-100 px-2 py-0.5 rounded font-mono">
+                    {paymentMethod === 'CHECK' ? 'Bank Cheque Clearance' : 'Wire Transfer Settlement'}
+                  </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-[10px] font-semibold text-blue-800 mb-0.5">
-                      Select Bank Account (الحساب المعتمد)
+                      Receiving Company Bank Account (الحساب المعتمد للشركة)
                     </label>
                     <select
                       value={selectedBankId}
                       onChange={(e) => handleBankSelect(e.target.value)}
                       className="w-full bg-white border border-blue-200 rounded px-2 py-1 text-xs font-medium text-slate-800"
                     >
-                      {COMPANY_BANK_ACCOUNTS.map((b) => (
+                      {companyBankAccounts.map((b) => (
                         <option key={b.id} value={b.id}>
-                          {b.name}
+                          {b.accountName}
                         </option>
                       ))}
                     </select>
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-blue-800 mb-0.5">
-                      Bank / Account Name (اسم المصرف والحساب)
+                      Sender Bank / Check Issuing Bank (مصرف المحول / الساحب)
                     </label>
                     <input
                       type="text"
-                      value={bankAccountName}
-                      onChange={(e) => setBankAccountName(e.target.value)}
-                      placeholder="e.g. BLOM Bank S.A.L."
+                      value={senderBank}
+                      onChange={(e) => setSenderBank(e.target.value)}
+                      placeholder="e.g. Fransabank, Byblos, Audi..."
                       className="w-full bg-white border border-blue-200 rounded px-2 py-1 text-xs text-slate-800"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-semibold text-blue-800 mb-0.5">
-                      Account Number / IBAN (رقم الحساب / الآيبان)
-                    </label>
-                    <input
-                      type="text"
-                      value={bankAccountNumber}
-                      onChange={(e) => setBankAccountNumber(e.target.value)}
-                      placeholder="e.g. LB12 0014 0000 0000..."
-                      className="w-full bg-white border border-blue-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
-                    />
-                  </div>
+                  {paymentMethod === 'CHECK' ? (
+                    <div>
+                      <label className="block text-[10px] font-semibold text-blue-800 mb-0.5">
+                        Cheque Number (رقم الشيك)
+                      </label>
+                      <input
+                        type="text"
+                        value={checkNumber}
+                        onChange={(e) => setCheckNumber(e.target.value)}
+                        placeholder="e.g. CHK-990145"
+                        className="w-full bg-white border border-blue-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-[10px] font-semibold text-blue-800 mb-0.5">
+                        Transfer Reference / Swift (رقم التحويل / السويفت)
+                      </label>
+                      <input
+                        type="text"
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder="e.g. TRF-20261015-88"
+                        className="w-full bg-white border border-blue-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
+                      />
+                    </div>
+                  )}
+                </div>
+                {/* Inline editable Account / IBAN field with global persistence */}
+                <div className="flex items-center gap-2 pt-1 border-t border-blue-200/60">
+                  <span className="text-[10px] font-semibold text-blue-900 shrink-0">Company Receiving IBAN / Account #:</span>
+                  <input
+                    type="text"
+                    value={bankAccountNumber}
+                    onChange={(e) => setBankAccountNumber(e.target.value)}
+                    onBlur={() => handleUpdateBankAccountNumber(selectedBankId, bankAccountNumber)}
+                    className="flex-1 bg-white border border-blue-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
+                    placeholder="Edit account number..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateBankAccountNumber(selectedBankId, bankAccountNumber)}
+                    className="px-2.5 py-1 bg-blue-700 hover:bg-blue-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
+                    title="Save updated Account / IBAN globally for all future transactions"
+                  >
+                    Save Account #
+                  </button>
                 </div>
               </div>
             )}
@@ -1257,14 +1529,47 @@ export default function CustomerReceiptsModal({
                     <div style={{ fontSize: '12px', fontWeight: '700', color: '#0f172a' }}>
                       {printingReceipt.paymentMethod} ({printingReceipt.currencyCode})
                     </div>
+                    {/* Card details */}
+                    {printingReceipt.cardholderName && (
+                      <div style={{ fontSize: '11px', color: '#1e3a8a', marginTop: '2px' }}>
+                        Cardholder: <strong>{printingReceipt.cardholderName}</strong>
+                      </div>
+                    )}
+                    {printingReceipt.cardNumber && (
+                      <div style={{ fontSize: '11px', fontFamily: 'monospace', color: '#1e3a8a' }}>
+                        Card #: <strong>{printingReceipt.cardNumber}</strong> {printingReceipt.cardBank ? `(${printingReceipt.cardBank})` : ''}
+                      </div>
+                    )}
+                    {/* Whish details */}
+                    {printingReceipt.whishSenderPhone && (
+                      <div style={{ fontSize: '11px', color: '#1e3a8a', marginTop: '2px' }}>
+                        Whish Sender: <strong>{printingReceipt.whishSenderPhone}</strong>
+                      </div>
+                    )}
+                    {printingReceipt.whishAccountNumber && (
+                      <div style={{ fontSize: '11px', fontFamily: 'monospace', color: '#1e3a8a' }}>
+                        Our Whish Wallet #: <strong>{printingReceipt.whishAccountNumber}</strong>
+                      </div>
+                    )}
+                    {/* Bank Transfer / Check details */}
                     {printingReceipt.bankAccountName && (
                       <div style={{ fontSize: '11px', color: '#1e3a8a', marginTop: '2px' }}>
-                        Bank: <strong>{printingReceipt.bankAccountName}</strong>
+                        Settled to Bank: <strong>{printingReceipt.bankAccountName}</strong>
                       </div>
                     )}
                     {printingReceipt.bankAccountNumber && (
                       <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#1e3a8a' }}>
-                        Account / IBAN: {printingReceipt.bankAccountNumber}
+                        Settled to Account #: {printingReceipt.bankAccountNumber}
+                      </div>
+                    )}
+                    {printingReceipt.senderBank && (
+                      <div style={{ fontSize: '10.5px', color: '#475569' }}>
+                        Issuing Bank: {printingReceipt.senderBank}
+                      </div>
+                    )}
+                    {printingReceipt.checkNumber && (
+                      <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#475569' }}>
+                        Cheque #: {printingReceipt.checkNumber}
                       </div>
                     )}
                     <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>
@@ -1520,11 +1825,51 @@ export default function CustomerReceiptsModal({
                         {printingReceipt.paymentMethod}
                       </td>
                     </tr>
+                    {printingReceipt.cardholderName && (
+                      <tr>
+                        <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Cardholder:</td>
+                        <td style={{ padding: '2px 0', textAlign: 'right', fontSize: '9px' }}>
+                          {printingReceipt.cardholderName}
+                        </td>
+                      </tr>
+                    )}
+                    {printingReceipt.cardNumber && (
+                      <tr>
+                        <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Card #:</td>
+                        <td style={{ padding: '2px 0', textAlign: 'right', fontFamily: 'monospace', fontSize: '9px' }}>
+                          {printingReceipt.cardNumber}
+                        </td>
+                      </tr>
+                    )}
+                    {printingReceipt.whishSenderPhone && (
+                      <tr>
+                        <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Whish Sender:</td>
+                        <td style={{ padding: '2px 0', textAlign: 'right', fontFamily: 'monospace', fontSize: '9px' }}>
+                          {printingReceipt.whishSenderPhone}
+                        </td>
+                      </tr>
+                    )}
+                    {printingReceipt.whishAccountNumber && (
+                      <tr>
+                        <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Our Whish #:</td>
+                        <td style={{ padding: '2px 0', textAlign: 'right', fontFamily: 'monospace', fontSize: '9px' }}>
+                          {printingReceipt.whishAccountNumber}
+                        </td>
+                      </tr>
+                    )}
                     {printingReceipt.bankAccountName && (
                       <tr>
                         <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Bank / المصرف:</td>
                         <td style={{ padding: '2px 0', textAlign: 'right', fontSize: '9px' }}>
                           {printingReceipt.bankAccountName}
+                        </td>
+                      </tr>
+                    )}
+                    {printingReceipt.bankAccountNumber && (
+                      <tr>
+                        <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Account #:</td>
+                        <td style={{ padding: '2px 0', textAlign: 'right', fontFamily: 'monospace', fontSize: '9px' }}>
+                          {printingReceipt.bankAccountNumber}
                         </td>
                       </tr>
                     )}

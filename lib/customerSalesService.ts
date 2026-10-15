@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { POS_EXCHANGE_RATE_LBP, getActiveShift, recordCashMovement } from '@/lib/posShiftService';
 import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 import { resolveItemUnitPrice, calculateAllCustomersAging } from '@/lib/engine/erpCalculationEngine';
+import { resolveSettlementGlAccount } from '@/lib/companySettlementAccounts';
 
 export const CUSTOMER_RECEIPTS_KEY = 'vanguard_customer_receipts_v1';
 export const CUSTOMER_SPECIAL_PRICES_KEY = 'vanguard_customer_special_prices_v1';
@@ -45,10 +46,24 @@ export interface CustomerReceipt {
   shiftId: string;
   customerId: string;
   customerName: string;
-  paymentMethod: string; // 'CASH USD' | 'CASH LBP' | 'BANK TRANSFER' | 'CHECK' | 'CARD'
+  paymentMethod: string; // 'CASH USD' | 'CASH LBP' | 'BANK TRANSFER' | 'CHECK' | 'CARD' | 'WHISH'
   currencyCode: 'USD' | 'LBP' | 'EUR' | 'GBP';
+  // Card / Merchant Payment Details
+  cardholderName?: string;
+  cardNumber?: string;
+  cardBank?: string;
+  // Whish Payment Details
+  whishSenderPhone?: string;
+  whishAccountNumber?: string;
+  // Company Receiving Account Details
+  companyAccountId?: string;
+  companyAccountName?: string;
+  companyAccountNumber?: string;
+  // Bank / Check details
   bankAccountName?: string;
   bankAccountNumber?: string;
+  senderBank?: string;
+  checkNumber?: string;
   amountReceived: number;
   amountReceivedUsd: number;
   amountReceivedLbp: number;
@@ -177,11 +192,10 @@ export async function createJournalEntryForReceipt(
   const jvDate = receipt.createdAt ? receipt.createdAt.split('T')[0] : new Date().toISOString().split('T')[0];
 
   const isCash = receipt.paymentMethod.toUpperCase().includes('CASH');
-  const debitAccountId = isCash ? 'acc-53100' : 'acc-51210';
-  const debitAccountNo = isCash ? '53100' : '51210';
-  const debitAccountName = isCash
-    ? 'POS Cash Drawer - Branch Main / صندوق الكاشير الفرعي'
-    : 'Commercial Bank Accounts (BLOM/Audi/BOB)';
+  const resolvedGl = resolveSettlementGlAccount(receipt.paymentMethod, receipt.companyAccountId);
+  const debitAccountId = `acc-${resolvedGl.code}`;
+  const debitAccountNo = resolvedGl.code;
+  const debitAccountName = receipt.companyAccountName || resolvedGl.name;
 
   const customerAccountId = 'acc-41100';
   const customerAccountNo = '41100';
@@ -190,14 +204,14 @@ export async function createJournalEntryForReceipt(
   const totalCreditUsd = receipt.amountReceivedUsd + (receipt.discountGiven || 0);
 
   const lines: any[] = [
-    // 1. Debit: Cash / Bank
+    // 1. Debit: Cash / Bank / Whish Asset Account
     {
       id: `line-${Date.now()}-1`,
       line_number: 1,
       account_id: debitAccountId,
       account_number: debitAccountNo,
       account_name: debitAccountName,
-      description: `Collection from ${receipt.customerName} (${receipt.receiptNo})`,
+      description: `Collection from ${receipt.customerName} (${receipt.receiptNo} - ${receipt.paymentMethod})`,
       amount_debit: receipt.amountReceivedUsd,
       amount_credit: 0,
       currency_rate: receipt.exchangeRate,
@@ -254,17 +268,46 @@ export async function createJournalEntryForReceipt(
     lines
   };
 
-  // Sync to local storage
+  // Sync to local storage & live accounts balance
   if (typeof window !== 'undefined') {
     try {
       const STORAGE_JVS_KEY = 'vanguard_accounting_jvs_data';
       const raw = localStorage.getItem(STORAGE_JVS_KEY);
       const jvs = raw ? JSON.parse(raw) : [];
       localStorage.setItem(STORAGE_JVS_KEY, JSON.stringify([jv, ...jvs]));
+
+      // Live General Ledger Account Balances Update
+      const STORAGE_ACCOUNTS_KEY = 'vanguard_accounting_accounts_data';
+      const accountsRaw = localStorage.getItem(STORAGE_ACCOUNTS_KEY);
+      if (accountsRaw) {
+        const accounts = JSON.parse(accountsRaw);
+        if (Array.isArray(accounts)) {
+          const updatedAccounts = accounts.map((acc: any) => {
+            const accNo = String(acc.account_number || acc.id || '');
+            if (accNo === debitAccountNo || acc.id === debitAccountId) {
+              return {
+                ...acc,
+                balance: Number((Number(acc.balance || 0) + receipt.amountReceivedUsd).toFixed(2))
+              };
+            }
+            if (accNo === customerAccountNo || acc.id === customerAccountId) {
+              return {
+                ...acc,
+                balance: Number((Number(acc.balance || 0) - totalCreditUsd).toFixed(2))
+              };
+            }
+            return acc;
+          });
+          localStorage.setItem(STORAGE_ACCOUNTS_KEY, JSON.stringify(updatedAccounts));
+        }
+      }
+
       window.dispatchEvent(new CustomEvent('vanguard_accounting_sync', {
         detail: { type: 'VOUCHER_SAVED', data: jv }
       }));
-    } catch {}
+    } catch (e) {
+      console.warn('Error syncing receipt journal voucher to accounting:', e);
+    }
   }
 
   // Dual persist to API if available

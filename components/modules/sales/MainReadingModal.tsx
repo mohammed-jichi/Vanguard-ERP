@@ -8,6 +8,8 @@ import {
   DollarSign,
   Banknote,
   Receipt,
+  CreditCard,
+  Landmark,
   ArrowDownLeft,
   ArrowUpRight,
   ShieldCheck,
@@ -507,7 +509,17 @@ export default function MainReadingModal({
                     {summary.collectionsByTender.map((tender, idx) => (
                       <tr key={idx} className="hover:bg-slate-50/80">
                         <td className="py-2.5 px-3 font-semibold text-slate-800 flex items-center gap-2">
-                          <Banknote className="w-4 h-4 text-slate-500" />
+                          {tender.method === 'card' ? (
+                            <CreditCard className="w-4 h-4 text-amber-600" />
+                          ) : tender.method === 'whish' ? (
+                            <Sparkles className="w-4 h-4 text-purple-600" />
+                          ) : tender.method === 'bank_transfer' ? (
+                            <Landmark className="w-4 h-4 text-blue-600" />
+                          ) : tender.method === 'check' ? (
+                            <FileText className="w-4 h-4 text-indigo-600" />
+                          ) : (
+                            <Banknote className="w-4 h-4 text-slate-500" />
+                          )}
                           <span>{tender.label}</span>
                         </td>
                         <td className="py-2.5 px-3 text-center font-mono text-slate-600">{tender.count}</td>

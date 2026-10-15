@@ -609,7 +609,8 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
     cash_lbp: { usd: 0, lbp: 0, count: 0, label: 'Cash LBP' },
     on_account: { usd: 0, lbp: 0, count: 0, label: 'Credit / On Account' },
     card: { usd: 0, lbp: 0, count: 0, label: 'Visa / MasterCard' },
-    bank_transfer: { usd: 0, lbp: 0, count: 0, label: 'Bank Transfer / Whish' },
+    whish: { usd: 0, lbp: 0, count: 0, label: 'Whish Money' },
+    bank_transfer: { usd: 0, lbp: 0, count: 0, label: 'Bank Transfer' },
     check: { usd: 0, lbp: 0, count: 0, label: 'Bank Cheque' }
   };
 
@@ -728,6 +729,10 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
           tenderMap.card.usd += pAmt;
           tenderMap.card.lbp += pAmt * exchangeRate;
           tenderMap.card.count += 1;
+        } else if (pType.includes('whish')) {
+          tenderMap.whish.usd += pAmt;
+          tenderMap.whish.lbp += pAmt * exchangeRate;
+          tenderMap.whish.count += 1;
         } else if (
           pType.includes('account') ||
           pType.includes('credit') ||
@@ -739,7 +744,6 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
           tenderMap.on_account.count += 1;
         } else if (
           pType.includes('transfer') ||
-          pType.includes('whish') ||
           pType.includes('omt') ||
           pType.includes('تحويل')
         ) {
@@ -779,7 +783,11 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
         tenderMap.card.usd += invGrand;
         tenderMap.card.lbp += invGrand * exchangeRate;
         tenderMap.card.count += 1;
-      } else if (pMethod.includes('transfer') || pMethod.includes('whish') || pMethod.includes('omt')) {
+      } else if (pMethod.includes('whish')) {
+        tenderMap.whish.usd += invGrand;
+        tenderMap.whish.lbp += invGrand * exchangeRate;
+        tenderMap.whish.count += 1;
+      } else if (pMethod.includes('transfer') || pMethod.includes('omt') || pMethod.includes('تحويل')) {
         tenderMap.bank_transfer.usd += invGrand;
         tenderMap.bank_transfer.lbp += invGrand * exchangeRate;
         tenderMap.bank_transfer.count += 1;
@@ -886,11 +894,15 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
       tenderMap.card.usd += amtUsd;
       tenderMap.card.lbp += amtLbp;
       tenderMap.card.count += 1;
+    } else if (methodStr.includes('whish')) {
+      tenderMap.whish.usd += amtUsd;
+      tenderMap.whish.lbp += amtLbp;
+      tenderMap.whish.count += 1;
     } else if (methodStr.includes('check') || methodStr.includes('cheque') || methodStr.includes('شيك')) {
       tenderMap.check.usd += amtUsd;
       tenderMap.check.lbp += amtLbp;
       tenderMap.check.count += 1;
-    } else if (methodStr.includes('transfer') || methodStr.includes('whish') || methodStr.includes('omt')) {
+    } else if (methodStr.includes('transfer') || methodStr.includes('bank') || methodStr.includes('omt')) {
       tenderMap.bank_transfer.usd += amtUsd;
       tenderMap.bank_transfer.lbp += amtLbp;
       tenderMap.bank_transfer.count += 1;
