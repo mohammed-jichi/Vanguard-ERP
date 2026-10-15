@@ -132,6 +132,10 @@ export interface CashMovement {
   isVoided?: boolean;
   voidReason?: string;
   voidedAt?: string;
+  date?: string;
+  status?: string;
+  closedInZReport?: boolean;
+  shiftClosed?: boolean;
 }
 
 export interface TenderCollection {
@@ -167,12 +171,26 @@ export interface MainReadingSummary {
   netSalesUsd: number;
   invoiceCount: number;
 
+  // Invoice Range Summary
+  firstInvoiceNo: string;
+  lastInvoiceNo: string;
+  invoiceRangeText: string;
+
   // Sales by Transaction Type
   salesByTransactionType: {
     localUsd: number;
     internationalUsd: number;
     onlineUsd: number;
   };
+
+  // Settlement Mode Breakdown
+  settlementMode: {
+    cashSalesUsd: number;
+    creditSalesUsd: number;
+    cardSalesUsd: number;
+  };
+
+  workingDate?: string;
 
   // 2. Returns / Credit Notes
   returnsCreditNotesUsd: number;
@@ -737,6 +755,79 @@ export function getShiftHistory(): PosShift[] {
 }
 
 /**
+ * Checks if a given date string or ISO timestamp matches the target YYYY-MM-DD date.
+ */
+export function isDateMatching(dateValue: any, targetDate: string): boolean {
+  if (!dateValue || !targetDate) return false;
+  if (typeof dateValue === 'string') {
+    if (dateValue === targetDate) return true;
+    if (dateValue.startsWith(targetDate)) return true;
+    const parsed = new Date(dateValue);
+    if (!isNaN(parsed.getTime())) {
+      const isoDate = parsed.toISOString().split('T')[0];
+      if (isoDate === targetDate) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Evaluates whether an invoice qualifies for the current shift/working-date Main Reading
+ */
+export function isInvoicePostedToday(inv: any, activeWorkingDate: string): boolean {
+  if (!inv) return false;
+  const statusStr = (inv.status || '').toUpperCase();
+  const isPosted =
+    (statusStr === 'POSTED' || inv.is_posted === true || inv.posted === true) &&
+    statusStr !== 'DRAFT' &&
+    statusStr !== 'HOLD';
+  if (!isPosted) return false;
+
+  const matchesDate =
+    isDateMatching(inv.date, activeWorkingDate) ||
+    isDateMatching(inv.createdAt, activeWorkingDate);
+  if (!matchesDate) return false;
+
+  if (inv.closedInZReport === true || inv.shiftClosed === true) return false;
+
+  return true;
+}
+
+/**
+ * Evaluates whether a customer receipt qualifies for the current shift/working-date Main Reading
+ */
+export function isReceiptPostedToday(rct: any, activeWorkingDate: string): boolean {
+  if (!rct || rct.isVoided === true) return false;
+  const statusStr = (rct.status || 'POSTED').toUpperCase();
+  if (statusStr === 'VOID' || statusStr === 'DRAFT') return false;
+
+  const matchesDate =
+    isDateMatching(rct.date, activeWorkingDate) ||
+    isDateMatching(rct.createdAt, activeWorkingDate);
+  if (!matchesDate) return false;
+
+  if (rct.closedInZReport === true || rct.shiftClosed === true) return false;
+
+  return true;
+}
+
+/**
+ * Evaluates whether a cash movement qualifies for the current shift/working-date Main Reading
+ */
+export function isCashMovementToday(m: any, activeWorkingDate: string): boolean {
+  if (!m || m.isVoided === true) return false;
+
+  const matchesDate =
+    isDateMatching(m.date, activeWorkingDate) ||
+    isDateMatching(m.createdAt, activeWorkingDate);
+  if (!matchesDate) return false;
+
+  if (m.closedInZReport === true || m.shiftClosed === true) return false;
+
+  return true;
+}
+
+/**
  * Closes an active shift and generates a fresh session (Z-Report closing)
  */
 export async function closeShiftSession(
@@ -744,8 +835,11 @@ export async function closeShiftSession(
   actualCountedUsd: number,
   actualCountedLbp: number,
   summary: MainReadingSummary,
-  tenantId?: string
-): Promise<{ closedShift: PosShift; newShift: PosShift }> {
+  tenantId?: string,
+  includedInvoices?: any[],
+  includedPaidInOut?: any[],
+  includedReceipts?: any[]
+): Promise<{ closedShift: PosShift; newShift: PosShift; closedInvoiceIds: string[] }> {
   const closedShift: PosShift = {
     ...shift,
     closedAt: new Date().toISOString(),
@@ -766,7 +860,72 @@ export async function closeShiftSession(
     } catch {}
   }
 
-  // 2. Create fresh next shift session
+  // 2. Mark included transactions with closedInZReport: true
+  const closedInvoiceIds: string[] = [];
+  if (includedInvoices && includedInvoices.length > 0) {
+    includedInvoices.forEach((inv) => {
+      inv.closedInZReport = true;
+      inv.shiftClosed = true;
+      if (inv.id) closedInvoiceIds.push(inv.id);
+      if (inv.invoiceNumber && !closedInvoiceIds.includes(inv.invoiceNumber)) {
+        closedInvoiceIds.push(inv.invoiceNumber);
+      }
+    });
+
+    if (typeof window !== 'undefined') {
+      try {
+        const storageKeys = ['vanguard_invoices_directory', 'vanguard_pos_invoices', 'vanguard_sales_invoices'];
+        storageKeys.forEach((key) => {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const list = JSON.parse(raw);
+            if (Array.isArray(list)) {
+              list.forEach((i: any) => {
+                if (closedInvoiceIds.includes(i.id) || closedInvoiceIds.includes(i.invoiceNumber)) {
+                  i.closedInZReport = true;
+                  i.shiftClosed = true;
+                }
+              });
+              localStorage.setItem(key, JSON.stringify(list));
+            }
+          }
+        });
+      } catch (e) {
+        console.warn('Error archiving invoices on shift close:', e);
+      }
+    }
+  }
+
+  // Mark included cash movements
+  if (includedPaidInOut && includedPaidInOut.length > 0) {
+    const currentM = getCashMovements();
+    const movementIds = includedPaidInOut.map((m) => m.id || m.movementNo);
+    currentM.forEach((m) => {
+      if (movementIds.includes(m.id) || movementIds.includes(m.movementNo)) {
+        m.closedInZReport = true;
+        m.shiftClosed = true;
+      }
+    });
+    saveCashMovements(currentM);
+  }
+
+  // Mark included customer receipts
+  if (includedReceipts && includedReceipts.length > 0) {
+    try {
+      const { getCustomerReceipts, saveCustomerReceipts } = await import('@/lib/customerSalesService');
+      const currentR = getCustomerReceipts();
+      const receiptIds = includedReceipts.map((r) => r.id || r.receiptNo);
+      currentR.forEach((r) => {
+        if (receiptIds.includes(r.id) || receiptIds.includes(r.receiptNo)) {
+          r.closedInZReport = true;
+          r.shiftClosed = true;
+        }
+      });
+      saveCustomerReceipts(currentR);
+    } catch {}
+  }
+
+  // 3. Create fresh next shift session
   const today = new Date();
   const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
   const nextShiftNumber = shift.shiftNumber + 1;
@@ -802,7 +961,7 @@ export async function closeShiftSession(
     notes: `Opening cash balance carried over from Shift #${shift.shiftNumber}`
   }, tenantId);
 
-  return { closedShift, newShift };
+  return { closedShift, newShift, closedInvoiceIds };
 }
 
 /**
@@ -818,7 +977,8 @@ export function computeMainReadingSummary({
   openingFloatLbp,
   actualCountedUsd,
   actualCountedLbp,
-  exchangeRate = POS_EXCHANGE_RATE_LBP
+  exchangeRate = POS_EXCHANGE_RATE_LBP,
+  workingDate
 }: {
   readingType: 'X' | 'Z';
   shift: PosShift;
@@ -830,6 +990,7 @@ export function computeMainReadingSummary({
   actualCountedUsd: number;
   actualCountedLbp: number;
   exchangeRate?: number;
+  workingDate?: string;
 }): MainReadingSummary {
   // Filter invoices for active shift or today
   // Standard invoices vs Credit notes
@@ -1092,6 +1253,32 @@ export function computeMainReadingSummary({
     }))
     .sort((a, b) => b.amountUsd - a.amountUsd);
 
+  // Invoice range calculation
+  const standardInvoices = invoices.filter(
+    (inv) =>
+      inv.transactionType !== 'Credit Note' &&
+      !inv.invoiceNumber?.startsWith('CRN-') &&
+      (inv.grandTotal === undefined || inv.grandTotal >= 0)
+  );
+  const sortedInvoices = [...standardInvoices].sort((a, b) =>
+    (a.invoiceNumber || a.id || '').localeCompare(b.invoiceNumber || b.id || '')
+  );
+  const firstInvoiceNo = sortedInvoices[0]?.invoiceNumber || sortedInvoices[0]?.id || '';
+  const lastInvoiceNo =
+    sortedInvoices[sortedInvoices.length - 1]?.invoiceNumber ||
+    sortedInvoices[sortedInvoices.length - 1]?.id ||
+    '';
+  const invoiceRangeText =
+    sortedInvoices.length > 0
+      ? `From #${firstInvoiceNo} to #${lastInvoiceNo} (Count: ${sortedInvoices.length})`
+      : 'No Invoices';
+
+  const settlementMode = {
+    cashSalesUsd: Number(cashSalesUsd.toFixed(2)),
+    creditSalesUsd: Number((tenderMap['on_account'].usd || 0).toFixed(2)),
+    cardSalesUsd: Number((tenderMap['card'].usd || 0).toFixed(2))
+  };
+
   return {
     readingType,
     generatedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -1102,6 +1289,11 @@ export function computeMainReadingSummary({
     cashierName: shift.cashierName,
     openedAt: shift.openedAt,
     closedAt: readingType === 'Z' ? new Date().toISOString() : shift.closedAt,
+    workingDate,
+
+    firstInvoiceNo,
+    lastInvoiceNo,
+    invoiceRangeText,
 
     grossSalesUsd: Number(grossSalesUsd.toFixed(2)),
     discountsUsd: Number(discountsUsd.toFixed(2)),
@@ -1114,6 +1306,8 @@ export function computeMainReadingSummary({
       internationalUsd: Number(salesByTransactionType.internationalUsd.toFixed(2)),
       onlineUsd: Number(salesByTransactionType.onlineUsd.toFixed(2))
     },
+
+    settlementMode,
 
     returnsCreditNotesUsd: Number(returnsCreditNotesUsd.toFixed(2)),
     creditNoteCount,

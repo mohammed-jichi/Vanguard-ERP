@@ -31,7 +31,10 @@ import {
   getActiveShift,
   getCashMovements,
   recordCashMovement,
-  POS_EXCHANGE_RATE_LBP
+  POS_EXCHANGE_RATE_LBP,
+  isInvoicePostedToday,
+  isReceiptPostedToday,
+  isCashMovementToday
 } from '@/lib/posShiftService';
 import {
   DeliveryProviderRecord,
@@ -931,6 +934,7 @@ export default function AuthenticVanguardSalesWorkstation({
   const [isPaidInOutModalOpen, setIsPaidInOutModalOpen] = useState(false);
   const [printCashVoucherSnapshot, setPrintCashVoucherSnapshot] = useState<any | null>(null);
   const [isMainReadingModalOpen, setIsMainReadingModalOpen] = useState(false);
+  const [isNoTransactionsModalOpen, setIsNoTransactionsModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [salesOptions, setSalesOptions] = useState<SalesOptionsState>(DEFAULT_SALES_OPTIONS);
 
@@ -3206,7 +3210,28 @@ export default function AuthenticVanguardSalesWorkstation({
                         type="button"
                         onClick={() => {
                           setIsActionsDropdownOpen(false);
-                          setIsMainReadingModalOpen(true);
+                          const activeWorkingDate = invoiceDate || getTodayFormatted();
+                          const postedTodayInvoices = invoicesDirectory.filter((inv) =>
+                            isInvoicePostedToday(inv, activeWorkingDate)
+                          );
+                          const postedTodayReceipts = getCustomerReceipts().filter((rct) =>
+                            isReceiptPostedToday(rct, activeWorkingDate)
+                          );
+                          const todayCashMovements = getCashMovements().filter(
+                            (m) =>
+                              isCashMovementToday(m, activeWorkingDate) &&
+                              m.reasonCategory !== 'OPENING_FLOAT' &&
+                              m.category !== 'Opening Float'
+                          );
+
+                          const totalActivityCount =
+                            postedTodayInvoices.length + postedTodayReceipts.length + todayCashMovements.length;
+
+                          if (totalActivityCount === 0) {
+                            setIsNoTransactionsModalOpen(true);
+                          } else {
+                            setIsMainReadingModalOpen(true);
+                          }
                         }}
                         className="w-full text-left px-3.5 py-1.5 hover:bg-slate-100 transition-colors cursor-pointer block text-slate-800"
                       >
@@ -6196,21 +6221,61 @@ export default function AuthenticVanguardSalesWorkstation({
       <MainReadingModal
         isOpen={isMainReadingModalOpen}
         onClose={() => setIsMainReadingModalOpen(false)}
-        invoices={invoicesDirectory}
-        paidInOutList={getCashMovements()}
-        customerReceipts={getCustomerReceipts()}
+        invoices={invoicesDirectory.filter((inv) =>
+          isInvoicePostedToday(inv, invoiceDate || getTodayFormatted())
+        )}
+        paidInOutList={getCashMovements().filter((m) =>
+          isCashMovementToday(m, invoiceDate || getTodayFormatted())
+        )}
+        customerReceipts={getCustomerReceipts().filter((rct) =>
+          isReceiptPostedToday(rct, invoiceDate || getTodayFormatted())
+        )}
+        workingDate={invoiceDate || getTodayFormatted()}
         branchName={BRANCH_OPTIONS.find((b) => b.id === selectedBranch)?.name || 'Southern Olive and Oil Products S.A.R.L.'}
         cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
         tenantId={currentTenant?.id}
         printerType={salesOptions.printer_type}
-        onShiftClosed={(closedShift, newShift) => {
+        onShiftClosed={(closedShift, newShift, closedIds) => {
           setDrawerCashBalance(newShift.openingCashUsd);
+          if (closedIds && closedIds.length > 0) {
+            setInvoicesDirectory((prev) =>
+              prev.map((inv) =>
+                closedIds.includes(inv.id) || closedIds.includes(inv.invoiceNumber)
+                  ? { ...inv, closedInZReport: true, shiftClosed: true }
+                  : inv
+              )
+            );
+          }
           setStatusNotice(
             `Shift #${closedShift.shiftNumber} closed! Shift #${newShift.shiftNumber} opened with opening cash $${newShift.openingCashUsd.toFixed(2)}.`
           );
           setTimeout(() => setStatusNotice(null), 4000);
         }}
       />
+
+      {/* ========================================================================= */}
+      {/* NO TRANSACTIONS EMPTY-STATE GUARD DIALOG                                  */}
+      {/* ========================================================================= */}
+      {isNoTransactionsModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-xl shadow-2xl border border-slate-300 w-full max-w-sm p-6 text-center text-slate-800">
+            <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-3 text-slate-600">
+              <Receipt className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900 mb-1.5">No Transactions.</h3>
+            <p className="text-xs text-slate-500 mb-5 leading-relaxed">
+              No posted invoices, customer receipts, or cash movements recorded for the current working date / shift ({invoiceDate || getTodayFormatted()}).
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsNoTransactionsModalOpen(false)}
+              className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-md transition-colors cursor-pointer shadow-xs"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* CONFIRMATION DIALOG FOR UNPOSTING INVOICE (VANGUARD POS PATTERN)           */}

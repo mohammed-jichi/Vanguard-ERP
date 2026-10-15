@@ -56,7 +56,11 @@ export interface CustomerReceipt {
   journalEntryId?: string;
   cashierName?: string;
   createdAt: string;
+  date?: string;
+  status?: string;
   isVoided?: boolean;
+  closedInZReport?: boolean;
+  shiftClosed?: boolean;
 }
 
 export function generateNextReceiptNumber(): string {

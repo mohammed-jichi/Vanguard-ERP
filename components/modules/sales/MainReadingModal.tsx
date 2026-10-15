@@ -46,11 +46,12 @@ interface MainReadingModalProps {
   invoices: any[];
   paidInOutList: any[];
   customerReceipts: any[];
+  workingDate?: string;
   branchName?: string;
   cashierName?: string;
   tenantId?: string;
   printerType?: 'a4' | 'thermal' | 'a5' | 'dot_matrix';
-  onShiftClosed?: (closedShift: PosShift, newShift: PosShift) => void;
+  onShiftClosed?: (closedShift: PosShift, newShift: PosShift, closedInvoiceIds: string[]) => void;
 }
 
 export default function MainReadingModal({
@@ -59,6 +60,7 @@ export default function MainReadingModal({
   invoices,
   paidInOutList,
   customerReceipts,
+  workingDate,
   branchName = 'Southern Olive and Oil Products S.A.R.L.',
   cashierName = 'Active Cashier',
   tenantId,
@@ -134,7 +136,8 @@ export default function MainReadingModal({
       openingFloatLbp: openingLbp,
       actualCountedUsd: countedUsd,
       actualCountedLbp: countedLbp,
-      exchangeRate: POS_EXCHANGE_RATE_LBP
+      exchangeRate: POS_EXCHANGE_RATE_LBP,
+      workingDate
     });
   }, [
     readingType,
@@ -196,7 +199,10 @@ export default function MainReadingModal({
         countedUsd,
         countedLbp,
         summary,
-        tenantId
+        tenantId,
+        invoices,
+        summary.paidInOutList,
+        customerReceipts
       );
 
       toast.success(
@@ -209,7 +215,7 @@ export default function MainReadingModal({
       }, 500);
 
       if (onShiftClosed) {
-        onShiftClosed(result.closedShift, result.newShift);
+        onShiftClosed(result.closedShift, result.newShift, result.closedInvoiceIds);
       }
 
       onClose();
@@ -390,8 +396,8 @@ export default function MainReadingModal({
                   <div className="text-lg font-black text-blue-950 font-mono mt-0.5">
                     ${summary.grossSalesUsd.toFixed(2)}
                   </div>
-                  <span className="text-[10px] text-blue-600 font-medium">
-                    {summary.invoiceCount} invoices issued
+                  <span className="text-[10px] text-blue-600 font-medium block truncate">
+                    {summary.invoiceRangeText}
                   </span>
                 </div>
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3">
@@ -927,7 +933,7 @@ export default function MainReadingModal({
                     منتوجات زيت وزيتون الجنوب ش.م.م
                   </p>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest">
-                    Vanguard ERP Commercial System
+                    Facility: [1300-01] Main • Vanguard ERP Commercial System
                   </p>
                   <div className="pt-2">
                     <span className="inline-block px-3 py-1 font-black text-xs uppercase border border-slate-900 bg-slate-100 rounded">
@@ -939,49 +945,104 @@ export default function MainReadingModal({
                 {/* Shift Details Box */}
                 <div className="grid grid-cols-2 gap-2 text-[11px] border-b border-slate-300 pb-3">
                   <div>
+                    <p>Facility: <strong className="font-bold">[1300-01] Main</strong></p>
                     <p>Branch: <strong className="font-bold">{summary.branch}</strong></p>
                     <p>Terminal: <strong className="font-bold">{summary.workstation}</strong></p>
-                    <p>Cashier: <strong className="font-bold">{summary.cashierName}</strong></p>
+                    <p>Cashier / User: <strong className="font-bold">{summary.cashierName}</strong></p>
                   </div>
                   <div className="text-right">
                     <p>Reading Slip #: <strong className="font-mono font-bold text-slate-900">{readingSlipNumber}</strong></p>
                     <p>Shift #: <strong className="font-mono font-bold">{summary.shiftNumber}</strong></p>
-                    <p>Shift ID: <span className="font-mono">{summary.shiftId}</span></p>
+                    <p>Working Date: <strong className="font-mono font-bold">{workingDate || summary.workingDate || new Date().toISOString().split('T')[0]}</strong></p>
                     <p>Printed: <span className="font-mono">{summary.generatedAt}</span></p>
                   </div>
                 </div>
 
-                {/* 1. Financial Turnover Breakdown */}
+                {/* Section 1 — Sales Totals (ملخص المبيعات) */}
                 <div className="space-y-1 text-xs">
-                  <div className="font-bold uppercase text-[10px] tracking-wider text-slate-700 border-b border-slate-200 pb-1">
-                    1. Financial Sales Turnover
+                  <div className="font-bold uppercase text-[10px] tracking-wider text-slate-800 border-b border-slate-200 pb-1 flex justify-between items-center">
+                    <span>1. Sales Totals (ملخص المبيعات)</span>
+                    <span className="font-mono font-semibold text-slate-600">{summary.invoiceRangeText}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Gross Sales:</span>
                     <span className="font-mono font-bold">${summary.grossSalesUsd.toFixed(2)} USD</span>
                   </div>
                   <div className="flex justify-between text-red-700">
-                    <span>Discounts:</span>
+                    <span>(-) Total Discounts:</span>
                     <span className="font-mono">-${summary.discountsUsd.toFixed(2)} USD</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Tax (VAT 11%):</span>
-                    <span className="font-mono">+${summary.taxUsd.toFixed(2)} USD</span>
-                  </div>
                   <div className="flex justify-between text-red-700">
-                    <span>Returns / Credit Notes:</span>
+                    <span>(-) Credit Notes / Returns:</span>
                     <span className="font-mono">-${summary.returnsCreditNotesUsd.toFixed(2)} USD</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span>(+) Tax / VAT:</span>
+                    <span className="font-mono">+${summary.taxUsd.toFixed(2)} USD</span>
+                  </div>
                   <div className="flex justify-between font-bold border-t border-slate-400 pt-1 text-sm text-slate-950">
-                    <span>Final Net Sales Turnover:</span>
+                    <span>= Net Sales (صافي المبيعات الفعلية):</span>
                     <span className="font-mono">${summary.finalTurnoverUsd.toFixed(2)} USD</span>
                   </div>
                 </div>
 
-                {/* 2. Collections by Tender */}
+                {/* Section 2 — Sales Breakdown by Type, Division & Payment Mode */}
+                <div className="space-y-1.5 text-xs pt-2">
+                  <div className="font-bold uppercase text-[10px] tracking-wider text-slate-800 border-b border-slate-200 pb-1">
+                    2. Sales Breakdown by Type, Division & Settlement Mode
+                  </div>
+                  {/* By Transaction Type */}
+                  <div className="bg-slate-50 p-2 rounded text-[11px] space-y-0.5">
+                    <div className="font-semibold text-slate-700 text-[10px] uppercase">By Transaction Type:</div>
+                    <div className="flex justify-between">
+                      <span>Local Sales:</span>
+                      <span className="font-mono font-bold">${summary.salesByTransactionType.localUsd.toFixed(2)} USD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>International / Export:</span>
+                      <span className="font-mono font-bold">${summary.salesByTransactionType.internationalUsd.toFixed(2)} USD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Online / Delivery:</span>
+                      <span className="font-mono font-bold">${summary.salesByTransactionType.onlineUsd.toFixed(2)} USD</span>
+                    </div>
+                  </div>
+
+                  {/* By Division */}
+                  <div className="bg-slate-50 p-2 rounded text-[11px] space-y-0.5">
+                    <div className="font-semibold text-slate-700 text-[10px] uppercase">By Division:</div>
+                    {summary.divisionBreakdown.map((div, i) => (
+                      <div key={i} className="flex justify-between">
+                        <span>{div.division} ({div.itemCount} items):</span>
+                        <span className="font-mono font-bold">${div.amountUsd.toFixed(2)} USD ({div.percentage}%)</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* By Settlement Mode */}
+                  <div className="bg-slate-50 p-2 rounded text-[11px] space-y-0.5">
+                    <div className="font-semibold text-slate-700 text-[10px] uppercase">By Settlement Mode:</div>
+                    <div className="flex justify-between">
+                      <span>Cash Sales:</span>
+                      <span className="font-mono font-bold">${summary.settlementMode.cashSalesUsd.toFixed(2)} USD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Credit / On Account Sales (ذمم):</span>
+                      <span className="font-mono font-bold">${summary.settlementMode.creditSalesUsd.toFixed(2)} USD</span>
+                    </div>
+                    {summary.settlementMode.cardSalesUsd > 0 && (
+                      <div className="flex justify-between">
+                        <span>Credit Card Sales:</span>
+                        <span className="font-mono font-bold">${summary.settlementMode.cardSalesUsd.toFixed(2)} USD</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Section 3 — Collections by Payment Method (تفصيل طرق الدفع) */}
                 <div className="space-y-1 text-xs pt-2">
-                  <div className="font-bold uppercase text-[10px] tracking-wider text-slate-700 border-b border-slate-200 pb-1">
-                    2. Collections by Tender (المقبوضات)
+                  <div className="font-bold uppercase text-[10px] tracking-wider text-slate-800 border-b border-slate-200 pb-1">
+                    3. Collections by Payment Method (تفصيل طرق الدفع)
                   </div>
                   {summary.collectionsByTender.map((t, idx) => (
                     <div key={idx} className="flex justify-between text-[11px]">
@@ -991,62 +1052,56 @@ export default function MainReadingModal({
                   ))}
                 </div>
 
-                {/* 3. Customer Debt Receipts */}
+                {/* Section 4 — Non-Sales Drawer Movements (حركات الصندوق النثرية) */}
                 <div className="space-y-1 text-xs pt-2">
-                  <div className="font-bold uppercase text-[10px] tracking-wider text-slate-700 border-b border-slate-200 pb-1">
-                    3. Customer Debt Receipts (سندات القبض)
+                  <div className="font-bold uppercase text-[10px] tracking-wider text-slate-800 border-b border-slate-200 pb-1">
+                    4. Non-Sales Drawer Movements (حركات الصندوق النثرية)
                   </div>
                   <div className="flex justify-between text-[11px]">
-                    <span>Receipts Collected ({summary.customerReceiptsCount}):</span>
-                    <span className="font-mono font-bold">${summary.customerReceiptsTotalUsd.toFixed(2)} USD</span>
+                    <span>(+) Opening Float:</span>
+                    <span className="font-mono font-bold">+${summary.openingFloatUsd.toFixed(2)} USD</span>
+                  </div>
+                  <div className="flex justify-between text-[11px]">
+                    <span>(+) Paid In:</span>
+                    <span className="font-mono font-bold">+${summary.paidInTotalUsd.toFixed(2)} USD</span>
+                  </div>
+                  <div className="flex justify-between text-[11px]">
+                    <span>(+) Customer Receipts (مقبوضات تسديد ذمم سابقة):</span>
+                    <span className="font-mono font-bold">+${summary.customerReceiptsTotalUsd.toFixed(2)} USD</span>
+                  </div>
+                  <div className="flex justify-between text-[11px] text-red-700">
+                    <span>(-) Paid Out:</span>
+                    <span className="font-mono font-bold">-${summary.paidOutTotalUsd.toFixed(2)} USD</span>
                   </div>
                 </div>
 
-                {/* 4. Cash Drawer Reconciliation Formula */}
-                <div className="space-y-1 text-xs pt-2 border-t-2 border-slate-900">
+                {/* Section 5 — Final Net Cash in Drawer (الرصيد الفعلي المطلوب بالصندوق) */}
+                <div className="space-y-1.5 text-xs pt-2 border-t-2 border-slate-900">
                   <div className="font-bold uppercase text-[10px] tracking-wider text-slate-900 border-b border-slate-200 pb-1">
-                    4. Cash Drawer Reconciliation (مطابقة الصندوق)
+                    5. Final Net Cash in Drawer (الرصيد الفعلي المطلوب بالصندوق)
                   </div>
-                  <div className="flex justify-between">
-                    <span>(+) Opening Float:</span>
-                    <span className="font-mono">${summary.openingFloatUsd.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>(+) Cash Invoiced Sales:</span>
-                    <span className="font-mono">${summary.cashSalesUsd.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>(+) Cash Customer Receipts:</span>
-                    <span className="font-mono">${summary.cashCustomerReceiptsUsd.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>(+) Paid In:</span>
-                    <span className="font-mono">${summary.paidInTotalUsd.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-red-700">
-                    <span>(-) Cash Refunds / Credit Notes:</span>
-                    <span className="font-mono">-${summary.cashRefundsUsd.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-red-700">
-                    <span>(-) Paid Out (Expenses):</span>
-                    <span className="font-mono">-${summary.paidOutTotalUsd.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between font-bold border-t border-slate-300 pt-1 text-slate-950">
-                    <span>Expected Cash in Drawer:</span>
-                    <span className="font-mono">${summary.expectedCashUsd.toFixed(2)} USD</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-slate-950">
-                    <span>Actual Counted Cash:</span>
-                    <span className="font-mono">${summary.actualCountedUsd.toFixed(2)} USD</span>
-                  </div>
-                  <div className="flex justify-between font-black text-sm border-t border-slate-400 pt-1">
-                    <span>Variance (Short / Over):</span>
-                    <span className="font-mono">
-                      {summary.varianceUsd >= 0 ? '+' : ''}${summary.varianceUsd.toFixed(2)} USD
-                    </span>
-                  </div>
-                  <div className="text-[10px] text-slate-500 font-mono text-right">
-                    Equivalent: {summary.expectedCashLbp.toLocaleString()} LBP expected
+                  <div className="bg-slate-50 p-2.5 rounded border border-slate-200 space-y-1 text-[11px]">
+                    <div className="text-[10px] text-slate-500 font-mono">
+                      Formula: (Opening + Cash Sales + Cash Receipts + Paid In) - (Cash Returns + Paid Out)
+                    </div>
+                    <div className="flex justify-between font-bold text-slate-950 text-xs">
+                      <span>Net Cash USD in Drawer:</span>
+                      <span className="font-mono text-sm">${summary.expectedCashUsd.toFixed(2)} USD</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-slate-950 text-xs">
+                      <span>Net Cash LBP in Drawer:</span>
+                      <span className="font-mono text-sm">{summary.expectedCashLbp.toLocaleString()} LBP</span>
+                    </div>
+                    <div className="flex justify-between border-t border-slate-200 pt-1 text-slate-700">
+                      <span>Actual Counted Cash:</span>
+                      <span className="font-mono">${summary.actualCountedUsd.toFixed(2)} USD ({summary.actualCountedLbp.toLocaleString()} LBP)</span>
+                    </div>
+                    <div className="flex justify-between font-black border-t border-slate-300 pt-1 text-slate-950">
+                      <span>Variance (Short / Over):</span>
+                      <span className="font-mono">
+                        {summary.varianceUsd >= 0 ? '+' : ''}${summary.varianceUsd.toFixed(2)} USD ({summary.varianceLbp >= 0 ? '+' : ''}{summary.varianceLbp.toLocaleString()} LBP)
+                      </span>
+                    </div>
                   </div>
                 </div>
 
