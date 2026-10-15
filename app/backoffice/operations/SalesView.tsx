@@ -5,7 +5,7 @@ import { printElementById } from '@/lib/utils/printDocument';
 import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber, formatDocLabel } from '@/lib/utils/documentSequence';
 import SalesOptionsModal from '@/components/modules/sales/SalesOptionsModal';
 import MainReadingModal from '@/components/modules/sales/MainReadingModal';
-import PaidInOutModal from '@/components/modules/sales/PaidInOutModal';
+import PaidInOutModal, { PrintableCashVoucher } from '@/components/modules/sales/PaidInOutModal';
 import CustomerReceiptsModal from '@/components/modules/sales/CustomerReceiptsModal';
 import CustomerAgedModal from '@/components/modules/sales/CustomerAgedModal';
 import CustomerPricingModal from '@/components/modules/sales/CustomerPricingModal';
@@ -929,6 +929,7 @@ export default function AuthenticVanguardSalesWorkstation({
   const [isCustomerAgedModalOpen, setIsCustomerAgedModalOpen] = useState(false);
   const [isCustomerReceiptsModalOpen, setIsCustomerReceiptsModalOpen] = useState(false);
   const [isPaidInOutModalOpen, setIsPaidInOutModalOpen] = useState(false);
+  const [printCashVoucherSnapshot, setPrintCashVoucherSnapshot] = useState<any | null>(null);
   const [isMainReadingModalOpen, setIsMainReadingModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [salesOptions, setSalesOptions] = useState<SalesOptionsState>(DEFAULT_SALES_OPTIONS);
@@ -6167,6 +6168,8 @@ export default function AuthenticVanguardSalesWorkstation({
         isOpen={isPaidInOutModalOpen}
         onClose={() => setIsPaidInOutModalOpen(false)}
         tenantId={currentTenant?.id}
+        cashierName={profile?.name || invoiceSalesman || 'Active Cashier'}
+        setPrintCashVoucherSnapshot={setPrintCashVoucherSnapshot}
         onMovementRecorded={(movement: any) => {
           setDrawerCashBalance((prev) =>
             movement.type === 'PAID_IN' ? prev + movement.amountUsd : Math.max(0, prev - movement.amountUsd)
@@ -6177,6 +6180,15 @@ export default function AuthenticVanguardSalesWorkstation({
           setTimeout(() => setStatusNotice(null), 3500);
         }}
       />
+
+      {/* ========================================================================= */}
+      {/* ALWAYS-MOUNTED OFF-SCREEN CASH VOUCHER PRINT CONTAINER                    */}
+      {/* ========================================================================= */}
+      <div className="fixed left-[-9999px] top-0 pointer-events-none" aria-hidden="true">
+        <div id="printable-cash-voucher">
+          <PrintableCashVoucher voucher={printCashVoucherSnapshot} />
+        </div>
+      </div>
 
       {/* ========================================================================= */}
       {/* 17. MAIN READING (X/Z READING) MODAL (UNIFIED COMPONENT)                  */}

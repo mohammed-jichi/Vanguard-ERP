@@ -30,6 +30,23 @@ export function printElementById(elementId: string, title: string = 'Vanguard Do
     .map((el) => el.outerHTML)
     .join('\n');
 
+  // Clone element to strip hidden, sr-only, and off-screen positioning classes
+  const cloned = element.cloneNode(true) as HTMLElement;
+  cloned.classList.remove('hidden', 'sr-only', 'invisible', 'opacity-0', 'fixed');
+  // Strip offscreen utility classes if present
+  Array.from(cloned.classList).forEach((cls) => {
+    if (cls.includes('[-9999px]') || cls.startsWith('left-') || cls.startsWith('top-') || cls === 'hidden') {
+      cloned.classList.remove(cls);
+    }
+  });
+  cloned.style.display = 'block';
+  cloned.style.visibility = 'visible';
+  cloned.style.opacity = '1';
+  cloned.style.position = 'static';
+  cloned.style.left = 'auto';
+  cloned.style.top = 'auto';
+  cloned.style.width = '100%';
+
   doc.open();
   doc.write(`
     <!DOCTYPE html>
@@ -48,6 +65,15 @@ export function printElementById(elementId: string, title: string = 'Vanguard Do
             overflow: visible !important;
             height: auto !important;
           }
+          #${elementId} {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: static !important;
+            left: auto !important;
+            top: auto !important;
+            width: 100% !important;
+          }
           body * {
             visibility: visible !important;
           }
@@ -55,7 +81,7 @@ export function printElementById(elementId: string, title: string = 'Vanguard Do
         </style>
       </head>
       <body>
-        ${element.outerHTML}
+        ${cloned.outerHTML}
       </body>
     </html>
   `);
