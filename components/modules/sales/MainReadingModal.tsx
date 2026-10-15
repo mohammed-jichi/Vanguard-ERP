@@ -40,6 +40,7 @@ import {
   SHIFT_UPDATED_EVENT,
   CASH_MOVEMENTS_UPDATED_EVENT
 } from '@/lib/posShiftService';
+import { calculateMainReadingSummary } from '@/lib/engine/erpCalculationEngine';
 
 interface MainReadingModalProps {
   isOpen: boolean;
@@ -123,7 +124,7 @@ export default function MainReadingModal({
       ? liveMovements
       : (paidInOutList && paidInOutList.length > 0 ? paidInOutList : getCashMovements());
 
-    return computeMainReadingSummary({
+    return calculateMainReadingSummary({
       readingType,
       shift: {
         ...activeShift,
@@ -138,8 +139,8 @@ export default function MainReadingModal({
       actualCountedUsd: countedUsd,
       actualCountedLbp: countedLbp,
       exchangeRate: POS_EXCHANGE_RATE_LBP,
-      workingDate
-    });
+      activeWorkingDate: workingDate
+    }) as unknown as MainReadingSummary;
   }, [
     readingType,
     activeShift,

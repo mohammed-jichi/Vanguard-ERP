@@ -5,6 +5,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 import { printElementById } from '@/lib/utils/printDocument';
+import { calculateDocumentTotals, resolveItemUnitPrice } from '@/lib/engine/erpCalculationEngine';
 import {
   Search,
   Plus,
@@ -442,7 +443,7 @@ export const DESKTOP_ITEMS_PRESET = [
   { name: 'Mixtures', type: 'File folder', date: '07-Apr-26 5:26 PM', size: '' },
   { name: 'New folder', type: 'File folder', date: '22-Jul-26 9:12 PM', size: '' },
   { name: 'ODb11gr2', type: 'File folder', date: '30-Jun-26 3:21 PM', size: '' },
-  { name: 'Omega Software Reset', type: 'File folder', date: '24-Jun-26 5:51 PM', size: '' },
+  { name: 'Vanguard Software Reset', type: 'File folder', date: '24-Jun-26 5:51 PM', size: '' },
   { name: 'PDF Invoices', type: 'File folder', date: '05-Jun-26 4:40 PM', size: '' },
   { name: 'Quotations', type: 'File folder', date: '20-Feb-26 10:50 AM', size: '' },
   { name: 'Sales', type: 'File folder', date: '26-Jan-26 10:10 AM', size: '' },
@@ -892,10 +893,10 @@ export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
 ];
 
 interface QuotationWorkstationProps {
-  withOmegaSidebar?: boolean;
+  withVanguardSidebar?: boolean;
 }
 
-export default function QuotationWorkstation({ withOmegaSidebar = false }: QuotationWorkstationProps) {
+export default function QuotationWorkstation({ withVanguardSidebar = false }: QuotationWorkstationProps) {
   const { t, dir } = useLanguage();
   // Quotation header state
   const [quotationNo, setQuotationNo] = useState(() => peekNextDocNumber('QUOTATION', INITIAL_QUOTATIONS));
@@ -906,7 +907,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
   const customerDropdownRef = useRef<HTMLDivElement>(null);
   const [linkedEventName, setLinkedEventName] = useState<string>('');
 
-  // Sync event from URL search params or localStorage (Omega ERP EVNT_FOR_NEWQUOT)
+  // Sync event from URL search params or localStorage (Vanguard ERP EVNT_FOR_NEWQUOT)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -1339,38 +1340,43 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
   }, [activeCategory, activeDivision, activeGroup, catalogSearch]);
 
 
-  // Calculations
-  const subtotalUSD = useMemo(() => {
-    return quotationItems.reduce((sum, item) => sum + item.total, 0);
-  }, [quotationItems]);
+  // Central Calculation Engine
+  const quotationTotals = useMemo(() => {
+    return calculateDocumentTotals({
+      items: quotationItems.map((q) => ({
+        id: q.id,
+        code: q.item.code,
+        name: q.item.name,
+        qty: q.qty,
+        unitPrice: q.unitPrice,
+        discountPercent: (q as any).discountPercent || 0,
+        discountAmount: (q as any).discountAmount || 0
+      })),
+      overallDiscountPercent: discountPercent > 0 ? discountPercent : undefined,
+      overallDiscountAmountManual: discountPercent <= 0 ? discountAmountManual : undefined,
+      isTaxEnabled: isTaxEnabled,
+      taxRate: 0.11,
+      exchangeRate: LBP_RATE,
+      secondaryDecimalPlaces: 0
+    });
+  }, [quotationItems, discountPercent, discountAmountManual, isTaxEnabled, LBP_RATE]);
 
-  const calculatedDiscount = useMemo(() => {
-    if (discountPercent > 0) {
-      return (subtotalUSD * discountPercent) / 100;
-    }
-    return discountAmountManual;
-  }, [subtotalUSD, discountPercent, discountAmountManual]);
-
-  const taxAmountUSD = useMemo(() => {
-    if (!isTaxEnabled) return 0;
-    const taxable = Math.max(0, subtotalUSD - calculatedDiscount);
-    return taxable * 0.11; // 11% Lebanese VAT
-  }, [subtotalUSD, calculatedDiscount, isTaxEnabled]);
-
-  const grandTotalUSD = useMemo(() => {
-    return Math.max(0, subtotalUSD - calculatedDiscount + taxAmountUSD);
-  }, [subtotalUSD, calculatedDiscount, taxAmountUSD]);
-
-  const grandTotalLL = useMemo(() => {
-    return Math.round(grandTotalUSD * LBP_RATE);
-  }, [grandTotalUSD, LBP_RATE]);
+  const subtotalUSD = quotationTotals.grossSubtotal;
+  const calculatedDiscount = quotationTotals.totalDiscount;
+  const taxAmountUSD = quotationTotals.taxAmount;
+  const grandTotalUSD = quotationTotals.grandTotalPrimary;
+  const grandTotalLL = quotationTotals.grandTotalSecondary;
 
   // Add Item to Quotation
   const handleAddItem = (product: SalesItem) => {
-    const markupMultiplier = applyMarkupOnItem && Number(markupPercent) > 0 
-      ? 1 + Number(markupPercent) / 100 
-      : 1;
-    const basePrice = Number((product.price * markupMultiplier).toFixed(2));
+    const resolvedPriceInfo = resolveItemUnitPrice({
+      itemCode: product.code,
+      standardPrice: product.price,
+      isMarkupEnabled: applyMarkupOnItem,
+      costBasisValue: product.cost || product.price,
+      markupPercent: Number(markupPercent)
+    });
+    const basePrice = resolvedPriceInfo.unitPrice;
 
     setQuotationItems((prev) => {
       const existing = prev.find((i) => i.item.code === product.code);
@@ -1495,7 +1501,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
     notify(`Picked up quotation ${item.title || item.code} successfully!`);
   };
 
-  // Open Invoice Discount Modal (Matching Omega ERP screenshot)
+  // Open Invoice Discount Modal (Matching Vanguard ERP specifications)
   const handleOpenDiscountModal = () => {
     if (discountAmountManual > 0) {
       setDiscountActiveMode('AMOUNT_DISCOUNT');
@@ -2978,7 +2984,7 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
       )}
 
       {/* ========================================================================= */}
-      {/* INVOICE DISCOUNT MODAL (Matching User Screenshot & Omega ERP)              */}
+      {/* INVOICE DISCOUNT MODAL (Matching User Screenshot & Vanguard ERP)          */}
       {/* ========================================================================= */}
       {isDiscountModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -4734,11 +4740,24 @@ export default function QuotationWorkstation({ withOmegaSidebar = false }: Quota
                   grandTotalLL: 1074000
                 };
 
-                const calcSubtotal = doc.subtotal !== undefined ? doc.subtotal : (doc.items ? doc.items.reduce((acc, it) => acc + (it.total || 0), 0) : 0);
-                const calcDiscount = doc.discountAmount !== undefined ? doc.discountAmount : 0;
-                const calcTax = doc.taxAmount !== undefined ? doc.taxAmount : 0;
-                const calcGrandTotalUSD = doc.grandTotalUSD !== undefined ? doc.grandTotalUSD : (calcSubtotal - calcDiscount + calcTax);
-                const calcGrandTotalLL = doc.grandTotalLL !== undefined ? doc.grandTotalLL : Math.round(calcGrandTotalUSD * 89500);
+                const calcTotals = calculateDocumentTotals({
+                  items: (doc.items || []).map((it: any) => ({
+                    qty: it.qty ?? it.quantity ?? 1,
+                    unitPrice: it.unitPrice ?? it.price ?? 0,
+                    discountPercent: it.discountPercent || 0,
+                    discountAmount: it.discountAmount || 0
+                  })),
+                  overallDiscountAmountManual: doc.discountAmount,
+                  taxRate: 0.11,
+                  isTaxEnabled: doc.taxAmount !== undefined ? doc.taxAmount > 0 : true,
+                  exchangeRate: 89500,
+                  secondaryDecimalPlaces: 0
+                });
+                const calcSubtotal = doc.subtotal !== undefined ? doc.subtotal : calcTotals.grossSubtotal;
+                const calcDiscount = doc.discountAmount !== undefined ? doc.discountAmount : calcTotals.totalDiscount;
+                const calcTax = doc.taxAmount !== undefined ? doc.taxAmount : calcTotals.taxAmount;
+                const calcGrandTotalUSD = doc.grandTotalUSD !== undefined ? doc.grandTotalUSD : calcTotals.grandTotalPrimary;
+                const calcGrandTotalLL = doc.grandTotalLL !== undefined ? doc.grandTotalLL : calcTotals.grandTotalSecondary;
 
                 return (
                   <div

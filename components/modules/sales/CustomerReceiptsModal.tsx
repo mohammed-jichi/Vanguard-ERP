@@ -29,6 +29,7 @@ import {
   generateNextReceiptNumber,
   CUSTOMER_RECEIPTS_UPDATED_EVENT
 } from '@/lib/customerSalesService';
+import { calculateCustomerReceivables } from '@/lib/engine/erpCalculationEngine';
 import { POS_EXCHANGE_RATE_LBP } from '@/lib/posShiftService';
 
 interface CustomerReceiptsModalProps {
@@ -136,9 +137,16 @@ export default function CustomerReceiptsModal({
       });
   }, [effectiveInvoices, selectedCustomerId]);
 
-  const totalOutstandingCustomerDebt = useMemo(() => {
-    return unpaidInvoices.reduce((sum, inv) => sum + inv.balanceDue, 0);
-  }, [unpaidInvoices]);
+  const customerReceivables = useMemo(() => {
+    return calculateCustomerReceivables({
+      customerId: selectedCustomerId,
+      customerName: activeCustomer?.name,
+      creditLimit: (activeCustomer as any)?.creditLimit || 5000,
+      invoices: effectiveInvoices
+    });
+  }, [selectedCustomerId, activeCustomer, effectiveInvoices]);
+
+  const totalOutstandingCustomerDebt = customerReceivables.currentOpenBalance;
 
   // Handle invoice toggle in specific mode
   const handleToggleInvoice = (invId: string, balanceDue: number) => {

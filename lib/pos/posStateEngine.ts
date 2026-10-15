@@ -71,39 +71,55 @@ export interface PosFinancialSummary {
   dueLbp: number;
 }
 
+import { calculateDocumentTotals } from '@/lib/engine/erpCalculationEngine';
+
 /**
  * Calculates dual-currency financials across all transaction cart lines.
+ * Delegated to the deterministic central ERP calculation engine.
  */
 export function calculatePosFinancialSummary(
   items: PosCartItem[],
   paidUsdAmount: number = 0,
   orderDiscountPercent: number = 0
 ): PosFinancialSummary {
-  const subtotalUsd = items.reduce((sum, item) => sum + item.totalUsd, 0);
-  const discountUsd = (subtotalUsd * orderDiscountPercent) / 100;
-  const netUsd = Math.max(0, subtotalUsd - discountUsd);
-  const taxUsd = netUsd * 0.11; // Standard 11% VAT
-  const totalDueUsd = Number((netUsd + taxUsd).toFixed(2));
+  const docTotals = calculateDocumentTotals({
+    items: items.map((item) => ({
+      id: item.id,
+      code: item.barcode,
+      name: item.name,
+      qty: item.qty,
+      unitPrice: item.priceUsd,
+      discountPercent: item.discountPercent
+    })),
+    overallDiscountPercent: orderDiscountPercent,
+    taxRate: 0.11,
+    isTaxEnabled: true,
+    exchangeRate: POS_EXCHANGE_RATE
+  });
+
+  const subtotalUsd = docTotals.grossSubtotal;
+  const discountUsd = docTotals.totalDiscount;
+  const taxUsd = docTotals.taxAmount;
+  const netUsd = docTotals.grandTotalPrimary;
 
   const subtotalLbp = Math.round(subtotalUsd * POS_EXCHANGE_RATE);
   const discountLbp = Math.round(discountUsd * POS_EXCHANGE_RATE);
-  const netLbp = Math.round(netUsd * POS_EXCHANGE_RATE);
+  const netLbp = docTotals.grandTotalSecondary;
   const taxLbp = Math.round(taxUsd * POS_EXCHANGE_RATE);
-  const totalDueLbp = netLbp + taxLbp;
 
   const paidLbp = Math.round(paidUsdAmount * POS_EXCHANGE_RATE);
-  const dueUsd = Math.max(0, Number((totalDueUsd - paidUsdAmount).toFixed(2)));
-  const dueLbp = Math.max(0, totalDueLbp - paidLbp);
+  const dueUsd = Math.max(0, Number((netUsd - paidUsdAmount).toFixed(2)));
+  const dueLbp = Math.max(0, netLbp - paidLbp);
 
   return {
-    subtotalUsd: Number(subtotalUsd.toFixed(2)),
+    subtotalUsd,
     subtotalLbp,
-    discountUsd: Number(discountUsd.toFixed(2)),
+    discountUsd,
     discountLbp,
-    taxUsd: Number(taxUsd.toFixed(2)),
+    taxUsd,
     taxLbp,
-    netUsd: totalDueUsd,
-    netLbp: totalDueLbp,
+    netUsd,
+    netLbp,
     paidUsd: Number(paidUsdAmount.toFixed(2)),
     paidLbp,
     dueUsd,

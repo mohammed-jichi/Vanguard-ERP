@@ -7,6 +7,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import { POS_EXCHANGE_RATE_LBP, getActiveShift, recordCashMovement } from '@/lib/posShiftService';
 import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
+import { resolveItemUnitPrice, calculateAllCustomersAging } from '@/lib/engine/erpCalculationEngine';
 
 export const CUSTOMER_RECEIPTS_KEY = 'vanguard_customer_receipts_v1';
 export const CUSTOMER_SPECIAL_PRICES_KEY = 'vanguard_customer_special_prices_v1';
@@ -355,71 +356,7 @@ export function calculateCustomerAging(
   invoices: any[],
   filterCustomerId?: string
 ): CustomerAgingRow[] {
-  const now = new Date().getTime();
-  const customerMap = new Map<string, CustomerAgingRow>();
-
-  // Process invoices
-  invoices.forEach((inv) => {
-    // Only look at posted invoices
-    if (inv.status?.toLowerCase() === 'draft' || inv.docType === 'CREDIT_NOTE') return;
-
-    const cId = inv.customerId || 'CUST-001';
-    const cName = inv.customerName || 'Miscellaneous Customer';
-    if (filterCustomerId && filterCustomerId !== 'ALL' && cId !== filterCustomerId) return;
-
-    const gTotal = Number(inv.grandTotal || 0);
-    const paid = Number(inv.amount_paid || inv.paidAmount || (inv.payments && inv.payments.reduce((s: number, p: any) => s + Number(p.amount || 0), 0)) || 0);
-    const due = Math.max(0, gTotal - paid);
-
-    if (due <= 0.01) return; // invoice is settled
-
-    // Calculate days old
-    const invDateStr = inv.date || inv.invoiceDate || inv.createdAt;
-    const invDate = new Date(invDateStr).getTime();
-    const diffDays = Math.max(0, Math.floor((now - (isNaN(invDate) ? now : invDate)) / (1000 * 60 * 60 * 24)));
-
-    if (!customerMap.has(cId)) {
-      customerMap.set(cId, {
-        customerId: cId,
-        customerName: cName,
-        creditLimit: 5000.0,
-        buckets: {
-          current30: 0,
-          days31to60: 0,
-          days61to90: 0,
-          over90: 0,
-          totalDue: 0
-        },
-        unpaidInvoices: []
-      });
-    }
-
-    const row = customerMap.get(cId)!;
-    row.buckets.totalDue += due;
-
-    if (diffDays <= 30) {
-      row.buckets.current30 += due;
-    } else if (diffDays <= 60) {
-      row.buckets.days31to60 += due;
-    } else if (diffDays <= 90) {
-      row.buckets.days61to90 += due;
-    } else {
-      row.buckets.over90 += due;
-    }
-
-    row.unpaidInvoices.push({
-      invoiceId: inv.id || inv.invoiceNumber,
-      invoiceNo: inv.invoiceNumber || inv.id,
-      date: inv.date || new Date().toISOString().split('T')[0],
-      daysOld: diffDays,
-      grandTotal: gTotal,
-      amountPaid: paid,
-      balanceDue: due
-    });
-  });
-
-  // Sort by total debt descending
-  return Array.from(customerMap.values()).sort((a, b) => b.buckets.totalDue - a.buckets.totalDue);
+  return calculateAllCustomersAging(invoices, filterCustomerId) as unknown as CustomerAgingRow[];
 }
 
 // =============================================================================
@@ -525,24 +462,23 @@ export function resolveItemPriceWaterfall({
   customerPriceTier?: 'Retail' | 'Wholesale' | 'VIP' | string;
   tierMultiplier?: number;
 }): { resolvedPrice: number; source: 'SPECIAL_PRICE' | 'TIER' | 'STANDARD' } {
-  if (customerId) {
-    const specialPrices = getCustomerSpecialPrices();
-    const match = specialPrices.find(
-      (sp) => sp.customerId === customerId && sp.itemCode.toLowerCase() === itemCode.toLowerCase()
-    );
-    if (match && match.specialPrice > 0) {
-      return { resolvedPrice: match.specialPrice, source: 'SPECIAL_PRICE' };
-    }
-  }
+  const result = resolveItemUnitPrice({
+    itemCode,
+    standardPrice,
+    customerId,
+    customerSpecialPrices: getCustomerSpecialPrices(),
+    customerPriceTier,
+    tierMultiplier
+  });
 
-  // Priority 2: Wholesale / Tier Pricing
-  if (customerPriceTier?.toLowerCase().includes('wholesale') || customerPriceTier === 'VIP') {
-    const wholesaleDiscountRate = 0.90; // 10% wholesale tier discount
-    return { resolvedPrice: Number((standardPrice * wholesaleDiscountRate).toFixed(2)), source: 'TIER' };
-  }
+  let source: 'SPECIAL_PRICE' | 'TIER' | 'STANDARD' = 'STANDARD';
+  if (result.appliedRule === 'CUSTOMER_SPECIAL_PRICE') source = 'SPECIAL_PRICE';
+  else if (result.appliedRule === 'CUSTOMER_TIER') source = 'TIER';
 
-  // Priority 3: Standard POS Branch Price
-  return { resolvedPrice: Number((standardPrice * tierMultiplier).toFixed(2)), source: 'STANDARD' };
+  return {
+    resolvedPrice: result.unitPrice,
+    source
+  };
 }
 
 // =============================================================================

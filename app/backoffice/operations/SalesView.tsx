@@ -20,6 +20,7 @@ import {
   CreditNoteRecord,
   postCreditNote
 } from '@/lib/customerSalesService';
+import { calculateDocumentTotals, resolveItemUnitPrice } from '@/lib/engine/erpCalculationEngine';
 import {
   SalesOptionsState,
   DEFAULT_SALES_OPTIONS,
@@ -423,7 +424,6 @@ export const VANGUARD_SALES_ITEMS: SalesItem[] = [
 ];
 
 export const VANGUARD_CATALOG_ITEMS = VANGUARD_SALES_ITEMS;
-export const OMEGA_SALES_ITEMS = VANGUARD_SALES_ITEMS;
 
 export const CATEGORIES_LIST = ['Retail', 'Wholesale', 'Promotions', 'Raw Materials'];
 
@@ -1452,27 +1452,33 @@ export default function AuthenticVanguardSalesWorkstation({
     });
   }, [activeTabCategory, activeTabDivision, activeTabGroup, catalogSearch]);
 
-  // Cart Calculations
-  const subtotal = useMemo(() => {
-    return cartItems.reduce((sum, item) => sum + item.total, 0);
-  }, [cartItems]);
+  // Cart Calculations via Central ERP Calculation Engine
+  const cartDocumentTotals = useMemo(() => {
+    return calculateDocumentTotals({
+      items: cartItems.map((item) => ({
+        id: item.id,
+        code: item.code,
+        name: item.name,
+        qty: item.qty,
+        unitPrice: item.unitPrice,
+        discountPercent: (item as any).discountPercent || 0,
+        discountAmount: (item as any).discountAmount || 0,
+        taxPercent: (item as any).taxPercent
+      })),
+      taxRate: 0.11,
+      isTaxEnabled: true,
+      noTax: salesOptions.no_tax,
+      removeTaxForInternational: salesOptions.remove_tax_for_international,
+      transactionType: transactionType,
+      exchangeRate: POS_EXCHANGE_RATE_LBP || 89500
+    });
+  }, [cartItems, salesOptions.no_tax, salesOptions.remove_tax_for_international, transactionType]);
 
-  const isTaxExempt = useMemo(() => {
-    return (
-      salesOptions.no_tax ||
-      (salesOptions.remove_tax_for_international && transactionType === 'International')
-    );
-  }, [salesOptions.no_tax, salesOptions.remove_tax_for_international, transactionType]);
-
-  const discount = 0;
-  const tax = useMemo(() => {
-    if (isTaxExempt) return 0;
-    return Number((subtotal * 0.11).toFixed(2));
-  }, [isTaxExempt, subtotal]);
-
-  const grandTotal = useMemo(() => {
-    return Number((subtotal - discount + tax).toFixed(2));
-  }, [subtotal, discount, tax]);
+  const subtotal = cartDocumentTotals.grossSubtotal;
+  const isTaxExempt = cartDocumentTotals.isTaxExempt;
+  const discount = cartDocumentTotals.totalDiscount;
+  const tax = cartDocumentTotals.taxAmount;
+  const grandTotal = cartDocumentTotals.grandTotalPrimary;
 
   const totalPaid = useMemo(() => {
     return payments.reduce((sum, p) => sum + p.amount, 0);
@@ -1543,12 +1549,18 @@ export default function AuthenticVanguardSalesWorkstation({
       return;
     }
 
-    // Calculate Selling Price with Markup if configured
-    let calculatedPrice = item.price;
-    if (salesOptions.apply_markup_on_item && salesOptions.mark_up_pct > 0) {
-      const baseCost = item.cost || (item.price * 0.7);
-      calculatedPrice = Number((baseCost * (1 + salesOptions.mark_up_pct / 100)).toFixed(2));
-    }
+    // Calculate Selling Price with 4-tier waterfall resolver via Central ERP Engine
+    const resolvedPriceInfo = resolveItemUnitPrice({
+      itemCode: item.code,
+      standardPrice: item.price,
+      customerId: selectedCustomer?.id,
+      customerSpecialPrices: getCustomerSpecialPrices(),
+      customerPriceTier: (selectedCustomer as any)?.category,
+      isMarkupEnabled: salesOptions.apply_markup_on_item,
+      costBasisValue: item.cost || (item.price * 0.7),
+      markupPercent: salesOptions.mark_up_pct
+    });
+    const calculatedPrice = resolvedPriceInfo.unitPrice;
 
     setCartItems((prev) => {
       const existing = prev.find((p) => p.itemId === item.id);

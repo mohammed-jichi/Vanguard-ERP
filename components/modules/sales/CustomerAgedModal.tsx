@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { printElementById } from '@/lib/utils/printDocument';
 import { calculateCustomerAging, CustomerAgingRow } from '@/lib/customerSalesService';
+import { calculateAllCustomersAging } from '@/lib/engine/erpCalculationEngine';
 
 interface CustomerAgedModalProps {
   isOpen: boolean;
@@ -52,10 +53,10 @@ export default function CustomerAgedModal({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedCustomerId, setExpandedCustomerId] = useState<string | null>(null);
 
-  // Compute live aging rows
+  // Compute live aging rows via Central ERP Calculation Engine
   const agingRows: CustomerAgingRow[] = useMemo(() => {
     const targetCId = filterMode === 'SELECTED' && effectiveCustomerId ? effectiveCustomerId : undefined;
-    return calculateCustomerAging(effectiveInvoices, targetCId);
+    return calculateAllCustomersAging(effectiveInvoices, targetCId) as unknown as CustomerAgingRow[];
   }, [effectiveInvoices, filterMode, effectiveCustomerId]);
 
   // Filter with search

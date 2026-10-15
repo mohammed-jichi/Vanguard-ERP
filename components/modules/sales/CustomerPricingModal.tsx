@@ -22,6 +22,7 @@ import {
   getCustomerSpecialPrices,
   saveCustomerSpecialPrices
 } from '@/lib/customerSalesService';
+import { resolveItemUnitPrice } from '@/lib/engine/erpCalculationEngine';
 
 interface CustomerPricingModalProps {
   isOpen: boolean;
@@ -132,11 +133,17 @@ export default function CustomerPricingModal({
     const priceVal = parseFloat(specialPriceInput);
     const discVal = parseFloat(discountPercentInput);
 
+    const resolvedResult = resolveItemUnitPrice({
+      itemCode: product.code,
+      standardPrice: product.price,
+      customerDiscountPercent: !isNaN(discVal) && discVal > 0 ? discVal : undefined
+    });
+
     let finalPrice = product.price;
     if (!isNaN(priceVal) && priceVal > 0) {
       finalPrice = priceVal;
     } else if (!isNaN(discVal) && discVal > 0) {
-      finalPrice = Number((product.price * (1 - discVal / 100)).toFixed(2));
+      finalPrice = resolvedResult.unitPrice;
     } else {
       toast.error('Please enter a valid contract price or discount percentage.');
       return;
