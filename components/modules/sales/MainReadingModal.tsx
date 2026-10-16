@@ -576,7 +576,20 @@ export default function MainReadingModal({
                           <tr key={i} className="hover:bg-slate-50">
                             <td className="py-1.5 px-2 font-mono text-slate-700">{rct.id}</td>
                             <td className="py-1.5 px-2 font-medium text-slate-900">{rct.customerName}</td>
-                            <td className="py-1.5 px-2 text-slate-600">{rct.method}</td>
+                            <td className="py-1.5 px-2 text-slate-600">
+                              <div className="font-medium text-slate-800">{rct.method}</div>
+                              {Boolean(rct.bankAccountName || rct.companyAccountName) && (
+                                <div className="text-[10px] text-blue-700 font-mono">
+                                  {rct.bankAccountName || rct.companyAccountName}
+                                  {Boolean(rct.bankAccountNumber || rct.companyAccountNumber) ? ` - ${rct.bankAccountNumber || rct.companyAccountNumber}` : ''}
+                                </div>
+                              )}
+                              {Boolean((rct as any).raw?.whishAccountNumber) && !rct.bankAccountName && (
+                                <div className="text-[10px] text-purple-700 font-mono">
+                                  Whish Wallet: {(rct as any).raw?.whishAccountNumber}
+                                </div>
+                              )}
+                            </td>
                             <td className="py-1.5 px-2 text-right font-mono font-bold text-emerald-700">
                               ${(Number(rct.amountUsd) || 0).toFixed(2)}
                             </td>

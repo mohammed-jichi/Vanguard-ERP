@@ -1,5 +1,27 @@
 [
   {
+    "id": "99b3d33f-e902-410c-a186-57ad16310b31",
+    "commit_hash": "99b3d33fe902510c818657ad16310b316e5310ef",
+    "short_hash": "99b3d33",
+    "version": "v2.0.0",
+    "title": "Resolve Main Reading crash loop, isolate shift reconciliation, and harden customer & credit note models",
+    "category": "fix",
+    "description": "fix(sales,contacts): resolve Main Reading crash loop, isolate shift reconciliation, and harden customer & credit note models",
+    "bullet_points": [
+      "Resolved: resolve main reading crash loop, isolate shift reconciliation, and harden customer & credit note models",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Sales & POS"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-16T10:34:14.000Z",
+    "created_at": "2026-10-16T15:55:33.041Z"
+  },
+  {
     "id": "d2c94e61-cda3-478f-a097-aa8edfba4e2f",
     "commit_hash": "d2c94e61cda3478f1097aa8edfba4e2f13e8d6c6",
     "short_hash": "d2c94e6",

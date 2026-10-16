@@ -216,6 +216,11 @@ export interface MainReadingSummary {
     method: string;
     amountUsd: number;
     date: string;
+    bankAccountName?: string;
+    bankAccountNumber?: string;
+    companyAccountName?: string;
+    companyAccountNumber?: string;
+    raw?: any;
   }>;
 
   // 5. Paid In / Paid Out Summary

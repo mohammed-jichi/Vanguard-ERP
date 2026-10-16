@@ -53,6 +53,9 @@ import {
   getCompanyWhishAccounts,
   updateCompanyWhishAccountNumber,
   resolveSettlementGlAccount,
+  getSavedSettlementAccount,
+  saveOrUpdateSettlementAccount,
+  cleanAccountLabel,
   CompanyBankAccount,
   CompanyWhishAccount,
   SETTLEMENT_ACCOUNTS_UPDATED_EVENT
@@ -751,52 +754,28 @@ export default function AuthenticVanguardSalesWorkstation({
   // --- Payments State ---
   const [payments, setPayments] = useState<PaymentEntry[]>([]);
 
-  // Configurable Settlement Accounts in SalesView
-  const [salesCompanyBankAccounts, setSalesCompanyBankAccounts] = useState<CompanyBankAccount[]>(getCompanyBankAccounts());
-  const [salesCompanyWhishAccounts, setSalesCompanyWhishAccounts] = useState<CompanyWhishAccount[]>(getCompanyWhishAccounts());
+  // Configurable Settlement Accounts in SalesView (Currency-Aware)
+  const [salesCompanyBankAccounts, setSalesCompanyBankAccounts] = useState<CompanyBankAccount[]>(() => getCompanyBankAccounts('USD'));
+  const [salesCompanyWhishAccounts, setSalesCompanyWhishAccounts] = useState<CompanyWhishAccount[]>(() => getCompanyWhishAccounts('USD'));
 
   // Card details
   const [salesCardholderName, setSalesCardholderName] = useState('');
   const [salesCardNumber, setSalesCardNumber] = useState('');
-  const [salesCardBank, setSalesCardBank] = useState('BLOM Bank S.A.L.');
-  const [salesCardBankAccountId, setSalesCardBankAccountId] = useState(salesCompanyBankAccounts[0]?.id || 'blom_usd');
-  const [salesCardAccountNumber, setSalesCardAccountNumber] = useState(salesCompanyBankAccounts[0]?.accountNumber || '');
+  const [salesCardBank, setSalesCardBank] = useState('');
+  const [salesCardCompanyBankName, setSalesCardCompanyBankName] = useState<string>(() => getSavedSettlementAccount('BANK', 'USD').name);
+  const [salesCardAccountNumber, setSalesCardAccountNumber] = useState<string>(() => getSavedSettlementAccount('BANK', 'USD').accountNumber);
 
   // Whish details
   const [salesWhishSenderPhone, setSalesWhishSenderPhone] = useState('');
-  const [salesWhishAccountId, setSalesWhishAccountId] = useState(salesCompanyWhishAccounts[0]?.id || 'whish_primary');
-  const [salesWhishAccountNumber, setSalesWhishAccountNumber] = useState(salesCompanyWhishAccounts[0]?.accountNumber || '');
+  const [salesWhishCompanyWalletName, setSalesWhishCompanyWalletName] = useState<string>(() => getSavedSettlementAccount('WHISH', 'USD').name);
+  const [salesWhishAccountNumber, setSalesWhishAccountNumber] = useState<string>(() => getSavedSettlementAccount('WHISH', 'USD').accountNumber);
 
   // Bank Check details
   const [salesCheckNumber, setSalesCheckNumber] = useState('');
   const [salesCheckIssuingBank, setSalesCheckIssuingBank] = useState('');
-  const [salesCheckCompanyBankId, setSalesCheckCompanyBankId] = useState(salesCompanyBankAccounts[0]?.id || 'blom_usd');
-  const [salesCheckAccountNumber, setSalesCheckAccountNumber] = useState(salesCompanyBankAccounts[0]?.accountNumber || '');
+  const [salesCheckCompanyBankName, setSalesCheckCompanyBankName] = useState<string>(() => getSavedSettlementAccount('BANK', 'USD').name);
+  const [salesCheckAccountNumber, setSalesCheckAccountNumber] = useState<string>(() => getSavedSettlementAccount('BANK', 'USD').accountNumber);
 
-  // Sync settlement accounts across windows/tabs
-  useEffect(() => {
-    const handleAccountsUpdate = () => {
-      const banks = getCompanyBankAccounts();
-      const whish = getCompanyWhishAccounts();
-      setSalesCompanyBankAccounts(banks);
-      setSalesCompanyWhishAccounts(whish);
-    };
-    window.addEventListener(SETTLEMENT_ACCOUNTS_UPDATED_EVENT, handleAccountsUpdate);
-    return () => {
-      window.removeEventListener(SETTLEMENT_ACCOUNTS_UPDATED_EVENT, handleAccountsUpdate);
-    };
-  }, []);
-
-  const handleUpdateSalesBankAccountNumber = (bankId: string, newNumber: string) => {
-    setSalesCardAccountNumber(newNumber);
-    setSalesCheckAccountNumber(newNumber);
-    updateCompanyBankAccountNumber(bankId, newNumber);
-  };
-
-  const handleUpdateSalesWhishAccountNumber = (whishId: string, newNumber: string) => {
-    setSalesWhishAccountNumber(newNumber);
-    updateCompanyWhishAccountNumber(whishId, newNumber);
-  };
 
   // --- Modals State ---
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -1277,6 +1256,103 @@ export default function AuthenticVanguardSalesWorkstation({
   // --- Payment Modal Temp State ---
   const [selectedPaymentType, setSelectedPaymentType] = useState('Cash USD');
   const [paymentAmountInput, setPaymentAmountInput] = useState('0.00');
+
+  // Sync settlement accounts on currency or payment method change
+  useEffect(() => {
+    const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
+    const banks = getCompanyBankAccounts(payCurr);
+    const whish = getCompanyWhishAccounts(payCurr);
+    setSalesCompanyBankAccounts(banks);
+    setSalesCompanyWhishAccounts(whish);
+
+    const savedBank = getSavedSettlementAccount('BANK', payCurr);
+    setSalesCardCompanyBankName(savedBank.name);
+    setSalesCardAccountNumber(savedBank.accountNumber);
+    setSalesCheckCompanyBankName(savedBank.name);
+    setSalesCheckAccountNumber(savedBank.accountNumber);
+
+    const savedWhish = getSavedSettlementAccount('WHISH', payCurr);
+    setSalesWhishCompanyWalletName(savedWhish.name);
+    setSalesWhishAccountNumber(savedWhish.accountNumber);
+  }, [currency, selectedPaymentType]);
+
+  // Sync settlement accounts across windows/tabs
+  useEffect(() => {
+    const handleAccountsUpdate = () => {
+      const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
+      const banks = getCompanyBankAccounts(payCurr);
+      const whish = getCompanyWhishAccounts(payCurr);
+      setSalesCompanyBankAccounts(banks);
+      setSalesCompanyWhishAccounts(whish);
+    };
+    window.addEventListener(SETTLEMENT_ACCOUNTS_UPDATED_EVENT, handleAccountsUpdate);
+    return () => {
+      window.removeEventListener(SETTLEMENT_ACCOUNTS_UPDATED_EVENT, handleAccountsUpdate);
+    };
+  }, [currency, selectedPaymentType]);
+
+  const handleSalesCardBankNameChange = (name: string) => {
+    setSalesCardCompanyBankName(name);
+    const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
+    const cleanTyped = cleanAccountLabel(name).toLowerCase();
+    const found = salesCompanyBankAccounts.find(
+      (b) => cleanAccountLabel(b.accountName).toLowerCase() === cleanTyped || cleanAccountLabel(b.bankName).toLowerCase() === cleanTyped
+    );
+    if (found && found.accountNumber) {
+      setSalesCardAccountNumber(found.accountNumber);
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: payCurr, name: found.accountName, accountNumber: found.accountNumber });
+    } else {
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: payCurr, name, accountNumber: salesCardAccountNumber });
+    }
+  };
+
+  const handleSaveSalesCardAccount = (num?: string) => {
+    const accNo = num !== undefined ? num : salesCardAccountNumber;
+    const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
+    saveOrUpdateSettlementAccount({ type: 'BANK', currency: payCurr, name: salesCardCompanyBankName, accountNumber: accNo });
+  };
+
+  const handleSalesWhishWalletNameChange = (name: string) => {
+    setSalesWhishCompanyWalletName(name);
+    const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
+    const cleanTyped = cleanAccountLabel(name).toLowerCase();
+    const found = salesCompanyWhishAccounts.find(
+      (w) => cleanAccountLabel(w.walletName).toLowerCase() === cleanTyped
+    );
+    if (found && found.accountNumber) {
+      setSalesWhishAccountNumber(found.accountNumber);
+      saveOrUpdateSettlementAccount({ type: 'WHISH', currency: payCurr, name: found.walletName, accountNumber: found.accountNumber });
+    } else {
+      saveOrUpdateSettlementAccount({ type: 'WHISH', currency: payCurr, name, accountNumber: salesWhishAccountNumber });
+    }
+  };
+
+  const handleSaveSalesWhishAccount = (num?: string) => {
+    const accNo = num !== undefined ? num : salesWhishAccountNumber;
+    const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
+    saveOrUpdateSettlementAccount({ type: 'WHISH', currency: payCurr, name: salesWhishCompanyWalletName, accountNumber: accNo });
+  };
+
+  const handleSalesCheckBankNameChange = (name: string) => {
+    setSalesCheckCompanyBankName(name);
+    const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
+    const cleanTyped = cleanAccountLabel(name).toLowerCase();
+    const found = salesCompanyBankAccounts.find(
+      (b) => cleanAccountLabel(b.accountName).toLowerCase() === cleanTyped || cleanAccountLabel(b.bankName).toLowerCase() === cleanTyped
+    );
+    if (found && found.accountNumber) {
+      setSalesCheckAccountNumber(found.accountNumber);
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: payCurr, name: found.accountName, accountNumber: found.accountNumber });
+    } else {
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: payCurr, name, accountNumber: salesCheckAccountNumber });
+    }
+  };
+
+  const handleSaveSalesCheckAccount = (num?: string) => {
+    const accNo = num !== undefined ? num : salesCheckAccountNumber;
+    const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
+    saveOrUpdateSettlementAccount({ type: 'BANK', currency: payCurr, name: salesCheckCompanyBankName, accountNumber: accNo });
+  };
 
   // --- Preview Sales Filter States ---
   const [previewBranchFilter, setPreviewBranchFilter] = useState('Zeit w zaytoun ljanoub');
@@ -1823,26 +1899,27 @@ export default function AuthenticVanguardSalesWorkstation({
     const isCard = selectedPaymentType.includes('Visa') || selectedPaymentType.includes('Card');
     const isWhish = selectedPaymentType.includes('Whish') || selectedPaymentType.includes('OMT');
     const isCheck = selectedPaymentType.includes('Check') || selectedPaymentType.includes('Cheque');
+    const payCurr = (selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD';
 
     let companyAccountId: string | undefined = undefined;
     let companyAccountName: string | undefined = undefined;
     let companyAccountNumber: string | undefined = undefined;
 
     if (isCard) {
-      companyAccountId = salesCardBankAccountId;
-      const b = salesCompanyBankAccounts.find((x) => x.id === salesCardBankAccountId) || salesCompanyBankAccounts[0];
-      companyAccountName = b?.accountName;
-      companyAccountNumber = salesCardAccountNumber || b?.accountNumber;
+      companyAccountName = salesCardCompanyBankName || (payCurr === 'LBP' ? 'Bank of Beirut (BOB)' : 'BLOM Bank S.A.L.');
+      companyAccountNumber = salesCardAccountNumber;
+      companyAccountId = `bank_${payCurr.toLowerCase()}`;
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: payCurr, name: companyAccountName, accountNumber: companyAccountNumber });
     } else if (isWhish) {
-      companyAccountId = salesWhishAccountId;
-      const w = salesCompanyWhishAccounts.find((x) => x.id === salesWhishAccountId) || salesCompanyWhishAccounts[0];
-      companyAccountName = w?.walletName;
-      companyAccountNumber = salesWhishAccountNumber || w?.accountNumber;
+      companyAccountName = salesWhishCompanyWalletName || (payCurr === 'LBP' ? 'Whish Money Operations Wallet' : 'Whish Money Merchant Wallet');
+      companyAccountNumber = salesWhishAccountNumber;
+      companyAccountId = `whish_${payCurr.toLowerCase()}`;
+      saveOrUpdateSettlementAccount({ type: 'WHISH', currency: payCurr, name: companyAccountName, accountNumber: companyAccountNumber });
     } else if (isCheck) {
-      companyAccountId = salesCheckCompanyBankId;
-      const b = salesCompanyBankAccounts.find((x) => x.id === salesCheckCompanyBankId) || salesCompanyBankAccounts[0];
-      companyAccountName = b?.accountName;
-      companyAccountNumber = salesCheckAccountNumber || b?.accountNumber;
+      companyAccountName = salesCheckCompanyBankName || (payCurr === 'LBP' ? 'Bank of Beirut (BOB)' : 'BLOM Bank S.A.L.');
+      companyAccountNumber = salesCheckAccountNumber;
+      companyAccountId = `bank_${payCurr.toLowerCase()}`;
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: payCurr, name: companyAccountName, accountNumber: companyAccountNumber });
     }
 
     const newEntry: PaymentEntry = {
@@ -2053,21 +2130,23 @@ export default function AuthenticVanguardSalesWorkstation({
           let totalDebit = 0;
 
           newRecord.payments.forEach((p) => {
-            const resolvedGl = resolveSettlementGlAccount(p.type, p.companyAccountId);
+            const payCurr = (p.type.includes('LBP') || newRecord.currency === 'LBP') ? 'LBP' : 'USD';
+            const resolvedGl = resolveSettlementGlAccount(p.type, p.companyAccountId, p.companyAccountName, payCurr);
             const debitAccountNo = resolvedGl.code;
             const debitAccountId = `acc-${debitAccountNo}`;
             const debitAccountName = p.companyAccountName || resolvedGl.name;
 
+            const accDetail = p.companyAccountNumber ? ` - Acc: ${p.companyAccountNumber}` : '';
             jvLines.push({
               id: `line-${Date.now()}-${lineNo}`,
               line_number: lineNo++,
               account_id: debitAccountId,
               account_number: debitAccountNo,
               account_name: debitAccountName,
-              description: `Settlement for Invoice #${newRecord.invoiceNumber} (${p.type})`,
+              description: `Settlement for Invoice #${newRecord.invoiceNumber} (${p.type}${accDetail})`,
               amount_debit: p.amount,
               amount_credit: 0,
-              currency_rate: 89500,
+              currency_rate: payCurr === 'LBP' ? 1 : 89500,
               amount_native: p.amount
             });
             totalDebit += p.amount;
@@ -4301,6 +4380,11 @@ export default function AuthenticVanguardSalesWorkstation({
                                 Cheque #{p.checkNumber}
                               </span>
                             )}
+                            {p.companyAccountName && (
+                              <span className="text-[10px] text-slate-500 font-mono">
+                                Settled to: {p.companyAccountName} {p.companyAccountNumber ? `(${p.companyAccountNumber})` : ''}
+                              </span>
+                            )}
                           </div>
                           <div className="flex items-center gap-2 font-semibold text-slate-900">
                             <span>{(Number(p.amount) || 0).toFixed(2)} USD</span>
@@ -4325,7 +4409,9 @@ export default function AuthenticVanguardSalesWorkstation({
                   <div className="bg-amber-50/70 border border-amber-200 rounded p-2.5 space-y-2">
                     <div className="font-bold text-[11px] text-amber-900 flex items-center justify-between">
                       <span>Cardholder & POS Terminal Settlement</span>
-                      <span className="text-[10px] font-mono text-amber-800">Merchant POS</span>
+                      <span className="text-[10px] font-mono text-amber-800">
+                        Merchant POS ({(selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD'})
+                      </span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-[11px]">
                       <div>
@@ -4360,31 +4446,42 @@ export default function AuthenticVanguardSalesWorkstation({
                       </div>
                       <div>
                         <span className="text-[10px] font-semibold text-slate-600 block mb-0.5">Receiving Bank Account:</span>
-                        <select
-                          value={salesCardBankAccountId}
-                          onChange={(e) => {
-                            setSalesCardBankAccountId(e.target.value);
-                            const b = salesCompanyBankAccounts.find((x) => x.id === e.target.value);
-                            if (b) setSalesCardAccountNumber(b.accountNumber);
-                          }}
-                          className="w-full bg-white border border-amber-200 rounded px-2 py-0.5 text-xs"
-                        >
+                        <input
+                          type="text"
+                          list="sales-card-banks-list"
+                          value={salesCardCompanyBankName}
+                          onChange={(e) => handleSalesCardBankNameChange(e.target.value)}
+                          placeholder="e.g. BLOM Bank, Bank Audi, BOB..."
+                          className="w-full bg-white border border-amber-200 rounded px-2 py-0.5 text-xs font-medium"
+                        />
+                        <datalist id="sales-card-banks-list">
                           {salesCompanyBankAccounts.map((b) => (
-                            <option key={b.id} value={b.id}>{b.accountName}</option>
+                            <option key={b.id} value={b.accountName}>
+                              {b.accountNumber ? `${b.accountName} (${b.accountNumber})` : b.accountName}
+                            </option>
                           ))}
-                        </select>
+                        </datalist>
                       </div>
                     </div>
                     {/* Inline editable Account / IBAN */}
                     <div className="flex items-center gap-1.5 pt-1 border-t border-amber-200/60">
-                      <span className="text-[10px] font-semibold text-amber-900 shrink-0">Settlement IBAN #:</span>
+                      <span className="text-[10px] font-semibold text-amber-900 shrink-0">Company Receiving IBAN / Account #:</span>
                       <input
                         type="text"
                         value={salesCardAccountNumber}
                         onChange={(e) => setSalesCardAccountNumber(e.target.value)}
-                        onBlur={() => handleUpdateSalesBankAccountNumber(salesCardBankAccountId, salesCardAccountNumber)}
+                        onBlur={() => handleSaveSalesCardAccount()}
                         className="flex-1 bg-white border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-mono"
+                        placeholder="Enter Account / IBAN..."
                       />
+                      <button
+                        type="button"
+                        onClick={() => handleSaveSalesCardAccount()}
+                        className="px-2 py-0.5 bg-amber-700 hover:bg-amber-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
+                        title="Save Account / IBAN globally for this currency"
+                      >
+                        Save Account #
+                      </button>
                     </div>
                   </div>
                 )}
@@ -4393,7 +4490,9 @@ export default function AuthenticVanguardSalesWorkstation({
                   <div className="bg-purple-50/70 border border-purple-200 rounded p-2.5 space-y-2">
                     <div className="font-bold text-[11px] text-purple-900 flex items-center justify-between">
                       <span>Whish Money Digital Settlement</span>
-                      <span className="text-[10px] font-mono text-purple-800">Wallet</span>
+                      <span className="text-[10px] font-mono text-purple-800">
+                        Wallet ({(selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD'})
+                      </span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-[11px]">
                       <div>
@@ -4408,31 +4507,42 @@ export default function AuthenticVanguardSalesWorkstation({
                       </div>
                       <div>
                         <span className="text-[10px] font-semibold text-slate-600 block mb-0.5">Receiving Wallet:</span>
-                        <select
-                          value={salesWhishAccountId}
-                          onChange={(e) => {
-                            setSalesWhishAccountId(e.target.value);
-                            const w = salesCompanyWhishAccounts.find((x) => x.id === e.target.value);
-                            if (w) setSalesWhishAccountNumber(w.accountNumber);
-                          }}
-                          className="w-full bg-white border border-purple-200 rounded px-2 py-0.5 text-xs"
-                        >
+                        <input
+                          type="text"
+                          list="sales-whish-wallets-list"
+                          value={salesWhishCompanyWalletName}
+                          onChange={(e) => handleSalesWhishWalletNameChange(e.target.value)}
+                          placeholder="e.g. Whish Money Merchant Wallet"
+                          className="w-full bg-white border border-purple-200 rounded px-2 py-0.5 text-xs font-medium"
+                        />
+                        <datalist id="sales-whish-wallets-list">
                           {salesCompanyWhishAccounts.map((w) => (
-                            <option key={w.id} value={w.id}>{w.walletName}</option>
+                            <option key={w.id} value={w.walletName}>
+                              {w.accountNumber ? `${w.walletName} (${w.accountNumber})` : w.walletName}
+                            </option>
                           ))}
-                        </select>
+                        </datalist>
                       </div>
                     </div>
                     {/* Inline editable Whish Wallet # */}
                     <div className="flex items-center gap-1.5 pt-1 border-t border-purple-200/60">
-                      <span className="text-[10px] font-semibold text-purple-900 shrink-0">Company Wallet #:</span>
+                      <span className="text-[10px] font-semibold text-purple-900 shrink-0">Company Whish Wallet / Phone #:</span>
                       <input
                         type="text"
                         value={salesWhishAccountNumber}
                         onChange={(e) => setSalesWhishAccountNumber(e.target.value)}
-                        onBlur={() => handleUpdateSalesWhishAccountNumber(salesWhishAccountId, salesWhishAccountNumber)}
+                        onBlur={() => handleSaveSalesWhishAccount()}
                         className="flex-1 bg-white border border-purple-200 rounded px-1.5 py-0.5 text-[11px] font-mono"
+                        placeholder="Enter Whish wallet #..."
                       />
+                      <button
+                        type="button"
+                        onClick={() => handleSaveSalesWhishAccount()}
+                        className="px-2 py-0.5 bg-purple-700 hover:bg-purple-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
+                        title="Save Whish wallet # globally for this currency"
+                      >
+                        Save Whish #
+                      </button>
                     </div>
                   </div>
                 )}
@@ -4441,9 +4551,11 @@ export default function AuthenticVanguardSalesWorkstation({
                   <div className="bg-blue-50/70 border border-blue-200 rounded p-2.5 space-y-2">
                     <div className="font-bold text-[11px] text-blue-900 flex items-center justify-between">
                       <span>Bank Cheque Clearance</span>
-                      <span className="text-[10px] font-mono text-blue-800">Commercial Cheque</span>
+                      <span className="text-[10px] font-mono text-blue-800">
+                        Commercial Cheque ({(selectedPaymentType.includes('LBP') || currency === 'LBP') ? 'LBP' : 'USD'})
+                      </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                    <div className="grid grid-cols-3 gap-2 text-[11px]">
                       <div>
                         <span className="text-[10px] font-semibold text-slate-600 block mb-0.5">Cheque Number:</span>
                         <input
@@ -4464,6 +4576,44 @@ export default function AuthenticVanguardSalesWorkstation({
                           className="w-full bg-white border border-blue-200 rounded px-2 py-0.5 text-xs"
                         />
                       </div>
+                      <div>
+                        <span className="text-[10px] font-semibold text-slate-600 block mb-0.5">Receiving Bank Account:</span>
+                        <input
+                          type="text"
+                          list="sales-check-banks-list"
+                          value={salesCheckCompanyBankName}
+                          onChange={(e) => handleSalesCheckBankNameChange(e.target.value)}
+                          placeholder="e.g. BLOM Bank S.A.L."
+                          className="w-full bg-white border border-blue-200 rounded px-2 py-0.5 text-xs font-medium"
+                        />
+                        <datalist id="sales-check-banks-list">
+                          {salesCompanyBankAccounts.map((b) => (
+                            <option key={b.id} value={b.accountName}>
+                              {b.accountNumber ? `${b.accountName} (${b.accountNumber})` : b.accountName}
+                            </option>
+                          ))}
+                        </datalist>
+                      </div>
+                    </div>
+                    {/* Inline editable Account / IBAN */}
+                    <div className="flex items-center gap-1.5 pt-1 border-t border-blue-200/60">
+                      <span className="text-[10px] font-semibold text-blue-900 shrink-0">Company Receiving IBAN / Account #:</span>
+                      <input
+                        type="text"
+                        value={salesCheckAccountNumber}
+                        onChange={(e) => setSalesCheckAccountNumber(e.target.value)}
+                        onBlur={() => handleSaveSalesCheckAccount()}
+                        className="flex-1 bg-white border border-blue-200 rounded px-1.5 py-0.5 text-[11px] font-mono"
+                        placeholder="Enter Account / IBAN..."
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleSaveSalesCheckAccount()}
+                        className="px-2 py-0.5 bg-blue-700 hover:bg-blue-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
+                        title="Save Account / IBAN globally for this currency"
+                      >
+                        Save Account #
+                      </button>
                     </div>
                   </div>
                 )}
@@ -6174,12 +6324,17 @@ export default function AuthenticVanguardSalesWorkstation({
                 </div>
               )}
 
-              {salesOptions.show_branch_payment_info && (
-                <div className="bg-slate-50 border border-slate-200 rounded p-2 text-[10px] text-slate-700 flex justify-between">
-                  <span><strong>Bank Payment:</strong> BLOM Bank (IBAN: LB82001400000000000123456789)</span>
-                  <span><strong>OMT / Whish:</strong> 03-998877 (SOUTHERN OIL)</span>
-                </div>
-              )}
+              {salesOptions.show_branch_payment_info && (() => {
+                const invCurr = targetPrintInvoice?.currency || currency || 'USD';
+                const bankInfo = getSavedSettlementAccount('BANK', invCurr);
+                const whishInfo = getSavedSettlementAccount('WHISH', invCurr);
+                return (
+                  <div className="bg-slate-50 border border-slate-200 rounded p-2 text-[10px] text-slate-700 flex justify-between">
+                    <span><strong>Bank Payment ({invCurr}):</strong> {bankInfo.name} {bankInfo.accountNumber ? `(IBAN: ${bankInfo.accountNumber})` : ''}</span>
+                    <span><strong>OMT / Whish ({invCurr}):</strong> {whishInfo.accountNumber ? `${whishInfo.accountNumber} (${whishInfo.name})` : whishInfo.name}</span>
+                  </div>
+                );
+              })()}
 
               {/* Customer Details Box */}
               <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">

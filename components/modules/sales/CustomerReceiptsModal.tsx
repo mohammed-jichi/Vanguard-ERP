@@ -51,6 +51,9 @@ import {
   updateCompanyBankAccountNumber,
   getCompanyWhishAccounts,
   updateCompanyWhishAccountNumber,
+  getSavedSettlementAccount,
+  saveOrUpdateSettlementAccount,
+  cleanAccountLabel,
   CompanyBankAccount,
   CompanyWhishAccount,
   SETTLEMENT_ACCOUNTS_UPDATED_EVENT
@@ -145,40 +148,25 @@ export default function CustomerReceiptsModal({
   );
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Configurable Settlement Accounts
-  const [companyBankAccounts, setCompanyBankAccounts] = useState<CompanyBankAccount[]>(getCompanyBankAccounts());
-  const [companyWhishAccounts, setCompanyWhishAccounts] = useState<CompanyWhishAccount[]>(getCompanyWhishAccounts());
+  // Configurable Settlement Accounts (Currency-Aware)
+  const [companyBankAccounts, setCompanyBankAccounts] = useState<CompanyBankAccount[]>(() => getCompanyBankAccounts('USD'));
+  const [companyWhishAccounts, setCompanyWhishAccounts] = useState<CompanyWhishAccount[]>(() => getCompanyWhishAccounts('USD'));
 
   // Card Payment Details
   const [cardholderName, setCardholderName] = useState<string>('');
   const [cardNumber, setCardNumber] = useState<string>('');
-  const [cardBank, setCardBank] = useState<string>('BLOM Bank S.A.L.');
-  const [selectedCardCompanyBankId, setSelectedCardCompanyBankId] = useState<string>(
-    companyBankAccounts[0]?.id || 'blom_usd'
-  );
-  const [cardCompanyAccountNumber, setCardCompanyAccountNumber] = useState<string>(
-    companyBankAccounts[0]?.accountNumber || ''
-  );
+  const [cardBank, setCardBank] = useState<string>('');
+  const [cardCompanyBankName, setCardCompanyBankName] = useState<string>(() => getSavedSettlementAccount('BANK', 'USD').name);
+  const [cardCompanyAccountNumber, setCardCompanyAccountNumber] = useState<string>(() => getSavedSettlementAccount('BANK', 'USD').accountNumber);
 
   // Whish Payment Details
   const [whishSenderPhone, setWhishSenderPhone] = useState<string>('');
-  const [selectedWhishCompanyAccountId, setSelectedWhishCompanyAccountId] = useState<string>(
-    companyWhishAccounts[0]?.id || 'whish_primary'
-  );
-  const [whishCompanyAccountNumber, setWhishCompanyAccountNumber] = useState<string>(
-    companyWhishAccounts[0]?.accountNumber || ''
-  );
+  const [whishCompanyWalletName, setWhishCompanyWalletName] = useState<string>(() => getSavedSettlementAccount('WHISH', 'USD').name);
+  const [whishCompanyAccountNumber, setWhishCompanyAccountNumber] = useState<string>(() => getSavedSettlementAccount('WHISH', 'USD').accountNumber);
 
   // Bank Account State (for Bank Transfer & Check)
-  const [selectedBankId, setSelectedBankId] = useState<string>(
-    companyBankAccounts[0]?.id || 'blom_usd'
-  );
-  const [bankAccountName, setBankAccountName] = useState<string>(
-    companyBankAccounts[0]?.accountName || 'BLOM Bank S.A.L. - Commercial (USD)'
-  );
-  const [bankAccountNumber, setBankAccountNumber] = useState<string>(
-    companyBankAccounts[0]?.accountNumber || 'LB12 0014 0000 0000 5122 0002 01'
-  );
+  const [bankAccountName, setBankAccountName] = useState<string>(() => getSavedSettlementAccount('BANK', 'USD').name);
+  const [bankAccountNumber, setBankAccountNumber] = useState<string>(() => getSavedSettlementAccount('BANK', 'USD').accountNumber);
   const [senderBank, setSenderBank] = useState<string>('');
   const [checkNumber, setCheckNumber] = useState<string>('');
 
@@ -189,8 +177,9 @@ export default function CustomerReceiptsModal({
   // Sync settlement accounts across windows/tabs
   useEffect(() => {
     const handleAccountsUpdate = () => {
-      const banks = getCompanyBankAccounts();
-      const whish = getCompanyWhishAccounts();
+      const activeCurr = currencyCode === 'LBP' ? 'LBP' : 'USD';
+      const banks = getCompanyBankAccounts(activeCurr);
+      const whish = getCompanyWhishAccounts(activeCurr);
       setCompanyBankAccounts(banks);
       setCompanyWhishAccounts(whish);
     };
@@ -198,7 +187,7 @@ export default function CustomerReceiptsModal({
     return () => {
       window.removeEventListener(SETTLEMENT_ACCOUNTS_UPDATED_EVENT, handleAccountsUpdate);
     };
-  }, []);
+  }, [currencyCode]);
 
   // On open or initial customer change
   useEffect(() => {
@@ -337,9 +326,9 @@ export default function CustomerReceiptsModal({
   const handlePaymentMethodChange = (newMethod: string) => {
     setPaymentMethod(newMethod);
     if (newMethod === 'CASH USD' || newMethod === 'CARD USD') {
-      setCurrencyCode('USD');
+      handleCurrencyChange('USD');
     } else if (newMethod === 'CASH LBP' || newMethod === 'CARD LBP') {
-      setCurrencyCode('LBP');
+      handleCurrencyChange('LBP');
     }
   };
 
@@ -354,34 +343,80 @@ export default function CustomerReceiptsModal({
     } else if (paymentMethod === 'CARD LBP' && newCurr === 'USD') {
       setPaymentMethod('CARD USD');
     }
+
+    const cur = newCurr === 'LBP' ? 'LBP' : 'USD';
+    const banks = getCompanyBankAccounts(cur);
+    const whish = getCompanyWhishAccounts(cur);
+    setCompanyBankAccounts(banks);
+    setCompanyWhishAccounts(whish);
+
+    const savedBank = getSavedSettlementAccount('BANK', cur);
+    setBankAccountName(savedBank.name);
+    setBankAccountNumber(savedBank.accountNumber);
+    setCardCompanyBankName(savedBank.name);
+    setCardCompanyAccountNumber(savedBank.accountNumber);
+
+    const savedWhish = getSavedSettlementAccount('WHISH', cur);
+    setWhishCompanyWalletName(savedWhish.name);
+    setWhishCompanyAccountNumber(savedWhish.accountNumber);
   };
 
-  // Synchronize Bank Account Selection
-  const handleBankSelect = (bankId: string) => {
-    setSelectedBankId(bankId);
-    const found = companyBankAccounts.find((b) => b.id === bankId);
-    if (found) {
-      setBankAccountName(found.accountName);
+  // Synchronize Bank Account Selection and Free-Text Changes
+  const handleBankNameChange = (name: string) => {
+    setBankAccountName(name);
+    const cur = currencyCode === 'LBP' ? 'LBP' : 'USD';
+    const cleanTyped = cleanAccountLabel(name).toLowerCase();
+    const found = companyBankAccounts.find((b) => cleanAccountLabel(b.accountName).toLowerCase() === cleanTyped || cleanAccountLabel(b.bankName).toLowerCase() === cleanTyped);
+    if (found && found.accountNumber) {
       setBankAccountNumber(found.accountNumber);
-      if (found.currency === 'LBP' && currencyCode !== 'LBP') {
-        handleCurrencyChange('LBP');
-      } else if (found.currency === 'USD' && currencyCode !== 'USD') {
-        handleCurrencyChange('USD');
-      }
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: cur, name: found.accountName, accountNumber: found.accountNumber });
+    } else {
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: cur, name, accountNumber: bankAccountNumber });
     }
   };
 
-  const handleUpdateBankAccountNumber = (bankId: string, newNumber: string) => {
-    setBankAccountNumber(newNumber);
-    setCardCompanyAccountNumber(newNumber);
-    updateCompanyBankAccountNumber(bankId, newNumber);
-    toast.success('Company Bank Account / IBAN updated globally');
+  const handleCardBankNameChange = (name: string) => {
+    setCardCompanyBankName(name);
+    const cur = currencyCode === 'LBP' ? 'LBP' : 'USD';
+    const cleanTyped = cleanAccountLabel(name).toLowerCase();
+    const found = companyBankAccounts.find((b) => cleanAccountLabel(b.accountName).toLowerCase() === cleanTyped || cleanAccountLabel(b.bankName).toLowerCase() === cleanTyped);
+    if (found && found.accountNumber) {
+      setCardCompanyAccountNumber(found.accountNumber);
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: cur, name: found.accountName, accountNumber: found.accountNumber });
+    } else {
+      saveOrUpdateSettlementAccount({ type: 'BANK', currency: cur, name, accountNumber: cardCompanyAccountNumber });
+    }
   };
 
-  const handleUpdateWhishAccountNumber = (whishId: string, newNumber: string) => {
-    setWhishCompanyAccountNumber(newNumber);
-    updateCompanyWhishAccountNumber(whishId, newNumber);
-    toast.success('Company Whish Account # updated globally');
+  const handleWhishWalletNameChange = (name: string) => {
+    setWhishCompanyWalletName(name);
+    const cur = currencyCode === 'LBP' ? 'LBP' : 'USD';
+    const cleanTyped = cleanAccountLabel(name).toLowerCase();
+    const found = companyWhishAccounts.find((w) => cleanAccountLabel(w.walletName).toLowerCase() === cleanTyped);
+    if (found && found.accountNumber) {
+      setWhishCompanyAccountNumber(found.accountNumber);
+      saveOrUpdateSettlementAccount({ type: 'WHISH', currency: cur, name: found.walletName, accountNumber: found.accountNumber });
+    } else {
+      saveOrUpdateSettlementAccount({ type: 'WHISH', currency: cur, name, accountNumber: whishCompanyAccountNumber });
+    }
+  };
+
+  const handleBankAccountNumberChange = (num: string) => {
+    setBankAccountNumber(num);
+    const cur = currencyCode === 'LBP' ? 'LBP' : 'USD';
+    saveOrUpdateSettlementAccount({ type: 'BANK', currency: cur, name: bankAccountName, accountNumber: num });
+  };
+
+  const handleCardCompanyAccountNumberChange = (num: string) => {
+    setCardCompanyAccountNumber(num);
+    const cur = currencyCode === 'LBP' ? 'LBP' : 'USD';
+    saveOrUpdateSettlementAccount({ type: 'BANK', currency: cur, name: cardCompanyBankName, accountNumber: num });
+  };
+
+  const handleWhishAccountNumberChange = (num: string) => {
+    setWhishCompanyAccountNumber(num);
+    const cur = currencyCode === 'LBP' ? 'LBP' : 'USD';
+    saveOrUpdateSettlementAccount({ type: 'WHISH', currency: cur, name: whishCompanyWalletName, accountNumber: num });
   };
 
   // Manual Selection & Partial Allocation Handler
@@ -480,20 +515,23 @@ export default function CustomerReceiptsModal({
       let targetCompanyAccountName: string | undefined = undefined;
       let targetCompanyAccountNumber: string | undefined = undefined;
 
+      const cur = currencyCode === 'LBP' ? 'LBP' : 'USD';
+
       if (isCard) {
-        targetCompanyAccountId = selectedCardCompanyBankId;
-        const b = companyBankAccounts.find((x) => x.id === selectedCardCompanyBankId) || companyBankAccounts[0];
-        targetCompanyAccountName = b?.accountName;
-        targetCompanyAccountNumber = cardCompanyAccountNumber || b?.accountNumber;
+        targetCompanyAccountId = `bank_${cur.toLowerCase()}`;
+        targetCompanyAccountName = cardCompanyBankName || (cur === 'LBP' ? 'Bank of Beirut (BOB)' : 'BLOM Bank S.A.L.');
+        targetCompanyAccountNumber = cardCompanyAccountNumber;
+        saveOrUpdateSettlementAccount({ type: 'BANK', currency: cur, name: targetCompanyAccountName, accountNumber: targetCompanyAccountNumber });
       } else if (isWhish) {
-        targetCompanyAccountId = selectedWhishCompanyAccountId;
-        const w = companyWhishAccounts.find((x) => x.id === selectedWhishCompanyAccountId) || companyWhishAccounts[0];
-        targetCompanyAccountName = w?.walletName;
-        targetCompanyAccountNumber = whishCompanyAccountNumber || w?.accountNumber;
+        targetCompanyAccountId = `whish_${cur.toLowerCase()}`;
+        targetCompanyAccountName = whishCompanyWalletName || (cur === 'LBP' ? 'Whish Money Operations Wallet' : 'Whish Money Merchant Wallet');
+        targetCompanyAccountNumber = whishCompanyAccountNumber;
+        saveOrUpdateSettlementAccount({ type: 'WHISH', currency: cur, name: targetCompanyAccountName, accountNumber: targetCompanyAccountNumber });
       } else if (isBankOrCheck) {
-        targetCompanyAccountId = selectedBankId;
-        targetCompanyAccountName = bankAccountName;
+        targetCompanyAccountId = `bank_${cur.toLowerCase()}`;
+        targetCompanyAccountName = bankAccountName || (cur === 'LBP' ? 'Bank of Beirut (BOB)' : 'BLOM Bank S.A.L.');
         targetCompanyAccountNumber = bankAccountNumber;
+        saveOrUpdateSettlementAccount({ type: 'BANK', currency: cur, name: targetCompanyAccountName, accountNumber: targetCompanyAccountNumber });
       }
 
       // Record Customer Receipt
@@ -878,21 +916,21 @@ export default function CustomerReceiptsModal({
                     <label className="block text-[10px] font-semibold text-amber-900 mb-0.5">
                       Receiving Company Bank Account (حساب التحصيل)
                     </label>
-                    <select
-                      value={selectedCardCompanyBankId}
-                      onChange={(e) => {
-                        setSelectedCardCompanyBankId(e.target.value);
-                        const b = companyBankAccounts.find((x) => x.id === e.target.value);
-                        if (b) setCardCompanyAccountNumber(b.accountNumber);
-                      }}
-                      className="w-full bg-white border border-amber-200 rounded px-2 py-1 text-xs text-slate-800 font-medium"
-                    >
+                    <input
+                      type="text"
+                      list="receipt-card-banks-list"
+                      value={cardCompanyBankName}
+                      onChange={(e) => handleCardBankNameChange(e.target.value)}
+                      placeholder="e.g. BLOM Bank, Bank Audi, BOB..."
+                      className="w-full bg-white border border-amber-200 rounded px-2 py-1 text-xs text-slate-800 font-medium placeholder:text-slate-400"
+                    />
+                    <datalist id="receipt-card-banks-list">
                       {companyBankAccounts.map((b) => (
-                        <option key={b.id} value={b.id}>
-                          {b.accountName}
+                        <option key={b.id} value={b.accountName}>
+                          {b.accountNumber ? `${b.accountName} (${b.accountNumber})` : b.accountName}
                         </option>
                       ))}
-                    </select>
+                    </datalist>
                   </div>
                 </div>
                 {/* Inline editable Account / IBAN field with global persistence */}
@@ -901,14 +939,13 @@ export default function CustomerReceiptsModal({
                   <input
                     type="text"
                     value={cardCompanyAccountNumber}
-                    onChange={(e) => setCardCompanyAccountNumber(e.target.value)}
-                    onBlur={() => handleUpdateBankAccountNumber(selectedCardCompanyBankId, cardCompanyAccountNumber)}
+                    onChange={(e) => handleCardCompanyAccountNumberChange(e.target.value)}
                     className="flex-1 bg-white border border-amber-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
                     placeholder="Edit account number..."
                   />
                   <button
                     type="button"
-                    onClick={() => handleUpdateBankAccountNumber(selectedCardCompanyBankId, cardCompanyAccountNumber)}
+                    onClick={() => handleCardCompanyAccountNumberChange(cardCompanyAccountNumber)}
                     className="px-2.5 py-1 bg-amber-700 hover:bg-amber-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
                     title="Save updated Account / IBAN globally for all future transactions"
                   >
@@ -947,21 +984,21 @@ export default function CustomerReceiptsModal({
                     <label className="block text-[10px] font-semibold text-purple-900 mb-0.5">
                       Our Receiving Whish Account (محفظة الشركة المستلمة)
                     </label>
-                    <select
-                      value={selectedWhishCompanyAccountId}
-                      onChange={(e) => {
-                        setSelectedWhishCompanyAccountId(e.target.value);
-                        const w = companyWhishAccounts.find((x) => x.id === e.target.value);
-                        if (w) setWhishCompanyAccountNumber(w.accountNumber);
-                      }}
-                      className="w-full bg-white border border-purple-200 rounded px-2 py-1 text-xs text-slate-800 font-medium"
-                    >
+                    <input
+                      type="text"
+                      list="receipt-whish-wallets-list"
+                      value={whishCompanyWalletName}
+                      onChange={(e) => handleWhishWalletNameChange(e.target.value)}
+                      placeholder="e.g. Whish Money Merchant Wallet..."
+                      className="w-full bg-white border border-purple-200 rounded px-2 py-1 text-xs text-slate-800 font-medium placeholder:text-slate-400"
+                    />
+                    <datalist id="receipt-whish-wallets-list">
                       {companyWhishAccounts.map((w) => (
-                        <option key={w.id} value={w.id}>
-                          {w.walletName}
+                        <option key={w.id} value={w.walletName}>
+                          {w.accountNumber ? `${w.walletName} (${w.accountNumber})` : w.walletName}
                         </option>
                       ))}
-                    </select>
+                    </datalist>
                   </div>
                 </div>
                 {/* Inline editable Whish Account / Wallet Number with global persistence */}
@@ -970,14 +1007,13 @@ export default function CustomerReceiptsModal({
                   <input
                     type="text"
                     value={whishCompanyAccountNumber}
-                    onChange={(e) => setWhishCompanyAccountNumber(e.target.value)}
-                    onBlur={() => handleUpdateWhishAccountNumber(selectedWhishCompanyAccountId, whishCompanyAccountNumber)}
+                    onChange={(e) => handleWhishAccountNumberChange(e.target.value)}
                     className="flex-1 bg-white border border-purple-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
                     placeholder="Edit Whish wallet number..."
                   />
                   <button
                     type="button"
-                    onClick={() => handleUpdateWhishAccountNumber(selectedWhishCompanyAccountId, whishCompanyAccountNumber)}
+                    onClick={() => handleWhishAccountNumberChange(whishCompanyAccountNumber)}
                     className="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
                     title="Save updated Whish Wallet number globally for all future transactions"
                   >
@@ -1004,17 +1040,21 @@ export default function CustomerReceiptsModal({
                     <label className="block text-[10px] font-semibold text-blue-800 mb-0.5">
                       Receiving Company Bank Account (الحساب المعتمد للشركة)
                     </label>
-                    <select
-                      value={selectedBankId}
-                      onChange={(e) => handleBankSelect(e.target.value)}
-                      className="w-full bg-white border border-blue-200 rounded px-2 py-1 text-xs font-medium text-slate-800"
-                    >
+                    <input
+                      type="text"
+                      list="receipt-company-bank-accounts"
+                      value={bankAccountName}
+                      onChange={(e) => handleBankNameChange(e.target.value)}
+                      placeholder="e.g. BLOM Bank, Bank Audi, BOB..."
+                      className="w-full bg-white border border-blue-200 rounded px-2 py-1 text-xs font-medium text-slate-800 placeholder:text-slate-400"
+                    />
+                    <datalist id="receipt-company-bank-accounts">
                       {companyBankAccounts.map((b) => (
-                        <option key={b.id} value={b.id}>
-                          {b.accountName}
+                        <option key={b.id} value={b.accountName}>
+                          {b.accountNumber ? `${b.accountName} (${b.accountNumber})` : b.accountName}
                         </option>
                       ))}
-                    </select>
+                    </datalist>
                   </div>
                   <div>
                     <label className="block text-[10px] font-semibold text-blue-800 mb-0.5">
@@ -1062,14 +1102,13 @@ export default function CustomerReceiptsModal({
                   <input
                     type="text"
                     value={bankAccountNumber}
-                    onChange={(e) => setBankAccountNumber(e.target.value)}
-                    onBlur={() => handleUpdateBankAccountNumber(selectedBankId, bankAccountNumber)}
+                    onChange={(e) => handleBankAccountNumberChange(e.target.value)}
                     className="flex-1 bg-white border border-blue-200 rounded px-2 py-1 text-xs font-mono text-slate-800"
                     placeholder="Edit account number..."
                   />
                   <button
                     type="button"
-                    onClick={() => handleUpdateBankAccountNumber(selectedBankId, bankAccountNumber)}
+                    onClick={() => handleBankAccountNumberChange(bankAccountNumber)}
                     className="px-2.5 py-1 bg-blue-700 hover:bg-blue-800 text-white rounded text-[10px] font-bold shrink-0 cursor-pointer shadow-2xs"
                     title="Save updated Account / IBAN globally for all future transactions"
                   >
@@ -1545,20 +1584,20 @@ export default function CustomerReceiptsModal({
                         Whish Sender: <strong>{printingReceipt.whishSenderPhone}</strong>
                       </div>
                     )}
-                    {printingReceipt.whishAccountNumber && (
+                    {(printingReceipt.whishAccountNumber || (printingReceipt.paymentMethod === 'WHISH' && printingReceipt.companyAccountNumber)) && (
                       <div style={{ fontSize: '11px', fontFamily: 'monospace', color: '#1e3a8a' }}>
-                        Our Whish Wallet #: <strong>{printingReceipt.whishAccountNumber}</strong>
+                        Our Whish Wallet #: <strong>{printingReceipt.whishAccountNumber || printingReceipt.companyAccountNumber}</strong> {printingReceipt.companyAccountName ? `(${printingReceipt.companyAccountName})` : ''}
                       </div>
                     )}
-                    {/* Bank Transfer / Check details */}
-                    {printingReceipt.bankAccountName && (
+                    {/* Bank Transfer / Check / Card Settlement details */}
+                    {(printingReceipt.bankAccountName || printingReceipt.companyAccountName) && printingReceipt.paymentMethod !== 'WHISH' && (
                       <div style={{ fontSize: '11px', color: '#1e3a8a', marginTop: '2px' }}>
-                        Settled to Bank: <strong>{printingReceipt.bankAccountName}</strong>
+                        Settled to Bank: <strong>{printingReceipt.bankAccountName || printingReceipt.companyAccountName}</strong>
                       </div>
                     )}
-                    {printingReceipt.bankAccountNumber && (
+                    {(printingReceipt.bankAccountNumber || printingReceipt.companyAccountNumber) && printingReceipt.paymentMethod !== 'WHISH' && (
                       <div style={{ fontSize: '10.5px', fontFamily: 'monospace', color: '#1e3a8a' }}>
-                        Settled to Account #: {printingReceipt.bankAccountNumber}
+                        Settled to Account / IBAN #: {printingReceipt.bankAccountNumber || printingReceipt.companyAccountNumber}
                       </div>
                     )}
                     {printingReceipt.senderBank && (
@@ -1848,27 +1887,27 @@ export default function CustomerReceiptsModal({
                         </td>
                       </tr>
                     )}
-                    {printingReceipt.whishAccountNumber && (
+                    {(printingReceipt.whishAccountNumber || (printingReceipt.paymentMethod === 'WHISH' && printingReceipt.companyAccountNumber)) && (
                       <tr>
                         <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Our Whish #:</td>
                         <td style={{ padding: '2px 0', textAlign: 'right', fontFamily: 'monospace', fontSize: '9px' }}>
-                          {printingReceipt.whishAccountNumber}
+                          {printingReceipt.whishAccountNumber || printingReceipt.companyAccountNumber}
                         </td>
                       </tr>
                     )}
-                    {printingReceipt.bankAccountName && (
+                    {(printingReceipt.bankAccountName || printingReceipt.companyAccountName) && printingReceipt.paymentMethod !== 'WHISH' && (
                       <tr>
                         <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Bank / المصرف:</td>
                         <td style={{ padding: '2px 0', textAlign: 'right', fontSize: '9px' }}>
-                          {printingReceipt.bankAccountName}
+                          {printingReceipt.bankAccountName || printingReceipt.companyAccountName}
                         </td>
                       </tr>
                     )}
-                    {printingReceipt.bankAccountNumber && (
+                    {(printingReceipt.bankAccountNumber || printingReceipt.companyAccountNumber) && printingReceipt.paymentMethod !== 'WHISH' && (
                       <tr>
-                        <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Account #:</td>
+                        <td style={{ padding: '2px 0', fontWeight: 'bold' }}>Account / IBAN:</td>
                         <td style={{ padding: '2px 0', textAlign: 'right', fontFamily: 'monospace', fontSize: '9px' }}>
-                          {printingReceipt.bankAccountNumber}
+                          {printingReceipt.bankAccountNumber || printingReceipt.companyAccountNumber}
                         </td>
                       </tr>
                     )}

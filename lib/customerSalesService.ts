@@ -203,10 +203,15 @@ export async function createJournalEntryForReceipt(
   const jvDate = receipt.createdAt ? receipt.createdAt.split('T')[0] : new Date().toISOString().split('T')[0];
 
   const isCash = receipt.paymentMethod.toUpperCase().includes('CASH');
-  const resolvedGl = resolveSettlementGlAccount(receipt.paymentMethod, receipt.companyAccountId);
+  const resolvedGl = resolveSettlementGlAccount(
+    receipt.paymentMethod,
+    receipt.companyAccountId,
+    receipt.bankAccountName || receipt.companyAccountName,
+    receipt.currencyCode as 'USD' | 'LBP'
+  );
   const debitAccountId = `acc-${resolvedGl.code}`;
   const debitAccountNo = resolvedGl.code;
-  const debitAccountName = receipt.companyAccountName || resolvedGl.name;
+  const debitAccountName = receipt.bankAccountName || receipt.companyAccountName || resolvedGl.name;
 
   const customerAccountId = 'acc-41100';
   const customerAccountNo = '41100';
@@ -214,6 +219,7 @@ export async function createJournalEntryForReceipt(
 
   const totalCreditUsd = receipt.amountReceivedUsd + (receipt.discountGiven || 0);
 
+  const accDetail = receipt.companyAccountNumber || receipt.bankAccountNumber ? ` - Acc: ${receipt.companyAccountNumber || receipt.bankAccountNumber}` : '';
   const lines: any[] = [
     // 1. Debit: Cash / Bank / Whish Asset Account
     {
@@ -222,7 +228,7 @@ export async function createJournalEntryForReceipt(
       account_id: debitAccountId,
       account_number: debitAccountNo,
       account_name: debitAccountName,
-      description: `Collection from ${receipt.customerName} (${receipt.receiptNo} - ${receipt.paymentMethod})`,
+      description: `Collection from ${receipt.customerName} (${receipt.receiptNo} - ${receipt.paymentMethod}${accDetail})`,
       amount_debit: receipt.amountReceivedUsd,
       amount_credit: 0,
       currency_rate: receipt.exchangeRate,

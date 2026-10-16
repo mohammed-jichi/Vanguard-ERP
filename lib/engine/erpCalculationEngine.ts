@@ -594,6 +594,11 @@ export interface MainReadingSummaryResult {
     method: string;
     amountUsd: number;
     date: string;
+    raw?: any;
+    bankAccountName?: string;
+    bankAccountNumber?: string;
+    companyAccountName?: string;
+    companyAccountNumber?: string;
   }>;
 
   // Paid In / Out Totals & List
@@ -1276,7 +1281,12 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
       customerName: r.customerName,
       method: r.method,
       amountUsd: r.amountUsd,
-      date: r.date
+      date: r.date,
+      raw: r.raw,
+      bankAccountName: (r.raw as any)?.bankAccountName,
+      bankAccountNumber: (r.raw as any)?.bankAccountNumber,
+      companyAccountName: (r.raw as any)?.companyAccountName,
+      companyAccountNumber: (r.raw as any)?.companyAccountNumber
     })),
 
     paidInTotalUsd: Number(paidInUsd.toFixed(2)),
