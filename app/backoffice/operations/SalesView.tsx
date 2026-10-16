@@ -201,6 +201,13 @@ export interface InvoiceRecord {
   is_posted?: boolean;
   posted?: boolean;
   createdAt: string;
+  createdAtIso?: string;
+  shiftId?: string;
+  shiftNumber?: number;
+  isReconciledOrClosed?: boolean;
+  closedInZReport?: boolean;
+  shiftClosed?: boolean;
+  closedShiftId?: string;
 }
 
 // 100% Authentic Vanguard ERP Catalog Items
@@ -1391,25 +1398,28 @@ export default function AuthenticVanguardSalesWorkstation({
   const mainReadingInvoices = useMemo(() => {
     if (!isMainReadingModalOpen) return [];
     const activeWorkingDate = invoiceDate || getTodayFormatted();
-    return invoicesDirectory.filter((inv) => isInvoicePostedToday(inv, activeWorkingDate));
+    const currentShift = getActiveShift();
+    return invoicesDirectory.filter((inv) => isInvoicePostedToday(inv, activeWorkingDate, currentShift));
   }, [isMainReadingModalOpen, invoicesDirectory, invoiceDate]);
 
   const mainReadingPaidInOut = useMemo(() => {
     if (!isMainReadingModalOpen) return [];
     const activeWorkingDate = invoiceDate || getTodayFormatted();
-    return getCashMovements().filter((m) => isCashMovementToday(m, activeWorkingDate));
+    const currentShift = getActiveShift();
+    return getCashMovements().filter((m) => isCashMovementToday(m, activeWorkingDate, currentShift));
   }, [isMainReadingModalOpen, invoiceDate]);
 
   const mainReadingReceipts = useMemo(() => {
     if (!isMainReadingModalOpen) return [];
     const activeWorkingDate = invoiceDate || getTodayFormatted();
+    const currentShift = getActiveShift();
     const all = [...customerReceipts, ...getCustomerReceipts()];
     const uniqueMap = new Map();
     for (const r of all) {
       const key = (r as any).id || (r as any).receiptNo || JSON.stringify(r);
       uniqueMap.set(key, r);
     }
-    return Array.from(uniqueMap.values()).filter((rct: any) => isReceiptPostedToday(rct, activeWorkingDate));
+    return Array.from(uniqueMap.values()).filter((rct: any) => isReceiptPostedToday(rct, activeWorkingDate, currentShift));
   }, [isMainReadingModalOpen, customerReceipts, invoiceDate]);
 
   const handleSelectCustomerFromModal = (cust: any) => {
@@ -1979,6 +1989,8 @@ export default function AuthenticVanguardSalesWorkstation({
     // If active document is Credit Note, route to postCreditNote workflow
     if (docType === 'CREDIT_NOTE') {
       const isCashRefund = !transactionType.toLowerCase().includes('credit') && !transactionType.toLowerCase().includes('account');
+      const activeShift = getActiveShift();
+      const nowIso = new Date().toISOString();
       const crnRecord: CreditNoteRecord = {
         id: invoiceNumber,
         invoiceNumber: invoiceNumber,
@@ -1995,6 +2007,13 @@ export default function AuthenticVanguardSalesWorkstation({
         branch: branchName,
         currency: currency,
         exchangeRate: POS_EXCHANGE_RATE_LBP,
+        shiftId: activeShift.id,
+        shiftNumber: activeShift.shiftNumber,
+        createdAt: nowIso,
+        createdAtIso: nowIso,
+        isReconciledOrClosed: false,
+        closedInZReport: false,
+        shiftClosed: false,
         items: cartItems.map((item) => ({
           id: item.id,
           code: item.code,
@@ -2011,8 +2030,7 @@ export default function AuthenticVanguardSalesWorkstation({
         grandTotal: grandTotal,
         status: 'Posted',
         posted: true,
-        is_posted: true,
-        createdAt: new Date().toISOString()
+        is_posted: true
       };
 
       await postCreditNote(crnRecord, currentTenant?.id);
@@ -2046,6 +2064,8 @@ export default function AuthenticVanguardSalesWorkstation({
       return;
     }
 
+    const activeShift = getActiveShift();
+    const nowIso = new Date().toISOString();
     const newRecord: InvoiceRecord = {
       id: invoiceNumber,
       invoiceNumber: invoiceNumber,
@@ -2072,7 +2092,13 @@ export default function AuthenticVanguardSalesWorkstation({
       status: postImmediately ? 'Posted' : 'Draft',
       is_posted: postImmediately,
       posted: postImmediately,
-      createdAt: new Date().toISOString()
+      shiftId: activeShift.id,
+      shiftNumber: activeShift.shiftNumber,
+      createdAt: nowIso,
+      createdAtIso: nowIso,
+      isReconciledOrClosed: false,
+      closedInZReport: false,
+      shiftClosed: false
     };
 
     // 1. Snapshot the saved invoice immediately before any form changes
@@ -2441,28 +2467,37 @@ export default function AuthenticVanguardSalesWorkstation({
       alert('Please enter a valid amount.');
       return;
     }
+    const activeShift = getActiveShift();
+    const nowIso = new Date().toISOString();
     const newEntry = {
       id: `PIO-${Date.now()}`,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       type: paidInOutType,
       category: paidInOutCategory,
       amount: amt,
-      notes: paidInOutNotes.trim() || (paidInOutType === 'in' ? 'Cash Deposit' : 'Cash Payout')
+      notes: paidInOutNotes.trim() || (paidInOutType === 'in' ? 'Cash Deposit' : 'Cash Payout'),
+      shiftId: activeShift.id,
+      shiftNumber: activeShift.shiftNumber,
+      createdAtIso: nowIso,
+      createdAt: nowIso,
+      isReconciledOrClosed: false
     };
     setPaidInOutHistory((prev) => [newEntry, ...prev]);
     setDrawerCashBalance((prev) => (paidInOutType === 'in' ? prev + amt : Math.max(0, prev - amt)));
 
     // Sync with POS Shift Cash Movements
-    const activeShift = getActiveShift();
     recordCashMovement({
       shiftId: activeShift.id,
+      shiftNumber: activeShift.shiftNumber,
+      createdAtIso: nowIso,
       movementType: paidInOutType === 'in' ? 'PAID_IN' : 'PAID_OUT',
       type: paidInOutType === 'in' ? 'PAID_IN' : 'PAID_OUT',
       amount: amt,
       category: paidInOutCategory,
       amountUsd: amt,
       amountLbp: amt * POS_EXCHANGE_RATE_LBP,
-      notes: newEntry.notes
+      notes: newEntry.notes,
+      isReconciledOrClosed: false
     }, currentTenant?.id);
 
     setPaidInOutAmount('');
@@ -6916,11 +6951,12 @@ export default function AuthenticVanguardSalesWorkstation({
           printerType={salesOptions.printer_type}
           onShiftClosed={(closedShift, newShift, closedIds) => {
             setDrawerCashBalance(newShift.openingCashUsd);
+            setPaidInOutHistory([]);
             if (closedIds && closedIds.length > 0) {
               setInvoicesDirectory((prev) =>
                 prev.map((inv) =>
                   closedIds.includes(inv.id) || closedIds.includes(inv.invoiceNumber)
-                    ? { ...inv, closedInZReport: true, shiftClosed: true }
+                    ? { ...inv, isReconciledOrClosed: true, closedInZReport: true, shiftClosed: true, closedShiftId: closedShift.id }
                     : inv
                 )
               );

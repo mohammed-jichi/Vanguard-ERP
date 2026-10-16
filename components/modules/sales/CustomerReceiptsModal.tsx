@@ -540,10 +540,12 @@ export default function CustomerReceiptsModal({
         {
           branchId: branchName,
           shiftId: currentShift.id,
+          shiftNumber: currentShift.shiftNumber,
           customerId: selectedCustomerId,
           customerName: activeCustomer.name,
           paymentMethod,
           currencyCode,
+          isReconciledOrClosed: false,
           // Card Details
           cardholderName: isCard ? cardholderName.trim() : undefined,
           cardNumber: isCard ? cardNumber.trim() : undefined,

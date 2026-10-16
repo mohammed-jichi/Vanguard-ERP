@@ -733,7 +733,7 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
   invoices.forEach((inv) => {
     if (!inv) return;
     if (inv.isReconciledOrClosed === true || inv.closedInZReport === true || inv.shiftClosed === true) return;
-    if (inv.closedShiftId && shift.id && inv.closedShiftId === shift.id) return;
+    if (inv.closedShiftId) return;
 
     // Strict Shift ID / Shift Number isolation
     if (shiftId && inv.shiftId) {
@@ -976,7 +976,7 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
   customerReceipts.forEach((rct) => {
     if (!rct || rct.isVoided) return;
     if (rct.isReconciledOrClosed === true || rct.closedInZReport === true || rct.shiftClosed === true) return;
-    if (rct.closedShiftId && shift.id && rct.closedShiftId === shift.id) return;
+    if (rct.closedShiftId) return;
 
     // Strict Shift ID / Shift Number isolation
     if (shiftId && rct.shiftId) {
@@ -1070,7 +1070,7 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
   paidInOutList.forEach((pio) => {
     if (!pio || pio.isVoided) return;
     if (pio.isReconciledOrClosed === true || pio.closedInZReport === true || pio.shiftClosed === true) return;
-    if (pio.closedShiftId && shift.id && pio.closedShiftId === shift.id) return;
+    if (pio.closedShiftId) return;
 
     // Strict Shift ID / Shift Number isolation
     if (shiftId && pio.shiftId) {

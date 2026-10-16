@@ -144,6 +144,7 @@ export default function Sidebar({
     op_actions: false,
     op_prodreq: false,
     op_events: false,
+    op_production: false,
     op_setup: false,
     op_more: false,
     purchasing: false,

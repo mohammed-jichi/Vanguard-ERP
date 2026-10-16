@@ -44,6 +44,7 @@ export interface CustomerReceipt {
   receiptNo: string; // e.g., 'RV-00501'
   branchId: string;
   shiftId: string;
+  shiftNumber?: number;
   customerId: string;
   customerName: string;
   paymentMethod: string; // 'CASH USD' | 'CASH LBP' | 'BANK TRANSFER' | 'CHECK' | 'CARD' | 'WHISH'
@@ -359,6 +360,7 @@ export async function recordCustomerReceipt(
     id: nextNo,
     receiptNo: nextNo,
     shiftId: receiptData.shiftId || currentShift.id,
+    shiftNumber: (receiptData as any).shiftNumber !== undefined ? (receiptData as any).shiftNumber : currentShift.shiftNumber,
     createdAt: nowIso,
     createdAtIso: nowIso,
     isVoided: false,

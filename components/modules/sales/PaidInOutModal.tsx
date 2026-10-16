@@ -416,6 +416,9 @@ export default function PaidInOutModal({
         {
           movementNo: nextMovNo,
           shiftId: activeShift.id,
+          shiftNumber: activeShift.shiftNumber,
+          createdAtIso: new Date().toISOString(),
+          isReconciledOrClosed: false,
           branchId: branchName,
           cashierName: byUser || cashierName,
           movementType,

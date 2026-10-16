@@ -1,5 +1,29 @@
 [
   {
+    "id": "42051223-8ff5-463d-a1ec-c5aa3d8ebe84",
+    "commit_hash": "420512238ff5663d01ecc5aa3d8ebe8425258343",
+    "short_hash": "4205122",
+    "version": "v2.0.0",
+    "title": "Make receiving company bank name and IBAN flexible free-text inputs across USD and LBP",
+    "category": "feature",
+    "description": "feat(receipts): make receiving company bank name and IBAN flexible free-text inputs across USD and LBP",
+    "bullet_points": [
+      "Implemented make receiving company bank name and iban flexible free-text inputs across usd and lbp",
+      "Enhanced system stability and operator workflow in Sales & POS & Accounting & Finance",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Sales & POS",
+      "Accounting & Finance",
+      "Account & Security"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-16T15:56:01.000Z",
+    "created_at": "2026-10-16T16:09:37.374Z"
+  },
+  {
     "id": "99b3d33f-e902-410c-a186-57ad16310b31",
     "commit_hash": "99b3d33fe902510c818657ad16310b316e5310ef",
     "short_hash": "99b3d33",

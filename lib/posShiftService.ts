@@ -114,6 +114,7 @@ export interface CashMovement {
   movementNo: string; // e.g. 'PI-00101' for Paid In, 'PO-00101' for Paid Out
   branchId: string;
   shiftId: string;
+  shiftNumber?: number;
   userId?: string;
   cashierName: string;
   movementType: 'PAID_IN' | 'PAID_OUT';
@@ -601,11 +602,16 @@ export async function recordCashMovement(
   const targetAccNo = movement.targetAccountNumber || catConfig?.targetAccountNumber || '53000';
   const targetAccName = movement.targetAccountName || catConfig?.targetAccountName || 'Main Safe';
 
+  const activeShift = getActiveShift();
+  const targetShiftId = movement.shiftId || activeShift.id;
+  const targetShiftNumber = (movement as any).shiftNumber !== undefined ? Number((movement as any).shiftNumber) : activeShift.shiftNumber;
+
   const newRecord: CashMovement = {
     id: movement.id || `PIO-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     movementNo: movNo,
     branchId: movement.branchId || 'Southern Olive and Oil Products S.A.R.L.',
-    shiftId: movement.shiftId || getActiveShift().id,
+    shiftId: targetShiftId,
+    shiftNumber: targetShiftNumber,
     userId: movement.userId,
     cashierName: movement.cashierName || 'Active Cashier',
     movementType: mType,
@@ -787,6 +793,7 @@ export function isRecordInActiveShiftSession(
   if (!record) return false;
   if (record.isVoided === true) return false;
   if (record.isReconciledOrClosed === true || record.closedInZReport === true || record.shiftClosed === true) return false;
+  if (record.closedShiftId) return false;
 
   const statusStr = String(record.status || '').toUpperCase();
   if (statusStr === 'VOID' || statusStr === 'ARCHIVED' || statusStr === 'DRAFT' || statusStr === 'HOLD' || statusStr === 'UNPOSTED') {
@@ -796,8 +803,8 @@ export function isRecordInActiveShiftSession(
   const shift = activeShift || getActiveShift();
   if (!shift) return true;
 
-  // 1. If record was sealed by a closed shift, exclude it
-  if (record.closedShiftId && record.closedShiftId === shift.id) {
+  // 1. If record has closedShiftId set, it is sealed by a closed shift
+  if (record.closedShiftId) {
     return false;
   }
 
@@ -1009,7 +1016,7 @@ export async function closeShiftSession(
             list.forEach((i: any) => {
               const iTime = new Date(i.createdAtIso || i.createdAt || i.timestamp || i.date).getTime();
               const isThisShift = i.shiftId === shift.id || invoiceIds.has(i.id) || invoiceIds.has(i.invoiceNumber);
-              const isPriorUnclosed = !i.shiftId && !isNaN(iTime) && iTime <= closeTimeMs;
+              const isPriorUnclosed = !isNaN(iTime) && iTime <= closeTimeMs;
               if (isThisShift || isPriorUnclosed) {
                 i.isReconciledOrClosed = true;
                 i.closedInZReport = true;
@@ -1038,7 +1045,7 @@ export async function closeShiftSession(
       const dateVal = m.createdAtIso || m.createdAt || (m as any).timestamp || (m as any).date || '';
       const mTime = dateVal ? new Date(dateVal).getTime() : NaN;
       const isThisShift = m.shiftId === shift.id || movementIds.has(m.id) || movementIds.has(m.movementNo);
-      const isPriorUnclosed = !m.shiftId && !isNaN(mTime) && mTime <= closeTimeMs;
+      const isPriorUnclosed = !isNaN(mTime) && mTime <= closeTimeMs;
       if (isThisShift || isPriorUnclosed) {
         m.isReconciledOrClosed = true;
         m.closedInZReport = true;
@@ -1060,7 +1067,7 @@ export async function closeShiftSession(
       const dateVal = (r as any).createdAtIso || r.createdAt || (r as any).timestamp || (r as any).date || '';
       const rTime = dateVal ? new Date(dateVal).getTime() : NaN;
       const isThisShift = r.shiftId === shift.id || receiptIds.has(r.id) || receiptIds.has(r.receiptNo);
-      const isPriorUnclosed = !r.shiftId && !isNaN(rTime) && rTime <= closeTimeMs;
+      const isPriorUnclosed = !isNaN(rTime) && rTime <= closeTimeMs;
       if (isThisShift || isPriorUnclosed) {
         r.isReconciledOrClosed = true;
         r.closedInZReport = true;
@@ -1081,7 +1088,7 @@ export async function closeShiftSession(
       const dateVal = (crn as any).createdAtIso || crn.createdAt || (crn as any).timestamp || crn.date || '';
       const crnTime = dateVal ? new Date(dateVal).getTime() : NaN;
       const isThisShift = crn.shiftId === shift.id;
-      const isPriorUnclosed = !crn.shiftId && !isNaN(crnTime) && crnTime <= closeTimeMs;
+      const isPriorUnclosed = !isNaN(crnTime) && crnTime <= closeTimeMs;
       if (isThisShift || isPriorUnclosed) {
         crn.isReconciledOrClosed = true;
         crn.closedInZReport = true;

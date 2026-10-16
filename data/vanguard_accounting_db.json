@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-16T15:55:33.048Z",
+  "last_updated": "2026-10-16T16:09:37.387Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,24 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-4205122",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (4205122) - Make receiving company bank name and IBAN flexible free-text inputs across USD and LBP",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "420512238ff5663d01ecc5aa3d8ebe8425258343",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Sales & POS",
+          "Accounting & Finance",
+          "Account & Security"
+        ]
+      },
+      "created_at": "2026-10-16T15:56:01.000Z"
+    },
     {
       "id": "act-rel-99b3d33",
       "company_id": 1300,
@@ -6923,6 +6941,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-4205122",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Make receiving company bank name and IBAN flexible free-text inputs across USD and LBP",
+      "message": "feat(receipts): make receiving company bank name and IBAN flexible free-text inputs across USD and LBP",
+      "timestamp": "2026-10-16T15:56:01.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "420512238ff5663d01ecc5aa3d8ebe8425258343",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-99b3d33",
       "type": "SYSTEM_RELEASE",
