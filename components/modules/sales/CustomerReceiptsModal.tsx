@@ -44,7 +44,7 @@ import {
   ReceiptSettlementResult
 } from '@/lib/engine/erpCalculationEngine';
 import { cleanDocumentNumber } from '@/lib/utils/documentSequence';
-import { POS_EXCHANGE_RATE_LBP } from '@/lib/posShiftService';
+import { POS_EXCHANGE_RATE_LBP, getActiveShift } from '@/lib/posShiftService';
 
 import {
   getCompanyBankAccounts,
@@ -497,10 +497,11 @@ export default function CustomerReceiptsModal({
       }
 
       // Record Customer Receipt
+      const currentShift = getActiveShift();
       const receipt = await recordCustomerReceipt(
         {
           branchId: branchName,
-          shiftId: 'SH-20261014-44',
+          shiftId: currentShift.id,
           customerId: selectedCustomerId,
           customerName: activeCustomer.name,
           paymentMethod,

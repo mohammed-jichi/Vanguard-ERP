@@ -21,7 +21,7 @@ import {
   postCreditNote,
   getCreditNotes
 } from '@/lib/customerSalesService';
-import { POS_EXCHANGE_RATE_LBP } from '@/lib/posShiftService';
+import { POS_EXCHANGE_RATE_LBP, getActiveShift } from '@/lib/posShiftService';
 import { peekNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 
 interface CreditNoteModalProps {
@@ -175,12 +175,15 @@ export default function CreditNoteModal({
     setIsPosting(true);
     try {
       const crnNumber = peekNextDocNumber('CREDIT_NOTE', getCreditNotes());
+      const currentShift = getActiveShift();
       const crnRecord: CreditNoteRecord = {
         id: crnNumber,
         invoiceNumber: crnNumber,
         parentInvoiceNo: selectedParentInvoiceNo || undefined,
         docType: 'CREDIT_NOTE',
         doc_type: 'CREDIT_NOTE',
+        shiftId: currentShift.id,
+        shiftNumber: currentShift.shiftNumber,
         date: new Date().toISOString().split('T')[0],
         customerId,
         customerName,
@@ -198,7 +201,11 @@ export default function CreditNoteModal({
         status: 'Posted',
         posted: true,
         is_posted: true,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        createdAtIso: new Date().toISOString(),
+        isReconciledOrClosed: false,
+        closedInZReport: false,
+        shiftClosed: false
       };
 
       const result = await postCreditNote(crnRecord, tenantId);

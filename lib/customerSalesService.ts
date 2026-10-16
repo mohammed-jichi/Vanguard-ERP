@@ -83,6 +83,9 @@ export interface CustomerReceipt {
   isVoided?: boolean;
   closedInZReport?: boolean;
   shiftClosed?: boolean;
+  isReconciledOrClosed?: boolean;
+  closedShiftId?: string;
+  createdAtIso?: string;
 }
 
 export function generateNextReceiptNumber(): string {
@@ -133,8 +136,12 @@ export function getCustomerReceipts(): CustomerReceipt[] {
       ],
       journalEntryId: 'jv-rct-seed-01',
       cashierName: 'Active Cashier',
-      createdAt: new Date().toISOString(),
-      isVoided: false
+      createdAt: '2026-09-08T10:00:00.000Z',
+      createdAtIso: '2026-09-08T10:00:00.000Z',
+      isVoided: false,
+      isReconciledOrClosed: true,
+      closedInZReport: true,
+      shiftClosed: true
     },
     {
       id: '5002602',
@@ -163,8 +170,12 @@ export function getCustomerReceipts(): CustomerReceipt[] {
       ],
       journalEntryId: 'jv-rct-seed-02',
       cashierName: 'Active Cashier',
-      createdAt: new Date().toISOString(),
-      isVoided: false
+      createdAt: '2026-09-08T10:00:00.000Z',
+      createdAtIso: '2026-09-08T10:00:00.000Z',
+      isVoided: false,
+      isReconciledOrClosed: true,
+      closedInZReport: true,
+      shiftClosed: true
     }
   ];
   return defaults;
@@ -335,13 +346,19 @@ export async function recordCustomerReceipt(
   const nextNo = receiptData.receiptNo || generateNextReceiptNumber();
   commitNextDocNumber('CUSTOMER_RECEIPT', nextNo, tenantId);
   const nowIso = new Date().toISOString();
+  const currentShift = getActiveShift();
 
   const newReceipt: CustomerReceipt = {
     ...receiptData,
     id: nextNo,
     receiptNo: nextNo,
+    shiftId: receiptData.shiftId || currentShift.id,
     createdAt: nowIso,
-    isVoided: false
+    createdAtIso: nowIso,
+    isVoided: false,
+    isReconciledOrClosed: false,
+    closedInZReport: false,
+    shiftClosed: false
   };
 
   // Create Accounting Journal Entry
@@ -665,6 +682,13 @@ export interface CreditNoteRecord {
   posted: boolean;
   is_posted: boolean;
   createdAt: string;
+  createdAtIso?: string;
+  shiftId?: string;
+  shiftNumber?: number;
+  isReconciledOrClosed?: boolean;
+  closedShiftId?: string;
+  closedInZReport?: boolean;
+  shiftClosed?: boolean;
 }
 
 export const CREDIT_NOTES_KEY = 'vanguard_credit_notes_v1';
@@ -892,9 +916,22 @@ export async function postCreditNote(
   // Advance document sequence
   commitNextDocNumber('CREDIT_NOTE', crn.invoiceNumber, tenantId);
 
+  const activeShift = getActiveShift();
+  const nowIso = new Date().toISOString();
+  const finalizedCrn: CreditNoteRecord = {
+    ...crn,
+    shiftId: crn.shiftId || activeShift.id,
+    shiftNumber: crn.shiftNumber !== undefined ? crn.shiftNumber : activeShift.shiftNumber,
+    createdAt: crn.createdAt || nowIso,
+    createdAtIso: crn.createdAtIso || nowIso,
+    isReconciledOrClosed: false,
+    closedInZReport: false,
+    shiftClosed: false
+  };
+
   // 1. Save to credit notes store
   const existingCrns = getCreditNotes();
-  const updatedCrns = [crn, ...existingCrns.filter(c => c.id !== crn.id && c.invoiceNumber !== crn.invoiceNumber)];
+  const updatedCrns = [finalizedCrn, ...existingCrns.filter(c => c.id !== finalizedCrn.id && c.invoiceNumber !== finalizedCrn.invoiceNumber)];
   saveCreditNotes(updatedCrns);
 
   // 2. Register in vanguard_sales_invoices_directory
@@ -902,11 +939,11 @@ export async function postCreditNote(
     const rawInvs = localStorage.getItem('vanguard_sales_invoices_directory');
     const invs = rawInvs ? JSON.parse(rawInvs) : [];
     const invRecord = {
-      ...crn,
+      ...finalizedCrn,
       docType: 'CREDIT_NOTE',
       doc_type: 'CREDIT_NOTE',
-      parent_invoice_id: crn.parentInvoiceNo,
-      parentInvoiceNo: crn.parentInvoiceNo,
+      parent_invoice_id: finalizedCrn.parentInvoiceNo,
+      parentInvoiceNo: finalizedCrn.parentInvoiceNo,
       transactionType: 'Credit Note',
       status: 'Posted',
       posted: true,

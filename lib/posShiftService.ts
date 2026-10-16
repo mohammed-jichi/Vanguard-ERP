@@ -139,6 +139,9 @@ export interface CashMovement {
   status?: string;
   closedInZReport?: boolean;
   shiftClosed?: boolean;
+  isReconciledOrClosed?: boolean;
+  closedShiftId?: string;
+  createdAtIso?: string;
 }
 
 export interface TenderCollection {
@@ -498,7 +501,7 @@ export function getCashMovements(): CashMovement[] {
             id: item.id || `PIO-${Date.now()}-${idx}`,
             movementNo: code,
             branchId: item.branchId || 'Southern Olive and Oil Products S.A.R.L.',
-            shiftId: item.shiftId || 'SH-20261014-44',
+            shiftId: item.shiftId || '',
             userId: item.userId,
             byUser: item.byUser || item.cashierName,
             paidToUser: item.paidToUser,
@@ -520,6 +523,11 @@ export function getCashMovements(): CashMovement[] {
             notes: item.notes || (mType === 'PAID_IN' ? 'Cash Deposit' : 'Cash Disbursement'),
             journalEntryId: item.journalEntryId,
             createdAt: item.createdAt || new Date().toISOString(),
+            createdAtIso: item.createdAtIso || item.createdAt || new Date().toISOString(),
+            isReconciledOrClosed: Boolean(item.isReconciledOrClosed || item.closedInZReport || item.shiftClosed),
+            closedShiftId: item.closedShiftId,
+            closedInZReport: Boolean(item.closedInZReport || item.isReconciledOrClosed),
+            shiftClosed: Boolean(item.shiftClosed || item.isReconciledOrClosed),
             timestamp: item.timestamp || item.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isVoided: Boolean(item.isVoided),
             voidReason: item.voidReason,
@@ -609,8 +617,12 @@ export async function recordCashMovement(
     targetAccountName: targetAccName,
     notes: movement.notes.trim(),
     createdAt: nowIso,
+    createdAtIso: nowIso,
     timestamp: timeStr,
-    isVoided: false
+    isVoided: false,
+    isReconciledOrClosed: false,
+    closedInZReport: false,
+    shiftClosed: false
   };
 
   // Generate double-entry journal entry
@@ -759,12 +771,74 @@ export function isDateMatching(dateValue: any, targetDate: string): boolean {
 }
 
 /**
+ * Evaluates whether an item (cash movement, invoice, receipt, credit note) belongs
+ * to the currently active shift session boundaries.
+ */
+export function isRecordInActiveShiftSession(
+  record: any,
+  activeShift?: PosShift | { id?: string; shiftNumber?: number; openedAt?: string; closedAt?: string | null },
+  activeWorkingDate?: string
+): boolean {
+  if (!record) return false;
+  if (record.isVoided === true) return false;
+  if (record.isReconciledOrClosed === true || record.closedInZReport === true || record.shiftClosed === true) return false;
+
+  const statusStr = String(record.status || '').toUpperCase();
+  if (statusStr === 'VOID' || statusStr === 'ARCHIVED' || statusStr === 'DRAFT' || statusStr === 'HOLD' || statusStr === 'UNPOSTED') {
+    return false;
+  }
+
+  const shift = activeShift || getActiveShift();
+  if (!shift) return true;
+
+  // 1. If record was sealed by a closed shift, exclude it
+  if (record.closedShiftId && record.closedShiftId === shift.id) {
+    return false;
+  }
+
+  // 2. Strict Shift ID check: if record has a shiftId that does not match this active shift, exclude it
+  if (record.shiftId && shift.id) {
+    if (String(record.shiftId).trim().toLowerCase() !== String(shift.id).trim().toLowerCase()) {
+      return false;
+    }
+  }
+
+  // 3. Strict Shift Number check
+  if (record.shiftNumber !== undefined && shift.shiftNumber !== undefined) {
+    if (Number(record.shiftNumber) !== Number(shift.shiftNumber)) {
+      return false;
+    }
+  }
+
+  // 4. Session OpenedAt boundary: any record created before the active shift opened is strictly excluded
+  if (shift.openedAt) {
+    const rawTime = record.createdAtIso || record.createdAt || record.timestamp || record.date;
+    if (rawTime) {
+      const recTime = new Date(rawTime).getTime();
+      const shiftOpenTime = new Date(shift.openedAt).getTime();
+      // Allow 2000ms grace period for clock skew during shift initialization
+      if (!isNaN(recTime) && !isNaN(shiftOpenTime) && recTime < (shiftOpenTime - 2000)) {
+        return false;
+      }
+    }
+  }
+
+  // 5. Calendar date matching (if activeWorkingDate is specified)
+  if (activeWorkingDate) {
+    const rawTime = record.createdAtIso || record.createdAt || record.timestamp || record.date;
+    if (rawTime && !isSameWorkingDay(rawTime, activeWorkingDate)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Evaluates whether an invoice qualifies for the current shift/working-date Main Reading
  */
-export function isInvoicePostedToday(inv: any, activeWorkingDate: string): boolean {
+export function isInvoicePostedToday(inv: any, activeWorkingDate: string, activeShift?: any): boolean {
   if (!inv) return false;
-  if (inv.closedInZReport === true || inv.shiftClosed === true) return false;
-
   const statusStr = String(inv.status || '').toUpperCase();
   const isPosted =
     statusStr === 'POSTED' ||
@@ -773,45 +847,23 @@ export function isInvoicePostedToday(inv: any, activeWorkingDate: string): boole
     (statusStr !== 'DRAFT' && statusStr !== 'HOLD' && statusStr !== 'UNPOSTED' && statusStr !== 'VOID' && inv.grandTotal !== undefined);
   if (!isPosted) return false;
 
-  const matchesDate =
-    isSameWorkingDay(inv.date, activeWorkingDate) ||
-    isSameWorkingDay(inv.createdAt, activeWorkingDate) ||
-    isSameWorkingDay(inv.timestamp, activeWorkingDate);
-
-  return matchesDate;
+  return isRecordInActiveShiftSession(inv, activeShift, activeWorkingDate);
 }
 
 /**
  * Evaluates whether a customer receipt qualifies for the current shift/working-date Main Reading
  */
-export function isReceiptPostedToday(rct: any, activeWorkingDate: string): boolean {
+export function isReceiptPostedToday(rct: any, activeWorkingDate: string, activeShift?: any): boolean {
   if (!rct || rct.isVoided === true) return false;
-  if (rct.closedInZReport === true || rct.shiftClosed === true) return false;
-
-  const statusStr = String(rct.status || 'POSTED').toUpperCase();
-  if (statusStr === 'VOID' || statusStr === 'DRAFT' || statusStr === 'UNPOSTED') return false;
-
-  const matchesDate =
-    isSameWorkingDay(rct.date, activeWorkingDate) ||
-    isSameWorkingDay(rct.createdAt, activeWorkingDate) ||
-    isSameWorkingDay(rct.timestamp, activeWorkingDate);
-
-  return matchesDate;
+  return isRecordInActiveShiftSession(rct, activeShift, activeWorkingDate);
 }
 
 /**
  * Evaluates whether a cash movement qualifies for the current shift/working-date Main Reading
  */
-export function isCashMovementToday(m: any, activeWorkingDate: string): boolean {
+export function isCashMovementToday(m: any, activeWorkingDate: string, activeShift?: any): boolean {
   if (!m || m.isVoided === true) return false;
-  if (m.closedInZReport === true || m.shiftClosed === true) return false;
-
-  const matchesDate =
-    isSameWorkingDay(m.date, activeWorkingDate) ||
-    isSameWorkingDay(m.createdAt, activeWorkingDate) ||
-    isSameWorkingDay(m.timestamp, activeWorkingDate);
-
-  return matchesDate;
+  return isRecordInActiveShiftSession(m, activeShift, activeWorkingDate);
 }
 
 /**
@@ -862,6 +914,46 @@ export function formatMovementDisplay(m: any) {
 }
 
 /**
+ * Ensures that if the active shift has an openedAt timestamp, any older unarchived
+ * movements from prior shifts or timestamps in localStorage are marked as closed.
+ */
+export function sanitizeStalePreShiftMovements(shift?: PosShift): void {
+  if (typeof window === 'undefined') return;
+  const activeShift = shift || getActiveShift();
+  if (!activeShift || !activeShift.openedAt) return;
+
+  const openTime = new Date(activeShift.openedAt).getTime();
+  if (isNaN(openTime)) return;
+
+  try {
+    const raw = localStorage.getItem(CASH_MOVEMENTS_KEY);
+    if (!raw) return;
+    const list = JSON.parse(raw);
+    if (!Array.isArray(list) || list.length === 0) return;
+
+    let hasChanges = false;
+    list.forEach((m: any) => {
+      const isPriorShift = m.shiftId && m.shiftId !== activeShift.id;
+      const mTime = new Date(m.createdAtIso || m.createdAt || m.timestamp || m.date).getTime();
+      const isPriorTime = !isNaN(mTime) && mTime < openTime - 2000;
+
+      if ((isPriorShift || isPriorTime) && !m.isReconciledOrClosed && !m.closedInZReport) {
+        m.isReconciledOrClosed = true;
+        m.closedInZReport = true;
+        m.shiftClosed = true;
+        hasChanges = true;
+      }
+    });
+
+    if (hasChanges) {
+      localStorage.setItem(CASH_MOVEMENTS_KEY, JSON.stringify(list));
+    }
+  } catch (e) {
+    console.warn('Error sanitizing stale movements:', e);
+  }
+}
+
+/**
  * Closes an active shift and generates a fresh session (Z-Report closing)
  */
 export async function closeShiftSession(
@@ -874,9 +966,12 @@ export async function closeShiftSession(
   includedPaidInOut?: any[],
   includedReceipts?: any[]
 ): Promise<{ closedShift: PosShift; newShift: PosShift; closedInvoiceIds: string[] }> {
+  const closeTimeIso = new Date().toISOString();
+  const closeTimeMs = new Date(closeTimeIso).getTime();
+
   const closedShift: PosShift = {
     ...shift,
-    closedAt: new Date().toISOString(),
+    closedAt: closeTimeIso,
     status: 'CLOSED',
     closingCashUsd: actualCountedUsd,
     closingCashLbp: actualCountedLbp,
@@ -894,106 +989,149 @@ export async function closeShiftSession(
     } catch {}
   }
 
-  // 2. Mark included transactions with closedInZReport: true
+  // 2. Permanently seal all invoices for this shift or up to close timestamp
   const closedInvoiceIds: string[] = [];
-  if (includedInvoices && includedInvoices.length > 0) {
-    includedInvoices.forEach((inv) => {
-      inv.closedInZReport = true;
-      inv.shiftClosed = true;
-      if (inv.id) closedInvoiceIds.push(inv.id);
-      if (inv.invoiceNumber && !closedInvoiceIds.includes(inv.invoiceNumber)) {
-        closedInvoiceIds.push(inv.invoiceNumber);
-      }
-    });
+  const invoiceIds = new Set((includedInvoices || []).map((i) => i.id || i.invoiceNumber));
 
-    if (typeof window !== 'undefined') {
-      try {
-        const storageKeys = ['vanguard_invoices_directory', 'vanguard_pos_invoices', 'vanguard_sales_invoices'];
-        storageKeys.forEach((key) => {
-          const raw = localStorage.getItem(key);
-          if (raw) {
-            const list = JSON.parse(raw);
-            if (Array.isArray(list)) {
-              list.forEach((i: any) => {
-                if (closedInvoiceIds.includes(i.id) || closedInvoiceIds.includes(i.invoiceNumber)) {
-                  i.closedInZReport = true;
-                  i.shiftClosed = true;
+  if (typeof window !== 'undefined') {
+    try {
+      const storageKeys = ['vanguard_invoices_directory', 'vanguard_pos_invoices', 'vanguard_sales_invoices'];
+      storageKeys.forEach((key) => {
+        const raw = localStorage.getItem(key);
+        if (raw) {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) {
+            list.forEach((i: any) => {
+              const iTime = new Date(i.createdAtIso || i.createdAt || i.timestamp || i.date).getTime();
+              const isThisShift = i.shiftId === shift.id || invoiceIds.has(i.id) || invoiceIds.has(i.invoiceNumber);
+              const isPriorUnclosed = !i.shiftId && !isNaN(iTime) && iTime <= closeTimeMs;
+              if (isThisShift || isPriorUnclosed) {
+                i.isReconciledOrClosed = true;
+                i.closedInZReport = true;
+                i.shiftClosed = true;
+                i.closedShiftId = shift.id;
+                if (i.id && !closedInvoiceIds.includes(i.id)) closedInvoiceIds.push(i.id);
+                if (i.invoiceNumber && !closedInvoiceIds.includes(i.invoiceNumber)) {
+                  closedInvoiceIds.push(i.invoiceNumber);
                 }
-              });
-              localStorage.setItem(key, JSON.stringify(list));
-            }
+              }
+            });
+            localStorage.setItem(key, JSON.stringify(list));
           }
-        });
-      } catch (e) {
-        console.warn('Error archiving invoices on shift close:', e);
-      }
+        }
+      });
+    } catch (e) {
+      console.warn('Error archiving invoices on shift close:', e);
     }
   }
 
-  // Mark included cash movements
-  if (includedPaidInOut && includedPaidInOut.length > 0) {
+  // 3. Permanently seal all cash movements for this shift or prior
+  try {
     const currentM = getCashMovements();
-    const movementIds = includedPaidInOut.map((m) => m.id || m.movementNo);
+    const movementIds = new Set((includedPaidInOut || []).map((m) => m.id || m.movementNo));
     currentM.forEach((m) => {
-      if (movementIds.includes(m.id) || movementIds.includes(m.movementNo)) {
+      const dateVal = m.createdAtIso || m.createdAt || (m as any).timestamp || (m as any).date || '';
+      const mTime = dateVal ? new Date(dateVal).getTime() : NaN;
+      const isThisShift = m.shiftId === shift.id || movementIds.has(m.id) || movementIds.has(m.movementNo);
+      const isPriorUnclosed = !m.shiftId && !isNaN(mTime) && mTime <= closeTimeMs;
+      if (isThisShift || isPriorUnclosed) {
+        m.isReconciledOrClosed = true;
         m.closedInZReport = true;
         m.shiftClosed = true;
+        m.closedShiftId = shift.id;
       }
     });
     saveCashMovements(currentM);
+  } catch (e) {
+    console.warn('Error sealing cash movements on shift close:', e);
   }
 
-  // Mark included customer receipts
-  if (includedReceipts && includedReceipts.length > 0) {
-    try {
-      const { getCustomerReceipts, saveCustomerReceipts } = await import('@/lib/customerSalesService');
-      const currentR = getCustomerReceipts();
-      const receiptIds = includedReceipts.map((r) => r.id || r.receiptNo);
-      currentR.forEach((r) => {
-        if (receiptIds.includes(r.id) || receiptIds.includes(r.receiptNo)) {
-          r.closedInZReport = true;
-          r.shiftClosed = true;
-        }
-      });
-      saveCustomerReceipts(currentR);
-    } catch {}
+  // 4. Permanently seal all customer receipts for this shift or prior
+  try {
+    const { getCustomerReceipts, saveCustomerReceipts } = await import('@/lib/customerSalesService');
+    const currentR = getCustomerReceipts();
+    const receiptIds = new Set((includedReceipts || []).map((r) => r.id || r.receiptNo));
+    currentR.forEach((r) => {
+      const dateVal = (r as any).createdAtIso || r.createdAt || (r as any).timestamp || (r as any).date || '';
+      const rTime = dateVal ? new Date(dateVal).getTime() : NaN;
+      const isThisShift = r.shiftId === shift.id || receiptIds.has(r.id) || receiptIds.has(r.receiptNo);
+      const isPriorUnclosed = !r.shiftId && !isNaN(rTime) && rTime <= closeTimeMs;
+      if (isThisShift || isPriorUnclosed) {
+        r.isReconciledOrClosed = true;
+        r.closedInZReport = true;
+        r.shiftClosed = true;
+        r.closedShiftId = shift.id;
+      }
+    });
+    saveCustomerReceipts(currentR);
+  } catch (e) {
+    console.warn('Error sealing customer receipts on shift close:', e);
   }
 
-  // 3. Create fresh next shift session
+  // 5. Permanently seal all credit notes for this shift or prior
+  try {
+    const { getCreditNotes, saveCreditNotes } = await import('@/lib/customerSalesService');
+    const currentCrn = getCreditNotes();
+    currentCrn.forEach((crn) => {
+      const dateVal = (crn as any).createdAtIso || crn.createdAt || (crn as any).timestamp || crn.date || '';
+      const crnTime = dateVal ? new Date(dateVal).getTime() : NaN;
+      const isThisShift = crn.shiftId === shift.id;
+      const isPriorUnclosed = !crn.shiftId && !isNaN(crnTime) && crnTime <= closeTimeMs;
+      if (isThisShift || isPriorUnclosed) {
+        crn.isReconciledOrClosed = true;
+        crn.closedInZReport = true;
+        crn.shiftClosed = true;
+        crn.closedShiftId = shift.id;
+      }
+    });
+    saveCreditNotes(currentCrn);
+  } catch (e) {
+    console.warn('Error sealing credit notes on shift close:', e);
+  }
+
+  // 6. Create clean fresh next shift session
   const today = new Date();
   const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
   const nextShiftNumber = shift.shiftNumber + 1;
+  const newShiftOpenedAt = new Date().toISOString();
+  const nextOpeningUsd = actualCountedUsd > 0 ? actualCountedUsd : 0.0;
+  const nextOpeningLbp = actualCountedLbp > 0 ? actualCountedLbp : 0.0;
+
   const newShift: PosShift = {
     id: `SH-${dateStr}-${nextShiftNumber}`,
     shiftNumber: nextShiftNumber,
     branch: shift.branch,
     workstation: shift.workstation,
     cashierName: shift.cashierName,
-    openedAt: new Date().toISOString(),
+    openedAt: newShiftOpenedAt,
     closedAt: null,
-    openingCashUsd: actualCountedUsd > 0 ? actualCountedUsd : 200.0,
-    openingCashLbp: actualCountedLbp > 0 ? actualCountedLbp : 200.0 * POS_EXCHANGE_RATE_LBP,
+    openingCashUsd: nextOpeningUsd,
+    openingCashLbp: nextOpeningLbp,
     status: 'OPEN',
     notes: `Shift #${nextShiftNumber} opened after Z-Report for Shift #${shift.shiftNumber}`
   };
 
   await saveActiveShift(newShift, tenantId);
 
-  // Record opening float movement for new shift
-  await recordCashMovement({
-    shiftId: newShift.id,
-    movementType: 'PAID_IN',
-    type: 'PAID_IN',
-    amount: newShift.openingCashUsd,
-    amountUsd: newShift.openingCashUsd,
-    amountLbp: newShift.openingCashLbp,
-    reasonCategory: 'OPENING_FLOAT',
-    category: 'Opening Float',
-    targetAccountId: 'acc-53000',
-    targetAccountNumber: '53000',
-    targetAccountName: 'Main Safe / الصندوق الرئيسي',
-    notes: `Opening cash balance carried over from Shift #${shift.shiftNumber}`
-  }, tenantId);
+  // Record opening float movement for new shift if float > 0
+  if (nextOpeningUsd > 0 || nextOpeningLbp > 0) {
+    await recordCashMovement({
+      shiftId: newShift.id,
+      movementType: 'PAID_IN',
+      type: 'PAID_IN',
+      amount: newShift.openingCashUsd,
+      amountUsd: newShift.openingCashUsd,
+      amountLbp: newShift.openingCashLbp,
+      reasonCategory: 'OPENING_FLOAT',
+      category: 'Opening Float',
+      targetAccountId: 'acc-53000',
+      targetAccountNumber: '53000',
+      targetAccountName: 'Main Safe / الصندوق الرئيسي',
+      notes: `Opening cash balance carried over from Shift #${shift.shiftNumber}`,
+      createdAtIso: newShiftOpenedAt,
+      isReconciledOrClosed: false
+    }, tenantId);
+  }
 
   return { closedShift, newShift, closedInvoiceIds };
 }

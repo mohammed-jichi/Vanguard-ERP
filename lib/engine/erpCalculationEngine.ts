@@ -680,6 +680,9 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
   } = input;
 
   const targetDate = activeWorkingDate || new Date().toISOString().split('T')[0];
+  const shiftId = shift.id ? String(shift.id).trim().toLowerCase() : '';
+  const shiftNumber = shift.shiftNumber !== undefined ? Number(shift.shiftNumber) : undefined;
+  const shiftOpenTimeMs = shift.openedAt ? new Date(shift.openedAt).getTime() : NaN;
 
   let grossSalesUsd = 0;
   let discountsUsd = 0;
@@ -724,15 +727,30 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
   // 1. Process Invoices (Sales Invoices vs. Credit Notes)
   invoices.forEach((inv) => {
     if (!inv) return;
-    if (inv.closedInZReport === true || inv.shiftClosed === true) return;
+    if (inv.isReconciledOrClosed === true || inv.closedInZReport === true || inv.shiftClosed === true) return;
+    if (inv.closedShiftId && shift.id && inv.closedShiftId === shift.id) return;
+
+    // Strict Shift ID / Shift Number isolation
+    if (shiftId && inv.shiftId) {
+      if (String(inv.shiftId).trim().toLowerCase() !== shiftId) return;
+    }
+    if (shiftNumber !== undefined && inv.shiftNumber !== undefined) {
+      if (Number(inv.shiftNumber) !== shiftNumber) return;
+    }
+
+    // Session openedAt boundary: records created prior to current shift's opening are excluded
+    const invDate = inv.createdAtIso || inv.createdAt || inv.timestamp || inv.date;
+    if (!isNaN(shiftOpenTimeMs) && invDate) {
+      const invTimeMs = new Date(invDate).getTime();
+      if (!isNaN(invTimeMs) && invTimeMs < shiftOpenTimeMs - 2000) return;
+    }
 
     // Check Date matching
-    const invDate = inv.date || inv.createdAt || inv.timestamp;
     if (targetDate && !isSameWorkingDay(invDate, targetDate)) return;
 
     // Status matching
     const statusStr = String(inv.status || 'POSTED').toUpperCase();
-    if (statusStr === 'VOID' || statusStr === 'DRAFT' || statusStr === 'HOLD' || statusStr === 'UNPOSTED') {
+    if (statusStr === 'VOID' || statusStr === 'ARCHIVED' || statusStr === 'DRAFT' || statusStr === 'HOLD' || statusStr === 'UNPOSTED') {
       return;
     }
 
@@ -952,13 +970,28 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
 
   customerReceipts.forEach((rct) => {
     if (!rct || rct.isVoided) return;
-    if (rct.closedInZReport === true || rct.shiftClosed === true) return;
+    if (rct.isReconciledOrClosed === true || rct.closedInZReport === true || rct.shiftClosed === true) return;
+    if (rct.closedShiftId && shift.id && rct.closedShiftId === shift.id) return;
 
-    const rctDate = rct.date || rct.createdAt || rct.timestamp;
+    // Strict Shift ID / Shift Number isolation
+    if (shiftId && rct.shiftId) {
+      if (String(rct.shiftId).trim().toLowerCase() !== shiftId) return;
+    }
+    if (shiftNumber !== undefined && rct.shiftNumber !== undefined) {
+      if (Number(rct.shiftNumber) !== shiftNumber) return;
+    }
+
+    // Session openedAt boundary: records created prior to current shift's opening are excluded
+    const rctDate = rct.createdAtIso || rct.createdAt || rct.timestamp || rct.date;
+    if (!isNaN(shiftOpenTimeMs) && rctDate) {
+      const rctTimeMs = new Date(rctDate).getTime();
+      if (!isNaN(rctTimeMs) && rctTimeMs < shiftOpenTimeMs - 2000) return;
+    }
+
     if (targetDate && !isSameWorkingDay(rctDate, targetDate)) return;
 
     const statusStr = String(rct.status || 'POSTED').toUpperCase();
-    if (statusStr === 'VOID' || statusStr === 'DRAFT' || statusStr === 'UNPOSTED') return;
+    if (statusStr === 'VOID' || statusStr === 'ARCHIVED' || statusStr === 'DRAFT' || statusStr === 'UNPOSTED') return;
 
     const amt = Number(rct.amountReceivedUsd ?? rct.amountReceived ?? rct.amount ?? 0);
     if (amt <= 0) return;
@@ -1031,9 +1064,24 @@ export function calculateMainReadingSummary(input: MainReadingCalculationInput):
 
   paidInOutList.forEach((pio) => {
     if (!pio || pio.isVoided) return;
-    if (pio.closedInZReport === true || pio.shiftClosed === true) return;
+    if (pio.isReconciledOrClosed === true || pio.closedInZReport === true || pio.shiftClosed === true) return;
+    if (pio.closedShiftId && shift.id && pio.closedShiftId === shift.id) return;
 
-    const pioDate = pio.date || pio.createdAt || pio.timestamp;
+    // Strict Shift ID / Shift Number isolation
+    if (shiftId && pio.shiftId) {
+      if (String(pio.shiftId).trim().toLowerCase() !== shiftId) return;
+    }
+    if (shiftNumber !== undefined && pio.shiftNumber !== undefined) {
+      if (Number(pio.shiftNumber) !== shiftNumber) return;
+    }
+
+    // Session openedAt boundary: movements created prior to current shift's opening are excluded
+    const pioDate = pio.createdAtIso || pio.createdAt || pio.timestamp || pio.date;
+    if (!isNaN(shiftOpenTimeMs) && pioDate) {
+      const pioTimeMs = new Date(pioDate).getTime();
+      if (!isNaN(pioTimeMs) && pioTimeMs < shiftOpenTimeMs - 2000) return;
+    }
+
     if (targetDate && !isSameWorkingDay(pioDate, targetDate)) return;
 
     if (pio.reasonCategory === 'OPENING_FLOAT' || pio.category === 'Opening Float') return;
