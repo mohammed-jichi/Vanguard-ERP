@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-17T11:24:24.857Z",
+  "last_updated": "2026-10-17T13:11:54.210Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-b5b874f",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (b5b874f) - Fix Client Account dropdown in Customer Pricing, overhaul Recurring Order modal, and sync Credit Note customer selection",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "b5b874f1ba5d5f3a827df90536cd2d706a8782dd",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Sales & POS",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-17T11:25:16.000Z"
+    },
     {
       "id": "act-rel-e81352c",
       "company_id": 1300,
@@ -6958,6 +6975,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-b5b874f",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Fix Client Account dropdown in Customer Pricing, overhaul Recurring Order modal, and sync Credit Note customer selection",
+      "message": "fix(sales-modals): fix Client Account dropdown in Customer Pricing, overhaul Recurring Order modal, and sync Credit Note customer selection",
+      "timestamp": "2026-10-17T11:25:16.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "b5b874f1ba5d5f3a827df90536cd2d706a8782dd",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-e81352c",
       "type": "SYSTEM_RELEASE",

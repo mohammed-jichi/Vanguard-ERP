@@ -19,7 +19,8 @@ import {
   CustomerReceipt,
   RecurringInvoiceTemplate,
   CreditNoteRecord,
-  postCreditNote
+  postCreditNote,
+  CUSTOMER_PRICING_UPDATED_EVENT
 } from '@/lib/customerSalesService';
 import { calculateDocumentTotals, resolveItemUnitPrice } from '@/lib/engine/erpCalculationEngine';
 import {
@@ -1425,43 +1426,73 @@ export default function AuthenticVanguardSalesWorkstation({
 
   const handleSelectCustomerFromModal = (cust: any) => {
     setSelectedCustomer(cust);
-    setCustomerSearch('');
+    setCustomerSearch(cust.name || '');
     setIsCustomerDropdownOpen(false);
     setIsCustomerLookupModalOpen(false);
 
-    // Apply dynamic Price Waterfall to cart items for this customer ONLY if prices change
-    setCartItems((prev) => {
-      const needsUpdate = prev.some((item) => {
+    // Apply dynamic Price Waterfall to cart items for this customer
+    setCartItems((prev) =>
+      prev.map((item) => {
+        const catalogItem = VANGUARD_SALES_ITEMS.find((c) => c.code === item.code || c.id === item.itemId);
+        const basePrice = catalogItem ? catalogItem.price : item.unitPrice;
         const resolved = resolveItemPriceWaterfall({
-          itemCode: item.code,
           customerId: cust.id,
-          standardPrice: item.unitPrice,
-          customerPriceTier: (cust as any).category || 'Retail Counter'
-        });
-        const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : item.unitPrice;
-        return unitPrice !== item.unitPrice;
-      });
-      if (!needsUpdate) return prev;
-      return prev.map((item) => {
-        const resolved = resolveItemPriceWaterfall({
+          customerName: cust.name,
+          itemId: item.itemId || item.id,
           itemCode: item.code,
-          customerId: cust.id,
-          standardPrice: item.unitPrice,
-          customerPriceTier: (cust as any).category || 'Retail Counter'
+          itemName: item.name,
+          standardPrice: basePrice,
+          customerPriceTier: cust.category || cust.tier || 'Retail Counter'
         });
         const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : item.unitPrice;
         return {
           ...item,
           unitPrice,
+          price: unitPrice,
           total: Number((item.qty * unitPrice).toFixed(2))
         };
-      });
-    });
+      })
+    );
 
     if (cust.salesman) {
       setInvoiceSalesman(cust.salesman);
     }
   };
+
+  // Listen for customer contract pricing updates and re-apply to active cart
+  useEffect(() => {
+    const handlePricingUpdate = () => {
+      if (selectedCustomer?.id && selectedCustomer.id !== 'CUST-001') {
+        setCartItems((prev) =>
+          prev.map((item) => {
+            const catalogItem = VANGUARD_SALES_ITEMS.find((c) => c.code === item.code || c.id === item.itemId);
+            const basePrice = catalogItem ? catalogItem.price : item.unitPrice;
+            const res = resolveItemPriceWaterfall({
+              customerId: selectedCustomer.id,
+              customerName: selectedCustomer.name,
+              itemId: item.itemId || item.id,
+              itemCode: item.code,
+              itemName: item.name,
+              standardPrice: basePrice,
+              customerPriceTier: (selectedCustomer as any)?.category || (selectedCustomer as any)?.tier || 'Retail Counter'
+            });
+            if (res.source === 'SPECIAL_PRICE' && res.resolvedPrice > 0) {
+              return {
+                ...item,
+                unitPrice: res.resolvedPrice,
+                price: res.resolvedPrice,
+                total: Number((item.qty * res.resolvedPrice).toFixed(2))
+              };
+            }
+            return item;
+          })
+        );
+      }
+    };
+
+    window.addEventListener(CUSTOMER_PRICING_UPDATED_EVENT, handlePricingUpdate);
+    return () => window.removeEventListener(CUSTOMER_PRICING_UPDATED_EVENT, handlePricingUpdate);
+  }, [selectedCustomer]);
 
   // Hydrate Delivery Providers from unified persistent store & listen to real-time sync
   useEffect(() => {
@@ -1802,8 +1833,11 @@ export default function AuthenticVanguardSalesWorkstation({
     // Calculate Selling Price with 4-tier waterfall resolver via Central ERP Engine
     const resolvedPriceInfo = resolveItemUnitPrice({
       itemCode: item.code,
+      itemId: item.id,
+      itemName: item.name,
       standardPrice: item.price,
       customerId: selectedCustomer?.id,
+      customerName: selectedCustomer?.name,
       customerSpecialPrices: getCustomerSpecialPrices(),
       customerPriceTier: (selectedCustomer as any)?.category,
       isMarkupEnabled: salesOptions.apply_markup_on_item,
@@ -3947,37 +3981,32 @@ export default function AuthenticVanguardSalesWorkstation({
                             key={cust.id}
                             onClick={() => {
                               setSelectedCustomer(cust);
-                              setCustomerSearch('');
+                              setCustomerSearch(cust.name || '');
                               setIsCustomerDropdownOpen(false);
 
-                              // Apply dynamic Price Waterfall to cart items for this customer ONLY if prices change
-                              setCartItems((prev) => {
-                                const needsUpdate = prev.some((item) => {
+                              // Apply dynamic Price Waterfall to cart items for this customer
+                              setCartItems((prev) =>
+                                prev.map((item) => {
+                                  const catalogItem = VANGUARD_SALES_ITEMS.find((c) => c.code === item.code || c.id === item.itemId);
+                                  const basePrice = catalogItem ? catalogItem.price : item.unitPrice;
                                   const resolved = resolveItemPriceWaterfall({
-                                    itemCode: item.code,
                                     customerId: cust.id,
-                                    standardPrice: item.unitPrice,
-                                    customerPriceTier: (cust as any).category || 'Retail Counter'
-                                  });
-                                  const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : item.unitPrice;
-                                  return unitPrice !== item.unitPrice;
-                                });
-                                if (!needsUpdate) return prev;
-                                return prev.map((item) => {
-                                  const resolved = resolveItemPriceWaterfall({
+                                    customerName: cust.name,
+                                    itemId: item.itemId || item.id,
                                     itemCode: item.code,
-                                    customerId: cust.id,
-                                    standardPrice: item.unitPrice,
-                                    customerPriceTier: (cust as any).category || 'Retail Counter'
+                                    itemName: item.name,
+                                    standardPrice: basePrice,
+                                    customerPriceTier: (cust as any).category || (cust as any).tier || 'Retail Counter'
                                   });
                                   const unitPrice = resolved.resolvedPrice > 0 ? resolved.resolvedPrice : item.unitPrice;
                                   return {
                                     ...item,
                                     unitPrice,
+                                    price: unitPrice,
                                     total: Number((item.qty * unitPrice).toFixed(2))
                                   };
-                                });
-                              });
+                                })
+                              );
                             }}
                             className="px-3 py-1.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between"
                           >
@@ -6327,7 +6356,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
           {/* Printable Document Paper */}
           <div className="p-6 overflow-y-auto space-y-4 text-xs font-sans bg-slate-50">
-            <div id="printable-sales-invoice" className="printable-document vanguard-printable bg-white p-6 rounded shadow-sm border border-slate-200 space-y-4">
+            <div id="printable-sales-invoice" className="printable-document vanguard-printable bg-white p-6 print:p-2 rounded shadow-sm border border-slate-200 space-y-3 print:space-y-1.5" style={{ breakAfter: 'avoid', pageBreakAfter: 'avoid' }}>
               {/* Standardized 3-Zone Corporate Header */}
               <Corporate3ZoneHeader
                 documentTitle={
@@ -6373,7 +6402,7 @@ export default function AuthenticVanguardSalesWorkstation({
               })()}
 
               {/* Customer Details Box */}
-              <div className="bg-slate-50 border border-slate-200 rounded p-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-slate-50 border border-slate-200 rounded p-3 print:p-1.5 grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <span className="text-slate-400 block text-[10px] uppercase font-semibold">Bill To:</span>
                   <p className="font-bold text-slate-800 text-sm">{targetPrintInvoice?.customerName || selectedCustomer.name}</p>
@@ -6393,15 +6422,15 @@ export default function AuthenticVanguardSalesWorkstation({
               {/* Line Items Table */}
               <table className="w-full border-collapse text-left text-xs">
                 <thead>
-                  <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
-                    <th className="py-2 px-2.5">Item Description</th>
+                  <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold print:text-[11px]">
+                    <th className="py-2 print:py-1 px-2.5 print:px-1.5">Item Description</th>
                     {salesOptions.show_barcode_on_invoice && (
-                      <th className="py-2 px-2 font-mono text-[10px]">Barcode / Code</th>
+                      <th className="py-2 print:py-1 px-2 print:px-1 font-mono text-[10px]">Barcode / Code</th>
                     )}
-                    <th className="py-2 px-2 text-center">Unit</th>
-                    <th className="py-2 px-2 text-right">Qty</th>
-                    <th className="py-2 px-2 text-right">Price</th>
-                    <th className="py-2 px-2.5 text-right">Total ({targetPrintInvoice?.currency || currency})</th>
+                    <th className="py-2 print:py-1 px-2 print:px-1 text-center">Unit</th>
+                    <th className="py-2 print:py-1 px-2 print:px-1 text-right">Qty</th>
+                    <th className="py-2 print:py-1 px-2 print:px-1 text-right">Price</th>
+                    <th className="py-2 print:py-1 px-2.5 print:px-1.5 text-right">Total ({targetPrintInvoice?.currency || currency})</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -6409,25 +6438,25 @@ export default function AuthenticVanguardSalesWorkstation({
                     { id: '1', code: 'EVOO-16L', name: 'Extra Virgin Olive Oil 16L Tin', unit: 'TIN', qty: 2, unitPrice: 115.00, total: 230.00 },
                     { id: '2', code: 'CWV250MLB103', name: 'White Vinegar 250ml', unit: 'BOT', qty: 12, unitPrice: 0.50, total: 6.00 }
                   ])).map((item: any, idx: number) => (
-                    <tr key={idx} className="hover:bg-slate-50">
-                      <td className="py-2 px-2.5">
+                    <tr key={idx} className="hover:bg-slate-50 print:py-0.5">
+                      <td className="py-2 print:py-0.5 px-2.5 print:px-1.5">
                         <p className="font-semibold text-slate-800">{item.name}</p>
                         <span className="text-[10px] font-mono text-slate-400">{item.code}</span>
                       </td>
                       {salesOptions.show_barcode_on_invoice && (
-                        <td className="py-2 px-2 font-mono text-[10px] text-slate-500">{item.code}</td>
+                        <td className="py-2 print:py-0.5 px-2 print:px-1 font-mono text-[10px] text-slate-500">{item.code}</td>
                       )}
-                      <td className="py-2 px-2 text-center text-slate-600">{item.unit}</td>
-                      <td className="py-2 px-2 text-right font-semibold text-slate-800">{item.qty}</td>
-                      <td className="py-2 px-2 text-right text-slate-600">${Number(item.unitPrice || 0).toFixed(2)}</td>
-                      <td className="py-2 px-2.5 text-right font-bold text-slate-900">${Number(item.total || 0).toFixed(2)}</td>
+                      <td className="py-2 print:py-0.5 px-2 print:px-1 text-center text-slate-600">{item.unit}</td>
+                      <td className="py-2 print:py-0.5 px-2 print:px-1 text-right font-semibold text-slate-800">{item.qty}</td>
+                      <td className="py-2 print:py-0.5 px-2 print:px-1 text-right text-slate-600">${Number(item.unitPrice || 0).toFixed(2)}</td>
+                      <td className="py-2 print:py-0.5 px-2.5 print:px-1.5 text-right font-bold text-slate-900">${Number(item.total || 0).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
 
               {/* Financial Summary */}
-              <div className="border-t border-slate-300 pt-3 flex justify-between items-start">
+              <div className="border-t border-slate-300 pt-3 print:pt-1.5 flex justify-between items-start">
                 <div className="text-[11px] text-slate-500 max-w-xs space-y-1">
                   {salesOptions.show_message_on_invoice && (
                     <>
@@ -6464,13 +6493,13 @@ export default function AuthenticVanguardSalesWorkstation({
               )}
 
               {/* Signatures */}
-              <div className="pt-6 grid grid-cols-2 gap-8 text-[11px] text-slate-500 text-center border-t border-slate-200">
+              <div className="pt-5 print:pt-2 grid grid-cols-2 gap-8 text-[11px] text-slate-500 text-center border-t border-slate-200">
                 <div>
-                  <div className="h-10 border-b border-dashed border-slate-300"></div>
+                  <div className="h-8 print:h-5 border-b border-dashed border-slate-300"></div>
                   <span className="mt-1 block">Prepared By / Sales Officer</span>
                 </div>
                 <div>
-                  <div className="h-10 border-b border-dashed border-slate-300"></div>
+                  <div className="h-8 print:h-5 border-b border-dashed border-slate-300"></div>
                   <span className="mt-1 block">Client Signature & Stamp</span>
                 </div>
               </div>
@@ -6851,21 +6880,63 @@ export default function AuthenticVanguardSalesWorkstation({
           invoicesDirectory={invoicesDirectory}
           catalogItems={VANGUARD_SALES_ITEMS}
           tenantId={currentTenant?.id}
-          onApplyRatesToCart={(rates: Record<string, number>) => {
+          onApplyRatesToCart={(rates: Record<string, number>, targetCustomer?: any) => {
+            let activeCust: any = selectedCustomer;
+            if (targetCustomer) {
+              const matchedPreset = CUSTOMER_PRESETS.find(
+                (c) => c.id === targetCustomer.id || c.name.toLowerCase() === targetCustomer.name?.toLowerCase()
+              );
+              activeCust = (matchedPreset as any) || {
+                id: targetCustomer.id,
+                name: targetCustomer.name,
+                address: targetCustomer.address || 'Beirut, Lebanon',
+                category: targetCustomer.tier || 'Wholesale Tier'
+              };
+              setSelectedCustomer(activeCust);
+              setCustomerSearch(activeCust.name);
+            }
+
             setCartItems((prev) =>
               prev.map((item) => {
-                if (rates[item.code] !== undefined) {
-                  const p = rates[item.code];
+                const itemCodeLower = item.code?.toLowerCase();
+                const itemIdLower = (item.itemId || item.id)?.toLowerCase();
+                const itemNameLower = item.name?.toLowerCase();
+
+                let matchedPrice: number | undefined;
+                if (rates[item.code] !== undefined) matchedPrice = rates[item.code];
+                else if (itemCodeLower && rates[itemCodeLower] !== undefined) matchedPrice = rates[itemCodeLower];
+                else if (item.itemId && rates[item.itemId] !== undefined) matchedPrice = rates[item.itemId];
+                else if (itemIdLower && rates[itemIdLower] !== undefined) matchedPrice = rates[itemIdLower];
+                else if (item.id && rates[item.id] !== undefined) matchedPrice = rates[item.id];
+                else if (item.name && rates[item.name] !== undefined) matchedPrice = rates[item.name];
+                else if (itemNameLower && rates[itemNameLower] !== undefined) matchedPrice = rates[itemNameLower];
+                else {
+                  const waterfall = resolveItemPriceWaterfall({
+                    customerId: activeCust?.id,
+                    customerName: activeCust?.name,
+                    itemId: item.itemId || item.id,
+                    itemCode: item.code,
+                    itemName: item.name,
+                    standardPrice: item.unitPrice,
+                    customerPriceTier: (activeCust as any)?.category || (activeCust as any)?.tier
+                  });
+                  if (waterfall.source === 'SPECIAL_PRICE' && waterfall.resolvedPrice > 0) {
+                    matchedPrice = waterfall.resolvedPrice;
+                  }
+                }
+
+                if (matchedPrice !== undefined && matchedPrice > 0) {
                   return {
                     ...item,
-                    unitPrice: p,
-                    total: Number((item.qty * p).toFixed(2))
+                    unitPrice: matchedPrice,
+                    price: matchedPrice,
+                    total: Number((item.qty * matchedPrice).toFixed(2))
                   };
                 }
                 return item;
               })
             );
-            setStatusNotice('Negotiated contract rates applied to active bill.');
+            setStatusNotice(`Negotiated contract rates applied for ${activeCust?.name || 'Customer'}.`);
             setTimeout(() => setStatusNotice(null), 3000);
           }}
         />

@@ -92,6 +92,8 @@ export function isSameWorkingDay(recordDateOrTimestamp: any, activeWorkingDate: 
 
 export interface ItemPricingContext {
   itemCode: string;
+  itemId?: string;
+  barcode?: string;
   itemName?: string;
   defaultSellingPrice?: number;
   standardPrice?: number;
@@ -99,8 +101,18 @@ export interface ItemPricingContext {
   markupPercent?: number;
   isMarkupEnabled?: boolean;
   customerId?: string;
+  customerName?: string;
   customerSpecialPrice?: number | null;
-  customerSpecialPrices?: Array<{ customerId?: string; itemCode?: string; specialPrice?: number }>;
+  customerSpecialPrices?: Array<{
+    id?: string;
+    customerId?: string;
+    customerName?: string;
+    itemId?: string;
+    itemCode?: string;
+    itemName?: string;
+    barcode?: string;
+    specialPrice?: number;
+  }>;
   customerDiscountPercent?: number;
   customerPriceTier?: 'Wholesale' | 'Retail' | 'VIP' | string;
   tierMultiplier?: number;
@@ -132,12 +144,44 @@ export function resolveItemUnitPrice(context: ItemPricingContext): ItemPricingRe
   const standardPrice = Number(context.defaultSellingPrice ?? context.standardPrice ?? 0);
 
   // 1. Customer Special Price / Customer Discount
-  if (context.customerId) {
+  if (context.customerId || context.customerName) {
     let resolvedSpecialPrice = context.customerSpecialPrice;
     if ((resolvedSpecialPrice === undefined || resolvedSpecialPrice === null) && context.customerSpecialPrices) {
-      const match = context.customerSpecialPrices.find(
-        (sp) => sp.customerId === context.customerId && sp.itemCode?.toLowerCase() === context.itemCode?.toLowerCase()
-      );
+      const match = context.customerSpecialPrices.find((sp: any) => {
+        // Customer matching: by ID or Name
+        const custMatch =
+          (context.customerId && (
+            sp.customerId === context.customerId ||
+            (sp.customerName && sp.customerName.toLowerCase() === context.customerId.toLowerCase())
+          )) ||
+          (context.customerName && (
+            (sp.customerId && sp.customerId.toLowerCase() === context.customerName.toLowerCase()) ||
+            (sp.customerName && sp.customerName.toLowerCase() === context.customerName.toLowerCase())
+          ));
+
+        if (!custMatch) return false;
+
+        // Item matching: by itemCode, itemId, barcode, or itemName
+        const itemCodeLower = context.itemCode?.toLowerCase();
+        const itemIdLower = context.itemId?.toLowerCase();
+        const barcodeLower = context.barcode?.toLowerCase();
+        const itemNameLower = context.itemName?.toLowerCase();
+
+        const spCodeLower = sp.itemCode?.toLowerCase();
+        const spIdLower = sp.itemId?.toLowerCase();
+        const spBarcodeLower = sp.barcode?.toLowerCase();
+        const spNameLower = sp.itemName?.toLowerCase();
+
+        const codeMatch = spCodeLower && itemCodeLower && spCodeLower === itemCodeLower;
+        const idMatch = (itemIdLower && (spIdLower === itemIdLower || spCodeLower === itemIdLower)) ||
+                        (spIdLower && itemCodeLower && spIdLower === itemCodeLower);
+        const barcodeMatch = (barcodeLower && (spCodeLower === barcodeLower || spBarcodeLower === barcodeLower)) ||
+                             (spBarcodeLower && itemCodeLower && spBarcodeLower === itemCodeLower);
+        const nameMatch = spNameLower && itemNameLower && spNameLower === itemNameLower;
+
+        return Boolean(codeMatch || idMatch || barcodeMatch || nameMatch);
+      });
+
       if (match && match.specialPrice !== undefined && match.specialPrice > 0) {
         resolvedSpecialPrice = match.specialPrice;
       }
@@ -151,7 +195,7 @@ export function resolveItemUnitPrice(context: ItemPricingContext): ItemPricingRe
         appliedRule: 'CUSTOMER_SPECIAL_PRICE',
         originalStandardPrice: standardPrice,
         discountPercentApplied: Math.max(0, discountPercent),
-        note: `Contract price applied for customer ${context.customerId}`
+        note: `Contract price applied for customer ${context.customerName || context.customerId}`
       };
     }
 

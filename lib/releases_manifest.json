@@ -1,5 +1,28 @@
 [
   {
+    "id": "b5b874f1-ba5d-4f3a-a27d-f90536cd2d70",
+    "commit_hash": "b5b874f1ba5d5f3a827df90536cd2d706a8782dd",
+    "short_hash": "b5b874f",
+    "version": "v2.0.0",
+    "title": "Fix Client Account dropdown in Customer Pricing, overhaul Recurring Order modal, and sync Credit Note customer selection",
+    "category": "fix",
+    "description": "fix(sales-modals): fix Client Account dropdown in Customer Pricing, overhaul Recurring Order modal, and sync Credit Note customer selection",
+    "bullet_points": [
+      "Resolved: fix client account dropdown in customer pricing, overhaul recurring order modal, and sync credit note customer selection",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Sales & POS",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-17T11:25:16.000Z",
+    "created_at": "2026-10-17T13:11:54.204Z"
+  },
+  {
     "id": "e81352cd-e5ed-477b-a30a-d9331f742f28",
     "commit_hash": "e81352cde5ede77bc30ad9331f742f28829b144f",
     "short_hash": "e81352c",

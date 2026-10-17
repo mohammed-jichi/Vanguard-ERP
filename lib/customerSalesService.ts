@@ -472,6 +472,7 @@ export function getCustomerSpecialPrices(): CustomerSpecialPrice[] {
       id: 'sp-01',
       customerId: 'CUST-002',
       customerName: 'Beirut Gourmet Market',
+      itemId: 'EVOO-16L',
       itemCode: 'EVOO-16L',
       itemName: 'Extra Virgin Olive Oil 16L Tin',
       unit: 'TIN',
@@ -483,6 +484,7 @@ export function getCustomerSpecialPrices(): CustomerSpecialPrice[] {
       id: 'sp-02',
       customerId: 'CUST-002',
       customerName: 'Beirut Gourmet Market',
+      itemId: 'EVOO-1L-BOT',
       itemCode: 'EVOO-1L-BOT',
       itemName: 'Extra Virgin Olive Oil 1L Glass Bottle',
       unit: 'BOT',
@@ -491,9 +493,22 @@ export function getCustomerSpecialPrices(): CustomerSpecialPrice[] {
       updatedAt: new Date().toISOString()
     },
     {
+      id: 'sp-04',
+      customerId: 'CUST-002',
+      customerName: 'Beirut Gourmet Market',
+      itemId: 'CWV250MLB103',
+      itemCode: 'CWV250MLB103',
+      itemName: 'White Vinegar 250ml',
+      unit: 'BOT',
+      currencyCode: 'USD',
+      specialPrice: 0.46, // Standard is 0.50, negotiated rate is 0.46
+      updatedAt: new Date().toISOString()
+    },
+    {
       id: 'sp-03',
       customerId: 'CUST-003',
       customerName: 'Phoenicia Hotels S.A.L',
+      itemId: 'EVOO-16L',
       itemCode: 'EVOO-16L',
       itemName: 'Extra Virgin Olive Oil 16L Tin',
       unit: 'TIN',
@@ -502,6 +517,34 @@ export function getCustomerSpecialPrices(): CustomerSpecialPrice[] {
       updatedAt: new Date().toISOString()
     }
   ];
+
+  try {
+    const raw = localStorage.getItem(CUSTOMER_SPECIAL_PRICES_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        let hasChanges = false;
+        defaults.forEach((def) => {
+          const exists = parsed.some(
+            (p: any) =>
+              (p.customerId === def.customerId || p.customerName?.toLowerCase() === def.customerName?.toLowerCase()) &&
+              (p.itemCode?.toLowerCase() === def.itemCode.toLowerCase() || p.itemId === def.itemId || p.itemName?.toLowerCase() === def.itemName?.toLowerCase())
+          );
+          if (!exists) {
+            parsed.push(def);
+            hasChanges = true;
+          }
+        });
+        if (hasChanges) {
+          localStorage.setItem(CUSTOMER_SPECIAL_PRICES_KEY, JSON.stringify(parsed));
+        }
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Error reading customer special prices from localStorage:', e);
+  }
+
   return defaults;
 }
 
@@ -523,21 +566,33 @@ export function saveCustomerSpecialPrices(list: CustomerSpecialPrice[]): void {
  */
 export function resolveItemPriceWaterfall({
   customerId,
+  customerName,
+  itemId,
   itemCode,
+  itemName,
+  barcode,
   standardPrice,
   customerPriceTier,
   tierMultiplier = 1
 }: {
   customerId?: string;
+  customerName?: string;
+  itemId?: string;
   itemCode: string;
+  itemName?: string;
+  barcode?: string;
   standardPrice: number;
   customerPriceTier?: 'Retail' | 'Wholesale' | 'VIP' | string;
   tierMultiplier?: number;
 }): { resolvedPrice: number; source: 'SPECIAL_PRICE' | 'TIER' | 'STANDARD' } {
   const result = resolveItemUnitPrice({
-    itemCode,
-    standardPrice,
     customerId,
+    customerName,
+    itemId,
+    itemCode,
+    itemName,
+    barcode,
+    standardPrice,
     customerSpecialPrices: getCustomerSpecialPrices(),
     customerPriceTier,
     tierMultiplier

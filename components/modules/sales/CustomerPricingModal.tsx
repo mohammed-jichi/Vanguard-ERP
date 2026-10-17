@@ -36,8 +36,8 @@ interface CustomerPricingModalProps {
   catalogItems?: Array<{ id: string; code: string; name: string; unit: string; price: number }>;
   invoicesDirectory?: any[];
   tenantId?: string;
-  onApplyPricingToCart?: (contractPrices: Record<string, number>) => void;
-  onApplyRatesToCart?: (contractPrices: Record<string, number>) => void;
+  onApplyPricingToCart?: (contractPrices: Record<string, number>, targetCustomer?: any) => void;
+  onApplyRatesToCart?: (contractPrices: Record<string, number>, targetCustomer?: any) => void;
 }
 
 const PRESET_CUSTOMERS = [
@@ -143,26 +143,43 @@ export default function CustomerPricingModal({
   useEffect(() => {
     if (isOpen) {
       let matchedId = '';
-      if (activeCustomer?.id && allCustomers.some((c) => c.id === activeCustomer.id)) {
-        matchedId = activeCustomer.id;
-      } else if (activeCustomer?.name) {
-        const found = allCustomers.find(
-          (c) => c.name.toLowerCase() === activeCustomer.name.toLowerCase()
-        );
-        if (found) matchedId = found.id;
+      const isWalkInOrRetail =
+        !activeCustomer?.id ||
+        activeCustomer.id === 'CUST-001' ||
+        activeCustomer.id.toLowerCase().includes('walk-in') ||
+        activeCustomer.name?.toLowerCase().includes('walk-in') ||
+        activeCustomer.name?.toLowerCase().includes('cash customer');
+
+      if (!isWalkInOrRetail) {
+        if (activeCustomer?.id && allCustomers.some((c) => c.id === activeCustomer.id)) {
+          matchedId = activeCustomer.id;
+        } else if (activeCustomer?.name) {
+          const found = allCustomers.find(
+            (c) => c.name.toLowerCase() === activeCustomer.name.toLowerCase()
+          );
+          if (found) matchedId = found.id;
+        }
       }
-      if (!matchedId && selectedCustomerId && allCustomers.some((c) => c.id === selectedCustomerId)) {
+
+      if (!matchedId && selectedCustomerId && selectedCustomerId !== 'CUST-001' && allCustomers.some((c) => c.id === selectedCustomerId)) {
         matchedId = selectedCustomerId;
       }
-      if (!matchedId && selectedCustomerName) {
+      if (!matchedId && selectedCustomerName && !selectedCustomerName.toLowerCase().includes('walk-in')) {
         const found = allCustomers.find(
           (c) => c.name.toLowerCase() === selectedCustomerName.toLowerCase()
         );
         if (found) matchedId = found.id;
       }
-      if (!matchedId) {
-        matchedId = allCustomers[0]?.id || 'CUST-002';
+
+      // Default to CUST-002 (Beirut Gourmet Market) or first valid registered B2B contract customer
+      if (!matchedId || !allCustomers.some((c) => c.id === matchedId)) {
+        const b2b =
+          allCustomers.find((c) => c.id === 'CUST-002') ||
+          allCustomers.find((c) => c.id !== 'CUST-001' && !c.name.toLowerCase().includes('walk-in')) ||
+          allCustomers[0];
+        matchedId = b2b?.id || 'CUST-002';
       }
+
       setActiveCustomerId(matchedId);
       setSpecialPrices(getCustomerSpecialPrices());
       if (effectiveCatalog.length > 0) {
@@ -260,7 +277,7 @@ export default function CustomerPricingModal({
 
     // Check if exists, update or add
     const existingIdx = specialPrices.findIndex(
-      (sp) => sp.customerId === activeCustomerId && sp.itemCode === product.code
+      (sp) => sp.customerId === activeCustomerId && (sp.itemCode === product.code || sp.itemId === product.id)
     );
 
     const newRule: CustomerSpecialPrice = {
@@ -287,6 +304,34 @@ export default function CustomerPricingModal({
 
     setSpecialPrices(updated);
     saveCustomerSpecialPrices(updated);
+
+    // Also auto-sync to active cart if requested
+    const updatedCustomerRules = updated.filter(
+      (sp) =>
+        sp.customerId === activeCustomerId ||
+        (currentCustomer?.name &&
+          sp.customerName &&
+          sp.customerName.toLowerCase() === currentCustomer.name.toLowerCase())
+    );
+    const priceMap: Record<string, number> = {};
+    updatedCustomerRules.forEach((r) => {
+      if (r.itemCode) {
+        priceMap[r.itemCode] = r.specialPrice;
+        priceMap[r.itemCode.toLowerCase()] = r.specialPrice;
+      }
+      if (r.itemId) {
+        priceMap[r.itemId] = r.specialPrice;
+        priceMap[r.itemId.toLowerCase()] = r.specialPrice;
+      }
+      if (r.itemName) {
+        priceMap[r.itemName] = r.specialPrice;
+        priceMap[r.itemName.toLowerCase()] = r.specialPrice;
+      }
+    });
+    if (effectiveOnApply) {
+      effectiveOnApply(priceMap, currentCustomer);
+    }
+
     toast.success(`Special pricing saved for ${product.name}!`);
 
     // Reset input
@@ -306,13 +351,24 @@ export default function CustomerPricingModal({
   const handleApplyToCart = () => {
     const priceMap: Record<string, number> = {};
     customerRules.forEach((r) => {
-      priceMap[r.itemCode] = r.specialPrice;
+      if (r.itemCode) {
+        priceMap[r.itemCode] = r.specialPrice;
+        priceMap[r.itemCode.toLowerCase()] = r.specialPrice;
+      }
+      if (r.itemId) {
+        priceMap[r.itemId] = r.specialPrice;
+        priceMap[r.itemId.toLowerCase()] = r.specialPrice;
+      }
+      if (r.itemName) {
+        priceMap[r.itemName] = r.specialPrice;
+        priceMap[r.itemName.toLowerCase()] = r.specialPrice;
+      }
     });
 
     if (effectiveOnApply) {
-      effectiveOnApply(priceMap);
+      effectiveOnApply(priceMap, currentCustomer);
     }
-    toast.success(`Applied ${Object.keys(priceMap).length} negotiated rates to active cart!`);
+    toast.success(`Applied negotiated rates for ${currentCustomer.name} to active cart!`);
     onClose();
   };
 
@@ -353,14 +409,15 @@ export default function CustomerPricingModal({
 
         {/* Customer Selector & Tabs */}
         <div className="bg-slate-50 border-b border-slate-200 px-5 py-3 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
-          <div className="min-w-[340px] w-full sm:w-[400px]">
+          <div className="min-w-[360px] w-full sm:w-[440px] flex-1 max-w-[440px]" style={{ minWidth: '360px', width: '100%', maxWidth: '440px' }}>
             <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">
               Client Account (حساب الزبون)
             </label>
             <select
               value={activeCustomerId}
               onChange={(e) => setActiveCustomerId(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs font-semibold text-slate-900 shadow-2xs focus:ring-1 focus:ring-primary focus:border-primary truncate"
+              style={{ minWidth: '360px', width: '100%', maxWidth: '440px' }}
+              className="w-full min-w-[360px] px-3 py-2 text-sm font-semibold text-slate-900 bg-white border border-slate-300 rounded-lg shadow-xs focus:ring-1 focus:ring-primary focus:border-primary truncate"
             >
               {allCustomers.map((c) => (
                 <option key={c.id} value={c.id}>

@@ -392,7 +392,8 @@ export function CorporatePrintableFooter({
 
   return (
     <div
-      className={`mt-8 pt-3 border-t border-slate-400 flex items-center justify-between text-[10px] font-sans text-slate-700 print:mt-4 ${className}`}
+      style={{ breakAfter: 'avoid', pageBreakAfter: 'avoid' }}
+      className={`mt-8 pt-3 border-t border-slate-400 flex items-center justify-between text-[10px] font-sans text-slate-700 print:mt-2 print:pt-1 ${className}`}
     >
       <span className="font-mono font-bold tracking-wider text-slate-900">
         {formattedRef}

@@ -55,7 +55,10 @@ export function printElementById(elementId: string, title: string = 'Vanguard Do
         <title>${title}</title>
         ${styles}
         <style>
-          @page { size: auto; margin: 10mm; }
+          @page {
+            size: A4 portrait;
+            margin: 6mm 6mm;
+          }
           html, body {
             background: #ffffff !important;
             color: #000000 !important;
@@ -65,7 +68,7 @@ export function printElementById(elementId: string, title: string = 'Vanguard Do
             overflow: visible !important;
             height: auto !important;
           }
-          #${elementId} {
+          #${elementId}, .printable-document, .vanguard-printable {
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
@@ -73,9 +76,32 @@ export function printElementById(elementId: string, title: string = 'Vanguard Do
             left: auto !important;
             top: auto !important;
             width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 4mm !important;
+            box-shadow: none !important;
+            border: none !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+            page-break-inside: auto !important;
+            break-inside: auto !important;
           }
           body * {
             visibility: visible !important;
+          }
+          table {
+            page-break-inside: auto;
+          }
+          tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+          body > *:last-child,
+          #${elementId} > *:last-child {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
           }
           .no-print, button { display: none !important; }
         </style>
