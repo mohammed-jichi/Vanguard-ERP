@@ -23,6 +23,7 @@ import {
   saveCustomerSpecialPrices
 } from '@/lib/customerSalesService';
 import { resolveItemUnitPrice } from '@/lib/engine/erpCalculationEngine';
+import { CANONICAL_CUSTOMERS } from '@/lib/customerDirectoryEngine';
 
 interface CustomerPricingModalProps {
   isOpen: boolean;
@@ -30,13 +31,37 @@ interface CustomerPricingModalProps {
   selectedCustomerId?: string;
   selectedCustomerName?: string;
   activeCustomer?: { id: string; name: string; address?: string };
-  customers?: Array<{ id: string; name: string }>;
+  customers?: Array<{ id: string; name: string; address?: string; priceTier?: string; tier?: string; group?: string }>;
   catalogProducts?: Array<{ id: string; code: string; name: string; unit: string; price: number }>;
   catalogItems?: Array<{ id: string; code: string; name: string; unit: string; price: number }>;
   invoicesDirectory?: any[];
   tenantId?: string;
   onApplyPricingToCart?: (contractPrices: Record<string, number>) => void;
   onApplyRatesToCart?: (contractPrices: Record<string, number>) => void;
+}
+
+const PRESET_CUSTOMERS = [
+  { id: 'CUST-001', name: 'Walk-in Cash Customer', tier: 'Retail Counter' },
+  { id: 'CUST-002', name: 'Beirut Gourmet Market', tier: 'Wholesale Tier' },
+  { id: 'CUST-003', name: 'Al-Janoub Mart Supermarket', tier: 'Wholesale Tier' },
+  { id: 'CUST-004', name: 'Tyre Regional Co-op', tier: 'Key Accounts' },
+  { id: 'CUST-005', name: 'Cedar Valley Organics', tier: 'VIP / Premium' },
+  { id: 'CUST-006', name: 'Tripoli Olive Press & Co', tier: 'Wholesale Tier' }
+];
+
+function resolveCustomerTier(c: { id?: string; name?: string; tier?: string; priceTier?: string; category?: string; group?: string }): string {
+  if (c.tier) return c.tier;
+  if (c.priceTier) return c.priceTier;
+  if (c.category) return c.category;
+  if (c.group === 'WHOLESALE') return 'Wholesale Tier';
+  if (c.group === 'KEY_ACCOUNTS') return 'Key Accounts';
+  if (c.group === 'HORECA') return 'HORECA / Hospitality';
+  if (c.group === 'RETAIL') return 'Retail Tier';
+  if (c.id === 'CUST-002' || c.id === 'CUST-003' || c.id === 'CUST-006') return 'Wholesale Tier';
+  if (c.id === 'CUST-004') return 'Key Accounts';
+  if (c.id === 'CUST-005') return 'VIP / Premium';
+  if (c.id === 'CUST-001' || c.id === 'Walk-in Cash Customer') return 'Retail Counter';
+  return 'Retail Counter';
 }
 
 export default function CustomerPricingModal({
@@ -53,12 +78,59 @@ export default function CustomerPricingModal({
   onApplyPricingToCart,
   onApplyRatesToCart
 }: CustomerPricingModalProps) {
-  const effectiveCustomerId = selectedCustomerId || activeCustomer?.id || 'CUST-002';
-  const effectiveCustomerName = selectedCustomerName || activeCustomer?.name || 'Beirut Gourmet Market';
   const effectiveCatalog = catalogProducts || catalogItems || [];
   const effectiveOnApply = onApplyRatesToCart || onApplyPricingToCart;
 
-  const [activeCustomerId, setActiveCustomerId] = useState<string>(effectiveCustomerId);
+  // Build merged, deduplicated customer directory
+  const allCustomers = useMemo(() => {
+    const map = new Map<string, { id: string; name: string; tier: string }>();
+
+    // 1. Core presets CUST-001 to CUST-006
+    PRESET_CUSTOMERS.forEach((c) => {
+      map.set(c.id, { id: c.id, name: c.name, tier: c.tier });
+    });
+
+    // 2. Canonical customer registry
+    CANONICAL_CUSTOMERS.forEach((c) => {
+      if (c.id && !map.has(c.id)) {
+        map.set(c.id, { id: c.id, name: c.name, tier: resolveCustomerTier(c) });
+      }
+    });
+
+    // 3. Injected customers prop
+    customers.forEach((c) => {
+      if (c.id && c.name) {
+        const existing = map.get(c.id);
+        map.set(c.id, {
+          id: c.id,
+          name: c.name,
+          tier: resolveCustomerTier(c) || existing?.tier || 'Retail Counter'
+        });
+      }
+    });
+
+    // 4. Invoices directory customers
+    invoicesDirectory.forEach((inv) => {
+      const id = inv.customerId || inv.customer?.id;
+      const name = inv.customerName || inv.customer?.name;
+      if (id && name && !map.has(id)) {
+        map.set(id, { id, name, tier: resolveCustomerTier({ id, name }) });
+      }
+    });
+
+    // 5. Active customer from SalesView
+    if (activeCustomer?.id && activeCustomer?.name && !map.has(activeCustomer.id)) {
+      map.set(activeCustomer.id, {
+        id: activeCustomer.id,
+        name: activeCustomer.name,
+        tier: resolveCustomerTier(activeCustomer)
+      });
+    }
+
+    return Array.from(map.values()).filter((c) => c.id.trim() !== '');
+  }, [customers, invoicesDirectory, activeCustomer]);
+
+  const [activeCustomerId, setActiveCustomerId] = useState<string>('CUST-002');
   const [activeTab, setActiveTab] = useState<'matrix' | 'history'>('matrix');
   const [specialPrices, setSpecialPrices] = useState<CustomerSpecialPrice[]>([]);
 
@@ -67,31 +139,60 @@ export default function CustomerPricingModal({
   const [specialPriceInput, setSpecialPriceInput] = useState<string>('');
   const [discountPercentInput, setDiscountPercentInput] = useState<string>('');
 
+  // Synchronize on modal open
   useEffect(() => {
     if (isOpen) {
-      setActiveCustomerId(effectiveCustomerId);
+      let matchedId = '';
+      if (activeCustomer?.id && allCustomers.some((c) => c.id === activeCustomer.id)) {
+        matchedId = activeCustomer.id;
+      } else if (activeCustomer?.name) {
+        const found = allCustomers.find(
+          (c) => c.name.toLowerCase() === activeCustomer.name.toLowerCase()
+        );
+        if (found) matchedId = found.id;
+      }
+      if (!matchedId && selectedCustomerId && allCustomers.some((c) => c.id === selectedCustomerId)) {
+        matchedId = selectedCustomerId;
+      }
+      if (!matchedId && selectedCustomerName) {
+        const found = allCustomers.find(
+          (c) => c.name.toLowerCase() === selectedCustomerName.toLowerCase()
+        );
+        if (found) matchedId = found.id;
+      }
+      if (!matchedId) {
+        matchedId = allCustomers[0]?.id || 'CUST-002';
+      }
+      setActiveCustomerId(matchedId);
       setSpecialPrices(getCustomerSpecialPrices());
-      if (effectiveCatalog.length > 0 && !selectedProductCode) {
+      if (effectiveCatalog.length > 0) {
         setSelectedProductCode(effectiveCatalog[0].code);
       }
     }
-  }, [isOpen, effectiveCustomerId, effectiveCatalog]);
+  }, [isOpen, activeCustomer, selectedCustomerId, selectedCustomerName, allCustomers, effectiveCatalog]);
 
   const currentCustomer = useMemo(() => {
     return (
-      customers.find((c) => c.id === activeCustomerId) || {
+      allCustomers.find((c) => c.id === activeCustomerId) || {
         id: activeCustomerId,
-        name: selectedCustomerName || 'Beirut Gourmet Market'
+        name: selectedCustomerName || activeCustomer?.name || 'Customer Account',
+        tier: 'Standard'
       }
     );
-  }, [customers, activeCustomerId, selectedCustomerName]);
+  }, [allCustomers, activeCustomerId, selectedCustomerName, activeCustomer]);
 
-  // Special prices for this customer
+  // Special prices for this customer (matching ID or Name)
   const customerRules = useMemo(() => {
-    return specialPrices.filter((sp) => sp.customerId === activeCustomerId);
-  }, [specialPrices, activeCustomerId]);
+    return specialPrices.filter(
+      (sp) =>
+        sp.customerId === activeCustomerId ||
+        (currentCustomer?.name &&
+          sp.customerName &&
+          sp.customerName.toLowerCase() === currentCustomer.name.toLowerCase())
+    );
+  }, [specialPrices, activeCustomerId, currentCustomer]);
 
-  // Historical purchases across invoices
+  // Historical purchases across invoices for this customer
   const purchaseHistory = useMemo(() => {
     const historyList: Array<{
       invoiceNo: string;
@@ -104,7 +205,15 @@ export default function CustomerPricingModal({
     }> = [];
 
     invoicesDirectory.forEach((inv) => {
-      if ((inv.customerId || inv.customer?.id) === activeCustomerId && inv.items && Array.isArray(inv.items)) {
+      const invCustId = inv.customerId || inv.customer?.id;
+      const invCustName = inv.customerName || inv.customer?.name;
+      const isMatch =
+        invCustId === activeCustomerId ||
+        (currentCustomer?.name &&
+          invCustName &&
+          invCustName.toLowerCase() === currentCustomer.name.toLowerCase());
+
+      if (isMatch && inv.items && Array.isArray(inv.items)) {
         inv.items.forEach((it: any) => {
           historyList.push({
             invoiceNo: inv.invoiceNumber || inv.id,
@@ -120,7 +229,7 @@ export default function CustomerPricingModal({
     });
 
     return historyList;
-  }, [invoicesDirectory, activeCustomerId]);
+  }, [invoicesDirectory, activeCustomerId, currentCustomer]);
 
   // Handle Add Rule
   const handleAddRule = () => {
@@ -244,16 +353,18 @@ export default function CustomerPricingModal({
 
         {/* Customer Selector & Tabs */}
         <div className="bg-slate-50 border-b border-slate-200 px-5 py-3 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
-          <div>
-            <label className="block text-[10px] text-slate-500 font-bold uppercase">Client Account</label>
+          <div className="min-w-[340px] w-full sm:w-[400px]">
+            <label className="block text-[10px] text-slate-500 font-bold uppercase mb-1">
+              Client Account (حساب الزبون)
+            </label>
             <select
               value={activeCustomerId}
               onChange={(e) => setActiveCustomerId(e.target.value)}
-              className="bg-white border border-slate-300 rounded px-2.5 py-1 text-xs font-semibold text-slate-900"
+              className="w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs font-semibold text-slate-900 shadow-2xs focus:ring-1 focus:ring-primary focus:border-primary truncate"
             >
-              {customers.map((c) => (
+              {allCustomers.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name} ({c.id})
+                  {c.name} ({c.id}) — {c.tier}
                 </option>
               ))}
             </select>

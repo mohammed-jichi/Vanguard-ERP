@@ -511,7 +511,8 @@ export const CUSTOMER_PRESETS = [
   { id: 'CUST-002', name: 'Beirut Gourmet Market', address: 'Hamra Street, Bloc B, Beirut' },
   { id: 'CUST-003', name: 'Al-Janoub Mart Supermarket', address: 'Main Highway, Nabatieh' },
   { id: 'CUST-004', name: 'Tyre Regional Co-op', address: 'Port Road, Tyre' },
-  { id: 'CUST-005', name: 'Cedar Valley Organics', address: 'Ashrafieh, Tabaris, Beirut' }
+  { id: 'CUST-005', name: 'Cedar Valley Organics', address: 'Ashrafieh, Tabaris, Beirut' },
+  { id: 'CUST-006', name: 'Tripoli Olive Press & Co', address: 'Mina Coastal Road, Tripoli' }
 ];
 
 export const PAYMENT_TYPES = [
@@ -6797,6 +6798,8 @@ export default function AuthenticVanguardSalesWorkstation({
           onClose={() => setIsCreditNoteModalOpen(false)}
           invoices={invoicesDirectory}
           activeCustomer={selectedCustomer}
+          customers={CUSTOMER_PRESETS}
+          catalogItems={VANGUARD_SALES_ITEMS}
           currentCartItems={cartItems}
           tenantId={currentTenant?.id}
           onCreditNotePosted={(crn) => {
@@ -6824,7 +6827,9 @@ export default function AuthenticVanguardSalesWorkstation({
           }}
           initialMode={isStoreRecurringModalOpen ? 'STORE' : isRecallRecurringModalOpen ? 'RECALL' : recurringModalMode}
           activeCustomer={selectedCustomer}
+          customers={CUSTOMER_PRESETS}
           currentCartItems={cartItems}
+          activeGrandTotal={grandTotal}
           currency={currency}
           transactionType={transactionType}
           deliveredBy={deliveredBy}
@@ -6842,6 +6847,8 @@ export default function AuthenticVanguardSalesWorkstation({
           isOpen={isCustomerPricingModalOpen}
           onClose={() => setIsCustomerPricingModalOpen(false)}
           activeCustomer={selectedCustomer}
+          customers={CUSTOMER_PRESETS}
+          invoicesDirectory={invoicesDirectory}
           catalogItems={VANGUARD_SALES_ITEMS}
           tenantId={currentTenant?.id}
           onApplyRatesToCart={(rates: Record<string, number>) => {

@@ -1,5 +1,28 @@
 [
   {
+    "id": "e81352cd-e5ed-477b-a30a-d9331f742f28",
+    "commit_hash": "e81352cde5ede77bc30ad9331f742f28829b144f",
+    "short_hash": "e81352c",
+    "version": "v2.0.0",
+    "title": "Enforce shift session isolation, flexible bank inputs, and restore Operations Center Dashboard/Reports",
+    "category": "feature",
+    "description": "feat(erp): enforce shift session isolation, flexible bank inputs, and restore Operations Center Dashboard/Reports",
+    "bullet_points": [
+      "Implemented enforce shift session isolation, flexible bank inputs, and restore operations center dashboard/reports",
+      "Enhanced system stability and operator workflow in Sales & POS & Accounting & Finance",
+      "Validated cross-language translation tags and reactive state synchronization"
+    ],
+    "affected_modules": [
+      "Sales & POS",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-10-16T16:10:48.000Z",
+    "created_at": "2026-10-17T11:24:24.850Z"
+  },
+  {
     "id": "42051223-8ff5-463d-a1ec-c5aa3d8ebe84",
     "commit_hash": "420512238ff5663d01ecc5aa3d8ebe8425258343",
     "short_hash": "4205122",

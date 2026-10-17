@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-16T16:09:37.387Z",
+  "last_updated": "2026-10-17T11:24:24.857Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,23 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-e81352c",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (e81352c) - Enforce shift session isolation, flexible bank inputs, and restore Operations Center Dashboard/Reports",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "e81352cde5ede77bc30ad9331f742f28829b144f",
+        "version": "v2.0.0",
+        "category": "feature",
+        "modules": [
+          "Sales & POS",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-16T16:10:48.000Z"
+    },
     {
       "id": "act-rel-4205122",
       "company_id": 1300,
@@ -6941,6 +6958,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-e81352c",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Enforce shift session isolation, flexible bank inputs, and restore Operations Center Dashboard/Reports",
+      "message": "feat(erp): enforce shift session isolation, flexible bank inputs, and restore Operations Center Dashboard/Reports",
+      "timestamp": "2026-10-16T16:10:48.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "e81352cde5ede77bc30ad9331f742f28829b144f",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-4205122",
       "type": "SYSTEM_RELEASE",
