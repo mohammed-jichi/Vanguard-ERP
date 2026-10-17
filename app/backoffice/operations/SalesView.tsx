@@ -111,13 +111,15 @@ import {
   ArrowUpRight,
   Filter,
   Tag,
-  Unlock
+  Unlock,
+  Lock
 } from 'lucide-react';
 import DatePickerInput from '@/components/DatePickerInput';
 import { useTenant } from '@/lib/TenantContext';
 import { useActiveUser } from '@/lib/useActiveUser';
 import { supabase } from '@/lib/supabaseClient';
 import { toggleDocumentPosting } from '@/lib/dataGateway';
+import { toast } from '@/lib/toast';
 
 
 const getTodayFormatted = () => {
@@ -1396,6 +1398,22 @@ export default function AuthenticVanguardSalesWorkstation({
   // Existing Invoices Directory (initialized with static seeds, then hydrated from persistent store)
   const [invoicesDirectory, setInvoicesDirectory] = useState<InvoiceRecord[]>(INITIAL_INVOICES_DIRECTORY);
 
+  // Check if currently loaded invoice in editor is in POSTED state
+  const isCurrentInvoicePosted = useMemo(() => {
+    return Boolean(
+      (currentInvoice &&
+        (currentInvoice.posted === true ||
+          (currentInvoice as any).is_posted === true ||
+          currentInvoice.status === 'Posted')) ||
+      (invoiceNumber &&
+        invoicesDirectory.some(
+          (inv) =>
+            inv.invoiceNumber === invoiceNumber &&
+            (inv.posted === true || (inv as any).is_posted === true || inv.status === 'Posted')
+        ))
+    );
+  }, [currentInvoice, invoiceNumber, invoicesDirectory]);
+
   // Memoized data slices for Main Reading modal (calculated strictly on demand when modal is open)
   const mainReadingInvoices = useMemo(() => {
     if (!isMainReadingModalOpen) return [];
@@ -1425,6 +1443,10 @@ export default function AuthenticVanguardSalesWorkstation({
   }, [isMainReadingModalOpen, customerReceipts, invoiceDate]);
 
   const handleSelectCustomerFromModal = (cust: any) => {
+    if (isCurrentInvoicePosted) {
+      toast.error("Cannot change customer on a posted invoice. Click 'Unpost' first.");
+      return;
+    }
     setSelectedCustomer(cust);
     setCustomerSearch(cust.name || '');
     setIsCustomerDropdownOpen(false);
@@ -1824,6 +1846,11 @@ export default function AuthenticVanguardSalesWorkstation({
 
   // Handlers
   const handleAddItemToCart = (item: SalesItem) => {
+    if (isCurrentInvoicePosted) {
+      toast.error("Cannot add items to a posted invoice. Click 'Unpost' first.");
+      return;
+    }
+
     // Check QTOH stock restriction
     if (!salesOptions.allow_sales_negative_stock && item.stockQty <= 0) {
       alert(`Item "${item.name}" has 0 or negative stock (${item.stockQty} ${item.unit}). Sales disallowed under active Sales Options.`);
@@ -1874,6 +1901,10 @@ export default function AuthenticVanguardSalesWorkstation({
   };
 
   const handleUpdateCartQty = (cartId: string, newQty: number) => {
+    if (isCurrentInvoicePosted) {
+      toast.error("Cannot modify items on a posted invoice. Click 'Unpost' first.");
+      return;
+    }
     if (newQty <= 0) {
       handleRemoveCartItem(cartId);
       return;
@@ -1888,6 +1919,10 @@ export default function AuthenticVanguardSalesWorkstation({
   };
 
   const handleUpdateCartPrice = (cartId: string, newPrice: number) => {
+    if (isCurrentInvoicePosted) {
+      toast.error("Cannot modify items on a posted invoice. Click 'Unpost' first.");
+      return;
+    }
     setCartItems((prev) =>
       prev.map((item) =>
         item.id === cartId
@@ -1898,7 +1933,19 @@ export default function AuthenticVanguardSalesWorkstation({
   };
 
   const handleRemoveCartItem = (cartId: string) => {
+    if (isCurrentInvoicePosted) {
+      toast.error("Cannot modify or delete items on a posted invoice. Click 'Unpost' first.");
+      return;
+    }
     setCartItems((prev) => prev.filter((item) => item.id !== cartId));
+  };
+
+  const handleClearCart = () => {
+    if (isCurrentInvoicePosted) {
+      toast.error("Cannot modify or delete items on a posted invoice. Click 'Unpost' first.");
+      return;
+    }
+    setCartItems([]);
   };
 
   const handleNewInvoice = () => {
@@ -2428,6 +2475,10 @@ export default function AuthenticVanguardSalesWorkstation({
   };
 
   const handleLoadRecurringTemplate = (tpl: RecurringInvoiceTemplate | any) => {
+    if (isCurrentInvoicePosted) {
+      toast.error("Cannot load template onto a posted invoice. Click 'Unpost' first.");
+      return;
+    }
     const mappedItems: CartItem[] = (tpl.items || []).map((it: any) => {
       let finalPrice = it.unitPrice || (it as any).fixedUnitPrice || 0;
       if (tpl.useLivePrice) {
@@ -2478,6 +2529,10 @@ export default function AuthenticVanguardSalesWorkstation({
   };
 
   const handleApplyCustomerPricing = () => {
+    if (isCurrentInvoicePosted) {
+      toast.error("Cannot modify items or prices on a posted invoice. Click 'Unpost' first.");
+      return;
+    }
     setCartItems((prev) =>
       prev.map((item) => {
         const special = customerSpecialPrices[item.code];
@@ -2810,13 +2865,7 @@ export default function AuthenticVanguardSalesWorkstation({
     return filteredPreviewInvoices.some((inv) => !inv.posted);
   }, [filteredPreviewInvoices]);
 
-  // Check if currently loaded invoice in editor is posted
-  const isCurrentInvoicePosted = Boolean(
-    currentInvoice &&
-      (currentInvoice.posted === true ||
-        (currentInvoice as any).is_posted === true ||
-        currentInvoice.status === 'Posted')
-  );
+
 
   const handleOpenReportScreen = (inv?: any) => {
     setReportTargetInvoice(inv || {
@@ -3861,8 +3910,19 @@ export default function AuthenticVanguardSalesWorkstation({
                   filteredCatalogItems.map((item) => (
                     <tr
                       key={item.id}
-                      className="hover:bg-muted/60 transition-colors group cursor-pointer"
-                      onClick={() => handleAddItemToCart(item)}
+                      className={
+                        isCurrentInvoicePosted
+                          ? "opacity-40 cursor-not-allowed bg-slate-50/70 select-none"
+                          : "hover:bg-muted/60 transition-colors group cursor-pointer"
+                      }
+                      onClick={() => {
+                        if (isCurrentInvoicePosted) {
+                          toast.error("Cannot add items to a posted invoice. Click 'Unpost' first.");
+                          return;
+                        }
+                        handleAddItemToCart(item);
+                      }}
+                      title={isCurrentInvoicePosted ? "Invoice is posted. Locked against adding items." : undefined}
                     >
                       <td className="py-2 px-3">
                         <div className="font-normal text-slate-800 text-[13px]">{item.name}</div>
@@ -3878,7 +3938,13 @@ export default function AuthenticVanguardSalesWorkstation({
                         {(Number(item.price) || 0).toFixed(2)} $
                       </td>
                       <td className="py-2 px-3 text-center w-8">
-                        <span className="text-slate-400 group-hover:text-slate-800 text-base font-bold select-none cursor-pointer">
+                        <span
+                          className={`text-base font-bold select-none ${
+                            isCurrentInvoicePosted
+                              ? "text-slate-300 cursor-not-allowed"
+                              : "text-slate-400 group-hover:text-slate-800 cursor-pointer"
+                          }`}
+                        >
                           +
                         </span>
                       </td>
@@ -3943,6 +4009,12 @@ export default function AuthenticVanguardSalesWorkstation({
                     CREDIT NOTE
                   </span>
                 )}
+                {isCurrentInvoicePosted && (
+                  <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-2xs">
+                    <Lock className="w-3 h-3 text-emerald-700" />
+                    POSTED (LOCKED)
+                  </span>
+                )}
               </div>
             </div>
             
@@ -3960,26 +4032,40 @@ export default function AuthenticVanguardSalesWorkstation({
                       type="text"
                       placeholder="Search customer ..."
                       value={customerSearch || selectedCustomer.name}
-                      onFocus={() => setIsCustomerDropdownOpen(true)}
+                      readOnly={isCurrentInvoicePosted}
+                      disabled={isCurrentInvoicePosted}
+                      onFocus={() => {
+                        if (!isCurrentInvoicePosted) setIsCustomerDropdownOpen(true);
+                      }}
                       onChange={(e) => {
+                        if (isCurrentInvoicePosted) return;
                         setCustomerSearch(e.target.value);
                         setIsCustomerDropdownOpen(true);
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
+                          if (isCurrentInvoicePosted) return;
                           setIsCustomerDropdownOpen(false);
                           setIsCustomerLookupModalOpen(true);
                         }
                       }}
-                      className="w-full bg-white border border-border rounded px-2.5 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
+                      className={`w-full border rounded px-2.5 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none shadow-2xs ${
+                        isCurrentInvoicePosted
+                          ? 'bg-slate-100 border-slate-200 cursor-not-allowed opacity-75'
+                          : 'bg-white border-border focus:border-blue-500'
+                      }`}
                     />
-                    {isCustomerDropdownOpen && (
+                    {isCustomerDropdownOpen && !isCurrentInvoicePosted && (
                       <div className="absolute left-0 top-full mt-1 w-full bg-white border border-slate-200 rounded shadow-xl z-50 max-h-48 overflow-y-auto text-xs py-1">
                         {CUSTOMER_PRESETS.filter((c) => c.name).map((cust) => (
                           <div
                             key={cust.id}
                             onClick={() => {
+                              if (isCurrentInvoicePosted) {
+                                toast.error("Cannot change customer on a posted invoice. Click 'Unpost' first.");
+                                return;
+                              }
                               setSelectedCustomer(cust);
                               setCustomerSearch(cust.name || '');
                               setIsCustomerDropdownOpen(false);
@@ -4032,9 +4118,15 @@ export default function AuthenticVanguardSalesWorkstation({
                     <span className="text-slate-600 truncate text-[11px]">{selectedCustomer.address || ''}</span>
                     <button
                       type="button"
-                      onClick={() => setIsCustomerModalOpen(true)}
-                      className="bg-primary hover:bg-primary/90 text-white p-1 rounded cursor-pointer shrink-0"
-                      title="Edit Customer"
+                      disabled={isCurrentInvoicePosted}
+                      onClick={() => {
+                        if (isCurrentInvoicePosted) return;
+                        setIsCustomerModalOpen(true);
+                      }}
+                      className={`text-white p-1 rounded shrink-0 ${
+                        isCurrentInvoicePosted ? 'bg-slate-400 opacity-50 cursor-not-allowed' : 'bg-primary hover:bg-primary/90 cursor-pointer'
+                      }`}
+                      title={isCurrentInvoicePosted ? "Invoice is posted" : "Edit Customer"}
                     >
                       <Edit2 className="w-3 h-3" />
                     </button>
@@ -4047,8 +4139,13 @@ export default function AuthenticVanguardSalesWorkstation({
                   <div className="flex-1">
                     <select
                       value={invoiceSalesman}
+                      disabled={isCurrentInvoicePosted}
                       onChange={(e) => setInvoiceSalesman(e.target.value)}
-                      className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs cursor-pointer"
+                      className={`w-full border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs ${
+                        isCurrentInvoicePosted
+                          ? 'bg-slate-100 border-slate-200 cursor-not-allowed opacity-75'
+                          : 'bg-white border-border cursor-pointer'
+                      }`}
                     >
                       <option value="Direct Counter">Direct Counter</option>
                       <option value="Mahdi">Mahdi</option>
@@ -4069,7 +4166,7 @@ export default function AuthenticVanguardSalesWorkstation({
                 {/* Date */}
                 <div className="flex items-center justify-between gap-1">
                   <span className="font-normal text-slate-700 text-[11px] w-20 text-right">Date:</span>
-                  <div className="flex-1">
+                  <div className={`flex-1 ${isCurrentInvoicePosted ? 'pointer-events-none opacity-75' : ''}`}>
                     <DatePickerInput
                       value={invoiceDate}
                       onChange={setInvoiceDate}
@@ -4082,7 +4179,7 @@ export default function AuthenticVanguardSalesWorkstation({
                 {/* Delivery Date */}
                 <div className="flex items-center justify-between gap-1">
                   <span className="font-normal text-slate-700 text-[11px] w-20 text-right">Delivery Date:</span>
-                  <div className="flex-1">
+                  <div className={`flex-1 ${isCurrentInvoicePosted ? 'pointer-events-none opacity-75' : ''}`}>
                     <DatePickerInput
                       value={deliveryDate}
                       onChange={setDeliveryDate}
@@ -4098,8 +4195,13 @@ export default function AuthenticVanguardSalesWorkstation({
                   <div className="flex items-center gap-1 flex-1">
                     <select
                       value={deliveredBy}
+                      disabled={isCurrentInvoicePosted}
                       onChange={(e) => setDeliveredBy(e.target.value)}
-                      className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs cursor-pointer"
+                      className={`w-full border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs ${
+                        isCurrentInvoicePosted
+                          ? 'bg-slate-100 border-slate-200 cursor-not-allowed opacity-75'
+                          : 'bg-white border-border cursor-pointer'
+                      }`}
                     >
                       <option value="Providers">Providers (Default / Unassigned)</option>
                       {deliveredBy && deliveredBy !== 'Providers' && !deliveryProviders.some((p) => (p.status === 'Active Carrier' || (p as any).active !== false) && p.name === deliveredBy) && (
@@ -4115,9 +4217,15 @@ export default function AuthenticVanguardSalesWorkstation({
                     </select>
                     <button
                       type="button"
-                      onClick={() => setIsAddProviderModalOpen(true)}
-                      className="bg-emerald-700 hover:bg-emerald-800 text-white p-1 rounded shrink-0 cursor-pointer transition-colors"
-                      title="Add Delivery Provider"
+                      disabled={isCurrentInvoicePosted}
+                      onClick={() => {
+                        if (isCurrentInvoicePosted) return;
+                        setIsAddProviderModalOpen(true);
+                      }}
+                      className={`text-white p-1 rounded shrink-0 transition-colors ${
+                        isCurrentInvoicePosted ? 'bg-slate-400 opacity-50 cursor-not-allowed' : 'bg-emerald-700 hover:bg-emerald-800 cursor-pointer'
+                      }`}
+                      title={isCurrentInvoicePosted ? "Invoice is posted" : "Add Delivery Provider"}
                     >
                       <Plus className="w-3 h-3" />
                     </button>
@@ -4130,8 +4238,13 @@ export default function AuthenticVanguardSalesWorkstation({
                   <div className="flex items-center gap-1 flex-1">
                     <select
                       value={currency}
+                      disabled={isCurrentInvoicePosted}
                       onChange={(e) => setCurrency(e.target.value)}
-                      className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
+                      className={`w-full border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs ${
+                        isCurrentInvoicePosted
+                          ? 'bg-slate-100 border-slate-200 cursor-not-allowed opacity-75'
+                          : 'bg-white border-border'
+                      }`}
                     >
                       <option value="USD">USD</option>
                       <option value="LBP">LBP</option>
@@ -4139,7 +4252,10 @@ export default function AuthenticVanguardSalesWorkstation({
                     </select>
                     <button
                       type="button"
-                      className="bg-primary hover:bg-primary/90 text-white p-1 rounded shrink-0"
+                      disabled={isCurrentInvoicePosted}
+                      className={`text-white p-1 rounded shrink-0 ${
+                        isCurrentInvoicePosted ? 'bg-slate-400 opacity-50 cursor-not-allowed' : 'bg-primary hover:bg-primary/90'
+                      }`}
                     >
                       <Edit2 className="w-3 h-3" />
                     </button>
@@ -4152,8 +4268,13 @@ export default function AuthenticVanguardSalesWorkstation({
                   <div className="flex-1">
                     <select
                       value={transactionType}
+                      disabled={isCurrentInvoicePosted}
                       onChange={(e) => setTransactionType(e.target.value)}
-                      className="w-full bg-white border border-border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs"
+                      className={`w-full border rounded px-2 py-0.5 text-xs text-slate-700 shadow-2xs ${
+                        isCurrentInvoicePosted
+                          ? 'bg-slate-100 border-slate-200 cursor-not-allowed opacity-75'
+                          : 'bg-white border-border'
+                      }`}
                     >
                       <option value="Local">Local</option>
                       <option value="Export">Export</option>
@@ -4199,10 +4320,18 @@ export default function AuthenticVanguardSalesWorkstation({
                           step="any"
                           min="1"
                           value={item.qty}
-                          onChange={(e) =>
-                            handleUpdateCartQty(item.id, parseFloat(e.target.value) || 0)
-                          }
-                          className="w-14 bg-white border border-slate-300 rounded px-1 py-0.5 text-xs text-right text-slate-800 focus:outline-none focus:border-blue-500 shadow-2xs"
+                          disabled={isCurrentInvoicePosted}
+                          readOnly={isCurrentInvoicePosted}
+                          onChange={(e) => {
+                            if (isCurrentInvoicePosted) return;
+                            handleUpdateCartQty(item.id, parseFloat(e.target.value) || 0);
+                          }}
+                          className={`w-14 border rounded px-1 py-0.5 text-xs text-right focus:outline-none shadow-2xs ${
+                            isCurrentInvoicePosted
+                              ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed select-none'
+                              : 'bg-white border-slate-300 text-slate-800 focus:border-blue-500'
+                          }`}
+                          title={isCurrentInvoicePosted ? "Invoice is posted. Locked against editing." : undefined}
                         />
                       </td>
                       <td className="py-2 px-2 text-center text-slate-600 font-normal">
@@ -4215,12 +4344,19 @@ export default function AuthenticVanguardSalesWorkstation({
                             step="0.01"
                             min="0"
                             value={item.unitPrice}
+                            disabled={isCurrentInvoicePosted}
+                            readOnly={isCurrentInvoicePosted}
                             onChange={(e) => {
+                              if (isCurrentInvoicePosted) return;
                               const val = parseFloat(e.target.value);
                               handleUpdateCartPrice(item.id, isNaN(val) ? 0 : val);
                             }}
-                            className="w-18 bg-white border border-slate-300 focus:border-blue-500 rounded px-1.5 py-0.5 text-xs text-right font-mono font-medium text-slate-800 focus:outline-none shadow-2xs"
-                            title="Edit Unit Price manually"
+                            className={`w-18 border rounded px-1.5 py-0.5 text-xs text-right font-mono font-medium focus:outline-none shadow-2xs ${
+                              isCurrentInvoicePosted
+                                ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed select-none'
+                                : 'bg-white border-slate-300 text-slate-800 focus:border-blue-500'
+                            }`}
+                            title={isCurrentInvoicePosted ? "Invoice is posted. Locked against editing." : "Edit Unit Price manually"}
                           />
                           <span className="text-slate-500 text-xs font-mono">$</span>
                         </div>
@@ -4232,13 +4368,19 @@ export default function AuthenticVanguardSalesWorkstation({
                         <td className="py-2 px-2 text-left">
                           <select
                             value={item.location}
+                            disabled={isCurrentInvoicePosted}
                             onChange={(e) => {
+                              if (isCurrentInvoicePosted) return;
                               const val = e.target.value;
                               setCartItems((prev) =>
                                 prev.map((p) => (p.id === item.id ? { ...p, location: val } : p))
                               );
                             }}
-                            className="w-full bg-white border border-slate-200 rounded px-1 py-0.5 text-[11px] font-normal text-slate-700 shadow-2xs"
+                            className={`w-full border rounded px-1 py-0.5 text-[11px] font-normal shadow-2xs ${
+                              isCurrentInvoicePosted
+                                ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed'
+                                : 'bg-white border-slate-200 text-slate-700'
+                            }`}
                           >
                             <option value="All Locations">All Locations</option>
                             <option value="Southern Olive and Oil Products - Main">Southern Olive and Oil Products - Main</option>
@@ -4250,22 +4392,40 @@ export default function AuthenticVanguardSalesWorkstation({
                           <input
                             type="text"
                             value={item.salesman || invoiceSalesman || 'Direct Counter'}
+                            disabled={isCurrentInvoicePosted}
+                            readOnly={isCurrentInvoicePosted}
                             onChange={(e) => {
+                              if (isCurrentInvoicePosted) return;
                               const val = e.target.value;
                               setCartItems((prev) =>
                                 prev.map((p) => (p.id === item.id ? { ...p, salesman: val } : p))
                               );
                             }}
-                            className="w-full bg-white border border-slate-200 rounded px-1 py-0.5 text-[11px] font-normal text-slate-700 shadow-2xs"
+                            className={`w-full border rounded px-1 py-0.5 text-[11px] font-normal shadow-2xs ${
+                              isCurrentInvoicePosted
+                                ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed'
+                                : 'bg-white border-slate-200 text-slate-700'
+                            }`}
                           />
                         </td>
                       )}
                       <td className="py-2 px-2 text-center">
                         <button
                           type="button"
-                          onClick={() => handleRemoveCartItem(item.id)}
-                          className="text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
-                          title="Remove item"
+                          disabled={isCurrentInvoicePosted}
+                          onClick={() => {
+                            if (isCurrentInvoicePosted) {
+                              toast.error("Cannot modify or delete items on a posted invoice. Click 'Unpost' first.");
+                              return;
+                            }
+                            handleRemoveCartItem(item.id);
+                          }}
+                          className={
+                            isCurrentInvoicePosted
+                              ? "text-slate-300 opacity-40 pointer-events-none cursor-not-allowed"
+                              : "text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                          }
+                          title={isCurrentInvoicePosted ? "Posted invoice is locked against item deletion" : "Remove item"}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -6881,6 +7041,10 @@ export default function AuthenticVanguardSalesWorkstation({
           catalogItems={VANGUARD_SALES_ITEMS}
           tenantId={currentTenant?.id}
           onApplyRatesToCart={(rates: Record<string, number>, targetCustomer?: any) => {
+            if (isCurrentInvoicePosted) {
+              toast.error("Cannot modify items or rates on a posted invoice. Click 'Unpost' first.");
+              return;
+            }
             let activeCust: any = selectedCustomer;
             if (targetCustomer) {
               const matchedPreset = CUSTOMER_PRESETS.find(

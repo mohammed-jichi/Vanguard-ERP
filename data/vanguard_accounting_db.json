@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-10-17T13:11:54.210Z",
+  "last_updated": "2026-10-17T13:36:03.127Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,24 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-39dd876",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (39dd876) - Fix Client Account select width, apply negotiated contract rates and selected client to cart/printout, and prevent blank 2nd print page",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "39dd8763f4a002d4c6b925354fbef8e6880768f2",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Sales & POS",
+          "Core Shell & UI",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-10-17T13:12:37.000Z"
+    },
     {
       "id": "act-rel-b5b874f",
       "company_id": 1300,
@@ -6975,6 +6993,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-39dd876",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Fix Client Account select width, apply negotiated contract rates and selected client to cart/printout, and prevent blank 2nd print page",
+      "message": "fix(pricing,sales): fix Client Account select width, apply negotiated contract rates and selected client to cart/printout, and prevent blank 2nd print page",
+      "timestamp": "2026-10-17T13:12:37.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "39dd8763f4a002d4c6b925354fbef8e6880768f2",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-b5b874f",
       "type": "SYSTEM_RELEASE",
