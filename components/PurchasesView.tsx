@@ -66,6 +66,9 @@ export interface PurchaseInvoice {
   currencyRate: number;
   notes: string;
   amountLL: number;
+  amount_usd?: number;
+  amount_lbp?: number;
+  exchange_rate?: number;
   enteredBy: string;
   updatedBy: string;
   updatedAt: string;
@@ -474,6 +477,120 @@ export default function PurchasesView() {
     [filteredPurchases]
   );
 
+  // Authoritative Balanced Journal Entry Helper for Purchases
+  const createPurchaseJournalEntry = async (p: PurchaseInvoice, targetTenantId: string, liveRate: number) => {
+    const netTotal = Number(p.amountLL || (p as any).grandTotal || (p as any).subtotal || 0);
+    const totalTax = Number(p.totalTax || 0);
+    const expenseAmt = Math.max(0, Math.round((netTotal - totalTax) * 100) / 100);
+    const jvId = `jv-pur-${p.id || p.invoiceNumber}`;
+    const jvNumber = `JV-PUR-${p.invoiceNumber}`;
+
+    const jvPayload = {
+      id: jvId,
+      tenant_id: targetTenantId,
+      voucher_number: jvNumber,
+      date: p.date ? new Date(p.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      reference: p.id || p.invoiceNumber,
+      reference_id: p.id || p.invoiceNumber,
+      reference_type: 'PURCHASE_INVOICE',
+      description: `Purchase Invoice #${p.invoiceNumber} - ${p.supplier}`,
+      currency: p.currency || 'USD',
+      exchange_rate: liveRate,
+      total_debit: netTotal,
+      total_credit: netTotal,
+      status: 'POSTED',
+      is_posted: true,
+      posted_at: new Date().toISOString(),
+      created_by: p.created_by || p.enteredBy || 'Vanguard Operator',
+      created_at: new Date().toISOString()
+    };
+
+    const linesPayload = [
+      {
+        jv_id: jvId,
+        tenant_id: targetTenantId,
+        line_no: 1,
+        line_number: 1,
+        account_id: '5110-00',
+        account_number: '5110-00',
+        account_name: 'Raw Material / Inventory Procurement',
+        description: `Procurement cost for Purchase #${p.invoiceNumber}`,
+        debit: totalTax > 0 ? expenseAmt : netTotal,
+        debit_amount: totalTax > 0 ? expenseAmt : netTotal,
+        credit: 0,
+        credit_amount: 0,
+        amount_debit: totalTax > 0 ? expenseAmt : netTotal,
+        amount_credit: 0,
+        currency_rate: liveRate,
+        created_at: new Date().toISOString()
+      }
+    ];
+
+    if (totalTax > 0) {
+      linesPayload.push({
+        jv_id: jvId,
+        tenant_id: targetTenantId,
+        line_no: 2,
+        line_number: 2,
+        account_id: '4422-00',
+        account_number: '4422-00',
+        account_name: 'VAT Input Receivable (11%)',
+        description: `VAT input 11% on Purchase #${p.invoiceNumber}`,
+        debit: Math.round(totalTax * 100) / 100,
+        debit_amount: Math.round(totalTax * 100) / 100,
+        credit: 0,
+        credit_amount: 0,
+        amount_debit: Math.round(totalTax * 100) / 100,
+        amount_credit: 0,
+        currency_rate: liveRate,
+        created_at: new Date().toISOString()
+      });
+    }
+
+    linesPayload.push({
+      jv_id: jvId,
+      tenant_id: targetTenantId,
+      line_no: linesPayload.length + 1,
+      line_number: linesPayload.length + 1,
+      account_id: '2110-00',
+      account_number: '2110-00',
+      account_name: 'Accounts Payable / Trade Creditors',
+      description: `Payable liability to ${p.supplier} for #${p.invoiceNumber}`,
+      debit: 0,
+      debit_amount: 0,
+      credit: netTotal,
+      credit_amount: netTotal,
+      amount_debit: 0,
+      amount_credit: netTotal,
+      currency_rate: liveRate,
+      created_at: new Date().toISOString()
+    });
+
+    try {
+      await supabase.from('acc_journal_vouchers').upsert([jvPayload], { onConflict: 'id' });
+      await supabase.from('acc_journal_voucher_lines').delete().eq('jv_id', jvId);
+      await supabase.from('acc_journal_voucher_lines').insert(linesPayload);
+    } catch (err) {
+      console.warn('Purchase journal voucher post notice:', err);
+    }
+
+    try {
+      const localJvs = JSON.parse(localStorage.getItem('vanguard_accounting_jvs_data') || '[]');
+      const fullJvRecord = {
+        ...jvPayload,
+        date_of_jv: jvPayload.date,
+        jv_number: jvNumber,
+        jv_type: 'PURCHASE_POSTING',
+        lines: linesPayload
+      };
+      const filtered = localJvs.filter((v: any) => v.id !== jvId && v.jv_number !== jvNumber);
+      localStorage.setItem('vanguard_accounting_jvs_data', JSON.stringify([fullJvRecord, ...filtered]));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('vanguard_accounting_sync', { detail: { type: 'VOUCHER_SAVED', data: fullJvRecord } }));
+      }
+    } catch {}
+  };
+
   // Post All Purchase Invoices
   const handlePostAllPurchases = async () => {
     if (!hasUnpostedPurchases) return;
@@ -490,6 +607,8 @@ export default function PurchasesView() {
       } catch (err) {
         console.warn('Notice posting purchase to unified service:', err);
       }
+      const liveRate = Number(p.currencyRate) || currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500;
+      await createPurchaseJournalEntry(p, targetTenantId, liveRate);
     }
 
     const allStockTxns = unposted.flatMap(p =>
@@ -512,7 +631,22 @@ export default function PurchasesView() {
       });
     }
 
-    const updated = purchases.map(p => ({ ...p, posted: true, is_posted: true }));
+    const updated = purchases.map(p => {
+      const liveRate = Number(p.currencyRate) || currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500;
+      const netTotal = Number(p.amountLL || (p as any).grandTotal || 0);
+      const isUSD = p.currency === 'USD' || p.currency === '$';
+      const amtUsd = isUSD ? netTotal : (netTotal / (liveRate || 1));
+      const amtLbp = !isUSD ? netTotal : (netTotal * (liveRate || 1));
+      return {
+        ...p,
+        posted: true,
+        is_posted: true,
+        amount_usd: Math.round(amtUsd * 100) / 100,
+        amount_lbp: Math.round(amtLbp),
+        currencyRate: liveRate,
+        exchange_rate: liveRate
+      };
+    });
     const res = await persistPurchasesToDatabase(updated);
     if (!res.success) {
       setNotice(`Database persistence failed: ${res.error}`);
@@ -622,6 +756,12 @@ export default function PurchasesView() {
       return;
     }
 
+    const liveRate = Number(formCurrencyRate) || currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500;
+    const netTotal = totals.netTotal;
+    const isUSD = formCurrency === 'USD' || formCurrency === '$';
+    const amtUsd = isUSD ? netTotal : (netTotal / (liveRate || 1));
+    const amtLbp = !isUSD ? netTotal : (netTotal * (liveRate || 1));
+
     const newInvoice: PurchaseInvoice = {
       id: activeEditingInvoiceId || 'PUR-' + Date.now(),
       branch: formBranch,
@@ -635,7 +775,10 @@ export default function PurchasesView() {
       supplierEmail: currentSupplierRecord?.email,
       location: formLocation,
       currency: formCurrency,
-      currencyRate: Number(formCurrencyRate) || 1,
+      currencyRate: liveRate,
+      exchange_rate: liveRate,
+      amount_usd: Math.round(amtUsd * 100) / 100,
+      amount_lbp: Math.round(amtLbp),
       notes: formNote,
       amountLL: totals.netTotal,
       enteredBy: profile?.name || 'Vanguard Operator',
@@ -686,6 +829,12 @@ export default function PurchasesView() {
       return;
     }
 
+    const liveRate = Number(formCurrencyRate) || currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500;
+    const netTotal = totals.netTotal;
+    const isUSD = formCurrency === 'USD' || formCurrency === '$';
+    const amtUsd = isUSD ? netTotal : (netTotal / (liveRate || 1));
+    const amtLbp = !isUSD ? netTotal : (netTotal * (liveRate || 1));
+
     const newInvoice: PurchaseInvoice = {
       id: activeEditingInvoiceId || 'PUR-' + Date.now(),
       branch: formBranch,
@@ -699,7 +848,10 @@ export default function PurchasesView() {
       supplierEmail: currentSupplierRecord?.email,
       location: formLocation,
       currency: formCurrency,
-      currencyRate: Number(formCurrencyRate) || 1,
+      currencyRate: liveRate,
+      exchange_rate: liveRate,
+      amount_usd: Math.round(amtUsd * 100) / 100,
+      amount_lbp: Math.round(amtLbp),
       notes: formNote,
       amountLL: totals.netTotal,
       enteredBy: profile?.name || 'Vanguard Operator',
@@ -742,6 +894,9 @@ export default function PurchasesView() {
         if (error) console.warn('Purchases stock transaction add notice:', error.message);
       });
     }
+
+    // Post double-entry journal voucher to General Ledger
+    await createPurchaseJournalEntry(newInvoice, targetTenantId, liveRate);
 
     let updated: PurchaseInvoice[];
     const idx = purchases.findIndex((p) => p.id === newInvoice.id);
@@ -787,6 +942,31 @@ export default function PurchasesView() {
         console.warn('Notice calling toggleDocumentPosting:', err);
       }
 
+      // Reverse linked journal vouchers in Supabase and local cache
+      try {
+        await supabase
+          .from('acc_journal_vouchers')
+          .update({
+            is_posted: false,
+            status: 'REVERSED',
+            description: `[REVERSED] Unposted Purchase #${invNum}`,
+            updated_at: new Date().toISOString()
+          })
+          .or(`reference.eq.${targetId},reference.eq.${invNum},id.eq.jv-pur-${targetId},id.eq.jv-pur-${invNum}`);
+
+        const localJvs = JSON.parse(localStorage.getItem('vanguard_accounting_jvs_data') || '[]');
+        const updatedJvs = localJvs.map((v: any) => {
+          if (v.id === `jv-pur-${targetId}` || v.id === `jv-pur-${invNum}` || v.reference === targetId || v.reference === invNum) {
+            return { ...v, is_posted: false, status: 'REVERSED' };
+          }
+          return v;
+        });
+        localStorage.setItem('vanguard_accounting_jvs_data', JSON.stringify(updatedJvs));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('vanguard_accounting_sync', { detail: { type: 'VOUCHER_SAVED', data: { id: `jv-pur-${invNum}`, is_posted: false } } }));
+        }
+      } catch (e) {}
+
       const updated = purchases.map((p) =>
         p.id === targetId || p.invoiceNumber === invNum ? { ...p, posted: false, transferred: false } : p
       );
@@ -815,11 +995,11 @@ export default function PurchasesView() {
       }
 
       const targetInv = purchases.find((p) => p.id === id || p.invoiceNumber === invNum);
-      if (targetInv && targetInv.items && targetInv.items.length > 0) {
-        const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
-          ? currentTenant.id
-          : '00000000-0000-0000-0000-000000000001';
+      const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+        ? currentTenant.id
+        : '00000000-0000-0000-0000-000000000001';
 
+      if (targetInv && targetInv.items && targetInv.items.length > 0) {
         const stockTxns = targetInv.items.map(item => ({
           tenant_id: targetTenantId,
           item_id: item.barcode || item.id,
@@ -835,6 +1015,11 @@ export default function PurchasesView() {
         supabase.from('stock_transactions').insert(stockTxns).then(({ error }) => {
           if (error) console.warn('Stock transaction add notice:', error.message);
         });
+      }
+
+      if (targetInv) {
+        const liveRate = Number(targetInv.currencyRate) || currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500;
+        await createPurchaseJournalEntry(targetInv, targetTenantId, liveRate);
       }
 
       const updated = purchases.map((p) => (p.id === id ? { ...p, posted: true, is_posted: true, transferred: true } : p));

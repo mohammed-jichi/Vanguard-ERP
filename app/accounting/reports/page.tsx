@@ -58,6 +58,7 @@ import {
 } from '@/lib/accountingData';
 import { supabase } from '@/lib/supabaseClient';
 import { apiFetchAccounts } from '@/lib/accountingPersistenceService';
+import { useTenant } from '@/lib/TenantContext';
 
 type ReportKey =
   | 'ACC_R_0015' // Income Statement
@@ -151,6 +152,7 @@ export interface AccountingReportsPageProps {
 
 function AccountingReportsContent({ initialReport }: AccountingReportsPageProps) {
   const { t, isRtl } = useLanguage();
+  const { currentTenant } = useTenant();
   const searchParams = useSearchParams();
   const reportParam = searchParams.get('report') || searchParams.get('report_id') || searchParams.get('code');
 
@@ -217,29 +219,69 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
           .select('*, lines:acc_journal_voucher_lines(*)')
           .order('date', { ascending: false });
 
+        const flatLines: any[] = [];
+
         if (!vErr && Array.isArray(voucherRows) && voucherRows.length > 0) {
-          const flatLines: any[] = [];
           for (const v of voucherRows) {
-            if (v.is_posted || v.status === 'POSTED') {
+            // Strictly enforce posted-only records
+            if (v.is_posted === true || v.status === 'POSTED' || v.status === 'Posted') {
               for (const l of (v.lines || [])) {
                 flatLines.push({
-                  id: l.id,
+                  id: l.id || `l-${v.id}-${l.line_no || l.line_number}`,
                   voucherId: v.id,
                   voucherNumber: v.voucher_number || 'JV-AUTO',
-                  date: v.date || (l.created_at ? l.created_at.split('T')[0] : '2026-09-01'),
-                  reference: v.reference || '-',
-                  accountNumber: l.account_number || '',
-                  accountName: l.account_name || '',
+                  date: v.date || (l.created_at ? l.created_at.split('T')[0] : new Date().toISOString().split('T')[0]),
+                  reference: v.reference || v.reference_id || '-',
+                  accountNumber: l.account_number || l.account_id || '',
+                  accountName: l.account_name || 'General Account',
                   description: l.description || v.description || 'Ledger transaction',
-                  debit: Number(l.debit) || 0,
-                  credit: Number(l.credit) || 0
+                  debit: Number(l.debit || l.debit_amount) || 0,
+                  credit: Number(l.credit || l.credit_amount) || 0,
+                  enteredBy: v.created_by || 'Vanguard Operator',
                 });
               }
             }
           }
-          if (flatLines.length > 0) {
-            setPostedLines(flatLines);
+        }
+
+        // Also merge workstation locally persisted posted JVs
+        if (typeof window !== 'undefined') {
+          try {
+            const rawJvs = localStorage.getItem('vanguard_accounting_jvs_data');
+            if (rawJvs) {
+              const localJvs = JSON.parse(rawJvs);
+              if (Array.isArray(localJvs)) {
+                const seenVouchers = new Set(flatLines.map(fl => fl.voucherNumber));
+                for (const lv of localJvs) {
+                  const jvNum = lv.jv_number || lv.voucher_number;
+                  if ((lv.is_posted === true || lv.status === 'POSTED' || lv.status === 'Posted') && !seenVouchers.has(jvNum)) {
+                    seenVouchers.add(jvNum);
+                    for (const l of (lv.lines || [])) {
+                      flatLines.push({
+                        id: l.id || `l-local-${jvNum}-${l.line_number}`,
+                        voucherId: lv.id,
+                        voucherNumber: jvNum,
+                        date: lv.date_of_jv || lv.date || new Date().toISOString().split('T')[0],
+                        reference: lv.doc_ref_number || lv.reference || '-',
+                        accountNumber: l.account_number || l.account_id || '',
+                        accountName: l.account_name || 'General Account',
+                        description: l.description || lv.description || 'Ledger transaction',
+                        debit: Number(l.amount_debit || l.debit) || 0,
+                        credit: Number(l.amount_credit || l.credit) || 0,
+                        enteredBy: lv.created_by || 'Vanguard Operator',
+                      });
+                    }
+                  }
+                }
+              }
+            }
+          } catch (localErr) {
+            console.warn('Notice loading local JVs:', localErr);
           }
+        }
+
+        if (flatLines.length > 0) {
+          setPostedLines(flatLines);
         }
 
         const liveAccounts = await apiFetchAccounts();
@@ -317,8 +359,9 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
     return trialBalanceAccounts.reduce((s, a) => s + a.credit, 0);
   }, [trialBalanceAccounts]);
 
-  // Currency multiplier (89,500 LBP/USD)
-  const fxRate = currency === 'LBP' ? 89500 : 1;
+  // Live Currency conversion multiplier (dynamic tenant rate with 89,500 LBP/USD fallback)
+  const liveLbpRate = currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500;
+  const fxRate = currency === 'LBP' ? liveLbpRate : 1;
   const currencySymbol = currency === 'USD' ? '$' : 'LBP';
 
   const formatAmount = (usdVal: number) => {

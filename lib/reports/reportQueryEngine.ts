@@ -1388,7 +1388,7 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
     }
 
     const standardVat = Math.round((standardTurnover * 0.11 + Number.EPSILON) * 100) / 100;
-    const rateLbp = 89500;
+    const rateLbp = Number(customParams?.exchangeRate) || Number(customParams?.usdToLbp) || 89500;
 
     const rows = [
       {
@@ -1481,13 +1481,14 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
       { item_code: 'OLV-02', name: 'Black Kalamata Olives in Brine 500g', stock_quantity: 210, cost_price: 3.8, branch: 'Southern Olive and Oil Products - Main' },
     ];
 
+    const liveLbpRate = Number(customParams?.exchangeRate) || Number(customParams?.usdToLbp) || 89500;
     const rows = baselineProducts.map((p: any, idx: number) => {
       const code = p.item_code || p.sku || p.code || `SKU-${idx + 1}`;
       const name = p.name || p.item_name || 'Olive Product';
       const qty = Number(p.stock_quantity ?? p.quantity ?? 100);
       const cost = Number(p.cost_price ?? p.unit_cost ?? p.price ?? 10);
       const totalUsd = qty * cost;
-      const totalLbp = totalUsd * 89500;
+      const totalLbp = totalUsd * liveLbpRate;
       return {
         itemCode: code,
         itemName: name,
@@ -1517,7 +1518,7 @@ export async function executeReportQuery(payload: UniversalFilterPayload): Promi
       rows,
       summaryTotals: {
         totalValuationUsd: Math.round(totalValUsd * 100) / 100,
-        totalValuationLbp: Math.round(totalValUsd * 89500),
+        totalValuationLbp: Math.round(totalValUsd * liveLbpRate),
         totalSkus: rows.length,
       },
       totalRecords: rows.length,

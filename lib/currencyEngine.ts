@@ -169,17 +169,49 @@ export function extractCurrencyFromFilter(filterValue?: string): string | null {
 }
 
 /**
+ * Retrieves the live configured exchange rate from tenant settings with safe fallback.
+ */
+export function getTenantExchangeRate(tenant?: any): number {
+  if (tenant?.exchangeRate && !isNaN(Number(tenant.exchangeRate))) {
+    return Number(tenant.exchangeRate);
+  }
+  if (tenant?.usdToLbp && !isNaN(Number(tenant.usdToLbp))) {
+    return Number(tenant.usdToLbp);
+  }
+  if (tenant?.feature_flags?.corporate_profile?.exchange_rate && !isNaN(Number(tenant.feature_flags.corporate_profile.exchange_rate))) {
+    return Number(tenant.feature_flags.corporate_profile.exchange_rate);
+  }
+  if (tenant?.feature_flags?.exchange_rate && !isNaN(Number(tenant.feature_flags.exchange_rate))) {
+    return Number(tenant.feature_flags.exchange_rate);
+  }
+  return SUPPORTED_CURRENCIES.LBP.rateToBase || 89500;
+}
+
+/**
+ * Converts monetary values between USD and LBP using the active tenant rate.
+ */
+export function convertWithTenantRate(
+  amount: number,
+  fromCurrency: string,
+  toCurrency: string,
+  tenant?: any
+): number {
+  const rate = getTenantExchangeRate(tenant);
+  return convertCurrency(amount, fromCurrency, toCurrency, { LBP: rate });
+}
+
+/**
  * Returns exchange rate against Lebanese Pound (LBP) or base for table Rate column display.
  */
-export function getExchangeRateForDisplay(currency: string): number {
+export function getExchangeRateForDisplay(currency: string, tenant?: any): number {
   const code = (currency || 'LBP').toUpperCase().trim();
+  const lbpRate = getTenantExchangeRate(tenant);
   if (code === 'LBP') {
-    return SUPPORTED_CURRENCIES.USD.rateToBase; // Standard LBP market reference (89,500)
+    return lbpRate;
   }
   const meta = SUPPORTED_CURRENCIES[code];
   if (meta) {
-    // For non-LBP currencies, show conversion rate to LBP
-    return Math.round(SUPPORTED_CURRENCIES.LBP.rateToBase / meta.rateToBase);
+    return Math.round(lbpRate / meta.rateToBase);
   }
-  return 89500;
+  return lbpRate;
 }

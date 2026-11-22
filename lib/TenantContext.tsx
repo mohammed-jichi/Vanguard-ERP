@@ -204,6 +204,8 @@ export interface TenantCompany {
   secondaryCurrency?: string;
   isDualCurrencyEnabled?: boolean;
   exchangeRatePolicy?: 'PLATFORM_FIXED' | 'TENANT_MANAGED';
+  exchangeRate?: number;
+  usdToLbp?: number;
   // Operational Quotas
   maxBranches?: number | string;
   maxConcurrentUsers?: number | string;
@@ -331,6 +333,8 @@ const DEFAULT_SUPERADMIN_TENANT: TenantCompany = {
   secondaryCurrency: 'LBP',
   isDualCurrencyEnabled: true,
   exchangeRatePolicy: 'PLATFORM_FIXED',
+  exchangeRate: 89500,
+  usdToLbp: 89500,
   subscriptionTier: 'ENTERPRISE',
   subscriptionStatus: 'ACTIVE',
   aiUsageCount: 0,
@@ -430,6 +434,8 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           secondaryCurrency: t.secondary_currency !== undefined ? t.secondary_currency : (t.feature_flags?.corporate_profile?.secondary_currency || t.feature_flags?.corporate_profile?.secondaryCurrency || 'LBP'),
           isDualCurrencyEnabled: t.is_dual_currency_enabled ?? t.feature_flags?.corporate_profile?.is_dual_currency_enabled ?? t.feature_flags?.corporate_profile?.isDualCurrencyEnabled ?? ((t.country || t.feature_flags?.corporate_profile?.country || 'Lebanon').toLowerCase() === 'lebanon'),
           exchangeRatePolicy: t.exchange_rate_policy || t.feature_flags?.corporate_profile?.exchange_rate_policy || t.feature_flags?.corporate_profile?.exchangeRatePolicy || 'PLATFORM_FIXED',
+          exchangeRate: Number(t.exchange_rate || t.feature_flags?.corporate_profile?.exchange_rate || t.feature_flags?.corporate_profile?.exchangeRate || t.feature_flags?.exchange_rate || 89500),
+          usdToLbp: Number(t.usd_to_lbp || t.feature_flags?.corporate_profile?.usd_to_lbp || t.feature_flags?.corporate_profile?.usdToLbp || t.feature_flags?.exchange_rate || 89500),
           subscriptionTier: t.subscription_tier || 'PRO',
           subscriptionStatus: t.subscription_status || 'ACTIVE',
           aiUsageCount: t.ai_usage_count || 0,

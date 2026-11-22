@@ -203,6 +203,13 @@ export interface InvoiceRecord {
   status: 'Posted' | 'Unposted' | 'Draft';
   is_posted?: boolean;
   posted?: boolean;
+  exchange_rate?: number;
+  amount_usd?: number;
+  amount_lbp?: number;
+  total_amount?: number;
+  subtotal_amount?: number;
+  discount_amount?: number;
+  tax_amount?: number;
   createdAt: string;
   createdAtIso?: string;
   shiftId?: string;
@@ -2150,6 +2157,12 @@ export default function AuthenticVanguardSalesWorkstation({
 
     const activeShift = getActiveShift();
     const nowIso = new Date().toISOString();
+    const liveRate = currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500;
+    const isUsd = currency === 'USD' || currency === '$';
+    const amountUsd = Math.round((isUsd ? grandTotal : (grandTotal / liveRate)) * 100) / 100;
+    const amountLbp = Math.round(!isUsd ? grandTotal : (grandTotal * liveRate));
+    const totalAmt = grandTotal;
+
     const newRecord: InvoiceRecord = {
       id: invoiceNumber,
       invoiceNumber: invoiceNumber,
@@ -2168,6 +2181,13 @@ export default function AuthenticVanguardSalesWorkstation({
       createdBy: profile?.name || 'Vanguard Operator',
       deliveredBy: deliveredBy,
       currency: currency,
+      exchange_rate: liveRate,
+      amount_usd: amountUsd,
+      amount_lbp: amountLbp,
+      total_amount: totalAmt,
+      subtotal_amount: subtotal,
+      discount_amount: discount,
+      tax_amount: tax,
       transactionType: transactionType,
       items: [...cartItems],
       subtotal: subtotal,
@@ -2922,12 +2942,27 @@ export default function AuthenticVanguardSalesWorkstation({
         console.warn('Unified toggle-post notice:', toggleErr);
       }
 
+      const liveRate = currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500;
+      const totalAmt = Number(inv.grandTotal) || 0;
+      const taxAmt = Number(inv.tax) || 0;
+      const isUsd = (inv.currency || 'USD') === 'USD' || (inv.currency || 'USD') === '$';
+      const amtUsd = isUsd ? totalAmt : (totalAmt / liveRate);
+      const amtLbp = !isUsd ? totalAmt : (totalAmt * liveRate);
+
       // 1. Update sales_invoices table in database
       try {
+        const salesUpdatePayload = {
+          is_posted: true,
+          status: 'Posted',
+          amount_usd: Math.round(amtUsd * 100) / 100,
+          amount_lbp: Math.round(amtLbp),
+          exchange_rate: liveRate,
+          updated_at: new Date().toISOString()
+        };
         if (isUUID(inv.id)) {
           const { error } = await supabase
             .from('sales_invoices')
-            .update({ is_posted: true, status: 'Posted' })
+            .update(salesUpdatePayload)
             .eq('id', inv.id);
 
           if (error) {
@@ -2939,7 +2974,7 @@ export default function AuthenticVanguardSalesWorkstation({
         } else {
           const { error } = await supabase
             .from('sales_invoices')
-            .update({ is_posted: true, status: 'Posted' })
+            .update(salesUpdatePayload)
             .eq('invoice_ref', invRef);
 
           if (error) {
@@ -3036,6 +3071,117 @@ export default function AuthenticVanguardSalesWorkstation({
         } catch {}
       } catch (flagErr) {
         console.warn('Feature flags post persistence notice:', flagErr);
+      }
+
+      // 5. Post double-entry journal voucher to General Ledger (acc_journal_vouchers & acc_journal_voucher_lines)
+      try {
+        const revenueAmt = Math.max(0, Math.round((totalAmt - taxAmt) * 100) / 100);
+        const jvId = `jv-sales-${invRef}`;
+        const jvNumber = `JV-SALES-${invRef}`;
+        const isCash = !inv.salesChannel?.toLowerCase().includes('credit') && !inv.transactionType?.toLowerCase().includes('credit');
+
+        const jvPayload = {
+          id: jvId,
+          tenant_id: targetTenantId,
+          voucher_number: jvNumber,
+          date: inv.date ? new Date(inv.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          reference: inv.id || invRef,
+          reference_id: inv.id || invRef,
+          reference_type: 'SALES_INVOICE',
+          description: `Sales Invoice #${invRef} - ${inv.customerName || 'Walk-in Cash Customer'}`,
+          currency: inv.currency || 'USD',
+          exchange_rate: liveRate,
+          total_debit: totalAmt,
+          total_credit: totalAmt,
+          status: 'POSTED',
+          is_posted: true,
+          posted_at: new Date().toISOString(),
+          created_by: inv.createdBy || profile?.name || 'Vanguard Operator',
+          created_at: new Date().toISOString()
+        };
+
+        const linesPayload = [
+          {
+            jv_id: jvId,
+            tenant_id: targetTenantId,
+            line_no: 1,
+            line_number: 1,
+            account_id: isCash ? '1110-01' : '1120-00',
+            account_number: isCash ? '1110-01' : '1120-00',
+            account_name: isCash ? 'Cash Vault / Direct Counter Cash' : 'Accounts Receivable (Trade Debtors)',
+            description: `Settlement for Invoice #${invRef}`,
+            debit: totalAmt,
+            debit_amount: totalAmt,
+            credit: 0,
+            credit_amount: 0,
+            amount_debit: totalAmt,
+            amount_credit: 0,
+            currency_rate: liveRate,
+            created_at: new Date().toISOString()
+          },
+          {
+            jv_id: jvId,
+            tenant_id: targetTenantId,
+            line_no: 2,
+            line_number: 2,
+            account_id: '4110-01',
+            account_number: '4110-01',
+            account_name: 'Sales Revenue - Commercial Goods',
+            description: `Sales revenue for Invoice #${invRef}`,
+            debit: 0,
+            debit_amount: 0,
+            credit: taxAmt > 0 ? revenueAmt : totalAmt,
+            credit_amount: taxAmt > 0 ? revenueAmt : totalAmt,
+            amount_debit: 0,
+            amount_credit: taxAmt > 0 ? revenueAmt : totalAmt,
+            currency_rate: liveRate,
+            created_at: new Date().toISOString()
+          }
+        ];
+
+        if (taxAmt > 0) {
+          linesPayload.push({
+            jv_id: jvId,
+            tenant_id: targetTenantId,
+            line_no: 3,
+            line_number: 3,
+            account_id: '4421-00',
+            account_number: '4421-00',
+            account_name: 'VAT Output Payable (11%)',
+            description: `VAT output 11% on Invoice #${invRef}`,
+            debit: 0,
+            debit_amount: 0,
+            credit: Math.round(taxAmt * 100) / 100,
+            credit_amount: Math.round(taxAmt * 100) / 100,
+            amount_debit: 0,
+            amount_credit: Math.round(taxAmt * 100) / 100,
+            currency_rate: liveRate,
+            created_at: new Date().toISOString()
+          });
+        }
+
+        await supabase.from('acc_journal_vouchers').upsert([jvPayload], { onConflict: 'id' });
+        await supabase.from('acc_journal_voucher_lines').delete().eq('jv_id', jvId);
+        await supabase.from('acc_journal_voucher_lines').insert(linesPayload);
+
+        // Synchronize local storage for instant client accounting reports view
+        try {
+          const localJvs = JSON.parse(localStorage.getItem('vanguard_accounting_jvs_data') || '[]');
+          const fullJvRecord = {
+            ...jvPayload,
+            date_of_jv: jvPayload.date,
+            jv_number: jvNumber,
+            jv_type: 'SALES_POSTING',
+            lines: linesPayload
+          };
+          const filtered = localJvs.filter((v: any) => v.id !== jvId && v.jv_number !== jvNumber);
+          localStorage.setItem('vanguard_accounting_jvs_data', JSON.stringify([fullJvRecord, ...filtered]));
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('vanguard_accounting_sync', { detail: { type: 'VOUCHER_SAVED', data: fullJvRecord } }));
+          }
+        } catch {}
+      } catch (jvErr) {
+        console.warn('Accounting journal post notice:', jvErr);
       }
     }
   };
