@@ -53,19 +53,54 @@ export function getCustomerOptions(allLabel: string = 'All Customers'): { label:
 }
 
 /**
+ * Normalizes customer name for clean enterprise display (no null, undefined, or empty dashes).
+ */
+export function normalizeCustomerDisplay(customerName?: any): string {
+  if (!customerName) return 'Walk-in Cash Customer';
+  const str = String(customerName).trim();
+  if (str === '' || str === '—' || str === '-' || str.toLowerCase() === 'null' || str.toLowerCase() === 'undefined') {
+    return 'Walk-in Cash Customer';
+  }
+  return str;
+}
+
+/**
  * Determines whether a record's customer matches an active filter value.
  */
 export function matchesCustomerFilter(recordCustomer?: any, filterCustomer?: any, recordCustId?: any): boolean {
   if (!filterCustomer || filterCustomer === 'ALL' || filterCustomer === 'all') {
     return true;
   }
+
+  const cleanFilter = String(filterCustomer).trim().toLowerCase();
+  const isWalkInFilter =
+    cleanFilter.includes('walk-in') ||
+    cleanFilter.includes('walkin') ||
+    cleanFilter === 'cash customer' ||
+    cleanFilter === 'walk-in cash customer';
+
+  const cleanRow = String(recordCustomer || '').trim().toLowerCase();
+  const cleanId = String(recordCustId || '').trim().toLowerCase();
+
+  // If filtering for Walk-in Cash Customer, treat empty, null, undefined, dashes, or cash as a match
+  if (isWalkInFilter) {
+    if (!recordCustomer && !recordCustId) return true;
+    if (
+      cleanRow === '' ||
+      cleanRow === '—' ||
+      cleanRow === '-' ||
+      cleanRow.includes('walk-in') ||
+      cleanRow.includes('walkin') ||
+      cleanRow.includes('cash') ||
+      cleanRow === 'retail'
+    ) {
+      return true;
+    }
+  }
+
   if (!recordCustomer && !recordCustId) {
     return false;
   }
-
-  const cleanFilter = String(filterCustomer).trim().toLowerCase();
-  const cleanRow = String(recordCustomer || '').trim().toLowerCase();
-  const cleanId = String(recordCustId || '').trim().toLowerCase();
 
   if (cleanRow && (cleanFilter === cleanRow || cleanRow.includes(cleanFilter) || cleanFilter.includes(cleanRow))) {
     return true;

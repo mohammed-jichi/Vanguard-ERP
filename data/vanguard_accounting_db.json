@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-11-22T14:32:55.409Z",
+  "last_updated": "2026-11-22T14:54:56.943Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,24 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-908926f",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (908926f) - Fix(inventory-purchasing): enforce dynamic timestamps, audit fallbacks, and stock deduction",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "908926f203a2ad11d604d2d4b8961d1bcd8a6e7a",
+        "version": "v2.0.0",
+        "category": "fix",
+        "modules": [
+          "Sales & POS",
+          "Procurement & Purchasing",
+          "Accounting & Finance"
+        ]
+      },
+      "created_at": "2026-11-22T14:33:12.000Z"
+    },
     {
       "id": "act-rel-47373b6",
       "company_id": 1300,
@@ -7043,6 +7061,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-908926f",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Fix(inventory-purchasing): enforce dynamic timestamps, audit fallbacks, and stock deduction",
+      "message": "fix(inventory-purchasing): enforce dynamic timestamps, audit fallbacks, and stock deduction",
+      "timestamp": "2026-11-22T14:33:12.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "908926f203a2ad11d604d2d4b8961d1bcd8a6e7a",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-47373b6",
       "type": "SYSTEM_RELEASE",

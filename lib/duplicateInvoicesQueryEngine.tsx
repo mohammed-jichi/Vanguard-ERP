@@ -522,7 +522,7 @@ export function buildTableColumnsFromSchema(
           return (
             <span className="inline-flex items-center gap-1.5 font-semibold text-slate-900">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block shrink-0"></span>
-              {rawVal || 'Staff'}
+              {rawVal || 'Direct Counter'}
             </span>
           );
         }
@@ -532,7 +532,7 @@ export function buildTableColumnsFromSchema(
           const custId = row.custId || row.cust_id || row.customer_id;
           return (
             <div className="flex flex-col">
-              <span className="font-semibold text-slate-900">{rawVal || 'Walk-in Customer'}</span>
+              <span className="font-semibold text-slate-900">{rawVal || 'Walk-in Cash Customer'}</span>
               {custId && <span className="text-[10px] font-mono text-slate-500 font-normal">{custId}</span>}
             </div>
           );
@@ -540,7 +540,7 @@ export function buildTableColumnsFromSchema(
 
         // 5. Salesman Column
         if (col.key === 'salesman') {
-          return <span className="font-semibold text-slate-900">{rawVal || 'Staff'}</span>;
+          return <span className="font-semibold text-slate-900">{rawVal || 'Direct Counter'}</span>;
         }
 
         // 6. Void / Refund Reason Column
@@ -890,10 +890,10 @@ export function generateDataForDuplicateInvoiceReport(
       invoiceNo: inv.invoiceNo,
       date: inv.date,
       time: inv.time || '12:00',
-      customer: inv.customerName || inv.customer || 'Standard Client',
-      customer_name: inv.customerName || inv.customer || 'Standard Client',
-      customer_id: inv.custId || inv.customer_id || 'CUST-001',
-      cust_id: inv.custId || inv.customer_id || 'CUST-001',
+      customer: (!inv.customerName || inv.customerName === '-' || inv.customerName === '—') ? 'Walk-in Cash Customer' : (inv.customerName || inv.customer || 'Walk-in Cash Customer'),
+      customer_name: (!inv.customerName || inv.customerName === '-' || inv.customerName === '—') ? 'Walk-in Cash Customer' : (inv.customerName || inv.customer || 'Walk-in Cash Customer'),
+      customer_id: inv.custId || inv.customer_id || 'Walk-in Cash Customer',
+      cust_id: inv.custId || inv.customer_id || 'Walk-in Cash Customer',
       order_number: inv.orderNo || inv.order_number || '1',
       print_count: inv.printCount ?? inv.print_count ?? 1,
       cust_count: inv.custCount ?? inv.cust_count ?? 1,
@@ -902,8 +902,8 @@ export function generateDataForDuplicateInvoiceReport(
       invoice_type: inv.invoice_type || inv.invoiceType || 'POS',
       service: inv.service ?? 0,
       items: inv.items || 'Standard Olive Oil Batch',
-      employee_name: inv.employee || inv.employee_name || inv.salesman || 'Staff',
-      salesman: inv.salesman || inv.employee || 'Staff',
+      employee_name: (!inv.employee && !inv.employee_name && !inv.salesman) ? 'Direct Counter' : (inv.employee || inv.employee_name || inv.salesman || 'Direct Counter'),
+      salesman: (!inv.salesman && !inv.employee) ? 'Direct Counter' : (inv.salesman || inv.employee || 'Direct Counter'),
       amount: subtotalVal,
       subtotal: subtotalVal,
       discount: discountVal,

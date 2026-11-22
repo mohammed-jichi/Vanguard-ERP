@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import ReportPageLayout, {
   ReportHeader,
   ExportButtons,
@@ -58,9 +59,113 @@ import { getDefaultReportDateRange } from '@/lib/reports/reportDefaults';
 const INITIAL_SALES_INVOICES: MasterMockTransaction[] = DEFAULT_MOCK_TRANSACTIONS;
 
 export default function MasterReportViewPage() {
+  // Live Transactions State hydrated from live database
+  const [liveInvoices, setLiveInvoices] = useState<MasterMockTransaction[]>(DEFAULT_MOCK_TRANSACTIONS);
+
   // 1. Navigation & Selection State (Defaulting to Transactions by Date)
   const [selectedReport, setSelectedReport] = useState<string>('Transactions by Date');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('ALL');
+
+  // Hydrate live transactions from Supabase on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchLiveInvoices() {
+      try {
+        // Fetch live database invoices
+        const { data: dbData } = await supabase
+          .from('sales_invoices')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(300);
+
+        // Fetch tenant workstation directory
+        const { data: tenantData } = await supabase
+          .from('tenants')
+          .select('feature_flags')
+          .limit(1)
+          .maybeSingle();
+
+        const flags = tenantData?.feature_flags || {};
+        const localInvoices: any[] = flags.sales_invoices_directory || flags.sales_invoices || [];
+
+        const rawCombined: any[] = [...(dbData || []), ...localInvoices];
+        if (rawCombined.length === 0 || !isMounted) return;
+
+        const converted: MasterMockTransaction[] = rawCombined.map((inv: any, idx: number) => {
+          const invNo = inv.invoice_number || inv.invoiceNo || `INV-LIVE-${idx + 1}`;
+          const rawDate = inv.sale_date || inv.date || inv.created_at || new Date().toISOString();
+          const dateStr = parseDateToIso(rawDate.split('T')[0]);
+          const custName = inv.customer_name || inv.customerName || inv.customer || 'Walk-in Cash Customer';
+          const rawTotal = Number(inv.total_amount ?? inv.total ?? 0);
+          const rawSubtotal = Number(inv.subtotal_amount ?? inv.subtotal ?? (rawTotal / 1.11));
+          const rawTax = Number(inv.tax_amount ?? inv.tax ?? (rawTotal - rawSubtotal));
+          const rawDisc = Number(inv.discount_amount ?? inv.discount ?? 0);
+          const curr = (inv.currency || 'USD').toUpperCase();
+          const rate = Number(inv.exchange_rate || 89500);
+
+          return {
+            invoiceNo: invNo,
+            date: dateStr,
+            time: inv.sale_time || inv.time || '12:00',
+            customerName: (!custName || custName === '-' || custName === '—') ? 'Walk-in Cash Customer' : custName,
+            custId: inv.customer_id || inv.custId || 'Walk-in Cash Customer',
+            salesman: inv.salesman || 'Direct Counter',
+            employee: inv.salesman || 'Direct Counter',
+            employee_name: inv.salesman || 'Direct Counter',
+            server: inv.salesman || 'Direct Counter',
+            branch: inv.branch || 'Southern Olive and Oil Products - Main',
+            channel: (inv.channel || 'Local') as any,
+            department: inv.department || 'POS',
+            departmentChannel: inv.department || 'POS',
+            workstation: inv.workstation || 'WS-POS-01',
+            customerGroup: inv.customer_group || 'RETAIL',
+            table: inv.table_number || '-',
+            orderNo: inv.order_number || inv.orderNo || invNo,
+            printCount: inv.print_count ?? 1,
+            custCount: 1,
+            invoice_type: (inv.invoice_type || 'POS') as any,
+            invoiceType: (inv.invoice_type || 'POS') as any,
+            payment_method: inv.payment_method || inv.paymentType || 'CASH',
+            paymentType: inv.payment_method || inv.paymentType || 'CASH',
+            payType: inv.payment_method || inv.paymentType || 'CASH',
+            itemsCount: Array.isArray(inv.items) ? inv.items.length : 1,
+            items: Array.isArray(inv.items) ? inv.items.map((i: any) => i.name || i.product_name).join(', ') : (inv.items || 'Standard Olive Oil Batch'),
+            subtotal: Math.round(rawSubtotal * 100) / 100,
+            discount: Math.round(rawDisc * 100) / 100,
+            tax: Math.round(rawTax * 100) / 100,
+            total: Math.round(rawTotal * 100) / 100,
+            currency: curr,
+            rate: rate,
+            subtotalLbp: curr === 'LBP' ? rawSubtotal : rawSubtotal * rate,
+            discountLbp: curr === 'LBP' ? rawDisc : rawDisc * rate,
+            taxLbp: curr === 'LBP' ? rawTax : rawTax * rate,
+            totalLbp: curr === 'LBP' ? rawTotal : rawTotal * rate,
+            totalUsd: curr === 'USD' ? rawTotal : rawTotal / rate,
+            isRefund: inv.is_refund ?? false,
+            is_posted: inv.is_posted === true || inv.posted === true || inv.status === 'Posted',
+            status: inv.is_posted ? 'Posted' : (inv.status || 'Posted'),
+          } as MasterMockTransaction;
+        });
+
+        // Deduplicate against mock templates
+        const existingNos = new Set(converted.map((c) => c.invoiceNo));
+        const filteredMocks = DEFAULT_MOCK_TRANSACTIONS.filter((m) => !existingNos.has(m.invoiceNo));
+
+        if (isMounted) {
+          setLiveInvoices([...converted, ...filteredMocks]);
+        }
+      } catch (err) {
+        console.warn('[MasterReportViewPage] Live invoices load warning:', err);
+      }
+    }
+
+    fetchLiveInvoices();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Resolved metadata for active report sheet
   const activeMeta = useMemo(() => getSalesReportMeta(selectedReport), [selectedReport]);
@@ -102,7 +207,7 @@ export default function MasterReportViewPage() {
 
   // Filtered Sales Invoices for Fallback Master Table & Report Views
   const filteredInvoices = useMemo(() => {
-    return INITIAL_SALES_INVOICES.filter((inv) => {
+    return liveInvoices.filter((inv) => {
       // 1. Search Query
       const matchesSearch =
         searchQuery === '' ||
@@ -188,6 +293,18 @@ export default function MasterReportViewPage() {
         activeCurr === 'ALL' ||
         String(inv.currency || '').toUpperCase() === String(activeCurr).toUpperCase();
 
+      // 12. Posted-Only Integrity Check
+      const activeStatus = salesFilterValues.status || salesFilterValues.postStatus;
+      let matchesPosted = true;
+      if (activeStatus === 'UNPOSTED' || activeStatus === 'unposted') {
+        matchesPosted = (inv as any).is_posted === false || (inv as any).status === 'Draft' || (inv as any).status === 'Unposted';
+      } else if (activeStatus === 'ALL' || activeStatus === 'all') {
+        matchesPosted = true;
+      } else {
+        // Enforce posted-only integrity by default for reporting & analytics
+        matchesPosted = (inv as any).is_posted !== false && (inv as any).status !== 'Draft' && (inv as any).status !== 'Unposted';
+      }
+
       return (
         matchesSearch &&
         matchesBranch &&
@@ -202,10 +319,11 @@ export default function MasterReportViewPage() {
         matchesEmployee &&
         matchesCustomer &&
         matchesSalesman &&
-        matchesCurrency
+        matchesCurrency &&
+        matchesPosted
       );
     });
-  }, [searchQuery, branch, paymentFilter, salesFilterValues, fromDate, toDate]);
+  }, [liveInvoices, searchQuery, branch, paymentFilter, salesFilterValues, fromDate, toDate]);
 
   // Paginated Slice
   const paginatedInvoices = useMemo(() => {

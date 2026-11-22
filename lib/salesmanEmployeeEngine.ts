@@ -20,7 +20,15 @@ export interface SalesmanEmployee {
 }
 
 export const CANONICAL_SALESMEN_EMPLOYEES: SalesmanEmployee[] = [
-  { id: 'Direct Counter', name: 'Direct Counter', code: 'REP_DIRECT', role: 'Sales / Cashier' }
+  { id: 'Direct Counter', name: 'Direct Counter', code: 'REP_DIRECT', role: 'Counter Cashier / Walk-in' },
+  { id: 'Ahmad Al-Hajj', name: 'Ahmad Al-Hajj', code: 'REP_AHMAD', role: 'Field Representative / Key Accounts', department: 'Sales' },
+  { id: 'Ahmad Ali Kassem', name: 'Ahmad Ali Kassem', code: 'REP_KASSEM', role: 'Sales / Driver Rep', department: 'Sales' },
+  { id: 'Maya Khoury', name: 'Maya Khoury', code: 'REP_MAYA', role: 'Retail Showroom Consultant', department: 'Sales' },
+  { id: 'Jad Tannous', name: 'Jad Tannous', code: 'REP_JAD', role: 'Wholesale Dispatch Representative', department: 'Sales' },
+  { id: 'Rania Eid', name: 'Rania Eid', code: 'REP_RANIA', role: 'HoReCa Account Manager', department: 'Sales' },
+  { id: 'Ziad Chehab', name: 'Ziad Chehab', code: 'REP_ZIAD', role: 'Key Accounts & Export Manager', department: 'Sales' },
+  { id: 'Hiba Aloulou', name: 'Hiba Aloulou', code: 'REP_HIBA', role: 'Sales & Social Media Specialist', department: 'Sales' },
+  { id: 'Hussein Mahdi', name: 'Hussein Mahdi', code: 'REP_HUSSEIN', role: 'Fleet & Counter Cashier', department: 'Sales' },
 ];
 
 /**

@@ -215,7 +215,31 @@ export const CHANNEL_MAPPINGS: Record<string, string> = {
   'training': 'Training',
 };
 
-export const SALESMAN_MAPPINGS: Record<string, string> = {};
+export const SALESMAN_MAPPINGS: Record<string, string> = {
+  'direct_counter': 'Direct Counter',
+  'direct counter': 'Direct Counter',
+  'counter': 'Direct Counter',
+  'pos_counter': 'Direct Counter',
+  'direct': 'Direct Counter',
+  'vanguard_operator': 'Direct Counter',
+  'vanguard operator': 'Direct Counter',
+  'operator': 'Direct Counter',
+  'rep_ahmad': 'Ahmad Al-Hajj',
+  'ahmad': 'Ahmad Al-Hajj',
+  'ahmad_al_hajj': 'Ahmad Al-Hajj',
+  'rep_maya': 'Maya Khoury',
+  'maya': 'Maya Khoury',
+  'maya_khoury': 'Maya Khoury',
+  'rep_jad': 'Jad Tannous',
+  'jad': 'Jad Tannous',
+  'jad_tannous': 'Jad Tannous',
+  'rep_rania': 'Rania Eid',
+  'rania': 'Rania Eid',
+  'rania_eid': 'Rania Eid',
+  'rep_ziad': 'Ziad Chehab',
+  'ziad': 'Ziad Chehab',
+  'ziad_chehab': 'Ziad Chehab',
+};
 
 export function normalizeFilterToken(value?: any): string {
   if (value === null || value === undefined) return '';
@@ -231,13 +255,38 @@ export function matchesSalesmanFilter(recordSalesman?: any, filterSalesman?: any
   if (!filterSalesman || filterSalesman === 'ALL' || filterSalesman === 'all') {
     return true;
   }
+
+  const cleanFilter = String(filterSalesman).trim().toLowerCase();
+  const filterSlug = normalizeFilterToken(filterSalesman);
+  const isDirectCounterFilter =
+    cleanFilter === 'direct counter' ||
+    cleanFilter === 'direct_counter' ||
+    cleanFilter === 'counter' ||
+    cleanFilter === 'direct' ||
+    cleanFilter === 'vanguard operator' ||
+    filterSlug === 'direct_counter';
+
+  // If filtering by Direct Counter, treat blank, null, undefined, dashes, or counter variations as a match
+  if (isDirectCounterFilter) {
+    if (!recordSalesman && recordSalesman !== 0) return true;
+    const cleanRow = String(recordSalesman).trim().toLowerCase();
+    if (
+      cleanRow === '' ||
+      cleanRow === '—' ||
+      cleanRow === '-' ||
+      cleanRow.includes('counter') ||
+      cleanRow.includes('direct') ||
+      cleanRow.includes('operator')
+    ) {
+      return true;
+    }
+  }
+
   if (!recordSalesman && recordSalesman !== 0) {
     return false;
   }
 
-  const cleanFilter = String(filterSalesman).trim().toLowerCase();
   const cleanRow = String(recordSalesman).trim().toLowerCase();
-  const filterSlug = normalizeFilterToken(filterSalesman);
   const rowSlug = normalizeFilterToken(recordSalesman);
 
   // 1. Direct or slug match
@@ -269,8 +318,22 @@ export function matchesSalesmanFilter(recordSalesman?: any, filterSalesman?: any
     return true;
   }
 
-  // 3. Name token matching (e.g. 'ahmad', 'maya', 'tannous', 'rania', 'chehab')
-  const distinctiveTokens = ['ahmad', 'hajj', 'maya', 'khoury', 'jad', 'tannous', 'rania', 'eid', 'ziad', 'chehab'];
+  // 3. Name token matching (e.g. 'direct', 'counter', 'ahmad', 'maya', 'tannous', 'rania', 'chehab')
+  const distinctiveTokens = [
+    'direct',
+    'counter',
+    'operator',
+    'ahmad',
+    'hajj',
+    'maya',
+    'khoury',
+    'jad',
+    'tannous',
+    'rania',
+    'eid',
+    'ziad',
+    'chehab',
+  ];
   for (const token of distinctiveTokens) {
     const filterHasToken = filterSlug.includes(token) || cleanFilter.includes(token);
     const rowHasToken = rowSlug.includes(token) || cleanRow.includes(token);
