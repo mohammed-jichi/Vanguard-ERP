@@ -1805,7 +1805,9 @@ export default function AuthenticVanguardSalesWorkstation({
       deliveredBy: deliveredBy,
       currency: currency,
       transactionType: transactionType,
-      salesman: invoiceSalesman || 'Direct Counter',
+      salesman: (!invoiceSalesman || invoiceSalesman === 'Vanguard Operator' || !selectedCustomer || selectedCustomer.name?.toLowerCase().includes('walk-in') || selectedCustomer.name?.toLowerCase().includes('cash'))
+        ? 'Direct Counter'
+        : invoiceSalesman,
       refNumber: invoiceReferenceNumber || '—',
       reference: invoiceReferenceNumber || '—',
       items: cartItems,
@@ -2160,7 +2162,9 @@ export default function AuthenticVanguardSalesWorkstation({
       customerId: selectedCustomer.id || 'CUST-001',
       company: ((selectedCustomer as any).company && (selectedCustomer as any).company !== '-') ? (selectedCustomer as any).company : (selectedCustomer.name || 'Walk-in Cash Customer'),
       customerAddress: selectedCustomer.address || 'Local Branch',
-      salesman: invoiceSalesman || 'Direct Counter',
+      salesman: (!invoiceSalesman || invoiceSalesman === 'Vanguard Operator' || !selectedCustomer || selectedCustomer.name?.toLowerCase().includes('walk-in') || selectedCustomer.name?.toLowerCase().includes('cash'))
+        ? 'Direct Counter'
+        : invoiceSalesman,
       createdBy: profile?.name || 'Vanguard Operator',
       deliveredBy: deliveredBy,
       currency: currency,
@@ -2862,7 +2866,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
   // Check for unposted invoices in the current filtered list
   const hasUnpostedInvoices = useMemo(() => {
-    return filteredPreviewInvoices.some((inv) => !inv.posted);
+    return filteredPreviewInvoices.some((inv) => (inv as any).is_posted !== true);
   }, [filteredPreviewInvoices]);
 
 
@@ -3055,7 +3059,7 @@ export default function AuthenticVanguardSalesWorkstation({
 
   const batchPostInvoices = async () => {
     const unposted = invoicesDirectory.filter(
-      (inv) => inv.status !== 'Posted' && (inv as any).is_posted !== true && (inv as any).posted !== true
+      (inv) => (inv as any).is_posted !== true
     );
     if (unposted.length === 0) {
       setStatusNotice('No unposted invoices to post.');
@@ -3063,10 +3067,7 @@ export default function AuthenticVanguardSalesWorkstation({
       return;
     }
 
-    // a) Await database update
-    await executeDatabasePost(unposted);
-
-    // b) Update local state
+    // a) Update local state immediately
     setInvoicesDirectory((prev) =>
       prev.map((inv) => ({
         ...inv,
@@ -3075,6 +3076,9 @@ export default function AuthenticVanguardSalesWorkstation({
         posted: true
       }))
     );
+
+    // b) Await database update
+    await executeDatabasePost(unposted);
 
     // c) Provide feedback
     setStatusNotice(`All ${unposted.length} unposted invoices successfully posted to General Ledger!`);
@@ -5872,7 +5876,9 @@ export default function AuthenticVanguardSalesWorkstation({
                         {inv.company && inv.company !== '-' ? inv.company : 'Walk-in Cash Customer'}
                       </td>
                       <td className="py-2.5 px-2 whitespace-nowrap text-slate-700">
-                        {inv.salesman || 'Direct Counter'}
+                        {(!inv.salesman || inv.salesman === 'Vanguard Operator' || !inv.company || inv.company === '-' || inv.company === 'Walk-in Cash Customer' || inv.customerName?.toLowerCase().includes('walk-in') || inv.customerName?.toLowerCase().includes('cash'))
+                          ? 'Direct Counter'
+                          : inv.salesman}
                       </td>
                       <td className="py-2.5 px-2 whitespace-nowrap text-slate-700">
                         {inv.createdBy || 'Vanguard Operator'}
@@ -5896,7 +5902,7 @@ export default function AuthenticVanguardSalesWorkstation({
                         {inv.currency}
                       </td>
                       <td className="py-2.5 px-2 text-center">
-                        {((inv as any).is_posted === true || inv.status === 'Posted' || (inv as any).posted === true) ? (
+                        {((inv as any).is_posted === true) ? (
                           <button
                             type="button"
                             onClick={() => handlePromptUnpost(inv)}
@@ -5921,7 +5927,7 @@ export default function AuthenticVanguardSalesWorkstation({
                       </td>
                       <td className="py-2.5 px-3 text-center whitespace-nowrap">
                         <div className="flex items-center justify-center gap-1.5">
-                          {((inv as any).is_posted === true || inv.status === 'Posted' || (inv as any).posted === true) ? (
+                          {((inv as any).is_posted === true) ? (
                             <button
                               type="button"
                               onClick={() => handlePromptUnpost(inv)}

@@ -1,5 +1,27 @@
 [
   {
+    "id": "65b18c94-1be7-439e-ae3b-87f5385d7133",
+    "commit_hash": "65b18c941be7d39e0e3b87f5385d7133935c5217",
+    "short_hash": "65b18c9",
+    "version": "v2.0.0",
+    "title": "Reorganize enterprise overview hub and organization settings",
+    "category": "maintenance",
+    "description": "chore(ui): reorganize enterprise overview hub and organization settings",
+    "bullet_points": [
+      "Applied improvements to Settings & Governance, Accounting & Finance",
+      "Maintained backward compatibility with existing enterprise workflows"
+    ],
+    "affected_modules": [
+      "Settings & Governance",
+      "Accounting & Finance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-11-22T11:30:02.000Z",
+    "created_at": "2026-11-22T12:38:06.691Z"
+  },
+  {
     "id": "240b8859-ce64-4a53-a900-f98f785ec57b",
     "commit_hash": "240b8859ce64ca530900f98f785ec57bb8fc27f4",
     "short_hash": "240b885",
