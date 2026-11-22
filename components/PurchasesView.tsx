@@ -588,7 +588,7 @@ export default function PurchasesView() {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('vanguard_accounting_sync', { detail: { type: 'VOUCHER_SAVED', data: fullJvRecord } }));
       }
-    } catch {}
+    } catch { }
   };
 
   // Post All Purchase Invoices
@@ -965,7 +965,7 @@ export default function PurchasesView() {
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('vanguard_accounting_sync', { detail: { type: 'VOUCHER_SAVED', data: { id: `jv-pur-${invNum}`, is_posted: false } } }));
         }
-      } catch (e) {}
+      } catch (e) { }
 
       const updated = purchases.map((p) =>
         p.id === targetId || p.invoiceNumber === invNum ? { ...p, posted: false, transferred: false } : p
@@ -1304,9 +1304,8 @@ export default function PurchasesView() {
                   {filteredPurchases.map((pur) => (
                     <tr
                       key={pur.id}
-                      className={`hover:bg-slate-50 transition-colors ${
-                        !pur.posted ? 'bg-amber-50/40' : ''
-                      }`}
+                      className={`hover:bg-slate-50 transition-colors ${!pur.posted ? 'bg-amber-50/40' : ''
+                        }`}
                     >
                       <td className="py-3 px-3 text-slate-900 font-medium">{pur.branch}</td>
                       <td className="py-3 px-3 text-slate-700 whitespace-nowrap">{pur.date}</td>

@@ -475,7 +475,7 @@ export function StatementModal({ isOpen, onClose, account }: StatementModalProps
 
             <button
               type="button"
-              onClick={() => {}}
+              onClick={() => window.print()}
               className="bg-card hover:bg-muted text-foreground border border-border px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
             >
               {t('preview', 'Preview')}

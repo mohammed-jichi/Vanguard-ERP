@@ -188,7 +188,7 @@ export default function WeighbridgeIntakeView() {
   const isSeasonActive = selectedSeason.status === 'Active';
 
   // Form fields
-  const [intakeDate, setIntakeDate] = useState('2026-09-22');
+  const [intakeDate, setIntakeDate] = useState(new Date().toISOString().split('T')[0]);
   const [intakeTime, setIntakeTime] = useState('12:30 PM');
   const [farmerName, setFarmerName] = useState('');
   const [farmerPhone, setFarmerPhone] = useState('');

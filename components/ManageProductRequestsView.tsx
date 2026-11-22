@@ -53,8 +53,8 @@ export default function ManageProductRequestsView() {
   const [filterBranchId, setFilterBranchId] = useState<number>(0);
   const [filterFromBranchId, setFilterFromBranchId] = useState<number>(0);
   const [filterStatus, setFilterStatus] = useState<string>('All');
-  const [filterFromDate, setFilterFromDate] = useState<string>('2026-09-01');
-  const [filterToDate, setFilterToDate] = useState<string>('2026-09-30');
+  const [filterFromDate, setFilterFromDate] = useState<string>(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-CA'));
+  const [filterToDate, setFilterToDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [filterSearch, setFilterSearch] = useState<string>('');
 
   // UI state

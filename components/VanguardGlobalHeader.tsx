@@ -1168,7 +1168,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                     <div className="space-y-1.5 pt-1 text-[11px]">
                       <button
                         type="button"
-                        onClick={() => {}}
+                        onClick={() => { window.location.href = '/backoffice/workstations-printers'; }}
                         className="w-full flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600 cursor-pointer"
                       >
                         <span>{t('vanguard_pos_desktop_terminal_v42', 'Vanguard POS Desktop Terminal v4.2')}</span>
@@ -1176,7 +1176,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                       </button>
                       <button
                         type="button"
-                        onClick={() => {}}
+                        onClick={() => { window.location.href = '/backoffice/workstations-printers'; }}
                         className="w-full flex items-center justify-between p-2 bg-white border border-gray-200 rounded-xl hover:text-amber-600 cursor-pointer"
                       >
                         <span>{t('vanguard_thermal_invoice_print_agent', 'Vanguard Thermal Invoice Print Agent')}</span>
@@ -1223,7 +1223,7 @@ export default function VanguardGlobalHeader({ activeScreen, onSelectScreen }: V
                 </label>
                 <button
                   type="button"
-                  onClick={() => {}}
+                  onClick={() => { window.dispatchEvent(new CustomEvent('vanguard_inbox_refresh')); }}
                   title={t('refresh_inbox', 'Refresh Inbox')}
                   className="p-1.5 text-slate-600 hover:text-amber-600 hover:bg-slate-200/60 rounded-lg transition-colors border border-slate-200 bg-white shadow-2xs cursor-pointer"
                 >

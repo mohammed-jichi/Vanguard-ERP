@@ -35,7 +35,7 @@ function ReceiptPageContent() {
   const [creditLimit, setCreditLimit] = useState<number>(0);
   const [paymentType, setPaymentType] = useState<string>('');
   const [currency, setCurrency] = useState<string>('LBP');
-  const [receiptDate, setReceiptDate] = useState<string>('2026-09-11');
+  const [receiptDate, setReceiptDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [receiptNumber, setReceiptNumber] = useState<string>('1');
   const [amount, setAmount] = useState<string>('0');
   const [referenceNumber, setReferenceNumber] = useState<string>('');

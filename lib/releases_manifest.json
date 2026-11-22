@@ -1,5 +1,30 @@
 [
   {
+    "id": "f87ac169-d30a-4381-a430-7a48a5d24bdf",
+    "commit_hash": "f87ac169d30af38144307a48a5d24bdf1d92b721",
+    "short_hash": "f87ac16",
+    "version": "v2.0.0",
+    "title": "Enforce live USD/LBP exchange rate, balanced GL entries, and posted-only ledger totals",
+    "category": "fix",
+    "description": "fix(accounting): enforce live USD/LBP exchange rate, balanced GL entries, and posted-only ledger totals",
+    "bullet_points": [
+      "Resolved: enforce live usd/lbp exchange rate, balanced gl entries, and posted-only ledger totals",
+      "Hardened validation and edge-case handling across affected components",
+      "Verified zero-regression behavior under production build"
+    ],
+    "affected_modules": [
+      "Accounting & Finance",
+      "Sales & POS",
+      "Procurement & Purchasing",
+      "Settings & Governance"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-11-22T15:23:30.000Z",
+    "created_at": "2026-11-22T15:32:49.041Z"
+  },
+  {
     "id": "2dec1114-4f91-4b8b-ac5b-20326fe7fbd0",
     "commit_hash": "2dec11144f919b8bec5b20326fe7fbd0e5dee4c2",
     "short_hash": "2dec111",

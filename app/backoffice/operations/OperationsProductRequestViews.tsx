@@ -111,8 +111,8 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
 
   // Dynamic Reports Filter State
   const [reportGroupBy, setReportGroupBy] = useState<'branch' | 'date' | 'category' | 'item'>('branch');
-  const [reportStartDate, setReportStartDate] = useState<string>('2026-09-01');
-  const [reportEndDate, setReportEndDate] = useState<string>('2026-09-30');
+  const [reportStartDate, setReportStartDate] = useState<string>(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-CA'));
+  const [reportEndDate, setReportEndDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [dateByDelivery, setDateByDelivery] = useState<boolean>(false);
   const [reportBranch, setReportBranch] = useState<string>('All Branches');
   const [reportFromBranch, setReportFromBranch] = useState<string>('All Branches');

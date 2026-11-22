@@ -278,7 +278,7 @@ export function Module1JournalVouchers({
   // =========================================================================
   const [isSavingVoucher, setIsSavingVoucher] = useState(false);
   const [voucherNumber, setVoucherNumber] = useState('JV-2026-1001');
-  const [voucherDate, setVoucherDate] = useState('2026-09-19');
+  const [voucherDate, setVoucherDate] = useState(new Date().toISOString().split('T')[0]);
   const [voucherType, setVoucherType] = useState<string>('JV');
   const [voucherLabel, setVoucherLabel] = useState('Physical cash received for shipment & settlement');
   const [internalNote, setInternalNote] = useState('');
@@ -329,7 +329,7 @@ export function Module1JournalVouchers({
   const [quickDescription, setQuickDescription] = useState('');
   const [quickDepartment, setQuickDepartment] = useState('Main Department');
   const [quickInvoiceNo, setQuickInvoiceNo] = useState('');
-  const [quickDate, setQuickDate] = useState('2026-09-19');
+  const [quickDate, setQuickDate] = useState(new Date().toISOString().split('T')[0]);
 
   // =========================================================================
   // SEED DATA FOR AUDIT TRAILS & RECURRING TEMPLATES

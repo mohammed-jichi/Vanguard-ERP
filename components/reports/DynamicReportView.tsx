@@ -30,7 +30,7 @@ export function DynamicReportView({
   reportId,
   reportTitle,
   filterValues = {},
-  fromDate = '01-Sep-2026',
+  fromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-'),
   toDate = '30-Sep-2026',
   branch = 'Southern Olive and Oil Products - Main',
   currency = 'USD',

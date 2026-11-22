@@ -59,7 +59,7 @@ export default function AdjustmentsView() {
   const [selectedLocationId, setSelectedLocationId] = useState<number>(1); // 1 = Main Store
 
   // Header parameters
-  const [adjustmentDate, setAdjustmentDate] = useState<string>('2026-09-11');
+  const [adjustmentDate, setAdjustmentDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [isEditingDate, setIsEditingDate] = useState<boolean>(false);
   const [includeFilter, setIncludeFilter] = useState<number>(0); // 0 = All, 1 = Daily adjustment, 2 = Weekly adjustment
   const [sortBy, setSortBy] = useState<string>('PRODUCTCODE');

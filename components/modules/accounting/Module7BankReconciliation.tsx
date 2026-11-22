@@ -52,8 +52,8 @@ export function Module7BankReconciliation({
     bankAccounts[0]?.id || accounts[0]?.id || ''
   );
   const [currency, setCurrency] = useState<'USD' | 'LBP'>('USD');
-  const [beginningDate, setBeginningDate] = useState('2026-09-01');
-  const [endingDate, setEndingDate] = useState('2026-09-30');
+  const [beginningDate, setBeginningDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-CA'));
+  const [endingDate, setEndingDate] = useState(new Date().toISOString().split('T')[0]);
   const [reconDescription, setReconDescription] = useState('September 2026 Monthly Bank Audit & Settlement');
   const [beginningValue, setBeginningValue] = useState<number>(184200.00);
   const [endingValue, setEndingValue] = useState<number>(172135.00);

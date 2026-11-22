@@ -63,7 +63,7 @@ export function Module8VatClosing({
   const [year] = useState('2026');
   const [vatPeriod] = useState('Quarterly');
   const [quarter, setQuarter] = useState<'Q1' | 'Q2' | 'Q3' | 'Q4'>('Q3');
-  const [vatClosingDate, setVatClosingDate] = useState('2026-09-19');
+  const [vatClosingDate, setVatClosingDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Automated date bindings per quarter
   useEffect(() => {

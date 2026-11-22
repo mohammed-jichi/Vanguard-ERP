@@ -260,7 +260,7 @@ export default function VTrackDashboardPage() {
                 </select>
 
                 <button
-                  onClick={() => {}}
+                  onClick={() => window.location.reload()}
                   className="p-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded text-slate-600 shadow-2xs transition-colors"
                   title="Refresh VTrack Data"
                 >

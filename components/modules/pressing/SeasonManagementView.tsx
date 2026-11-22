@@ -91,7 +91,7 @@ export default function SeasonManagementView() {
 
   // Form states for creating / editing season
   const [seasonName, setSeasonName] = useState('Season 2026/2027 (Active Campaign)');
-  const [startDateTime, setStartDateTime] = useState('2026-09-15T06:00');
+  const [startDateTime, setStartDateTime] = useState(`${new Date().toISOString().split('T')[0]}T06:00`);
   const [endDateTime, setEndDateTime] = useState('2027-01-31T20:00');
   const [status, setStatus] = useState<SeasonStatus>('Active');
   const [notes, setNotes] = useState('Primary winter pressing campaign across Mount Lebanon, Hasbaya, and Chouf.');

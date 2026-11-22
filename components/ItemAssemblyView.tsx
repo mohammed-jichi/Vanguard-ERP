@@ -669,7 +669,7 @@ export default function ItemAssemblyView() {
   // Single Assembly State
   const [selectedBranchId, setSelectedBranchId] = useState<number | null>(null);
   const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
-  const [assemblyDate, setAssemblyDate] = useState<string>('2026-09-11');
+  const [assemblyDate, setAssemblyDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [assembledBy] = useState<string>('Mohammed Jichi');
   
   // Selected finished item
@@ -688,7 +688,7 @@ export default function ItemAssemblyView() {
   const [multiBranchId, setMultiBranchId] = useState<number | null>(null);
   const [multiLocationId, setMultiLocationId] = useState<number | null>(null);
   const [multiAssemblyName, setMultiAssemblyName] = useState<string>('MULTIPLE ITEM ASSEMBLY 2');
-  const [multiAssemblyDate, setMultiAssemblyDate] = useState<string>('2026-09-11');
+  const [multiAssemblyDate, setMultiAssemblyDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [multiRemark, setMultiRemark] = useState<string>('');
   const [multiSearchText, setMultiSearchText] = useState<string>('');
   const [multiItems, setMultiItems] = useState<MultipleAssemblyItem[]>([]);

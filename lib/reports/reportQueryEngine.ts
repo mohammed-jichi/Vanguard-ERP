@@ -755,8 +755,8 @@ const AUTHORITATIVE_SOCIAL_CAMPAIGNS = [
 export async function executeReportQuery(payload: UniversalFilterPayload): Promise<ReportDataResult> {
   const {
     reportId = 'REP_S_00210',
-    dateFrom = '2026-09-01',
-    dateTo = '2026-09-30',
+    dateFrom = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-CA'),
+    dateTo = new Date().toISOString().split('T')[0],
     facilityId = 'all',
     departmentId = 'all',
     terminalId = 'all',

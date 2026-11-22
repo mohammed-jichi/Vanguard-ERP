@@ -285,7 +285,7 @@ export default function TransfersView() {
   };
 
   // Form State
-  const [transferDate, setTransferDate] = useState('2026-09-10');
+  const [transferDate, setTransferDate] = useState(new Date().toISOString().split('T')[0]);
   const [transferNumber, setTransferNumber] = useState<string>(() => peekNextDocNumber('STOCK_TRANSFER', INITIAL_SAVED_TRANSFERS));
   const [fromReqNo, setFromReqNo] = useState('');
   const { facilities, activeFacility } = useTenantFacilities();
@@ -323,8 +323,8 @@ export default function TransfersView() {
   const [previewItemTypeFilter, setPreviewItemTypeFilter] = useState('ALL');
   const [multiplePosting, setMultiplePosting] = useState(false);
   const [allDates, setAllDates] = useState(true);
-  const [fromDate, setFromDate] = useState('2026-09-01');
-  const [toDate, setToDate] = useState('2026-09-10');
+  const [fromDate, setFromDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-CA'));
+  const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]);
   const [fromBranchFilter, setFromBranchFilter] = useState('ALL');
   const [toBranchFilter, setToBranchFilter] = useState('ALL');
 

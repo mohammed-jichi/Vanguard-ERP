@@ -1,10 +1,10 @@
-import ProductInsightsPage from '@/app/product-insights/page';
+import ProductsHub from './ProductsHub';
 
 export const metadata = {
-  title: 'Product Insights - Back Office - Vanguard ERP System',
-  description: 'Product performance analysis, menu mix breakdown, and cost structure',
+  title: 'Products - Back Office - Vanguard ERP System',
+  description: 'Product catalog / item master and product performance insights',
 };
 
 export default function BackofficeProductsPage() {
-  return <ProductInsightsPage />;
+  return <ProductsHub />;
 }

@@ -387,7 +387,7 @@ export default function LostGoodsView() {
   const [selectedReasonId, setSelectedReasonId] = useState<number | ''>('');
   
   // Date in YYYY-MM-DD for native input, displayed nicely
-  const [dateValue, setDateValue] = useState<string>('2026-09-11');
+  const [dateValue, setDateValue] = useState<string>(new Date().toISOString().split('T')[0]);
   const employeeName = 'Mohammed Jichi';
 
   // Table items

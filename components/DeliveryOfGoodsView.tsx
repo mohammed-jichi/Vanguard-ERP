@@ -36,7 +36,7 @@ export default function DeliveryOfGoodsView() {
   const [statusFilter, setStatusFilter] = useState('All Invoices');
   const [dateTypeFilter, setDateTypeFilter] = useState('Delivery Date');
   const [searchQuery, setSearchQuery] = useState('');
-  const [fromDate, setFromDate] = useState('01-Sep-2026');
+  const [fromDate, setFromDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-'));
   const [toDate, setToDate] = useState('30-Sep-2026');
 
   // Popover search states
@@ -118,7 +118,7 @@ export default function DeliveryOfGoodsView() {
   const [deliveredMarkingModalOpen, setDeliveredMarkingModalOpen] = useState(false);
   const [deliveredTargetRecord, setDeliveredTargetRecord] = useState<DeliveryRecord | null>(null);
   const [deliveredByEmployee, setDeliveredByEmployee] = useState('Ahmad Dirani');
-  const [deliveredActualDate, setDeliveredActualDate] = useState('2026-09-10');
+  const [deliveredActualDate, setDeliveredActualDate] = useState(new Date().toISOString().split('T')[0]);
   const [deliveryNotes, setDeliveryNotes] = useState('');
 
   // Serial Numbers Modal state

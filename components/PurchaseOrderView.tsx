@@ -363,7 +363,7 @@ export default function PurchaseOrderView() {
   const [filterStatus, setFilterStatus] = useState('Pending');
   const [filterSupplier, setFilterSupplier] = useState('All Suppliers');
   const [filterDateType, setFilterDateType] = useState('Delivery Date');
-  const [fromDate, setFromDate] = useState('01-Sep-2026');
+  const [fromDate, setFromDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-'));
   const [toDate, setToDate] = useState('10-Sep-2026');
   const [hasAppliedFilter, setHasAppliedFilter] = useState(false);
 

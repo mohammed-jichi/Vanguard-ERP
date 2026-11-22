@@ -46,8 +46,8 @@ const PRESSING_REPORTS = [
 export default function PressingMillReportsPage() {
   const { t } = useLanguage();
   const [selectedReportId, setSelectedReportId] = useState<string>('REP_MILL_001');
-  const [fromDate, setFromDate] = useState<string>('2026-09-01');
-  const [toDate, setToDate] = useState<string>('2026-09-30');
+  const [fromDate, setFromDate] = useState<string>(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString('en-CA'));
+  const [toDate, setToDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [branch, setBranch] = useState<string>('Southern Olive and Oil Products - Main');
 
   const activeReport = PRESSING_REPORTS.find((r) => r.id === selectedReportId) || PRESSING_REPORTS[0];
