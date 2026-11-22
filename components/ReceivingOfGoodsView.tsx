@@ -26,14 +26,22 @@ import {
   ProductRequestLineItem,
   OMEGA_PR_BRANCHES
 } from '@/lib/productRequestData';
+import { useTenant } from '@/lib/TenantContext';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 export default function ReceivingOfGoodsView() {
   const { t, dir } = useLanguage();
+  const { currentTenant } = useTenant();
+  const profile = useActiveUser();
   // Top filter state
   const [filterBranchId, setFilterBranchId] = useState<number>(0);
   const [filterFromBranchId, setFilterFromBranchId] = useState<number>(0);
-  const [fromDate, setFromDate] = useState<string>('2026-09-01');
-  const [toDate, setToDate] = useState<string>('2026-09-30');
+  const [fromDate, setFromDate] = useState<string>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d.toISOString().split('T')[0];
+  });
+  const [toDate, setToDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [searchPrNb, setSearchPrNb] = useState<string>('');
 
   // Data state
@@ -119,6 +127,8 @@ export default function ReceivingOfGoodsView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           requestid: activePr.ID,
+          tenantId: currentTenant?.id,
+          receivedBy: profile?.name || 'Vanguard Operator',
           items: activePr.items.map(i => ({
             ITEMID: i.ITEMID,
             QTYREC: i.QTYREC,
@@ -146,6 +156,8 @@ export default function ReceivingOfGoodsView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           requestid: activePr.ID,
+          tenantId: currentTenant?.id,
+          receivedBy: profile?.name || 'Vanguard Operator',
           items: activePr.items.map(i => ({
             ITEMID: i.ITEMID,
             QTYREC: i.QTYREC,
@@ -357,16 +369,16 @@ export default function ReceivingOfGoodsView() {
                   </tr>
                 ) : (
                   approvedPrList.map(pr => {
-                    const isConfirmed = pr.STATUS === 'Confirmed';
+                    const isConfirmed = pr.STATUS === 'Confirmed' || (pr as any).is_confirmed === true || (pr as any).is_posted === true;
 
                     return (
                       <tr key={pr.ID} className="hover:bg-slate-50/70 transition-colors">
                         <td className="py-3 px-3 font-mono font-bold text-teal-700">{pr.REQUESTNB}</td>
                         <td className="py-3 px-3 font-semibold text-slate-800">{pr.TOBRANCH}</td>
                         <td className="py-3 px-3 text-slate-600">{pr.FROMBRANCHNAME}</td>
-                        <td className="py-3 px-3 text-slate-600">{pr.CURRENTDATE}</td>
-                        <td className="py-3 px-3 font-mono text-[11px] text-slate-500">{pr.DELIVERYDATE}</td>
-                        <td className="py-3 px-3 text-slate-600">{pr.REQUESTEDBY}</td>
+                        <td className="py-3 px-3 text-slate-600">{pr.CURRENTDATE || new Date().toISOString().split('T')[0]}</td>
+                        <td className="py-3 px-3 font-mono text-[11px] text-slate-500">{pr.DELIVERYDATE || new Date().toISOString().split('T')[0]}</td>
+                        <td className="py-3 px-3 text-slate-600">{pr.REQUESTEDBY || 'Vanguard Operator'}</td>
                         <td className="py-3 px-3 text-slate-600">{pr.LOCATIONDESCRIPTION}</td>
                         <td className="py-3 px-3 text-slate-500 truncate max-w-[120px]">
                           {pr.REMARK || '-'}

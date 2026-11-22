@@ -2216,6 +2216,8 @@ export default function AuthenticVanguardSalesWorkstation({
         transaction_type: 'SALES_DEDUCTION',
         quantity: -item.qty,
         reference_number: invoiceNumber,
+        reference_id: newRecord.id || invoiceNumber,
+        reference_type: 'SALES_INVOICE',
         branch_id: selectedBranch || 'BRANCH-01',
         created_at: new Date().toISOString()
       }));
@@ -2977,6 +2979,8 @@ export default function AuthenticVanguardSalesWorkstation({
             transaction_type: 'SALES_DEDUCTION',
             quantity: -item.qty,
             reference_number: inv.invoiceNumber,
+            reference_id: inv.id || inv.invoiceNumber,
+            reference_type: 'SALES_INVOICE',
             branch_id: inv.branch || selectedBranch || 'BRANCH-01',
             created_at: new Date().toISOString()
           }));

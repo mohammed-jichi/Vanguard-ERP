@@ -29,6 +29,7 @@ import {
 import Link from 'next/link';
 import DatePickerInput from './DatePickerInput';
 import { useTenant } from '@/lib/TenantContext';
+import { useActiveUser } from '@/lib/useActiveUser';
 import { supabase } from '@/lib/supabase';
 import { toggleDocumentPosting } from '@/lib/dataGateway';
 
@@ -68,7 +69,10 @@ export interface PurchaseInvoice {
   enteredBy: string;
   updatedBy: string;
   updatedAt: string;
+  created_by?: string;
+  created_at?: string;
   posted: boolean;
+  is_posted?: boolean;
   transferred: boolean;
   transactionType: 'Invoice' | 'Purchase with back order' | 'Inter Brands invoice';
   items: PurchaseItemLine[];
@@ -114,6 +118,7 @@ const PREDEFINED_CATALOG_ITEMS = [
 export default function PurchasesView() {
   const { t, dir } = useLanguage();
   const { currentTenant } = useTenant();
+  const profile = useActiveUser();
   // Current screen mode: 'list' (Screenshot 1) or 'form' (Screenshot 2)
   const [viewMode, setViewMode] = useState<'list' | 'form'>('list');
 
@@ -124,8 +129,12 @@ export default function PurchasesView() {
   const [filterSupplier, setFilterSupplier] = useState('All Suppliers');
   const [filterTransType, setFilterTransType] = useState('Invoice');
   const [filterTransfer, setFilterTransfer] = useState('All Trans. / Not Trans.'); // All | Not Transferred | Transferred
-  const [fromDate, setFromDate] = useState('01-Sep-2026');
-  const [toDate, setToDate] = useState('08-Sep-2026');
+  const [fromDate, setFromDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 30);
+    return d.toISOString().split('T')[0];
+  });
+  const [toDate, setToDate] = useState(() => new Date().toISOString().split('T')[0]);
 
   // Locations state: All Locations and Southern Olive and Oil Products - Main
   const [locations, setLocations] = useState<string[]>([
@@ -365,8 +374,8 @@ export default function PurchasesView() {
   // Form State (matching Screenshot 2)
   const [formBranch, setFormBranch] = useState('Main Branch');
   const [formLocation, setFormLocation] = useState('Southern Olive and Oil Products - Main');
-  const [formDate, setFormDate] = useState('08-Sep-2026');
-  const [formDeliveryDate, setFormDeliveryDate] = useState('08-Sep-2026');
+  const [formDate, setFormDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [formDeliveryDate, setFormDeliveryDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [formCurrency, setFormCurrency] = useState('LL');
   const [formCurrencyRate, setFormCurrencyRate] = useState<string>('1');
   const [formInvNumber, setFormInvNumber] = useState('4000044');
@@ -468,8 +477,12 @@ export default function PurchasesView() {
   // Post All Purchase Invoices
   const handlePostAllPurchases = async () => {
     if (!hasUnpostedPurchases) return;
-    const unposted = purchases.filter((p) => !p.posted);
+    const unposted = purchases.filter((p) => !p.posted && (p as any).is_posted !== true);
     if (unposted.length === 0) return;
+
+    const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
 
     for (const p of unposted) {
       try {
@@ -479,7 +492,27 @@ export default function PurchasesView() {
       }
     }
 
-    const updated = purchases.map(p => ({ ...p, posted: true }));
+    const allStockTxns = unposted.flatMap(p =>
+      (p.items || []).map(item => ({
+        tenant_id: targetTenantId,
+        item_id: item.barcode || item.id,
+        transaction_type: 'PURCHASE_RECEIPT',
+        quantity: Math.abs(Number(item.qty) || 1),
+        reference_number: p.invoiceNumber,
+        reference_id: p.id || p.invoiceNumber,
+        reference_type: 'PURCHASE_INVOICE',
+        branch_id: p.branch || 'BRANCH-01',
+        created_at: new Date().toISOString()
+      }))
+    );
+
+    if (allStockTxns.length > 0) {
+      supabase.from('stock_transactions').insert(allStockTxns).then(({ error }) => {
+        if (error) console.warn('Bulk stock transaction add notice:', error.message);
+      });
+    }
+
+    const updated = purchases.map(p => ({ ...p, posted: true, is_posted: true }));
     const res = await persistPurchasesToDatabase(updated);
     if (!res.success) {
       setNotice(`Database persistence failed: ${res.error}`);
@@ -497,8 +530,8 @@ export default function PurchasesView() {
     setSelectedSupplierName('');
     setFormBranch('Zeit w zaytoun ljanoub');
     setFormLocation('Southern Olive and Oil Products - Main');
-    setFormDate('08-Sep-2026');
-    setFormDeliveryDate('08-Sep-2026');
+    setFormDate(new Date().toISOString().split('T')[0]);
+    setFormDeliveryDate(new Date().toISOString().split('T')[0]);
     setFormCurrency('LL');
     setFormCurrencyRate('1');
     setFormInvNumber((4000040 + purchases.length + 1).toString());
@@ -605,10 +638,13 @@ export default function PurchasesView() {
       currencyRate: Number(formCurrencyRate) || 1,
       notes: formNote,
       amountLL: totals.netTotal,
-      enteredBy: 'Mohammed Jichi',
-      updatedBy: 'Mohammed Jichi',
-      updatedAt: '08-Sep-2026 ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      enteredBy: profile?.name || 'Vanguard Operator',
+      updatedBy: profile?.name || 'Vanguard Operator',
+      updatedAt: new Date().toISOString(),
+      created_by: profile?.name || 'Vanguard Operator',
+      created_at: new Date().toISOString(),
       posted: false, // DRAFT / UNPOSTED
+      is_posted: false,
       transferred: false,
       transactionType: 'Invoice',
       items: formItems,
@@ -666,10 +702,13 @@ export default function PurchasesView() {
       currencyRate: Number(formCurrencyRate) || 1,
       notes: formNote,
       amountLL: totals.netTotal,
-      enteredBy: 'Mohammed Jichi',
-      updatedBy: 'Mohammed Jichi',
-      updatedAt: '08-Sep-2026 ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      enteredBy: profile?.name || 'Vanguard Operator',
+      updatedBy: profile?.name || 'Vanguard Operator',
+      updatedAt: new Date().toISOString(),
+      created_by: profile?.name || 'Vanguard Operator',
+      created_at: new Date().toISOString(),
       posted: true, // POSTED IMMEDIATELY!
+      is_posted: true,
       transferred: true,
       transactionType: 'Invoice',
       items: formItems,
@@ -681,6 +720,28 @@ export default function PurchasesView() {
       totalTax: totals.totalTax,
       totalDiscount: totals.totalDiscount
     };
+
+    const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+      ? currentTenant.id
+      : '00000000-0000-0000-0000-000000000001';
+
+    if (newInvoice.items && newInvoice.items.length > 0) {
+      const stockTxns = newInvoice.items.map(item => ({
+        tenant_id: targetTenantId,
+        item_id: item.barcode || item.id,
+        transaction_type: 'PURCHASE_RECEIPT',
+        quantity: Math.abs(Number(item.qty) || 1),
+        reference_number: newInvoice.invoiceNumber,
+        reference_id: newInvoice.id,
+        reference_type: 'PURCHASE_INVOICE',
+        branch_id: newInvoice.branch || 'BRANCH-01',
+        created_at: new Date().toISOString()
+      }));
+
+      supabase.from('stock_transactions').insert(stockTxns).then(({ error }) => {
+        if (error) console.warn('Purchases stock transaction add notice:', error.message);
+      });
+    }
 
     let updated: PurchaseInvoice[];
     const idx = purchases.findIndex((p) => p.id === newInvoice.id);
@@ -752,7 +813,31 @@ export default function PurchasesView() {
       } catch (err) {
         console.warn('Notice calling toggleDocumentPosting on purchase:', err);
       }
-      const updated = purchases.map((p) => (p.id === id ? { ...p, posted: true, transferred: true } : p));
+
+      const targetInv = purchases.find((p) => p.id === id || p.invoiceNumber === invNum);
+      if (targetInv && targetInv.items && targetInv.items.length > 0) {
+        const targetTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
+          ? currentTenant.id
+          : '00000000-0000-0000-0000-000000000001';
+
+        const stockTxns = targetInv.items.map(item => ({
+          tenant_id: targetTenantId,
+          item_id: item.barcode || item.id,
+          transaction_type: 'PURCHASE_RECEIPT',
+          quantity: Math.abs(Number(item.qty) || 1),
+          reference_number: targetInv.invoiceNumber,
+          reference_id: targetInv.id || targetInv.invoiceNumber,
+          reference_type: 'PURCHASE_INVOICE',
+          branch_id: targetInv.branch || 'BRANCH-01',
+          created_at: new Date().toISOString()
+        }));
+
+        supabase.from('stock_transactions').insert(stockTxns).then(({ error }) => {
+          if (error) console.warn('Stock transaction add notice:', error.message);
+        });
+      }
+
+      const updated = purchases.map((p) => (p.id === id ? { ...p, posted: true, is_posted: true, transferred: true } : p));
       const res = await persistPurchasesToDatabase(updated);
       if (!res.success) {
         setNotice(`Database persistence failed: ${res.error}`);
@@ -1053,14 +1138,14 @@ export default function PurchasesView() {
                       <td className="py-3 px-3 text-right font-mono font-bold text-slate-900">
                         {pur.amountLL.toLocaleString()} LL
                       </td>
-                      <td className="py-3 px-3 text-slate-600">{pur.enteredBy}</td>
-                      <td className="py-3 px-3 text-slate-600">{pur.updatedBy}</td>
-                      <td className="py-3 px-3 text-slate-500 whitespace-nowrap">{pur.updatedAt}</td>
+                      <td className="py-3 px-3 text-slate-600">{pur.enteredBy || 'Vanguard Operator'}</td>
+                      <td className="py-3 px-3 text-slate-600">{pur.updatedBy || 'Vanguard Operator'}</td>
+                      <td className="py-3 px-3 text-slate-500 whitespace-nowrap">{pur.updatedAt || '—'}</td>
                       <td className="py-3 px-3 text-slate-600 max-w-xs truncate" title={pur.notes}>
                         {pur.notes || '-'}
                       </td>
                       <td className="py-3 px-3 text-center">
-                        {pur.posted ? (
+                        {(pur.posted === true || (pur as any).is_posted === true) ? (
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
                             {t('yes', 'Yes')}
                           </span>

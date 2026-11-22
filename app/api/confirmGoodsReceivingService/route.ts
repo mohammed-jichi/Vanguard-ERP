@@ -8,8 +8,9 @@ export async function POST(req: NextRequest) {
     const items = body.items || body.products || body.row?.items;
     const remark = body.remark || body.row?.REMARK;
     const tenantId = body.tenantId || body.tenant_id;
+    const receivedBy = body.receivedBy || body.received_by || body.userName;
 
-    const res = await ProductRequestService.confirmGoodsReceiving(Number(requestId), items, remark, tenantId);
+    const res = await ProductRequestService.confirmGoodsReceiving(Number(requestId), items, remark, tenantId, receivedBy);
     if (!res) {
       return NextResponse.json({ status: 0, message: 'Product request not found' }, { status: 404 });
     }

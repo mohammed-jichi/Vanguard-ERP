@@ -628,7 +628,8 @@ export class ProductRequestService {
     requestId: number,
     receivedItems?: Array<{ ITEMID: number; QTYREC: number; REMARK?: string }>,
     remark?: string,
-    tenantId?: string
+    tenantId?: string,
+    receivedBy?: string
   ): Promise<ProductRequestHeader | null> {
     const pr = this.saveGoodsReceiving(requestId, receivedItems, remark);
     if (!pr) return null;
@@ -636,7 +637,7 @@ export class ProductRequestService {
     pr.STATUS = 'Confirmed';
     pr.CONVERTED = -1;
     pr.receivedAt = new Date().toISOString();
-    pr.receivedBy = 'Vanguard Operator';
+    pr.receivedBy = receivedBy || 'Vanguard Operator';
     pr.items.forEach(it => {
       if (!it.QTYREC && it.QTYAPP) {
         it.QTYREC = it.QTYAPP;

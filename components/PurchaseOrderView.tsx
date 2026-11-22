@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { Corporate3ZoneHeader, CorporatePrintableFooter } from '@/components/documents/Corporate3ZoneHeader';
 import { useTenant } from '@/lib/TenantContext';
+import { useActiveUser } from '@/lib/useActiveUser';
 import { supabase } from '@/lib/supabase';
 import { peekNextDocNumber, commitNextDocNumber, cleanDocumentNumber } from '@/lib/utils/documentSequence';
 
@@ -48,6 +49,9 @@ export interface PurchaseOrderRecord {
   notes: string;
   enteredBy: string;
   status: 'Pending' | 'Approved' | 'Rejected' | 'Converted';
+  is_posted?: boolean;
+  created_by?: string;
+  created_at?: string;
   emailStatus: 'Sent' | 'Not Sent';
   items: PurchaseOrderItem[];
   discountType: 'percent' | 'amount';
@@ -286,6 +290,7 @@ const ITEMS_CATALOG = [
 export default function PurchaseOrderView() {
   const { t, dir } = useLanguage();
   const { currentTenant } = useTenant();
+  const profile = useActiveUser();
 
   // Mount hydration from Supabase
   useEffect(() => {
@@ -367,8 +372,12 @@ export default function PurchaseOrderView() {
   const [formBranch, setFormBranch] = useState('Main Branch');
   const [formLocation, setFormLocation] = useState('Southern Olive and Oil Products - Main');
   const [formShipment, setFormShipment] = useState('Local Delivery');
-  const [formOrderDate, setFormOrderDate] = useState('2026-09-10');
-  const [formDeliveryDate, setFormDeliveryDate] = useState('2026-09-24');
+  const [formOrderDate, setFormOrderDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [formDeliveryDate, setFormDeliveryDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    return d.toISOString().split('T')[0];
+  });
   const [formSupplier, setFormSupplier] = useState(SUPPLIERS_CATALOG[0]);
   const [formCurrency, setFormCurrency] = useState('USD');
   const [formCurrencyRate, setFormCurrencyRate] = useState<number>(89500);
@@ -446,8 +455,10 @@ export default function PurchaseOrderView() {
     setFormBranch('Marjeyoun Press Mill & Silos');
     setFormLocation('Southern Olive and Oil Products - Main');
     setFormShipment('Local Delivery');
-    setFormOrderDate('2026-09-10');
-    setFormDeliveryDate('2026-09-24');
+    setFormOrderDate(new Date().toISOString().split('T')[0]);
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    setFormDeliveryDate(d.toISOString().split('T')[0]);
     setFormSupplier(SUPPLIERS_CATALOG[0]);
     setFormCurrency('USD');
     setFormCurrencyRate(89500);
@@ -623,8 +634,11 @@ export default function PurchaseOrderView() {
       currency: formCurrency,
       currencyRate: formCurrencyRate,
       notes: formNotes,
-      enteredBy: 'Mohamad Jichi',
+      enteredBy: profile?.name || 'Vanguard Operator',
       status: post ? 'Approved' : (activeOrder ? activeOrder.status : 'Pending'),
+      is_posted: post || (activeOrder ? activeOrder.status === 'Approved' : false),
+      created_by: profile?.name || 'Vanguard Operator',
+      created_at: activeOrder?.created_at || new Date().toISOString(),
       emailStatus: activeOrder ? activeOrder.emailStatus : 'Not Sent',
       items: formItems,
       discountType: formDiscType,
@@ -658,7 +672,7 @@ export default function PurchaseOrderView() {
   // Approve PO
   const handleApprovePO = async () => {
     if (!activeOrder) return;
-    const updated = orders.map(o => o.id === activeOrder.id ? { ...o, status: 'Approved' as const } : o);
+    const updated = orders.map(o => o.id === activeOrder.id ? { ...o, status: 'Approved' as const, is_posted: true } : o);
     const res = await persistOrdersToDatabase(updated);
     if (!res.success) {
       triggerToast(`Database persistence failed: ${res.error}`);
@@ -721,7 +735,7 @@ export default function PurchaseOrderView() {
           status: 'DRAFT',
           is_posted: false,
           notes: 'Converted from Purchase Order #' + activeOrder.poNumber,
-          created_by: 'Procurement Specialist',
+          created_by: profile?.name || 'Vanguard Operator',
           created_at: new Date().toISOString()
         }]);
 
@@ -1042,12 +1056,12 @@ export default function PurchaseOrderView() {
                           <td className="py-2.5 px-3 text-right font-medium text-foreground">
                             {amountLL.toLocaleString()}
                           </td>
-                          <td className="py-2.5 px-3 text-muted-foreground">{po.enteredBy}</td>
+                          <td className="py-2.5 px-3 text-muted-foreground">{po.enteredBy || 'Vanguard Operator'}</td>
                           <td className="py-2.5 px-3 text-muted-foreground max-w-[200px] truncate">{po.notes}</td>
                           <td className="py-2.5 px-3 text-right">
                             <span
                               className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${
-                                po.status === 'Approved'
+                                (po.status === 'Approved' || (po as any).is_posted === true)
                                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                   : po.status === 'Pending'
                                   ? 'bg-amber-50 text-amber-700 border border-amber-200'
@@ -1056,7 +1070,7 @@ export default function PurchaseOrderView() {
                                   : 'bg-blue-50 text-blue-700 border border-blue-200'
                               }`}
                             >
-                              {po.status}
+                              {(po.status === 'Approved' || (po as any).is_posted === true) ? 'Approved' : po.status}
                             </span>
                           </td>
                           <td className="py-2.5 px-3 text-center">
