@@ -2,40 +2,38 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { 
-  Building2, 
-  ShoppingCart, 
-  Boxes, 
-  Users, 
-  HeartHandshake, 
-  Award, 
-  BookOpen, 
-  UserCheck, 
-  Truck, 
-  Share2, 
-  ArrowRight, 
-  CheckCircle2, 
-  Clock, 
-  TrendingUp, 
-  DollarSign, 
-  AlertCircle, 
-  Search, 
-  FileText, 
-  ShieldCheck, 
-  PlusCircle, 
-  MapPin, 
-  Layers, 
+import {
+  Building2,
+  ShoppingCart,
+  Boxes,
+  Users,
+  HeartHandshake,
+  Award,
+  BookOpen,
+  UserCheck,
+  Truck,
+  Share2,
+  ArrowUpRight,
+  Clock,
+  DollarSign,
+  Search,
+  FileText,
+  ShieldCheck,
+  MapPin,
   ChevronRight,
+  ChevronDown,
   ExternalLink,
-  Sparkles,
   Inbox,
   Factory,
   Smartphone,
   Store,
-  MessageSquare
+  LayoutGrid,
+  List
 } from 'lucide-react';
 import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
+
+type ModuleCategory = 'all' | 'core' | 'crm' | 'fleet_hr';
 
 export default function EnterpriseOverviewHub() {
   const { currentTenant } = useTenant();
@@ -64,9 +62,10 @@ export default function EnterpriseOverviewHub() {
   };
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentTime, setCurrentTime] = useState('');
-  
-  // Real dynamic notifications & pending approvals count
+  const [activeCategory, setActiveCategory] = useState<ModuleCategory>('all');
+  const [compactMode, setCompactMode] = useState(false);
+  const [showActivityFeed, setShowActivityFeed] = useState(false);
+
   const [stats, setStats] = useState({
     pendingApprovals: 0,
     unreadInbox: 0,
@@ -79,20 +78,6 @@ export default function EnterpriseOverviewHub() {
       created_at: string;
     }>
   });
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(now.toLocaleTimeString(isAr ? 'ar-LB' : 'en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      }));
-    };
-    updateTime();
-    const timer = setInterval(updateTime, 1000);
-    return () => clearInterval(timer);
-  }, [isAr]);
 
   useEffect(() => {
     const loadDynamicData = async () => {
@@ -114,743 +99,626 @@ export default function EnterpriseOverviewHub() {
     loadDynamicData();
   }, []);
 
-  // 12 Enterprise Modules Configuration
-  const modulesList = [
+  const modulesList = useMemo(() => [
     {
       id: 'sales',
-      number: '01',
+      category: 'core' as ModuleCategory,
       titleEn: 'V-POS & Counter Sales',
       titleAr: 'نقاط البيع والمبيعات (V-POS)',
-      descriptionEn: 'Cashier touchstations, retail & wholesale checkout, barcode scanning, price modes, and daily Z-reports.',
-      descriptionAr: 'محطات الكاشير، فواتير التجزئة والجملة، أنماط الأسعار، الخصومات وتقارير الإغلاق اليومي.',
+      descriptionEn: 'Retail & wholesale checkout, barcode scanning, and daily Z-reports.',
+      descriptionAr: 'محطات الكاشير، فواتير التجزئة والجملة، وتقارير الإغلاق اليومي.',
       icon: ShoppingCart,
-      color: 'emerald',
+      accent: 'text-emerald-700 bg-emerald-50 border-emerald-200/80',
       primaryRoute: '/dashboard/sales',
       subLinks: [
         { labelEn: 'Sales Dashboard', labelAr: 'لوحة المبيعات', href: '/dashboard/sales' },
         { labelEn: 'Cashier Reports', labelAr: 'تقارير الصندوق', href: '/backoffice/reportview' },
         { labelEn: 'Online Orders', labelAr: 'الطلبات الإلكترونية', href: '/backoffice/online-orders' },
-        { labelEn: 'End of Day (Z-Report)', labelAr: 'إغلاق اليوم', href: '/backoffice/end-of-day' },
+        { labelEn: 'End of Day', labelAr: 'إغلاق اليوم', href: '/backoffice/end-of-day' },
       ],
-      badge: 'V-POS'
     },
     {
       id: 'operations',
-      number: '02',
-      titleEn: 'Operations Center & Inventory',
+      category: 'core' as ModuleCategory,
+      titleEn: 'Operations & Inventory',
       titleAr: 'مركز العمليات والمستودعات',
-      descriptionEn: 'Warehouse logistics, multi-location stock, tank inventory transfers, multi-decimal BOM, and procurement.',
-      descriptionAr: 'إدارة المستودعات، أرصدة المخزون، تحويلات الخزانات، التجميع والتصنيع والمشتريات التشغيلية.',
+      descriptionEn: 'Multi-location stock, warehouse transfers, BOM assembly, and procurement.',
+      descriptionAr: 'إدارة المستودعات، أرصدة المخزون، تحويلات الخزانات والمشتريات.',
       icon: Boxes,
-      color: 'amber',
+      accent: 'text-amber-700 bg-amber-50 border-amber-200/80',
       primaryRoute: '/backoffice/operations',
       subLinks: [
-        { labelEn: 'Operations Dashboard', labelAr: 'لوحة العمليات', href: '/backoffice/operations' },
+        { labelEn: 'Operations Hub', labelAr: 'لوحة العمليات', href: '/backoffice/operations' },
         { labelEn: 'Products Master', labelAr: 'دليل المنتجات', href: '/backoffice/products' },
-        { labelEn: 'Stock Adjustments', labelAr: 'تعديلات المخزون', href: '/adjustments' },
+        { labelEn: 'Adjustments', labelAr: 'تعديلات المخزون', href: '/adjustments' },
         { labelEn: 'Goods Receipts', labelAr: 'استلام البضائع', href: '/receiving-of-goods' },
       ],
-      badge: 'CORE'
-    },
-    {
-      id: 'customers',
-      number: '03',
-      titleEn: 'Customer Management (CRM)',
-      titleAr: 'إدارة علاقات العملاء (CRM)',
-      descriptionEn: 'Customer accounts directory, aged debtor tracking, LTV insights, appointments, and pipeline.',
-      descriptionAr: 'دليل حسابات الزبائن، أعمار الديون المدينة، تحليلات القيمة الممتدة، والمواعيد والمهام.',
-      icon: Users,
-      color: 'blue',
-      primaryRoute: '/backoffice/customers',
-      subLinks: [
-        { labelEn: 'Customers Directory', labelAr: 'دليل العملاء', href: '/backoffice/customers' },
-        { labelEn: 'Aged Debtors', labelAr: 'أعمار الذمم', href: '/backoffice/customers?tab=aged' },
-        { labelEn: 'Customer Insights & LTV', labelAr: 'تحليلات LTV', href: '/backoffice/customers?tab=insights' },
-        { labelEn: 'Customer Receipts', labelAr: 'إيصالات القبض', href: '/backoffice/customers?tab=receipts' },
-      ],
-      badge: 'GROWTH'
-    },
-    {
-      id: 'feedback',
-      number: '04',
-      titleEn: 'Feedback & Customer Surveys',
-      titleAr: 'الشكاوى واستطلاعات الرأي',
-      descriptionEn: 'Omnichannel customer complaint lifecycle, CSAT surveys, root-cause categorization, and care.',
-      descriptionAr: 'إدارة دورة حياة الشكاوى، استطلاعات الرضا، تصنيف الأسباب الجذرية وبرامج العناية.',
-      icon: HeartHandshake,
-      color: 'rose',
-      primaryRoute: '/backoffice/feedback',
-      subLinks: [
-        { labelEn: 'Feedback Dashboard', labelAr: 'لوحة الشكاوى', href: '/backoffice/feedback' },
-        { labelEn: 'Manage Complaints', labelAr: 'إدارة الشكاوى', href: '/backoffice/feedback?tab=manage' },
-        { labelEn: 'Customer Surveys', labelAr: 'الاستطلاعات والتقييم', href: '/backoffice/feedback?tab=surveys' },
-        { labelEn: 'Resolution Actions', labelAr: 'الإجراءات والحلول', href: '/backoffice/feedback?tab=actions' },
-      ],
-      badge: 'QUALITY'
-    },
-    {
-      id: 'loyalty',
-      number: '05',
-      titleEn: 'Loyalty & Rewards Program',
-      titleAr: 'برنامج الولاء ونقاط المكافآت',
-      descriptionEn: 'Tiered loyalty membership (Silver, Gold, VIP), point earning rules, and SMS/WhatsApp offers.',
-      descriptionAr: 'مستويات العضوية (فضي، ذهبي، بلاتيني)، احتساب النقاط، والحملات الترويجية الموجهة.',
-      icon: Award,
-      color: 'purple',
-      primaryRoute: '/backoffice/loyalty',
-      subLinks: [
-        { labelEn: 'Loyalty Dashboard', labelAr: 'لوحة الولاء', href: '/backoffice/loyalty' },
-        { labelEn: 'Members Directory', labelAr: 'سجل الأعضاء', href: '/backoffice/loyalty?tab=members' },
-        { labelEn: 'Tiers & Levels', labelAr: 'المستويات والمراحل', href: '/backoffice/loyalty?tab=levels' },
-        { labelEn: 'Promotional Messages', labelAr: 'الرسائل التسويقية', href: '/backoffice/loyalty?tab=messages' },
-      ],
-      badge: 'REWARDS'
     },
     {
       id: 'accounting',
-      number: '06',
+      category: 'core' as ModuleCategory,
       titleEn: 'Accounting & Financials',
       titleAr: 'المحاسبة والشؤون المالية',
-      descriptionEn: 'Multi-currency General Ledger, Trial Balance, dual-signoff vouchers, AP/AR, and bank reconciliations.',
-      descriptionAr: 'دفتر الأستاذ العام، ميزان المراجعة، السندات ذات التوقيع المزدوج، الذمم، والتسويات البنكية.',
+      descriptionEn: 'Multi-currency General Ledger, Trial Balance, vouchers, AP/AR, and bank reconciliation.',
+      descriptionAr: 'دفتر الأستاذ العام، ميزان المراجعة، السندات، الذمم، والتسويات البنكية.',
       icon: BookOpen,
-      color: 'indigo',
+      accent: 'text-indigo-700 bg-indigo-50 border-indigo-200/80',
       primaryRoute: '/backoffice/accounting',
       subLinks: [
-        { labelEn: 'Accounting Dashboard', labelAr: 'لوحة المحاسبة', href: '/backoffice/accounting' },
-        { labelEn: 'Journal Vouchers (JV)', labelAr: 'سندات القيد (JV)', href: '/backoffice/accounting?tab=jv' },
-        { labelEn: 'General Ledger & Trial Balance', labelAr: 'ميزان المراجعة وGL', href: '/backoffice/accounting?tab=reports' },
-        { labelEn: 'Bank Reconciliation', labelAr: 'المطابقات البنكية', href: '/backoffice/accounting?tab=reconciliation' },
+        { labelEn: 'Accounting Hub', labelAr: 'لوحة المحاسبة', href: '/backoffice/accounting' },
+        { labelEn: 'Journal Vouchers', labelAr: 'سندات القيد (JV)', href: '/backoffice/accounting?tab=jv' },
+        { labelEn: 'Ledger & Trial Balance', labelAr: 'ميزان المراجعة', href: '/backoffice/accounting?tab=reports' },
+        { labelEn: 'Reconciliation', labelAr: 'المطابقات البنكية', href: '/backoffice/accounting?tab=reconciliation' },
       ],
-      badge: 'ERP GL'
-    },
-    {
-      id: 'hr',
-      number: '07',
-      titleEn: 'Human Resources & Payroll',
-      titleAr: 'الموارد البشرية ومسير الرواتب',
-      descriptionEn: 'Personnel records, biometric attendance logging, work shifts, leave requests, and net payslips.',
-      descriptionAr: 'سجل الموظفين، بصمة الحضور والانصراف، المناوبات، طلبات الإجازات وقسائم الرواتب.',
-      icon: UserCheck,
-      color: 'teal',
-      primaryRoute: '/backoffice/hr',
-      subLinks: [
-        { labelEn: 'HR Overview', labelAr: 'لوحة الموارد البشرية', href: '/backoffice/hr' },
-        { labelEn: 'Personnel Directory', labelAr: 'دليل الكادر الوظيفي', href: '/backoffice/hr?tab=personnel' },
-        { labelEn: 'Attendance Log', labelAr: 'سجل الدوام والبصمة', href: '/backoffice/hr?tab=attendance' },
-        { labelEn: 'Net Payslips', labelAr: 'احتساب الرواتب', href: '/backoffice/hr?tab=payroll' },
-      ],
-      badge: 'PAYROLL'
-    },
-    {
-      id: 'fleet',
-      number: '08',
-      titleEn: 'SuperSonic Fleet Logistics',
-      titleAr: 'أسطول النقل واللوجستيات (SuperSonic)',
-      descriptionEn: 'Real-time GPS vehicle tracking, corridor order dispatch, live mileage, and fuel audits.',
-      descriptionAr: 'تتبع الشاحنات الحي عبر GPS، تفويج طلبيات الممرات الجغرافية، والرقابة على الوقود.',
-      icon: Truck,
-      color: 'amber',
-      primaryRoute: '/backoffice/fleet',
-      subLinks: [
-        { labelEn: 'Fleet Dispatch Radar', labelAr: 'رادار تتبع الشاحنات', href: '/backoffice/fleet' },
-        { labelEn: 'Route Corridors', labelAr: 'ممرات التوصيل', href: '/backoffice/fleet?tab=corridors' },
-        { labelEn: 'Fuel & Maintenance', labelAr: 'الوقود والصيانة', href: '/backoffice/fleet?tab=maintenance' },
-        { labelEn: 'Fleet GPS Reports', labelAr: 'تقارير الرحلات', href: '/backoffice/fleet/reports' },
-      ],
-      badge: 'GPS LIVE'
-    },
-    {
-      id: 'social',
-      number: '09',
-      titleEn: 'V-Connect (Social CRM & Support)',
-      titleAr: 'منظومة V-Connect (التواصل الاجتماعي وواتساب)',
-      descriptionEn: 'Unified multichannel inbox, WhatsApp & Meta customer conversations, chat orders, and ticket support.',
-      descriptionAr: 'الصندوق الموحد لرسائل واتساب وإنستغرام، محادثات العملاء، توليد الطلبات، وإدارة الدعم.',
-      icon: Share2,
-      color: 'cyan',
-      primaryRoute: '/connect',
-      subLinks: [
-        { labelEn: 'V-Connect Hub', labelAr: 'بوابة V-Connect', href: '/connect' },
-        { labelEn: 'Omnichannel Inbox', labelAr: 'صندوق المحادثات', href: '/backoffice/social-crm' },
-        { labelEn: 'Platform Orders', labelAr: 'طلبات المنصات', href: '/backoffice/social-crm?tab=orders' },
-        { labelEn: 'Distributor Directory', labelAr: 'دليل الموزعين', href: '/backoffice/social-crm?tab=distributors' },
-      ],
-      badge: 'V-CONNECT'
     },
     {
       id: 'pressing-mill',
-      number: '10',
+      category: 'core' as ModuleCategory,
       titleEn: 'Pressing Mill & Oil Plant',
       titleAr: 'معصرة الزيتون ومصنع الزيت',
-      descriptionEn: 'Olive intake weighbridge scale, pressing batches, 50-tank storage matrix, milling fees, and oil handover.',
-      descriptionAr: 'استلام ثمار الزيتون، قبان الوزن، خطوط العصر، مصفوفة الخزانات الـ 50، ومحاسبة الأجور والرد.',
+      descriptionEn: 'Weighbridge intake, pressing batches, 50-tank storage matrix, and oil handover.',
+      descriptionAr: 'استلام الزيتون، قبان الوزن، خطوط العصر، ومصفوفة الخزانات.',
       icon: Factory,
-      color: 'amber',
+      accent: 'text-amber-800 bg-amber-50/90 border-amber-200/80',
       primaryRoute: '/pressing-mill',
       subLinks: [
         { labelEn: 'Mill Dashboard', labelAr: 'لوحة المعصرة', href: '/pressing-mill/dashboard' },
-        { labelEn: 'Intake Weighbridge', labelAr: 'قبان الاستلام', href: '/pressing-mill/intake' },
+        { labelEn: 'Weighbridge', labelAr: 'قبان الاستلام', href: '/pressing-mill/intake' },
         { labelEn: 'Pressing Batches', labelAr: 'دفعات العصر', href: '/pressing-mill/batches' },
-        { labelEn: 'Tanks Matrix (1-50)', labelAr: 'مصفوفة الخزانات', href: '/pressing-mill/tanks' },
+        { labelEn: 'Tanks Matrix', labelAr: 'مصفوفة الخزانات', href: '/pressing-mill/tanks' },
       ],
-      badge: 'AGRI-MILL'
     },
     {
-      id: 'v-driver',
-      number: '11',
-      titleEn: 'V-Driver (Driver & Fleet App)',
-      titleAr: 'تطبيق السائقين الميداني (V-Driver)',
-      descriptionEn: 'Standalone mobile PWA for delivery drivers, turn-by-turn route corridors, proof of delivery, and offline sync.',
-      descriptionAr: 'تطبيق ويب تقدمي (PWA) للسائقين، توجيه المسارات والممرات، إثبات التسليم والمزامنة دون اتصال.',
-      icon: Smartphone,
-      color: 'blue',
-      primaryRoute: '/v-driver',
+      id: 'customers',
+      category: 'crm' as ModuleCategory,
+      titleEn: 'Customer Management (CRM)',
+      titleAr: 'إدارة علاقات العملاء (CRM)',
+      descriptionEn: 'Client accounts directory, aged receivables, LTV analytics, and receipts.',
+      descriptionAr: 'دليل حسابات الزبائن، أعمار الديون المدينة، وتحليلات العملاء.',
+      icon: Users,
+      accent: 'text-blue-700 bg-blue-50 border-blue-200/80',
+      primaryRoute: '/backoffice/customers',
       subLinks: [
-        { labelEn: 'Driver App Console', labelAr: 'شاشة السائق', href: '/v-driver' },
-        { labelEn: 'Corridors Dispatch', labelAr: 'تفويج الممرات', href: '/backoffice/fleet?tab=corridors' },
-        { labelEn: 'Live GPS Tracking', labelAr: 'تتبع السائقين', href: '/backoffice/fleet' },
-        { labelEn: 'Delivery Receipts', labelAr: 'إثباتات التسليم', href: '/delivery-of-goods' },
+        { labelEn: 'Directory', labelAr: 'دليل العملاء', href: '/backoffice/customers' },
+        { labelEn: 'Aged Debtors', labelAr: 'أعمار الذمم', href: '/backoffice/customers?tab=aged' },
+        { labelEn: 'LTV Insights', labelAr: 'تحليلات LTV', href: '/backoffice/customers?tab=insights' },
+        { labelEn: 'Receipts', labelAr: 'إيصالات القبض', href: '/backoffice/customers?tab=receipts' },
       ],
-      badge: 'V-DRIVER'
+    },
+    {
+      id: 'social',
+      category: 'crm' as ModuleCategory,
+      titleEn: 'V-Connect (Social CRM)',
+      titleAr: 'منظومة V-Connect (التواصل وواتساب)',
+      descriptionEn: 'Unified WhatsApp & Meta inbox, chat-to-order conversion, and distributor care.',
+      descriptionAr: 'الصندوق الموحد لرسائل واتساب وإنستغرام وتوليد الطلبات.',
+      icon: Share2,
+      accent: 'text-cyan-700 bg-cyan-50 border-cyan-200/80',
+      primaryRoute: '/connect',
+      subLinks: [
+        { labelEn: 'V-Connect Hub', labelAr: 'بوابة V-Connect', href: '/connect' },
+        { labelEn: 'Unified Inbox', labelAr: 'صندوق المحادثات', href: '/backoffice/social-crm' },
+        { labelEn: 'Platform Orders', labelAr: 'طلبات المنصات', href: '/backoffice/social-crm?tab=orders' },
+        { labelEn: 'Distributors', labelAr: 'دليل الموزعين', href: '/backoffice/social-crm?tab=distributors' },
+      ],
     },
     {
       id: 'v-store',
-      number: '12',
-      titleEn: 'V-Store (Storefront & B2B Portal)',
-      titleAr: 'المتجر الإلكتروني وبوابة B2B (V-Store)',
-      descriptionEn: 'High-conversion B2B wholesale portal and retail storefront, online order routing, and catalog showcase.',
-      descriptionAr: 'بوابة طلبات الجملة والتجزئة الإلكترونية، ربط الطلبات الفوري بالمخازن، وكتالوج المنتجات.',
+      category: 'crm' as ModuleCategory,
+      titleEn: 'V-Store (B2B & Storefront)',
+      titleAr: 'المتجر الإلكتروني وبوابة B2B',
+      descriptionEn: 'Wholesale B2B ordering portal, retail web storefront, and catalog showcase.',
+      descriptionAr: 'بوابة طلبات الجملة والتجزئة الإلكترونية وكتالوج المنتجات.',
       icon: Store,
-      color: 'emerald',
+      accent: 'text-emerald-700 bg-emerald-50 border-emerald-200/80',
       primaryRoute: '/v-store',
       subLinks: [
-        { labelEn: 'Storefront Portal', labelAr: 'واجهة المتجر', href: '/v-store' },
+        { labelEn: 'Web Storefront', labelAr: 'واجهة المتجر', href: '/v-store' },
         { labelEn: 'Online Orders', labelAr: 'طلبات الويب', href: '/backoffice/online-orders' },
-        { labelEn: 'Product Catalog', labelAr: 'كتالوج المنتجات', href: '/backoffice/products' },
-        { labelEn: 'Customer Pricing', labelAr: 'أسعار العملاء', href: '/backoffice/customers' },
+        { labelEn: 'Catalog', labelAr: 'كتالوج المنتجات', href: '/backoffice/products' },
+        { labelEn: 'Client Pricing', labelAr: 'أسعار العملاء', href: '/backoffice/customers' },
       ],
-      badge: 'V-STORE'
-    }
-  ];
+    },
+    {
+      id: 'loyalty',
+      category: 'crm' as ModuleCategory,
+      titleEn: 'Loyalty & Rewards',
+      titleAr: 'برنامج الولاء ونقاط المكافآت',
+      descriptionEn: 'Tiered memberships (Silver, Gold, VIP), points rules, and targeted offers.',
+      descriptionAr: 'مستويات العضوية، احتساب النقاط، والحملات الترويجية.',
+      icon: Award,
+      accent: 'text-purple-700 bg-purple-50 border-purple-200/80',
+      primaryRoute: '/backoffice/loyalty',
+      subLinks: [
+        { labelEn: 'Loyalty Hub', labelAr: 'لوحة الولاء', href: '/backoffice/loyalty' },
+        { labelEn: 'Members', labelAr: 'سجل الأعضاء', href: '/backoffice/loyalty?tab=members' },
+        { labelEn: 'VIP Tiers', labelAr: 'المستويات', href: '/backoffice/loyalty?tab=levels' },
+        { labelEn: 'Campaigns', labelAr: 'الرسائل التسويقية', href: '/backoffice/loyalty?tab=messages' },
+      ],
+    },
+    {
+      id: 'feedback',
+      category: 'crm' as ModuleCategory,
+      titleEn: 'Feedback & CSAT Surveys',
+      titleAr: 'الشكاوى واستطلاعات الرأي',
+      descriptionEn: 'Complaint resolution lifecycle, customer satisfaction surveys, and QA tracking.',
+      descriptionAr: 'إدارة الشكاوى، استطلاعات الرضا، وإجراءات المعالجة.',
+      icon: HeartHandshake,
+      accent: 'text-rose-700 bg-rose-50 border-rose-200/80',
+      primaryRoute: '/backoffice/feedback',
+      subLinks: [
+        { labelEn: 'Feedback Hub', labelAr: 'لوحة الشكاوى', href: '/backoffice/feedback' },
+        { labelEn: 'Complaints', labelAr: 'إدارة الشكاوى', href: '/backoffice/feedback?tab=manage' },
+        { labelEn: 'CSAT Surveys', labelAr: 'الاستطلاعات', href: '/backoffice/feedback?tab=surveys' },
+        { labelEn: 'Resolutions', labelAr: 'الإجراءات والحلول', href: '/backoffice/feedback?tab=actions' },
+      ],
+    },
+    {
+      id: 'fleet',
+      category: 'fleet_hr' as ModuleCategory,
+      titleEn: 'SuperSonic Fleet Logistics',
+      titleAr: 'أسطول النقل واللوجستيات (SuperSonic)',
+      descriptionEn: 'Live GPS vehicle tracking, geographic delivery corridors, and fuel audits.',
+      descriptionAr: 'تتبع الشاحنات عبر GPS، تفويج الممرات، والرقابة على الوقود.',
+      icon: Truck,
+      accent: 'text-blue-700 bg-blue-50 border-blue-200/80',
+      primaryRoute: '/backoffice/fleet',
+      subLinks: [
+        { labelEn: 'Dispatch Radar', labelAr: 'رادار الشاحنات', href: '/backoffice/fleet' },
+        { labelEn: 'Corridors', labelAr: 'ممرات التوصيل', href: '/backoffice/fleet?tab=corridors' },
+        { labelEn: 'Maintenance', labelAr: 'الوقود والصيانة', href: '/backoffice/fleet?tab=maintenance' },
+        { labelEn: 'Trip Reports', labelAr: 'تقارير الرحلات', href: '/backoffice/fleet/reports' },
+      ],
+    },
+    {
+      id: 'v-driver',
+      category: 'fleet_hr' as ModuleCategory,
+      titleEn: 'V-Driver (Field Driver App)',
+      titleAr: 'تطبيق السائقين الميداني (V-Driver)',
+      descriptionEn: 'Mobile PWA for delivery drivers, digital POD signatures, and cash collection.',
+      descriptionAr: 'تطبيق السائقين لتوجيه المسارات وإثبات التسليم الإلكتروني.',
+      icon: Smartphone,
+      accent: 'text-slate-700 bg-slate-100 border-slate-200/80',
+      primaryRoute: '/v-driver',
+      subLinks: [
+        { labelEn: 'Driver PWA', labelAr: 'شاشة السائق', href: '/v-driver' },
+        { labelEn: 'Route Dispatch', labelAr: 'تفويج الممرات', href: '/backoffice/fleet?tab=corridors' },
+        { labelEn: 'Live GPS', labelAr: 'تتبع السائقين', href: '/backoffice/fleet' },
+        { labelEn: 'POD Receipts', labelAr: 'إثباتات التسليم', href: '/delivery-of-goods' },
+      ],
+    },
+    {
+      id: 'hr',
+      category: 'fleet_hr' as ModuleCategory,
+      titleEn: 'Human Resources & Payroll',
+      titleAr: 'الموارد البشرية ومسير الرواتب',
+      descriptionEn: 'Employee directory, biometric attendance, shift schedules, and net payslips.',
+      descriptionAr: 'سجل الموظفين، الحضور والانصراف، المناوبات وقسائم الرواتب.',
+      icon: UserCheck,
+      accent: 'text-teal-700 bg-teal-50 border-teal-200/80',
+      primaryRoute: '/backoffice/hr',
+      subLinks: [
+        { labelEn: 'HR Overview', labelAr: 'لوحة الموارد البشرية', href: '/backoffice/hr' },
+        { labelEn: 'Employees', labelAr: 'دليل الموظفين', href: '/backoffice/hr?tab=personnel' },
+        { labelEn: 'Attendance', labelAr: 'سجل الدوام', href: '/backoffice/hr?tab=attendance' },
+        { labelEn: 'Payroll', labelAr: 'مسير الرواتب', href: '/backoffice/hr?tab=payroll' },
+      ],
+    },
+  ], []);
 
-  // Search filter
+  const categories: Array<{ id: ModuleCategory; labelEn: string; labelAr: string; count: number }> = useMemo(() => [
+    { id: 'all', labelEn: 'All Modules', labelAr: 'جميع الوحدات', count: modulesList.length },
+    { id: 'core', labelEn: 'Core & Operations', labelAr: 'العمليات والمالية', count: modulesList.filter(m => m.category === 'core').length },
+    { id: 'crm', labelEn: 'Sales, CRM & Commerce', labelAr: 'المبيعات والعملاء', count: modulesList.filter(m => m.category === 'crm').length },
+    { id: 'fleet_hr', labelEn: 'Fleet & Workforce', labelAr: 'الأسطول والموارد البشرية', count: modulesList.filter(m => m.category === 'fleet_hr').length },
+  ], [modulesList]);
+
   const filteredModules = useMemo(() => {
-    if (!searchQuery.trim()) return modulesList;
-    const q = searchQuery.toLowerCase().trim();
-    return modulesList.filter(m => 
-      m.titleEn.toLowerCase().includes(q) ||
-      m.titleAr.includes(q) ||
-      m.descriptionEn.toLowerCase().includes(q) ||
-      m.descriptionAr.includes(q) ||
-      m.subLinks.some(s => s.labelEn.toLowerCase().includes(q) || s.labelAr.includes(q))
-    );
-  }, [modulesList, searchQuery]);
+    return modulesList.filter(m => {
+      if (activeCategory !== 'all' && m.category !== activeCategory) return false;
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase().trim();
+      return (
+        m.titleEn.toLowerCase().includes(q) ||
+        m.titleAr.includes(q) ||
+        m.descriptionEn.toLowerCase().includes(q) ||
+        m.descriptionAr.includes(q) ||
+        m.subLinks.some(s => s.labelEn.toLowerCase().includes(q) || s.labelAr.includes(q))
+      );
+    });
+  }, [modulesList, activeCategory, searchQuery]);
+
+  const tierLabel = useMemo(() => {
+    const raw = (currentTenant?.subscriptionTier || 'ENTERPRISE').toUpperCase();
+    return raw.includes('ENTERPRISE') ? 'ENTERPRISE' : raw;
+  }, [currentTenant?.subscriptionTier]);
 
   return (
-    <div dir={dir} className="max-w-7xl mx-auto space-y-6 pb-12">
-      
-      {/* 1. EXECUTIVE ENTERPRISE BANNER */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs relative overflow-hidden">
-        <div className="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
-          
-          <div className="flex items-start sm:items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-amber-500/30 flex items-center justify-center text-amber-400 shadow-md shrink-0">
-              <Building2 className="w-7 h-7" />
-            </div>
-            
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {currentTenant?.name || 'Southern Olive Oil Products S.A.R.L'}
-                </h1>
-                <span className="bg-amber-100 text-amber-800 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-bold">
-                  #{currentTenant?.companyId || '1300'}
-                </span>
-                <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                  {currentTenant?.subscriptionTier || 'PRO'} Enterprise
-                </span>
-              </div>
-              <p className="text-xs text-slate-600 font-medium flex flex-wrap items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                  {isAr ? 'البوابة المركزية: الشويفات وصيدا ومعصرة صور' : 'Gateway: Choueifat Logistics & Tyre Pressing Mill'}
-                </span>
-                <span className="text-slate-300">•</span>
-                <span className="flex items-center gap-1 font-mono text-slate-600">
-                  <Clock className="w-3.5 h-3.5 text-slate-500" />
-                  {currentTime || '12:00:00 PM'}
-                </span>
-              </p>
-            </div>
-          </div>
+    <div dir={dir} className="max-w-7xl mx-auto space-y-5 pb-10">
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            <Link prefetch={false}
-              href="/backoffice/inbox"
-              className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-slate-300 relative cursor-pointer"
-            >
-              <Inbox className="w-4 h-4 text-slate-700" />
-              <span>{isAr ? 'صندوق الموافقات' : 'Approval Inbox'}</span>
-              {stats.pendingApprovals > 0 && (
-                <span className="px-1.5 py-0.2 bg-red-600 text-white rounded-full text-[10px] font-extrabold animate-pulse">
-                  {stats.pendingApprovals}
-                </span>
-              )}
-            </Link>
-
-            <Link prefetch={false}
-              href="/dashboard/sales"
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 cursor-pointer"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span>{isAr ? 'نقطة البيع (POS)' : 'Open POS & Sales'}</span>
-            </Link>
-
-            <Link prefetch={false}
-              href="/admin"
-              className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-amber-400 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              <span>{isAr ? 'إدارة المؤسسة ↩' : 'Admin Hub ↩'}</span>
-            </Link>
+      {/* 1. CLEAN WORKSPACE HEADER & QUICK COMMAND BAR */}
+      <section className="bg-white border border-slate-200/90 rounded-2xl px-5 py-4 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5 min-w-0">
+          <div className="w-11 h-11 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center shrink-0 shadow-xs">
+            <Building2 className="w-5 h-5" />
           </div>
-
-        </div>
-      </div>
-
-      {/* 2. REAL-TIME ENTERPRISE KPI HIGHLIGHTS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        {/* Sales & Cashflow Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs hover:border-emerald-400 transition-colors">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              {isAr ? 'إجمالي نشاط اليوم' : "Today's Gross Activity"}
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <DollarSign className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <div className="text-2xl font-black text-slate-900">$12,480.00</div>
-            <div className="text-[11px] text-emerald-700 font-bold mt-0.5 flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" />
-              <span>1,116,960,000 LBP @ 89,500</span>
-            </div>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
-            <span className="text-slate-500">{isAr ? 'صندوق الكاشير' : 'Cashier Drawers'}</span>
-            <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-              {isAr ? 'نشط ومطابق' : 'Balanced & Active'}
-            </span>
-          </div>
-        </div>
-
-        {/* Dual-Signoff & Pending Approvals */}
-        <Link prefetch={false} 
-          href="/backoffice/inbox" 
-          className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs hover:border-amber-400 transition-colors cursor-pointer group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              {isAr ? 'سندات بانتظار الاعتماد' : 'Pending Dual-Signoff'}
-            </span>
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold ${
-              stats.pendingApprovals > 0 ? 'bg-amber-50 text-amber-600 animate-bounce' : 'bg-slate-50 text-slate-500'
-            }`}>
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <div className="text-2xl font-black text-slate-900 flex items-center gap-2">
-              <span>{stats.pendingApprovals}</span>
-              <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
-                {isAr ? 'يتطلب توقيع' : 'Requires Signoff'}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-lg font-extrabold text-slate-900 truncate">
+                {currentTenant?.name || 'Southern Olive and Oil Products S.A.R.L'}
+              </h1>
+              <span className="text-[11px] font-mono font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+                #{currentTenant?.companyId || '1300'}
+              </span>
+              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                {tierLabel}
               </span>
             </div>
-            <div className="text-[11px] text-slate-500 font-medium mt-0.5">
-              {isAr ? 'سندات تفوق سقف الصلاحية' : 'Limit-exceeding vouchers in inbox'}
-            </div>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-amber-700 font-bold group-hover:text-amber-800">
-            <span>{isAr ? 'فتح صندوق الموافقات' : 'Review in Approval Inbox'}</span>
-            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </div>
-        </Link>
-
-        {/* SuperSonic Fleet Status */}
-        <Link prefetch={false} 
-          href="/backoffice/fleet" 
-          className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs hover:border-blue-400 transition-colors cursor-pointer group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              {isAr ? 'أسطول الشاحنات الحي' : 'Live Fleet Logistics'}
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Truck className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <div className="text-2xl font-black text-slate-900">12 / 14</div>
-            <div className="text-[11px] text-blue-700 font-bold mt-0.5 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
-              <span>{isAr ? 'مركبات في الخدمة على 4 ممرات' : 'Active On 4 Corridors'}</span>
-            </div>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-blue-700 font-bold group-hover:text-blue-800">
-            <span>{isAr ? 'خريطة التتبع الفوري' : 'Live Corridor Radar'}</span>
-            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </div>
-        </Link>
-
-        {/* Olive Pressing & Storage */}
-        <Link prefetch={false} 
-          href="/backoffice/operations" 
-          className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs hover:border-purple-400 transition-colors cursor-pointer group"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              {isAr ? 'المعصرة والخزانات' : 'Mill & Tank Storage'}
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-              <Boxes className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <div className="text-2xl font-black text-slate-900">42,500 L</div>
-            <div className="text-[11px] text-purple-700 font-bold mt-0.5">
-              {isAr ? 'زيت زيتون بكر ممتاز مخزن' : 'Extra Virgin Olive Oil Tanks'}
-            </div>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-purple-700 font-bold group-hover:text-purple-800">
-            <span>{isAr ? 'سجل التشغيل والعصر' : 'View Operations Hub'}</span>
-            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </div>
-        </Link>
-
-      </div>
-
-      {/* 3. FAST ACTION LAUNCHPAD */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-600" />
-            <span className="text-xs font-black text-slate-800 uppercase tracking-wider">
-              {isAr ? 'منصة الإجراءات السريعة' : 'Enterprise Quick Action Launchpad'}
-            </span>
-          </div>
-          <span className="text-[11px] text-slate-500 font-medium">
-            {isAr ? 'اختصارات العمليات اليومية' : 'Frequently executed enterprise workflows'}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
-          <Link prefetch={false}
-            href="/backoffice/accounting?action=new-jv"
-            className="p-3 bg-white border border-slate-200 hover:border-indigo-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <FileText className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-bold text-slate-800 group-hover:text-indigo-600">
-              {isAr ? 'سند قيد (JV)' : 'New Voucher'}
-            </span>
-          </Link>
-
-          <Link prefetch={false}
-            href="/dashboard/sales"
-            className="p-3 bg-white border border-slate-200 hover:border-emerald-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <ShoppingCart className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-bold text-slate-800 group-hover:text-emerald-600">
-              {isAr ? 'فاتورة بيع' : 'Sales / POS'}
-            </span>
-          </Link>
-
-          <Link prefetch={false}
-            href="/backoffice/fleet"
-            className="p-3 bg-white border border-slate-200 hover:border-amber-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Truck className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-bold text-slate-800 group-hover:text-amber-600">
-              {isAr ? 'خريطة الأسطول' : 'Fleet Map'}
-            </span>
-          </Link>
-
-          <Link prefetch={false}
-            href="/backoffice/inbox"
-            className="p-3 bg-white border border-slate-200 hover:border-red-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-bold text-slate-800 group-hover:text-red-600">
-              {isAr ? 'الموافقات' : 'Approvals'}
-            </span>
-          </Link>
-
-          <Link prefetch={false}
-            href="/backoffice/customers"
-            className="p-3 bg-white border border-slate-200 hover:border-blue-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Users className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-bold text-slate-800 group-hover:text-blue-600">
-              {isAr ? 'العملاء' : 'Customers'}
-            </span>
-          </Link>
-
-          <Link prefetch={false}
-            href="/backoffice/reportview"
-            className="p-3 bg-white border border-slate-200 hover:border-teal-400 hover:shadow-xs rounded-xl flex flex-col items-center justify-center text-center gap-1.5 transition-all group cursor-pointer"
-          >
-            <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <FileText className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-bold text-slate-800 group-hover:text-teal-600">
-              {isAr ? 'التقارير' : 'Reports Hub'}
-            </span>
-          </Link>
-        </div>
-
-        {/* Standalone Apps Suite (V-Suite) External Quick Launch */}
-        <div className="mt-3 pt-3 border-t border-slate-200/80">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-              <ExternalLink className="w-3.5 h-3.5 text-amber-600" />
-              <span>{isAr ? 'منظومة التطبيقات المستقلة (V-Suite — فتح في نافذة مستقلة)' : 'Standalone Apps Suite (V-Suite — Launch in New Tab)'}</span>
-            </div>
-            <span className="text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.2 rounded-full">
-              4 EXTERNAL APPS
-            </span>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <a
-              href="/connect"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2.5 bg-cyan-50/70 hover:bg-cyan-100/70 border border-cyan-200 rounded-xl flex items-center justify-between text-left group transition-all"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-cyan-600 text-white flex items-center justify-center shadow-xs">
-                  <Share2 className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-cyan-900 leading-tight">{t('vconnect', 'V-Connect')}</div>
-                  <div className="text-[10px] text-slate-500 font-medium">{t('social_crm_whatsapp', 'Social CRM & WhatsApp')}</div>
-                </div>
-              </div>
-              <ExternalLink className="w-3.5 h-3.5 text-cyan-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </a>
-
-            <a
-              href="/v-driver"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2.5 bg-blue-50/70 hover:bg-blue-100/70 border border-blue-200 rounded-xl flex items-center justify-between text-left group transition-all"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs">
-                  <Smartphone className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-blue-900 leading-tight">{t('vdriver', 'V-Driver')}</div>
-                  <div className="text-[10px] text-slate-500 font-medium">{t('driver_fleet_pwa', 'Driver & Fleet PWA')}</div>
-                </div>
-              </div>
-              <ExternalLink className="w-3.5 h-3.5 text-blue-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </a>
-
-            <a
-              href="/pos"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2.5 bg-emerald-50/70 hover:bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between text-left group transition-all"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs">
-                  <ShoppingCart className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-emerald-900 leading-tight">{t('vpos', 'V-POS')}</div>
-                  <div className="text-[10px] text-slate-500 font-medium">{t('touch_counter_sales', 'Touch Counter Sales')}</div>
-                </div>
-              </div>
-              <ExternalLink className="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </a>
-
-            <a
-              href="/v-store"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2.5 bg-amber-50/70 hover:bg-amber-100/70 border border-amber-200 rounded-xl flex items-center justify-between text-left group transition-all"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center shadow-xs">
-                  <Store className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <div className="text-xs font-extrabold text-slate-900 group-hover:text-amber-900 leading-tight">{t('vstore', 'V-Store')}</div>
-                  <div className="text-[10px] text-slate-500 font-medium">{t('storefront_b2b_web', 'Storefront / B2B Web')}</div>
-                </div>
-              </div>
-              <ExternalLink className="w-3.5 h-3.5 text-amber-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. SEARCH & ALL 12 ENTERPRISE MODULES DIRECTORY */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
-          <div>
-            <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-amber-600" />
-              <span>{isAr ? `منظومة الوحدات المؤسسية (${modulesList.filter(m => isModuleActive(m.id)).length} وحدة فعّالة)` : `Enterprise Modules Portal (${modulesList.filter(m => isModuleActive(m.id)).length} Active Modules)`}</span>
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {isAr ? 'اختر الوحدة المطلوبة للوصول إلى لوحات التحكم والشاشات التشغيلية' : 'Select a primary module to access dedicated operations and analytics'}
+            <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5 truncate">
+              <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span className="truncate">
+                {isAr ? 'البوابة المركزية: الشويفات وصيدا ومعصرة صور' : 'Choueifat Logistics & Tyre Pressing Mill'}
+              </span>
             </p>
           </div>
+        </div>
 
-          <div className="relative w-full sm:w-72">
-            <input
-              type="text"
-              placeholder={isAr ? 'بحث في الوحدات والشاشات...' : 'Filter modules & screens...'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs bg-white border border-slate-300 rounded-xl py-2 px-3 pl-8 text-slate-800 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
-            />
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+        {/* Streamlined Primary Actions & External Suite Chips */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            prefetch={false}
+            href="/dashboard/sales"
+            className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors shadow-2xs flex items-center gap-1.5"
+          >
+            <ShoppingCart className="w-3.5 h-3.5" />
+            <span>{isAr ? 'نقطة البيع (POS)' : 'Open POS & Sales'}</span>
+          </Link>
+
+          <Link
+            prefetch={false}
+            href="/backoffice/accounting?action=new-jv"
+            className="px-3 py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-800 border border-slate-200/90 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+          >
+            <FileText className="w-3.5 h-3.5 text-slate-600" />
+            <span>{isAr ? 'سند قيد جديد' : 'New Voucher'}</span>
+          </Link>
+
+          <Link
+            prefetch={false}
+            href="/backoffice/reportview"
+            className="px-3 py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-800 border border-slate-200/90 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+          >
+            <FileText className="w-3.5 h-3.5 text-slate-600" />
+            <span>{isAr ? 'التقارير' : 'Reports'}</span>
+          </Link>
+
+          <Link
+            prefetch={false}
+            href="/backoffice/inbox"
+            className="px-3 py-2 bg-slate-100 hover:bg-slate-200/80 text-slate-800 border border-slate-200/90 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+          >
+            <Inbox className="w-3.5 h-3.5 text-slate-600" />
+            <span>{isAr ? 'الموافقات' : 'Inbox'}</span>
+            {stats.pendingApprovals > 0 && (
+              <span className="px-1.5 py-0.2 bg-red-600 text-white rounded-full text-[10px] font-bold">
+                {stats.pendingApprovals}
+              </span>
+            )}
+          </Link>
+
+          <div className="hidden sm:block h-5 w-px bg-slate-200 mx-0.5" />
+
+          {/* Compact External Web Apps Pill Group */}
+          <div className="flex items-center gap-1 bg-slate-50 border border-slate-200/80 rounded-xl p-1">
+            {[
+              { label: 'V-Connect', href: '/connect' },
+              { label: 'V-Driver', href: '/v-driver' },
+              { label: 'V-POS', href: '/pos' },
+              { label: 'V-Store', href: '/v-store' },
+            ].map((app) => (
+              <a
+                key={app.href}
+                href={app.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`Launch ${app.label} in new tab`}
+                className="px-2 py-1 rounded-lg text-[11px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-2xs transition-all flex items-center gap-1"
+              >
+                <span>{app.label}</span>
+                <ExternalLink className="w-2.5 h-2.5 text-slate-400" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 2. COMPACT 4-COLUMN KPI SUMMARY STRIP */}
+      <section aria-label="Key Performance Metrics" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <Link
+          prefetch={false}
+          href="/dashboard/sales"
+          className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl px-4 py-3.5 shadow-2xs flex items-center justify-between gap-3 transition-colors group"
+        >
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold text-slate-500">
+              {isAr ? 'إجمالي نشاط اليوم' : "Today's Gross Activity"}
+            </div>
+            <div className="text-xl font-black text-slate-900 mt-0.5">$12,480.00</div>
+            <div className="text-[11px] text-emerald-700 font-medium mt-0.5 truncate">
+              1,116,960,000 LBP • {isAr ? 'نشط ومطابق' : 'Drawers Balanced'}
+            </div>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
+            <DollarSign className="w-4 h-4" />
+          </div>
+        </Link>
+
+        <Link
+          prefetch={false}
+          href="/backoffice/inbox"
+          className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl px-4 py-3.5 shadow-2xs flex items-center justify-between gap-3 transition-colors group"
+        >
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold text-slate-500">
+              {isAr ? 'سندات بانتظار الاعتماد' : 'Pending Dual-Signoff'}
+            </div>
+            <div className="text-xl font-black text-slate-900 mt-0.5 flex items-center gap-2">
+              <span>{stats.pendingApprovals}</span>
+              <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200/80 px-1.5 py-0.5 rounded-md">
+                {stats.pendingApprovals === 0
+                  ? (isAr ? 'مكتمل' : 'All Clear')
+                  : (isAr ? 'بانتظار التوقيع' : 'Action Needed')}
+              </span>
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+              {isAr ? 'صندوق الموافقات والسندات' : 'Voucher & Expense Approvals'}
+            </div>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:bg-amber-100 transition-colors">
+            <ShieldCheck className="w-4 h-4" />
+          </div>
+        </Link>
+
+        <Link
+          prefetch={false}
+          href="/backoffice/fleet"
+          className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl px-4 py-3.5 shadow-2xs flex items-center justify-between gap-3 transition-colors group"
+        >
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold text-slate-500">
+              {isAr ? 'أسطول الشاحنات الحي' : 'Live Fleet Logistics'}
+            </div>
+            <div className="text-xl font-black text-slate-900 mt-0.5">12 / 14</div>
+            <div className="text-[11px] text-blue-700 font-medium mt-0.5 truncate">
+              {isAr ? 'مركبات نشطة على 4 ممرات' : 'Active across 4 route corridors'}
+            </div>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+            <Truck className="w-4 h-4" />
+          </div>
+        </Link>
+
+        <Link
+          prefetch={false}
+          href="/backoffice/operations"
+          className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl px-4 py-3.5 shadow-2xs flex items-center justify-between gap-3 transition-colors group"
+        >
+          <div className="min-w-0">
+            <div className="text-[11px] font-semibold text-slate-500">
+              {isAr ? 'المعصرة والخزانات' : 'Mill & Tank Storage'}
+            </div>
+            <div className="text-xl font-black text-slate-900 mt-0.5">42,500 L</div>
+            <div className="text-[11px] text-purple-700 font-medium mt-0.5 truncate">
+              {isAr ? 'مخزون زيت الزيتون البكر الممتاز' : 'Extra Virgin Olive Oil Inventory'}
+            </div>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
+            <Boxes className="w-4 h-4" />
+          </div>
+        </Link>
+      </section>
+
+      {/* 3. ORGANIZED ENTERPRISE MODULES WORKSPACE */}
+      <section className="space-y-3.5">
+        {/* Category Filter Tabs + Search + View Density Toggle */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-2.5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+          {/* Category Tabs */}
+          <div role="tablist" aria-label="Module Categories" className="flex flex-wrap items-center gap-1">
+            {categories.map((cat) => {
+              const active = activeCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    active
+                      ? 'bg-slate-900 text-white shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <span>{isAr ? cat.labelAr : cat.labelEn}</span>
+                  <span
+                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                      active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                    }`}
+                  >
+                    {cat.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Search & Compact Toggle */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 md:w-64">
+              <input
+                type="text"
+                placeholder={isAr ? 'بحث في الوحدات والشاشات...' : 'Search modules or screens...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 pl-8 text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400 transition-all"
+              />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
+            </div>
+
+            <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+              <button
+                type="button"
+                onClick={() => setCompactMode(false)}
+                title={isAr ? 'عرض تفصيلي' : 'Standard View'}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  !compactMode ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCompactMode(true)}
+                title={isAr ? 'عرض مدمج' : 'Compact View'}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  compactMode ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <List className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Modules Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          className={`grid gap-3.5 ${
+            compactMode
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          }`}
+        >
           {filteredModules.map((module) => {
             const Icon = module.icon;
             const enabled = isModuleActive(module.id);
 
             return (
-              <div
+              <article
                 key={module.id}
-                className={`bg-white border rounded-2xl p-5 shadow-xs flex flex-col justify-between transition-all duration-200 ${
-                  enabled 
-                    ? 'border-slate-200 hover:border-amber-400 hover:shadow-md hover:-translate-y-0.5' 
-                    : 'border-slate-200 opacity-60'
+                className={`bg-white border rounded-2xl p-4 shadow-2xs flex flex-col justify-between transition-all ${
+                  enabled
+                    ? 'border-slate-200/90 hover:border-slate-300 hover:shadow-sm'
+                    : 'border-slate-200 opacity-55'
                 }`}
               >
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white ${
-                        module.color === 'emerald' ? 'bg-emerald-600' :
-                        module.color === 'amber' ? 'bg-amber-600' :
-                        module.color === 'blue' ? 'bg-blue-600' :
-                        module.color === 'rose' ? 'bg-rose-600' :
-                        module.color === 'purple' ? 'bg-purple-600' :
-                        module.color === 'indigo' ? 'bg-indigo-600' :
-                        module.color === 'teal' ? 'bg-teal-600' :
-                        'bg-cyan-600'
-                      }`}>
-                        <Icon className="w-5 h-5" />
+                <div>
+                  {/* Card Header: Icon + Direct Module Link */}
+                  <header className="flex items-start justify-between gap-2.5">
+                    <Link
+                      prefetch={false}
+                      href={module.primaryRoute}
+                      className="flex items-center gap-3 group min-w-0 flex-1"
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${module.accent}`}
+                      >
+                        <Icon className="w-4 h-4" />
                       </div>
-                      <div>
-                        <div className="text-[10px] font-mono font-bold text-slate-400 uppercase">
-                          MODULE {module.number}
-                        </div>
-                        <h3 className="text-sm font-extrabold text-slate-900 leading-tight">
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-extrabold text-slate-900 group-hover:text-amber-700 transition-colors truncate">
                           {isAr ? module.titleAr : module.titleEn}
                         </h3>
+                        {!compactMode && (
+                          <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                            {isAr ? module.descriptionAr : module.descriptionEn}
+                          </p>
+                        )}
                       </div>
-                    </div>
+                    </Link>
 
-                    <span className="text-[9px] font-extrabold tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                      {module.badge}
-                    </span>
-                  </div>
+                    <Link
+                      prefetch={false}
+                      href={module.primaryRoute}
+                      aria-label={`Open ${isAr ? module.titleAr : module.titleEn}`}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors shrink-0"
+                    >
+                      <ArrowUpRight className="w-4 h-4" />
+                    </Link>
+                  </header>
 
-                  <p className="text-xs text-slate-600 font-medium line-clamp-2">
-                    {isAr ? module.descriptionAr : module.descriptionEn}
-                  </p>
-
-                  {/* Sub-links quick access */}
-                  <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-1.5 text-[11px]">
+                  {/* Sub-screen Pill Shortcuts */}
+                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap gap-1.5">
                     {module.subLinks.map((sub, i) => (
-                      <Link prefetch={false}
+                      <Link
+                        prefetch={false}
                         key={i}
                         href={sub.href}
-                        className="truncate text-slate-600 hover:text-amber-700 hover:bg-amber-50/60 px-1.5 py-1 rounded transition-colors"
+                        className="text-[11px] font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200/70 px-2.5 py-1 rounded-lg transition-colors truncate max-w-full"
                       >
-                        • {isAr ? sub.labelAr : sub.labelEn}
+                        {isAr ? sub.labelAr : sub.labelEn}
                       </Link>
                     ))}
                   </div>
                 </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    {isAr ? 'مفعّل في باقتك' : 'Licensed & Active'}
-                  </span>
-
-                  <Link prefetch={false}
-                    href={module.primaryRoute}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 hover:text-amber-700 group cursor-pointer"
-                  >
-                    <span>{isAr ? 'دخول الوحدة' : 'Open Module'}</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
-              </div>
+              </article>
             );
           })}
         </div>
-      </div>
+      </section>
 
-      {/* 5. RECENT ENTERPRISE OPERATIONS AUDIT FEED */}
+      {/* 4. COLLAPSIBLE RECENT OPERATIONS & AUDIT BAR */}
       {stats.recentActivities.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <Clock className="w-4 h-4 text-slate-500" />
-              <span>{isAr ? 'سجل العمليات والتدقيق الأخير' : 'Recent Enterprise Operations & Audit Feed'}</span>
-            </h3>
-            <Link prefetch={false}
-              href="/backoffice/inbox"
-              className="text-xs font-bold text-amber-700 hover:underline"
+        <section className="bg-white border border-slate-200/90 rounded-2xl shadow-2xs overflow-hidden">
+          <div className="px-4 py-3 flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={() => setShowActivityFeed(!showActivityFeed)}
+              className="flex items-center gap-2.5 text-left min-w-0 flex-1 cursor-pointer group"
             >
-              {isAr ? 'عرض الكل في صندوق العمليات ←' : 'View Full Feed in Operations Inbox ←'}
+              <Clock className="w-4 h-4 text-slate-400 shrink-0" />
+              <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider shrink-0">
+                {isAr ? 'آخر العمليات' : 'Recent Activity'}
+              </span>
+              <span className="text-slate-300">•</span>
+              <span className="text-xs text-slate-600 truncate">
+                {stats.recentActivities[0]?.description}
+              </span>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 transition-transform shrink-0 ${
+                  showActivityFeed ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            <Link
+              prefetch={false}
+              href="/backoffice/inbox"
+              className="text-xs font-bold text-amber-700 hover:text-amber-800 shrink-0 flex items-center gap-1"
+            >
+              <span>{isAr ? 'سجل العمليات' : 'Full Log'}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="divide-y divide-slate-100 text-xs">
-            {stats.recentActivities.map((act) => (
-              <div key={act.id} className="py-2.5 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                  <div>
-                    <span className="font-bold text-slate-900">{act.description}</span>
-                    <span className="text-slate-400 mx-2">•</span>
-                    <span className="text-slate-500 font-medium">{act.performed_by}</span>
+          {showActivityFeed && (
+            <div className="px-4 pb-3 pt-1 border-t border-slate-100 divide-y divide-slate-100 text-xs">
+              {stats.recentActivities.map((act) => (
+                <div key={act.id} className="py-2 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="font-semibold text-slate-800 truncate">{act.description}</span>
+                    <span className="text-slate-400 shrink-0">•</span>
+                    <span className="text-slate-500 shrink-0">{act.performed_by}</span>
                   </div>
+                  <span className="text-[11px] font-mono text-slate-400 shrink-0">
+                    {new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 shrink-0">
-                  {new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          )}
+        </section>
       )}
 
     </div>
