@@ -1,5 +1,29 @@
 [
   {
+    "id": "c6006f03-705b-4d1d-ab35-331ac1d82e2d",
+    "commit_hash": "c6006f03705bfd1d3b35331ac1d82e2d1e9e2935",
+    "short_hash": "c6006f0",
+    "version": "v2.0.0",
+    "title": "Complete live data wiring, active user attribution, and portal audit",
+    "category": "maintenance",
+    "description": "chore(release): complete live data wiring, active user attribution, and portal audit",
+    "bullet_points": [
+      "Applied improvements to Operations & Inventory, Accounting & Finance, Procurement & Purchasing, Sales & POS",
+      "Maintained backward compatibility with existing enterprise workflows"
+    ],
+    "affected_modules": [
+      "Operations & Inventory",
+      "Accounting & Finance",
+      "Procurement & Purchasing",
+      "Sales & POS"
+    ],
+    "author_name": "mohammed-jichi",
+    "author_email": "mohammed.jichi@gmail.com",
+    "is_critical": false,
+    "deployed_at": "2026-11-22T15:43:50.000Z",
+    "created_at": "2026-11-22T17:07:31.168Z"
+  },
+  {
     "id": "1cbf9f21-929d-43b6-a83b-bee9f6b12c6e",
     "commit_hash": "1cbf9f21929dd3b6a83bbee9f6b12c6e3836db67",
     "short_hash": "1cbf9f2",

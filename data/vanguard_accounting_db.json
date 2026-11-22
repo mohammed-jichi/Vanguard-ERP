@@ -4499,7 +4499,7 @@
       "created_at": "2026-09-20T12:50:23.835Z"
     }
   ],
-  "last_updated": "2026-11-22T15:43:35.227Z",
+  "last_updated": "2026-11-22T17:07:31.178Z",
   "inbox_items": [
     {
       "id": "MSG-1789907266482-315",
@@ -4646,6 +4646,25 @@
     }
   ],
   "system_activities": [
+    {
+      "id": "act-rel-c6006f0",
+      "company_id": 1300,
+      "action_type": "SYSTEM_RELEASE_DEPLOYED",
+      "description": "Vanguard deployment succeeded: v2.0.0 (c6006f0) - Complete live data wiring, active user attribution, and portal audit",
+      "performed_by": "mohammed-jichi",
+      "metadata": {
+        "commit_hash": "c6006f03705bfd1d3b35331ac1d82e2d1e9e2935",
+        "version": "v2.0.0",
+        "category": "maintenance",
+        "modules": [
+          "Operations & Inventory",
+          "Accounting & Finance",
+          "Procurement & Purchasing",
+          "Sales & POS"
+        ]
+      },
+      "created_at": "2026-11-22T15:43:50.000Z"
+    },
     {
       "id": "act-rel-1cbf9f2",
       "company_id": 1300,
@@ -7119,6 +7138,20 @@
     "alert-exp-ev-1789895110090-9745"
   ],
   "system_alerts": [
+    {
+      "id": "alert-rel-c6006f0",
+      "type": "SYSTEM_RELEASE",
+      "severity": "INFO",
+      "title": "🚀 Platform Release v2.0.0: Complete live data wiring, active user attribution, and portal audit",
+      "message": "chore(release): complete live data wiring, active user attribution, and portal audit",
+      "timestamp": "2026-11-22T15:43:50.000Z",
+      "is_read": false,
+      "status": "PENDING",
+      "source_ref": "c6006f03705bfd1d3b35331ac1d82e2d1e9e2935",
+      "source_type": "RELEASE",
+      "actionLink": "/backoffice?openUpdates=true",
+      "actionLabel": "View Release Notes"
+    },
     {
       "id": "alert-rel-1cbf9f2",
       "type": "SYSTEM_RELEASE",
