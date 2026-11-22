@@ -35,6 +35,7 @@ import {
   subscribeToAccountingSync
 } from '@/lib/accountingPersistenceService';
 import QuickAddAccountModal from './QuickAddAccountModal';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 interface ReceiptLine {
   id: string;
@@ -62,6 +63,7 @@ export function Module4ReceiptVouchers({
   prefillFromAccount,
   prefillMemo
 }: Module4ReceiptVouchersProps) {
+  const profile = useActiveUser();
   const { t } = useLanguage();
   // Account groupings (Strict Lebanese PCG standard)
   const clientAccounts = useMemo(
@@ -150,7 +152,7 @@ export function Module4ReceiptVouchers({
         dateOfRv: v.date_of_jv,
         amount: Number(v.total_debit) || Number(v.lines?.[0]?.amount_debit) || 0,
         description: v.description,
-        enteredBy: v.created_by || 'Super Admin',
+        enteredBy: v.created_by || profile?.name || 'Vanguard Operator',
         department: v.department || 'Commercial Sales & Retail',
         posted: Boolean(v.is_posted)
       };
@@ -251,7 +253,7 @@ export function Module4ReceiptVouchers({
         description: `Customer collection receipts total $${totalAmt.toFixed(2)}`,
         department,
         postImmediately,
-        user: 'Super Admin'
+        user: profile?.name || 'Vanguard Operator'
       });
 
       onShowToast(
@@ -690,7 +692,7 @@ export function Module4ReceiptVouchers({
                               amount: r.amount,
                               description: r.description,
                               department: 'Sales & Receipts Division',
-                              enteredBy: 'Cashier / Collector',
+                              enteredBy: profile?.name || 'Vanguard Operator',
                               posted: r.posted
                             })}
                             className="text-primary hover:text-primary/80 font-bold text-xs inline-flex items-center gap-1 cursor-pointer"

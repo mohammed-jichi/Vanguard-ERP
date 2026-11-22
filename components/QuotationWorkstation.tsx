@@ -52,6 +52,7 @@ import { CRMContact, INITIAL_CONTACTS as INITIAL_CRM_CONTACTS } from './Contacts
 import ContactLookupModal from '@/components/modules/sales/ContactLookupModal';
 import CustomerLookupModal from '@/components/modules/sales/CustomerLookupModal';
 import { resolveItemPriceWaterfall } from '@/lib/customerSalesService';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 export const formatLiveTodayDate = (dateObj: Date = new Date()): string => {
   const d = dateObj;
@@ -905,6 +906,7 @@ interface QuotationWorkstationProps {
 }
 
 export default function QuotationWorkstation({ withVanguardSidebar = false }: QuotationWorkstationProps) {
+  const profile = useActiveUser();
   const { t, dir } = useLanguage();
   // Quotation header state
   const [quotationNo, setQuotationNo] = useState(() => peekNextDocNumber('QUOTATION', INITIAL_QUOTATIONS));
@@ -1751,7 +1753,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
             pipelineStage: 'Quotation Sent',
             expectedValue: grandTotalUSD,
             salesOwner: infoSalesman || defaultSalesman || 'Mohammed Jichi',
-            createdBy: 'Mohammed Jichi',
+            createdBy: profile?.name || 'Vanguard Operator',
             dateCreated:
               new Date().toLocaleDateString('en-GB', {
                 day: '2-digit',

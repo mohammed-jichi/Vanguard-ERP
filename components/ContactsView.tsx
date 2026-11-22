@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 export interface CRMContact {
   id: string;
@@ -159,6 +160,7 @@ export const INITIAL_CONTACTS: CRMContact[] = [
 ];
 
 export default function ContactsView() {
+  const profile = useActiveUser();
   const { t } = useLanguage();
   // Contacts data state synced with localStorage
   const [contacts, setContacts] = useState<CRMContact[]>(INITIAL_CONTACTS);
@@ -310,7 +312,7 @@ export default function ContactsView() {
         externalLeadId: formData.externalLeadId,
         notes: formData.notes,
         salesOwner: 'Mohammed Jichi',
-        createdBy: 'Mohammed Jichi',
+        createdBy: profile?.name || 'Vanguard Operator',
         dateCreated: new Date().toLocaleDateString('en-GB', {
           day: '2-digit',
           month: 'short',

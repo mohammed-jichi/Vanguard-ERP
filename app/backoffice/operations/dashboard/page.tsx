@@ -53,6 +53,7 @@ import SalesDashboard from '@/components/SalesDashboard';
 import SalesTeamPerformanceView from '@/components/SalesTeamPerformanceView';
 import CustomerInsightsView from '@/components/CustomerInsightsView';
 import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/lib/LanguageContext';
 import { getBranchData, getAllBranchesList, ALL_BRANCHES_CONSOLIDATED, BranchInfo } from '@/lib/branchData';
 
@@ -109,8 +110,8 @@ function OperationsDashboardContent() {
   // Filters matching Vanguard toolbar exact specs
   const [selectedBranch, setSelectedBranch] = useState<string>('ALL');
   const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
-  const [selectedYear, setSelectedYear] = useState<string>('2026');
-  const [selectedMonth, setSelectedMonth] = useState<string>('9');
+  const [selectedYear, setSelectedYear] = useState<string>(String(new Date().getFullYear()));
+  const [selectedMonth, setSelectedMonth] = useState<string>(String(new Date().getMonth() + 1));
   const [showNegatives, setShowNegatives] = useState<boolean>(false);
   const [recalculating, setRecalculating] = useState<boolean>(false);
   const [exportingPdf, setExportingPdf] = useState<boolean>(false);
@@ -207,7 +208,7 @@ function OperationsDashboardContent() {
 
   // Format Currency
   const formatCurrency = (amount: number) => {
-    const val = amount * (selectedCurrency === 'USD' ? 1 : 89500);
+    const val = amount * (selectedCurrency === 'USD' ? 1 : (currentTenant?.exchangeRate || currentTenant?.usdToLbp || 89500));
     if (selectedCurrency === 'USD') {
       return `$${val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     }
@@ -215,48 +216,16 @@ function OperationsDashboardContent() {
   };
 
   // 1. Sales Dialog Records (Last 10 Transactions)
-  const salesList: SalesRecord[] = [
-    { id: 1, REFERENCE: 'INV-4000035', CUSTOMER: 'Abou Hamza', COMPANY: 'Abou Hamza Nuts & Oils', TOTAL: 23940000 / 89500, DATE: '2026-09-04', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 2, REFERENCE: 'INV-4000036', CUSTOMER: 'George Haddad', COMPANY: 'Beirut Gourmet House', TOTAL: 18450000 / 89500, DATE: '2026-09-04', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 3, REFERENCE: 'INV-4000037', CUSTOMER: 'Fadi Mroueh', COMPANY: 'Nabatieh Southern Hub', TOTAL: 34100000 / 89500, DATE: '2026-09-03', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 4, REFERENCE: 'INV-4000038', CUSTOMER: 'Salim Kassir', COMPANY: 'Saida Wholesalers', TOTAL: 12500000 / 89500, DATE: '2026-09-03', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 5, REFERENCE: 'INV-4000039', CUSTOMER: 'Karim Daher', COMPANY: 'Tyre Hospitality Stores', TOTAL: 9800000 / 89500, DATE: '2026-09-02', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 6, REFERENCE: 'INV-4000040', CUSTOMER: 'Ziad Al-Amin', COMPANY: 'Al-Amin Superstores', TOTAL: 41200000 / 89500, DATE: '2026-09-02', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 7, REFERENCE: 'INV-4000041', CUSTOMER: 'Hassan Srour', COMPANY: 'Choueifat Depot Direct', TOTAL: 15600000 / 89500, DATE: '2026-09-01', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 8, REFERENCE: 'INV-4000042', CUSTOMER: 'Nabil Khoury', COMPANY: 'Khoury Food & Oils', TOTAL: 27800000 / 89500, DATE: '2026-08-31', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 9, REFERENCE: 'INV-4000043', CUSTOMER: 'Samir Bazzi', COMPANY: 'Bint Jbeil Retailers', TOTAL: 8900000 / 89500, DATE: '2026-08-30', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 10, REFERENCE: 'INV-4000044', CUSTOMER: 'Ahmad Chehab', COMPANY: 'Saida Wholesalers', TOTAL: 38200000 / 89500, DATE: '2026-08-29', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-  ];
+  const [salesList, setSalesList] = useState<SalesRecord[]>([]);
 
   // 2. Purchase Dialog Records (Last 10 Transactions)
-  const purchaseList: PurchaseRecord[] = [
-    { id: 1, INVOICENUMBER: 'PO-9821', SUPPLIERNAME: 'Koura Olive Growers Syndicate', SUBTOTAL: 45000.00, PURCHASEDATE: '2026-09-04', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 2, INVOICENUMBER: 'PO-9822', SUPPLIERNAME: 'Akkar Organic Farmers Guild', SUBTOTAL: 32500.00, PURCHASEDATE: '2026-09-03', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 3, INVOICENUMBER: 'PO-9823', SUPPLIERNAME: 'Lebanon Glassworks S.A.L', SUBTOTAL: 18400.00, PURCHASEDATE: '2026-09-02', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 4, INVOICENUMBER: 'PO-9824', SUPPLIERNAME: 'Italian Stainless Caps & Filters Co.', SUBTOTAL: 8900.00, PURCHASEDATE: '2026-08-30', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 5, INVOICENUMBER: 'PO-9825', SUPPLIERNAME: 'Hasbaya Olive Tree Farms', SUBTOTAL: 27600.00, PURCHASEDATE: '2026-08-28', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 6, INVOICENUMBER: 'PO-9826', SUPPLIERNAME: 'Marjeyoun Agricultural Supply', SUBTOTAL: 14200.00, PURCHASEDATE: '2026-08-26', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 7, INVOICENUMBER: 'PO-9827', SUPPLIERNAME: 'Mediterranean Label Printing Press', SUBTOTAL: 6500.00, PURCHASEDATE: '2026-08-24', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { id: 8, INVOICENUMBER: 'PO-9828', SUPPLIERNAME: 'Tyre Bio-Agronomy Co.', SUBTOTAL: 11200.00, PURCHASEDATE: '2026-08-20', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-  ];
+  const [purchaseList, setPurchaseList] = useState<PurchaseRecord[]>([]);
 
   // 3. Wastage Dialog Records (Last 10 Transactions)
-  const wastageList: WastageRecord[] = [
-    { id: 1, SER: 'WST-2026-089', COST: 1250.00, DDATE: '2026-09-02', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Glass Bottle Breakage during conveyor boxing' },
-    { id: 2, SER: 'WST-2026-088', COST: 890.00, DDATE: '2026-08-29', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Sediment residue filter drain cleaning' },
-    { id: 3, SER: 'WST-2026-087', COST: 420.00, DDATE: '2026-08-27', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Cap leak on 500ml sample tins' },
-    { id: 4, SER: 'WST-2026-086', COST: 310.00, DDATE: '2026-08-24', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Pallet drop during forklift staging' },
-    { id: 5, SER: 'WST-2026-085', COST: 680.00, DDATE: '2026-08-21', BARANCHNAME: '1300-01 - Choueifat Main Facility', REASON: 'Olive pressing calibration waste' },
-  ];
+  const [wastageList, setWastageList] = useState<WastageRecord[]>([]);
 
   // 4. Variance Dialog Records (Last 10 Transactions)
-  const varianceList: VarianceRecord[] = [
-    { SER: 1, PRODUCT: 'Extra Virgin Olive Oil 500ml Glass', VARIANCE: -4, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-09-01', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { SER: 2, PRODUCT: 'Virgin Olive Oil 1L Tin', VARIANCE: +2, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-31', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { SER: 3, PRODUCT: 'Extra Virgin Olive Oil 16L Bulk Tin', VARIANCE: -1, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-28', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { SER: 4, PRODUCT: 'Traditional Castile Soap Bar 150g', VARIANCE: +12, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-25', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-    { SER: 5, PRODUCT: 'Organic Cured Green Olives 1kg Jar', VARIANCE: -3, LOCATION: 'Southern Olive and Oil Products - Main', ADATE: '2026-08-22', BARANCHNAME: '1300-01 - Choueifat Main Facility' },
-  ];
+  const [varianceList, setVarianceList] = useState<VarianceRecord[]>([]);
 
   // 5. Stock Categories Breakdown
   const stockCategories: StockRecord[] = [
@@ -438,12 +407,7 @@ function OperationsDashboardContent() {
   const totalIdealCost = idealProfitData.reduce((a, b) => a + b.cost, 0);
 
   // Expired Items in Stock Tab
-  const expiredItems = [
-    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Traditional Cured Black Olives 500g', qty: 24.00, expiry: '2026-08-25' },
-    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Olive Blossom Infused Hand Balm 50ml', qty: 12.00, expiry: '2026-08-28' },
-    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Extra Virgin Early Harvest 250ml', qty: 18.00, expiry: '2026-09-15' },
-    { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Castile Liquid Soap 1L Refill', qty: 8.00, expiry: '2026-09-20' },
-  ];
+  const expiredItems: { branch: string; location: string; product: string; qty: number; expiry: string }[] = [];
 
   // Out of Stock Items Data
   const outOfStockBranches = [
@@ -472,20 +436,82 @@ function OperationsDashboardContent() {
   ];
 
   // Quantity Not Received Records (Matching Omega getInventoryQtyNotReceived)
-  const pendingProductRequests = [
-    { reqNo: 'PR-2026-042', reqDate: '2026-09-02', branch: '1300-01 - Choueifat Main Facility', item: 'Extra Virgin Olive Oil 500ml Glass', qty: 120 },
-    { reqNo: 'PR-2026-045', reqDate: '2026-09-03', branch: '1300-01 - Choueifat Main Facility', item: 'Dark Green Marasca Glass Bottles 500ml', qty: 500 },
-    { reqNo: 'PR-2026-048', reqDate: '2026-09-04', branch: '1300-01 - Choueifat Main Facility', item: 'Table Olives Stuffed with Almond 500g', qty: 200 },
-  ];
+  const pendingProductRequests: { reqNo: string; reqDate: string; branch: string; item: string; qty: number }[] = [];
 
-  const pendingTransfers = [
-    { reqNo: 'TR-2026-018', reqDate: '2026-09-01', fromBranch: '1300-01 - Choueifat Main Facility', toBranch: '1300-01 - Choueifat Main Facility', item: 'Extra Virgin Olive Oil 16L Bulk Tin', qty: 45 },
-    { reqNo: 'TR-2026-021', reqDate: '2026-09-03', fromBranch: '1300-01 - Choueifat Main Facility', toBranch: '1300-01 - Choueifat Main Facility', item: 'Pure Castile Liquid Soap 1L Refill', qty: 30 },
-  ];
+  const pendingTransfers: { reqNo: string; reqDate: string; fromBranch: string; toBranch: string; item: string; qty: number }[] = [];
 
   const totalQtyNotReceivedCount = pendingProductRequests.length + pendingTransfers.length;
 
   // Filtered lists for modals based on current branch
+  // Live tenant-scoped data (posted-only for financial documents)
+  const dashTenantId = (currentTenant?.id && currentTenant.id !== '1300' && !String(currentTenant.id).startsWith('comp-'))
+    ? currentTenant.id
+    : '00000000-0000-0000-0000-000000000001';
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: inv } = await supabase
+          .from('sales_invoices').select('*')
+          .eq('tenant_id', dashTenantId).eq('is_posted', true)
+          .order('created_at', { ascending: false }).limit(10);
+        if (!cancelled && Array.isArray(inv)) {
+          setSalesList(inv.map((r: any, i: number) => ({
+            id: i + 1,
+            REFERENCE: r.invoice_ref || r.invoice_number || String(r.id),
+            CUSTOMER: r.customer_name || 'Walk-in Cash Customer',
+            COMPANY: r.company || r.customer_name || 'Walk-in Cash Customer',
+            TOTAL: Number(r.amount_usd ?? r.total_amount ?? r.grand_total ?? 0) || 0,
+            DATE: String(r.date || r.created_at || '').slice(0, 10),
+            BARANCHNAME: r.branch || r.branch_name || '',
+          })));
+        }
+        const { data: pur } = await supabase
+          .from('purchases_invoices').select('*')
+          .eq('tenant_id', dashTenantId).eq('is_posted', true)
+          .order('created_at', { ascending: false }).limit(10);
+        if (!cancelled && Array.isArray(pur)) {
+          setPurchaseList(pur.map((r: any, i: number) => ({
+            id: i + 1,
+            INVOICENUMBER: r.invoice_number || String(r.id),
+            SUPPLIERNAME: r.supplier || r.supplier_name || '',
+            SUBTOTAL: Number(r.amount_usd ?? r.subtotal ?? r.total_amount ?? 0) || 0,
+            PURCHASEDATE: String(r.date || r.created_at || '').slice(0, 10),
+            BARANCHNAME: r.branch || r.branch_name || '',
+          })));
+        }
+        const { data: stx } = await supabase
+          .from('stock_transactions').select('*')
+          .eq('tenant_id', dashTenantId)
+          .order('created_at', { ascending: false }).limit(200);
+        if (!cancelled && Array.isArray(stx)) {
+          const wast = stx.filter((r: any) => /WAST|LOST/i.test(String(r.transaction_type || '')));
+          const adj = stx.filter((r: any) => /ADJUST/i.test(String(r.transaction_type || '')));
+          setWastageList(wast.slice(0, 10).map((r: any, i: number) => ({
+            id: i + 1,
+            SER: r.reference_number || String(r.id),
+            COST: Math.abs(Number(r.total_cost ?? r.quantity ?? 0)) || 0,
+            DDATE: String(r.created_at || '').slice(0, 10),
+            BARANCHNAME: r.branch_id || '',
+            REASON: r.notes || r.transaction_type || '',
+          })));
+          setVarianceList(adj.slice(0, 10).map((r: any, i: number) => ({
+            SER: i + 1,
+            PRODUCT: r.item_id || '',
+            VARIANCE: Number(r.quantity) || 0,
+            LOCATION: r.location || '',
+            ADATE: String(r.created_at || '').slice(0, 10),
+            BARANCHNAME: r.branch_id || '',
+          })));
+        }
+      } catch {
+        /* keep clean empty state */
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [dashTenantId]);
+
   const filteredSalesList = useMemo(() => {
     if (selectedBranch === 'ALL' || selectedBranch === '0') return salesList;
     const code = currentBranchData.code;
@@ -533,7 +559,7 @@ function OperationsDashboardContent() {
     setRecalcToast(`Recalculating operations balances for ${currentBranchData.name}...`);
     setTimeout(() => {
       setRecalculating(false);
-      setRecalcToast(`✓ Balances recalculated successfully for ${currentBranchData.name}`);
+      setRecalcToast(`âœ“ Balances recalculated successfully for ${currentBranchData.name}`);
       setTimeout(() => setRecalcToast(null), 3500);
     }, 600);
   };
@@ -551,7 +577,7 @@ function OperationsDashboardContent() {
     setTimeout(() => {
       setIsSyncing(false);
       setActiveActionModal(null);
-      setRecalcToast('✓ Sales sync completed successfully.');
+      setRecalcToast('âœ“ Sales sync completed successfully.');
       setTimeout(() => setRecalcToast(null), 3000);
     }, 800);
   };
@@ -561,7 +587,7 @@ function OperationsDashboardContent() {
     setTimeout(() => {
       setIsEndingMonth(false);
       setActiveActionModal(null);
-      setRecalcToast('✓ End of Month routine executed successfully.');
+      setRecalcToast('âœ“ End of Month routine executed successfully.');
       setTimeout(() => setRecalcToast(null), 3000);
     }, 800);
   };
@@ -3033,11 +3059,11 @@ function OperationsDashboardContent() {
             <div className="my-4 space-y-2 text-xs">
               <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-between text-emerald-900 font-semibold">
                 <span>{t('bom_recipes', 'Bill of Materials (BOM) Production Recipes')}</span>
-                <span className="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">✓ {t('verified', 'Verified')}</span>
+                <span className="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">âœ“ {t('verified', 'Verified')}</span>
               </div>
               <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-between text-emerald-900 font-semibold">
                 <span>{t('daily_sales_invoices_posting_status', 'Daily Sales Invoices Posting Status')}</span>
-                <span className="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">✓ {t('complete', 'Complete')}</span>
+                <span className="text-xs bg-emerald-200 px-2 py-0.5 rounded-full font-bold">âœ“ {t('complete', 'Complete')}</span>
               </div>
               <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-between text-blue-900 font-semibold">
                 <span>{t('inter_branch_transit_requisitions', 'Inter-branch In-Transit Requisitions')}</span>

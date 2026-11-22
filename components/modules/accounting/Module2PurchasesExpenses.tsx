@@ -73,6 +73,7 @@ import {
   subscribeToAccountingSync
 } from '@/lib/accountingPersistenceService';
 import QuickAddAccountModal, { QuickAddPreset } from './QuickAddAccountModal';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 export type VoucherLifecycleStatus =
   | 'NEW'
@@ -136,6 +137,7 @@ export function Module2PurchasesExpenses({
   onShowToast,
   onPostVoucherToJv
 }: Module2PurchasesExpensesProps) {
+  const profile = useActiveUser();
   const { t } = useLanguage();
   // Current date helper
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
@@ -465,7 +467,7 @@ export function Module2PurchasesExpenses({
       amount: 1560.0,
       totalDisbursed: 1500.0,
       description: 'Emergency press repairs, replacement bearings, and hydraulic seals',
-      enteredBy: 'Super Admin',
+      enteredBy: profile?.name || 'Vanguard Operator',
       department: 'Mill Operations',
       posted: true,
       status: 'UNCLOSED_PENDING_SETTLEMENT',
@@ -543,7 +545,7 @@ export function Module2PurchasesExpenses({
       amount: 18500.0,
       totalDisbursed: 18500.0,
       description: 'Raw olive harvest batch delivery 45T',
-      enteredBy: 'Super Admin',
+      enteredBy: profile?.name || 'Vanguard Operator',
       department: 'Mill Operations',
       posted: true,
       status: 'FULLY_CLOSED_RECONCILED'
@@ -763,7 +765,7 @@ export function Module2PurchasesExpenses({
       amount: totalUSD,
       totalDisbursed: enterPaymentDetails ? totalPaymentsUSD : totalUSD,
       description,
-      enteredBy: 'Super Admin',
+      enteredBy: profile?.name || 'Vanguard Operator',
       department: purchaseDept,
       posted: postImmediately,
       status: determinedStatus,

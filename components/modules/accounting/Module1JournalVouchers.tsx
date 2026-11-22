@@ -71,6 +71,7 @@ import {
   SearchableFilterDropdown,
   DropdownOption
 } from './SearchableFilterDropdown';
+import { useActiveUser } from '@/lib/useActiveUser';
 
 // Omega ERP Journal Voucher Types Catalog
 export const OMEGA_JV_TYPES = [
@@ -140,6 +141,7 @@ export function Module1JournalVouchers({
   onOpenStatement,
   initialScreenMode = 'LIST'
 }: Module1JournalVouchersProps) {
+  const profile = useActiveUser();
   const { t } = useLanguage();
   // Screen mode: 'LIST' or 'ENTRY' (Opened via `+ New`)
   const [screenMode, setScreenMode] = useState<'LIST' | 'ENTRY'>(initialScreenMode);
@@ -339,7 +341,7 @@ export function Module1JournalVouchers({
       {
         id: 'rec-001',
         description: 'Monthly HQ Office & Warehouse Lease Amortization',
-        user: 'Super Admin',
+        user: profile?.name || 'Vanguard Operator',
         date_entered: '01-Jan-2026',
         frequency: 'Monthly',
         jv_type: 'JV',
@@ -373,7 +375,7 @@ export function Module1JournalVouchers({
       {
         id: 'rec-002',
         description: 'Bi-Weekly Factory Maintenance & Utilities Allocation',
-        user: 'Finance Controller',
+        user: profile?.name || 'Vanguard Operator',
         date_entered: '15-Jan-2026',
         frequency: '2 Weeks',
         jv_type: 'JV',
@@ -441,7 +443,7 @@ export function Module1JournalVouchers({
       {
         id: 'rec-004',
         description: 'Quarterly Logistics Fleet & Press Depreciation',
-        user: 'Super Admin',
+        user: profile?.name || 'Vanguard Operator',
         date_entered: '31-Mar-2026',
         frequency: 'Quarter',
         jv_type: 'DP',
@@ -486,7 +488,7 @@ export function Module1JournalVouchers({
         amount: 1450.0,
         currency: 'USD',
         remark: 'Reversed bank movement - duplicate Blom wire transfer',
-        created_by: 'Super Admin',
+        created_by: profile?.name || 'Vanguard Operator',
         department: 'Main Dep.'
       },
       {
@@ -497,7 +499,7 @@ export function Module1JournalVouchers({
         amount: 890.0,
         currency: 'USD',
         remark: 'Voided currency exchange rounding adjustment',
-        created_by: 'Finance Controller',
+        created_by: profile?.name || 'Vanguard Operator',
         department: 'Main Dep.'
       },
       {
@@ -508,7 +510,7 @@ export function Module1JournalVouchers({
         amount: 3200.0,
         currency: 'USD',
         remark: 'Bounced cheque movement canceled by treasury',
-        created_by: 'Admin',
+        created_by: profile?.name || 'Vanguard Operator',
         department: 'Main Dep.'
       }
     ],
@@ -521,7 +523,7 @@ export function Module1JournalVouchers({
         id: 'aud-01',
         date: '19-Sep-2026',
         jv_number: 'JV-2026-1001',
-        user: 'Super Admin',
+        user: profile?.name || 'Vanguard Operator',
         action_type: 'Posted',
         timestamp: '18:42:10',
         remark: 'Posted dual-currency physical vault cash settlement'
@@ -530,7 +532,7 @@ export function Module1JournalVouchers({
         id: 'aud-02',
         date: '18-Sep-2026',
         jv_number: 'JV-2026-1003',
-        user: 'Finance Controller',
+        user: profile?.name || 'Vanguard Operator',
         action_type: 'Lines Reallocated',
         timestamp: '15:20:04',
         remark: 'Allocated plant maintenance cost center from HQ to Mill'
@@ -548,7 +550,7 @@ export function Module1JournalVouchers({
         id: 'aud-04',
         date: '16-Sep-2026',
         jv_number: 'JV-2026-1004',
-        user: 'Admin',
+        user: profile?.name || 'Vanguard Operator',
         action_type: 'Created',
         timestamp: '09:12:44',
         remark: 'Drafted opening balance voucher for fiscal period'
@@ -720,7 +722,7 @@ export function Module1JournalVouchers({
           ...j,
           is_posted: !j.is_posted,
           posted_at: !j.is_posted ? new Date().toISOString() : undefined,
-          posted_by: !j.is_posted ? 'Super Admin' : undefined
+          posted_by: !j.is_posted ? profile?.name || 'Vanguard Operator' : undefined
         };
       }
       return j;
@@ -973,7 +975,7 @@ export function Module1JournalVouchers({
           internal_remark: internalNote || undefined,
           department: 'Main Department',
           sub_department: 'General Operations',
-          created_by: 'Super Admin'
+          created_by: profile?.name || 'Vanguard Operator'
         },
         lines,
         postImmediately

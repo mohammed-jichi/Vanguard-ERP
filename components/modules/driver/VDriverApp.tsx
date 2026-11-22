@@ -689,7 +689,8 @@ export default function VDriverApp() {
             collected_cash_lbp: inputLbp,
             updated_at: new Date().toISOString()
           })
-          .eq('id', selectedStopForAction.id);
+          .eq('id', selectedStopForAction.id)
+          .eq('tenant_id', targetTenantId);
 
         // Record collected cash into driver run sheets (public.driver_run_sheets)
         await supabase
