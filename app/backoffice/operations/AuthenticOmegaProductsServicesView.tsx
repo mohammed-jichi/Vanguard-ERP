@@ -89,38 +89,39 @@ import {
 import { INITIAL_OMEGA_UNITS, UnitItem } from '@/lib/omegaUnitsData';
 import { OMEGA_BRANCHES, BranchOption } from '@/lib/omegaDepartmentsData';
 import { supabase } from '@/lib/supabaseClient';
+import { useTenant } from '@/lib/TenantContext';
+import { getTenantExchangeRate } from '@/lib/currencyEngine';
+import {
+  resolveTenantUuid,
+  fetchCatalogRows,
+  rowToRecord,
+  upsertCatalogProduct,
+  upsertCatalogProducts,
+  deleteCatalogProduct,
+  reconcileStockFromLedger,
+  fetchItemSalesPerformance,
+  emptyItemSalesPerformance,
+  ItemSalesPerformance
+} from '@/lib/productCatalogService';
 
 export default function AuthenticOmegaProductsServicesView() {
   // Master Products State (hydrated cleanly after mount to eliminate SSR mismatch)
-  const [products, setProducts] = useState<AuthenticProductRecord[]>(INITIAL_OMEGA_PRODUCTS);
+  const [products, setProducts] = useState<AuthenticProductRecord[]>([]);
+  const { currentTenant } = useTenant();
+  const tenantUuid = resolveTenantUuid(currentTenant);
+  const liveRate = getTenantExchangeRate(currentTenant);
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
   useEffect(() => {
     setIsMounted(true);
     try {
-      // Purge legacy/stale v1 key if it contains conflicting outdated records
+      // The catalog now lives in Supabase; purge any stale local demo caches.
       localStorage.removeItem('vanguard_omega_products_catalog');
-      const saved = localStorage.getItem('vanguard_omega_products_catalog_v2');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setProducts(parsed);
-        }
-      }
+      localStorage.removeItem('vanguard_omega_products_catalog_v2');
     } catch (e) {
-      console.error('Error reading saved products:', e);
+      console.error('Error clearing legacy product cache:', e);
     }
   }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-    try {
-      localStorage.setItem('vanguard_omega_products_catalog_v2', JSON.stringify(products));
-    } catch (e) {
-      console.error('Error saving products:', e);
-    }
-  }, [products, isMounted]);
-
   // Hierarchy Navigation States (Multi-Category, Multi-Division, Multi-Group)
   const [selectedCategories, setSelectedCategories] = useState<string[]>(['All']);
   const [isMultiCategory, setIsMultiCategory] = useState<boolean>(false);
@@ -218,7 +219,7 @@ export default function AuthenticOmegaProductsServicesView() {
   const [isNewModalOpen, setIsNewModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [activeModalTab, setActiveModalTab] = useState<
-    'main' | 'stock' | 'media' | 'assembly' | 'included' | 'usedIn' | 'history' | 'sales' | 'more'
+    'main' | 'stock' | 'media' | 'assembly' | 'included' | 'usedIn' | 'history' | 'sales' | 'more' | 'logistics'
   >('main');
   const [historySubTab, setHistorySubTab] = useState<
     'movements' | 'costVariation' | 'supplierPricing' | 'salesPerformance' | 'audit'
@@ -350,7 +351,7 @@ export default function AuthenticOmegaProductsServicesView() {
   const [isSizeColorModalOpen, setIsSizeColorModalOpen] = useState<boolean>(false);
   const [isImportExcelModalOpen, setIsImportExcelModalOpen] = useState<boolean>(false);
   const [isPrintBarcodesModalOpen, setIsPrintBarcodesModalOpen] = useState<boolean>(false);
-  const [pricingMatrixEdits, setPricingMatrixEdits] = useState<{ [id: number]: { sp1: number; sp2: number; sp3: number } }>({});
+  const [pricingMatrixEdits, setPricingMatrixEdits] = useState<{ [id: number]: { sp1: number; sp2: number; sp3: number; sp4: number } }>({});
 
   // Print Barcodes Operational States
   const [printBarcodeSelectedItems, setPrintBarcodeSelectedItems] = useState<{ [id: number]: { selected: boolean; qty: number } }>({
@@ -430,7 +431,7 @@ export default function AuthenticOmegaProductsServicesView() {
     if (!editingProduct) return;
     const rec = editingProduct.recommendedPriceLL || 0;
     const cost = editingProduct.unitCostLL || 0;
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const profit = cost > 0 ? Number((((rec - cost) / cost) * 100).toFixed(2)) : 0;
     const usd = Number((rec / rate).toFixed(2));
     const updated = { ...editingProduct };
@@ -472,7 +473,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
   const handleApplySecondCurrencyRates = () => {
     if (!editingProduct) return;
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const sp1USD = Number(((editingProduct.sellingPrice1LL || 0) / rate).toFixed(2));
     const sp2USD = Number(((editingProduct.sellingPrice2LL || 0) / rate).toFixed(2));
     const sp3USD = Number(((editingProduct.sellingPrice3LL || 0) / rate).toFixed(2));
@@ -489,7 +490,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
   const handleUnitCostUSDChange = (usdVal: number) => {
     if (!editingProduct) return;
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const llVal = Math.round(usdVal * rate);
     const markup = editingProduct.markupPct || 0;
     const rec = Math.round(llVal * (1 + markup / 100));
@@ -513,7 +514,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
   const handleUnitCostLLChange = (llVal: number) => {
     if (!editingProduct) return;
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const usdVal = rate > 0 ? Number((llVal / rate).toFixed(4)) : 0;
     const markup = editingProduct.markupPct || 0;
     const rec = Math.round(llVal * (1 + markup / 100));
@@ -537,7 +538,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
   const handleSellingPriceLLChange = (num: number, valLL: number) => {
     if (!editingProduct) return;
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const usdVal = rate > 0 ? Number((valLL / rate).toFixed(2)) : 0;
     const cost = editingProduct.unitCostLL || 0;
     const profit = cost > 0 ? Number((((valLL - cost) / cost) * 100).toFixed(2)) : 0;
@@ -558,7 +559,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
   const handleSellingPriceUSDChange = (num: number, usdVal: number) => {
     if (!editingProduct) return;
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const valLL = Math.round(usdVal * rate);
     const cost = editingProduct.unitCostLL || 0;
     const profit = cost > 0 ? Number((((valLL - cost) / cost) * 100).toFixed(2)) : 0;
@@ -641,7 +642,7 @@ export default function AuthenticOmegaProductsServicesView() {
   const handleFixValuationCostError = () => {
     if (!editingProduct) return;
     const correctCostLL = 543960;
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const correctCostUSD = Number((correctCostLL / rate).toFixed(4));
     const markup = 50;
     const recPrice = 1080000;
@@ -712,7 +713,7 @@ export default function AuthenticOmegaProductsServicesView() {
     ];
     const allItems = [...existingItems, ...packagingItems];
     const totalLL = allItems.reduce((acc, curr) => acc + curr.totalCostLL, 0);
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const usdVal = Number((totalLL / rate).toFixed(4));
     setEditingProduct({
       ...editingProduct,
@@ -729,7 +730,7 @@ export default function AuthenticOmegaProductsServicesView() {
   const handleRecalculateBOMCost = () => {
     if (!editingProduct || !editingProduct.assemblyItems) return;
     const totalLL = editingProduct.assemblyItems.reduce((sum, item) => sum + (item.totalCostLL || (item.qtyNeeded * item.unitCostLL)), 0);
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const correctUSD = Number((totalLL / rate).toFixed(4));
     const markup = editingProduct.markupPct || 50;
     const recommendedPrice = Math.round(totalLL * (1 + markup / 100));
@@ -748,7 +749,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
   const handleApplySameAsBOM = (template: BOMTemplateProduct) => {
     if (!editingProduct) return;
-    const rate = editingProduct.secondCurrencyRate || 90000;
+    const rate = editingProduct.secondCurrencyRate || liveRate;
     const correctUSD = Number((template.totalCostLL / rate).toFixed(4));
     const markup = editingProduct.markupPct || 50;
     const recPrice = Math.round(template.totalCostLL * (1 + markup / 100));
@@ -859,7 +860,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
   const handleLoadSamplePalletUsedIn = () => {
     if (!editingProduct) return;
-    const palletCost = (editingProduct.unitCostLL || 543960) * 100;
+    const palletCost = (editingProduct.unitCostLL || 0) * 100;
     const palletLink: ProductUsedInItem = {
       id: Date.now() + 1,
       parentProductId: 991,
@@ -867,7 +868,7 @@ export default function AuthenticOmegaProductsServicesView() {
       parentDescription: 'White Vinegar 500ml Pallet (100 Boxes)',
       qtyConsumed: 100,
       unit: 'BOX',
-      componentCostLL: editingProduct.unitCostLL || 543960,
+      componentCostLL: editingProduct.unitCostLL || 0,
       impactOnParentCostLL: palletCost,
       relationType: 'Palletization'
     };
@@ -887,8 +888,8 @@ export default function AuthenticOmegaProductsServicesView() {
       parentDescription: 'Restaurant Supply Combo (Vinegar Case + Molasses Case)',
       qtyConsumed: 1,
       unit: 'BOX',
-      componentCostLL: editingProduct.unitCostLL || 543960,
-      impactOnParentCostLL: editingProduct.unitCostLL || 543960,
+      componentCostLL: editingProduct.unitCostLL || 0,
+      impactOnParentCostLL: editingProduct.unitCostLL || 0,
       relationType: 'Bundle/Kit'
     };
     setEditingProduct({
@@ -907,7 +908,7 @@ export default function AuthenticOmegaProductsServicesView() {
       parentDescription: 'White Vinegar 500ml (Retail Bottle)',
       qtyConsumed: 0.08,
       unit: 'BOX',
-      componentCostLL: editingProduct.unitCostLL || 543960,
+      componentCostLL: editingProduct.unitCostLL || 0,
       impactOnParentCostLL: 45692.64,
       relationType: 'Inverted Breakdown (Hazard)'
     };
@@ -931,7 +932,7 @@ export default function AuthenticOmegaProductsServicesView() {
     e.preventDefault();
     if (!editingProduct || !newUsedInParentCode.trim()) return;
 
-    const unitCost = editingProduct.unitCostLL || 543960;
+    const unitCost = editingProduct.unitCostLL || 0;
     const qty = newUsedInQty || 1;
     const totalImpact = unitCost * qty;
 
@@ -961,9 +962,25 @@ export default function AuthenticOmegaProductsServicesView() {
   };
 
   const handlePrintInventoryProductionsReport = () => {
-    window.print();
+    const esc = (s: any) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const rows = bomProducts
+      .map((p: any) => {
+        const comps = (p.assemblyItems || [])
+          .map((a: any) => `<tr><td>${esc(a.rawMaterialCode)}</td><td>${esc(a.rawMaterialName)}</td><td style="text-align:right">${Number(a.qtyNeeded || 0).toFixed(2)}</td><td>${esc(a.unit)}</td><td style="text-align:right">$${(Number(a.unitCostLL || 0) / liveRate).toFixed(2)}</td><td style="text-align:right">$${(Number(a.totalCostLL || 0) / liveRate).toFixed(2)}</td></tr>`)
+          .join('');
+        return `<tr><th colspan="6" style="text-align:left;padding-top:10px">${esc(p.code)} - ${esc(p.description)}</th></tr>${comps}`;
+      })
+      .join('');
+    const w = window.open('', '_blank');
+    if (!w) {
+      showToast('Pop-up blocked: allow pop-ups to print the report.');
+      return;
+    }
+    w.document.write(`<html><head><title>Inventory Productions</title><style>body{font-family:sans-serif;font-size:12px;padding:16px}table{width:100%;border-collapse:collapse}td,th{padding:3px 6px;border-bottom:1px solid #ddd}</style></head><body><h3 style="text-align:center">${esc((currentTenant as any)?.name || 'Vanguard ERP')}</h3><h4 style="text-align:center">Inventory Productions (Bill of Materials)</h4><div>${new Date().toLocaleDateString('en-GB')}</div><table><tr><th>Code</th><th>Description</th><th>Qty</th><th>Unit</th><th>Unit Cost</th><th>Total</th></tr>${rows || '<tr><td colspan="6">No Bill of Materials defined yet.</td></tr>'}</table></body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 300);
   };
-
   const handleExportInventoryProductionsReport = () => {
     const withBom = products.filter((p) => ((p as any).assemblyItems || []).length > 0);
     const q = (v: any) => `"${String(v ?? '').replace(/"/g, '""')}"`;
@@ -1075,7 +1092,7 @@ export default function AuthenticOmegaProductsServicesView() {
   // Handler for Tab 7 History -> Sales Performance Simulation
   const handleSimulateLiveDispatchSale = () => {
     if (!editingProduct) return;
-    const currentCost = editingProduct.unitCostLL || 543960;
+    const currentCost = editingProduct.unitCostLL || 0;
     const sp1 = editingProduct.sellingPrice1LL || 1080000;
     const qty = 5;
     const revenue = qty * sp1;
@@ -1168,8 +1185,8 @@ export default function AuthenticOmegaProductsServicesView() {
         cost: newCost,
         unitCostLL: newCost,
         averageCostLL: newCost,
-        unitCostUSD: Number((newCost / (prod.secondCurrencyRate || 90000)).toFixed(4)),
-        averageCostUSD: Number((newCost / (prod.secondCurrencyRate || 90000)).toFixed(4))
+        unitCostUSD: Number((newCost / (prod.secondCurrencyRate || liveRate)).toFixed(4)),
+        averageCostUSD: Number((newCost / (prod.secondCurrencyRate || liveRate)).toFixed(4))
       };
     });
     setProducts(updated);
@@ -1229,25 +1246,6 @@ export default function AuthenticOmegaProductsServicesView() {
     document.body.removeChild(link);
     showToast('Exported PLU flat file successfully (CSV format)');
     setIsExportPLUModalOpen(false);
-  };
-
-  const handleSaveItemsPricingMatrix = () => {
-    const updated = products.map((prod) => {
-      const edit = pricingMatrixEdits[prod.id];
-      if (edit) {
-        return {
-          ...prod,
-          sellingPrice: edit.sp1 || prod.sellingPrice,
-          sellingPrice1LL: edit.sp1 || prod.sellingPrice1LL,
-          sellingPrice2LL: edit.sp2 || prod.sellingPrice2LL,
-          sellingPrice3LL: edit.sp3 || prod.sellingPrice3LL
-        };
-      }
-      return prod;
-    });
-    setProducts(updated);
-    setIsItemsPricingModalOpen(false);
-    showToast('Saved updated B2B wholesale pricing tiers across all modified items');
   };
 
   const handleCopyPLUJson = () => {
@@ -1730,7 +1728,7 @@ export default function AuthenticOmegaProductsServicesView() {
   };
 
   // Open New Modal
-  const openNewModal = () => {
+  const makeBlankProduct = (): AuthenticProductRecord => {
     const newRecord: AuthenticProductRecord = {
       id: Math.max(...products.map((p) => p.id), 0) + 1,
       description: '',
@@ -1741,20 +1739,20 @@ export default function AuthenticOmegaProductsServicesView() {
       secondLangItemComment: '',
       internalNote: '',
       categoryId: 2,
-      categoryName: selectedCategories[0] || 'Retail',
+      categoryName: selectedCategories[0] && selectedCategories[0] !== 'All' ? selectedCategories[0] : 'Retail',
       divisionId: 5,
-      divisionName: selectedDivisions[0] || 'Retail Distillates & Molasses',
+      divisionName: selectedDivisions[0] && selectedDivisions[0] !== 'All' ? selectedDivisions[0] : 'Retail Distillates & Molasses',
       groupId: 14,
-      groupName: selectedGroups[0] || 'Retail Distillates 250ml',
+      groupName: selectedGroups[0] && selectedGroups[0] !== 'All' ? selectedGroups[0] : 'Retail Distillates 250ml',
       sellingFunction: 'Revenue',
       defaultLocationId: 12,
       defaultLocationName: 'Showroom',
       logicalWarehouseId: 1,
       logicalWarehouseName: 'Main Store',
-      mainSupplierId: 5,
-      mainSupplierName: 'SOOL',
-      lastSupplierName: 'SOOL',
-      itemBrand: 'Southern Olive Oil Products',
+      mainSupplierId: 0,
+      mainSupplierName: '',
+      lastSupplierName: '',
+      itemBrand: '',
       itemLeadTime: '2 Days',
       source: 'Local',
       buyingFormat: 'UNIT',
@@ -1790,8 +1788,8 @@ export default function AuthenticOmegaProductsServicesView() {
       qtyPrice4: 1,
       profit4Pct: 0,
       sellingPrice4USD: 0,
-      secondCurrencyRate: 90000,
-      barcode: `${Math.floor(5280000000000 + Math.random() * 9999999999)}`,
+      secondCurrencyRate: liveRate,
+      barcode: '',
       alternativeBarcode2: '',
       alternativeBarcode3: '',
       applySp2Qty2: false,
@@ -1802,11 +1800,9 @@ export default function AuthenticOmegaProductsServicesView() {
       sellingPrice: 0,
       cost: 0,
       function: 'Revenue',
-      updatedAt: '12 Sep, 2026',
+      updatedAt: new Date().toISOString().slice(0, 10),
       isDiscontinued: false,
-      stockRecords: [
-        { branchId: 1, branchName: 'Zeit w zaytoun ljanoub', warehouseId: 1, warehouseName: 'Main Store', locationId: 12, locationName: 'Showroom', qtyOH: 0, reorderLevel: 10, maxStock: 100, reservedQty: 0, availableQty: 0 }
-      ],
+      stockRecords: [],
       imageUrl: '',
       videoUrl: '',
       assemblyCalculationMethod: 'Automatic',
@@ -1815,9 +1811,7 @@ export default function AuthenticOmegaProductsServicesView() {
       movements: [],
       priceLogs: [],
       auditLogs: [],
-      salesPerformance: [
-        { month: 'Jan', monthIndex: 1, qtyThisYear: 0, salesThisYearLL: 0, qtyLastYear: 0, salesLastYearLL: 0 }
-      ],
+      salesPerformance: [],
       assetAccount: '120101',
       expenseAccount: '510101',
       revenueAccount: '410101',
@@ -1844,13 +1838,13 @@ export default function AuthenticOmegaProductsServicesView() {
       hasExpiry: true,
       hasExpiryDate: true,
       expiryDate: '',
-      hsCode: '2009.89.00',
+      hsCode: '',
       pluForScale: '',
-      dimensionsLength: 30,
-      dimensionsWidth: 20,
-      dimensionsHeight: 25,
-      dimensionsWeight: 6.5,
-      dimensionsVolume: 0.015,
+      dimensionsLength: 0,
+      dimensionsWidth: 0,
+      dimensionsHeight: 0,
+      dimensionsWeight: 0,
+      dimensionsVolume: 0,
       itemSorting: 1,
       isBestSelling: false,
       sellOnline: true,
@@ -1869,7 +1863,11 @@ export default function AuthenticOmegaProductsServicesView() {
       mainImage: '',
       additionalImages: []
     };
-    setEditingProduct(newRecord);
+    return newRecord;
+  };
+
+  const openNewModal = () => {
+    setEditingProduct(makeBlankProduct());
     setActiveModalTab('main');
     setIsNewModalOpen(true);
   };
@@ -1882,7 +1880,66 @@ export default function AuthenticOmegaProductsServicesView() {
   };
 
   // Save Handlers
-  const handleSaveProduct = (e: React.FormEvent) => {
+  // ===================== LIVE SUPABASE CATALOG WIRING =====================
+  const [isLoadingCatalog, setIsLoadingCatalog] = useState<boolean>(false);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [isItemActionsOpen, setIsItemActionsOpen] = useState<boolean>(false);
+  const [stockShowLBP, setStockShowLBP] = useState<boolean>(false);
+  const [livePerf, setLivePerf] = useState<ItemSalesPerformance>(emptyItemSalesPerformance());
+  const [isImportDragOver, setIsImportDragOver] = useState<boolean>(false);
+  const [importFileName, setImportFileName] = useState<string>('');
+  const [importPreview, setImportPreview] = useState<any[]>([]);
+  const [isImportBusy, setIsImportBusy] = useState<boolean>(false);
+  const [pricingSearch, setPricingSearch] = useState<string>('');
+  const curYear = new Date().getFullYear();
+  const reservedQtyLive = (editingProduct?.stockRecords || []).reduce((a: number, s: any) => a + Number(s.reservedQty || 0), 0);
+  const bomProducts = products.filter((p) => ((p as any).assemblyItems || []).length > 0);
+
+  const reloadCatalog = async () => {
+    setIsLoadingCatalog(true);
+    const { rows, error } = await fetchCatalogRows(tenantUuid);
+    if (error) {
+      setCatalogError(error);
+      showToast(`Could not load live catalog from Supabase: ${error}`);
+    } else {
+      setCatalogError(null);
+    }
+    const blank = makeBlankProduct();
+    setProducts(rows.map((r, i) => rowToRecord(r, blank, i, liveRate) as AuthenticProductRecord));
+    setIsLoadingCatalog(false);
+  };
+
+  useEffect(() => {
+    if (!isMounted) return;
+    reloadCatalog();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMounted, tenantUuid]);
+
+  useEffect(() => {
+    if (activeModalTab !== 'sales' || !isEditModalOpen || !editingProduct) return;
+    let cancelled = false;
+    fetchItemSalesPerformance(tenantUuid, editingProduct, liveRate).then((r) => {
+      if (!cancelled) setLivePerf(r);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeModalTab, isEditModalOpen, editingProduct?.code, tenantUuid]);
+
+  const tierUsd = (p: any, n: number): number => {
+    const usd = Number(p[`sellingPrice${n}USD`]);
+    if (usd) return usd;
+    const ll = Number(p[`sellingPrice${n}LL`]);
+    return ll && liveRate ? Number((ll / liveRate).toFixed(2)) : 0;
+  };
+  const setTier = (prod: any, n: 1 | 2 | 3 | 4, val: number) =>
+    setPricingMatrixEdits((prev) => {
+      const cur = prev[prod.id] || { sp1: tierUsd(prod, 1), sp2: tierUsd(prod, 2), sp3: tierUsd(prod, 3), sp4: tierUsd(prod, 4) };
+      return { ...prev, [prod.id]: { ...cur, [`sp${n}`]: val } };
+    });
+
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
 
@@ -1891,17 +1948,253 @@ export default function AuthenticOmegaProductsServicesView() {
       return;
     }
 
+    const toSave: AuthenticProductRecord = { ...editingProduct, updatedAt: new Date().toISOString().slice(0, 10) };
     if (isNewModalOpen) {
-      setProducts([editingProduct, ...products]);
+      setProducts([toSave, ...products]);
       setIsNewModalOpen(false);
-      showToast(`Product "${editingProduct.description}" created successfully`);
     } else {
-      setProducts(products.map((p) => (p.id === editingProduct.id ? editingProduct : p)));
+      setProducts(products.map((p) => (p.id === toSave.id ? toSave : p)));
       setIsEditModalOpen(false);
-      showToast(`Product "${editingProduct.description}" updated successfully`);
+    }
+    const res = await upsertCatalogProduct(tenantUuid, toSave, liveRate);
+    if (res.ok) {
+      showToast(`Product "${toSave.description}" saved to Supabase${res.fullFidelity ? '' : ' (core fields only - run lib/supabase/schema_products_catalog_extension.sql to persist full details)'}`);
+    } else {
+      showToast(`Product "${toSave.description}" kept locally; Supabase save failed: ${res.error}`);
     }
   };
 
+  const openLabelSheet = (entries: { description: string; code: string; barcode: string; qty: number }[]) => {
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const labels: string[] = [];
+    entries.forEach((en) => {
+      const value = String(en.barcode || en.code || '');
+      const bars = value
+        .split('')
+        .map((ch, i) => `<span style="display:inline-block;height:100%;background:${i % 2 === 0 ? '#000' : '#fff'};width:${(1 + (ch.charCodeAt(0) % 4)) * 1.5}px"></span>`)
+        .join('');
+      for (let k = 0; k < en.qty; k++) {
+        labels.push(`<div class="label"><div class="d">${esc(en.description)}</div><div class="s">SKU: ${esc(en.code)}</div><div class="b">${bars}</div><div class="n">${esc(value)}</div></div>`);
+      }
+    });
+    const w = window.open('', '_blank');
+    if (!w) {
+      showToast('Pop-up blocked: allow pop-ups to print labels.');
+      return;
+    }
+    w.document.write(`<html><head><title>Barcode Label</title><style>@page{margin:4mm}body{font-family:sans-serif;margin:0}.label{width:100mm;height:75mm;box-sizing:border-box;border:1px dashed #999;padding:2mm;display:inline-block;margin:1mm;page-break-inside:avoid;overflow:hidden}.d{font-weight:bold;font-size:12px}.s{font-size:10px;font-family:monospace}.b{height:30%;margin:2mm 0;text-align:center;white-space:nowrap}.n{text-align:center;font-family:monospace;font-size:11px;letter-spacing:2px}</style></head><body>${labels.join('')}</body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 300);
+  };
+
+  const handlePrintItemBarcodeLabel = () => {
+    if (!editingProduct) return;
+    setIsItemActionsOpen(false);
+    openLabelSheet([{ description: editingProduct.description, code: editingProduct.code, barcode: editingProduct.barcode, qty: 1 }]);
+  };
+
+  const handleDuplicateItem = async () => {
+    if (!editingProduct) return;
+    setIsItemActionsOpen(false);
+    const copy: AuthenticProductRecord = {
+      ...JSON.parse(JSON.stringify(editingProduct)),
+      id: Math.max(0, ...products.map((p) => p.id)) + 1,
+      code: `${editingProduct.code}-COPY${Date.now().toString().slice(-4)}`,
+      description: `${editingProduct.description} (Copy)`,
+      barcode: '',
+      qtyOH: 0
+    };
+    setProducts([copy, ...products]);
+    setIsEditModalOpen(false);
+    const res = await upsertCatalogProduct(tenantUuid, copy, liveRate);
+    showToast(res.ok ? `Duplicated item as "${copy.description}" (${copy.code})` : `Duplicate kept locally; Supabase save failed: ${res.error}`);
+  };
+
+  const handleViewStockLedger = () => {
+    setIsItemActionsOpen(false);
+    setStockSubTab('qtyOH');
+    setActiveModalTab('stock');
+  };
+
+  const handleArchiveItem = async () => {
+    if (!editingProduct) return;
+    setIsItemActionsOpen(false);
+    if (!window.confirm(`Archive "${editingProduct.description}"? It will be marked discontinued and hidden from sales.`)) return;
+    const archived: AuthenticProductRecord = { ...editingProduct, isDiscontinued: true };
+    setProducts(products.map((p) => (p.id === archived.id ? archived : p)));
+    setIsEditModalOpen(false);
+    const res = await upsertCatalogProduct(tenantUuid, archived, liveRate);
+    showToast(res.ok ? `Archived "${archived.description}"` : `Archived locally; Supabase save failed: ${res.error}`);
+  };
+
+  const handleDeleteEditingProduct = async () => {
+    if (!editingProduct) return;
+    setIsItemActionsOpen(false);
+    if (!window.confirm(`Permanently delete "${editingProduct.description}" from the catalog? This cannot be undone.`)) return;
+    const target = editingProduct;
+    setProducts(products.filter((p) => p.id !== target.id));
+    setIsEditModalOpen(false);
+    const res = await deleteCatalogProduct(tenantUuid, target.code);
+    showToast(res.ok ? `Deleted "${target.description}"` : `Removed locally; Supabase delete failed: ${res.error}`);
+  };
+
+  const handleReconcileStock = async () => {
+    setIsMaintenanceRunning(true);
+    setMaintenanceReport('');
+    setMaintenanceStep('Reconciling qty_on_hand against stock_transactions ledger...');
+    const r = await reconcileStockFromLedger(tenantUuid, products);
+    if (!r.ok) {
+      setMaintenanceReport(`Reconciliation unavailable: ${r.error}. Run lib/supabase/schema_products_catalog_extension.sql to create the stock_transactions ledger.`);
+    } else if (r.ledgerRows === 0) {
+      setMaintenanceReport('The stock_transactions ledger has 0 rows for this tenant - nothing to reconcile.');
+    } else if (r.adjustments.length === 0) {
+      setMaintenanceReport(`Ledger checked (${r.ledgerRows} rows): every qty_on_hand already matches the ledger.`);
+    } else {
+      const map = new Map(r.adjustments.map((a) => [a.code.toLowerCase(), a.to]));
+      const updated = products.map((p) => (map.has(String(p.code).toLowerCase()) ? { ...p, qtyOH: map.get(String(p.code).toLowerCase()) as number } : p));
+      setProducts(updated);
+      const changed = updated.filter((p) => map.has(String(p.code).toLowerCase()));
+      const res = await upsertCatalogProducts(tenantUuid, changed, liveRate);
+      setMaintenanceReport(`Ledger checked (${r.ledgerRows} rows): adjusted qty_on_hand on ${r.adjustments.length} products (${res.saved} saved to Supabase${res.failed ? `, ${res.failed} failed: ${res.firstError}` : ''}).`);
+    }
+    setIsMaintenanceRunning(false);
+    setMaintenanceStep('Sweep Complete: stock reconciliation finished.');
+  };
+
+  const normImportKey = (k: string) => String(k).toLowerCase().replace(/[^a-z0-9\u0600-\u06ff]/g, '');
+  const pickImport = (row: any, names: string[]) => {
+    for (const k of Object.keys(row)) {
+      if (names.includes(normImportKey(k))) return row[k];
+    }
+    return '';
+  };
+
+  const handleImportFile = async (file: File | undefined | null) => {
+    if (!file) return;
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    if (!['xlsx', 'xls', 'csv'].includes(ext)) {
+      showToast('Unsupported file type. Use .xlsx, .xls or .csv');
+      return;
+    }
+    setIsImportBusy(true);
+    try {
+      const XLSX = await import('xlsx');
+      const wb = ext === 'csv' ? XLSX.read(await file.text(), { type: 'string' }) : XLSX.read(await file.arrayBuffer(), { type: 'array' });
+      const rows: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+      const mapped = rows
+        .map((r) => ({
+          code: String(pickImport(r, ['code', 'sku', 'itemcode', 'productcode'])).trim(),
+          description: String(pickImport(r, ['description', 'name', 'itemname', 'desc', 'productname'])).trim(),
+          group: String(pickImport(r, ['group', 'groupname'])).trim(),
+          category: String(pickImport(r, ['category', 'categoryname'])).trim(),
+          price: Number(pickImport(r, ['sellingprice', 'sellingpriceusd', 'price', 'sp1', 'retailprice'])) || 0,
+          cost: Number(pickImport(r, ['cost', 'costusd', 'unitcost'])) || 0,
+          unit: String(pickImport(r, ['unit', 'uom'])).trim(),
+          barcode: String(pickImport(r, ['barcode'])).trim(),
+          qty: Number(pickImport(r, ['qty', 'qtyoh', 'stock', 'quantity'])) || 0
+        }))
+        .filter((r) => r.code || r.description);
+      setImportPreview(mapped);
+      setImportFileName(file.name);
+      showToast(mapped.length ? `Parsed ${mapped.length} rows from ${file.name}` : 'No valid rows found in file');
+    } catch (e: any) {
+      showToast(`Could not read file: ${e?.message || e}`);
+    }
+    setIsImportBusy(false);
+  };
+
+  const handleProcessImport = async () => {
+    if (!importPreview.length) return;
+    setIsImportBusy(true);
+    let nextId = Math.max(0, ...products.map((p) => p.id)) + 1;
+    const byCode = new Map<string, any>(products.map((p) => [String(p.code).toLowerCase(), p]));
+    const touched: any[] = [];
+    importPreview.forEach((r) => {
+      const code = r.code || `ITEM-${nextId}`;
+      const existing = byCode.get(code.toLowerCase());
+      const base: any = existing ? { ...existing } : { ...makeBlankProduct(), id: nextId++, code };
+      const rec: any = {
+        ...base,
+        description: r.description || base.description,
+        barcode: r.barcode || base.barcode,
+        unit: r.unit || base.unit,
+        groupName: r.group || base.groupName,
+        categoryName: r.category || base.categoryName
+      };
+      if (r.price) {
+        rec.sellingPrice1USD = r.price;
+        rec.sellingPrice1LL = Math.round(r.price * liveRate);
+        rec.sellingPrice = rec.sellingPrice1LL;
+      }
+      if (r.cost) {
+        rec.unitCostUSD = r.cost;
+        rec.averageCostUSD = r.cost;
+        rec.unitCostLL = Math.round(r.cost * liveRate);
+        rec.averageCostLL = rec.unitCostLL;
+        rec.cost = rec.unitCostLL;
+      }
+      if (r.qty) rec.qtyOH = r.qty;
+      rec.secondCurrencyRate = rec.secondCurrencyRate || liveRate;
+      touched.push(rec);
+      byCode.set(code.toLowerCase(), rec);
+    });
+    const touchedMap = new Map<number, any>(touched.map((t) => [t.id, t]));
+    setProducts((prev) => {
+      const ids = new Set(prev.map((p) => p.id));
+      return [...touched.filter((t) => !ids.has(t.id)), ...prev.map((p) => touchedMap.get(p.id) || p)];
+    });
+    const res = await upsertCatalogProducts(tenantUuid, touched, liveRate);
+    showToast(`Imported ${touched.length} items: ${res.saved} saved to Supabase${res.failed ? `, ${res.failed} failed (${res.firstError})` : ''}${res.fullFidelity ? '' : ' - core fields only (run schema_products_catalog_extension.sql for full details)'}`);
+    setImportPreview([]);
+    setImportFileName('');
+    setIsImportBusy(false);
+    setIsImportExcelModalOpen(false);
+    if (res.failed === 0) await reloadCatalog();
+  };
+
+  const downloadImportTemplate = () => {
+    const csv = 'Code,Description,Category,Group,Selling Price (USD),Cost (USD),Unit,Barcode,Qty\n';
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'inventory_import_template.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Downloaded inventory import template (CSV)');
+  };
+
+  const handleSaveItemsPricingMatrix = async () => {
+    const touched: any[] = [];
+    const updated = products.map((prod) => {
+      const e = pricingMatrixEdits[prod.id];
+      if (!e) return prod;
+      const next: any = {
+        ...prod,
+        sellingPrice1USD: e.sp1,
+        sellingPrice2USD: e.sp2,
+        sellingPrice3USD: e.sp3,
+        sellingPrice4USD: e.sp4,
+        sellingPrice1LL: Math.round(e.sp1 * liveRate),
+        sellingPrice2LL: Math.round(e.sp2 * liveRate),
+        sellingPrice3LL: Math.round(e.sp3 * liveRate),
+        sellingPrice4LL: Math.round(e.sp4 * liveRate),
+        sellingPrice: Math.round(e.sp1 * liveRate)
+      };
+      touched.push(next);
+      return next;
+    });
+    setProducts(updated);
+    setIsItemsPricingModalOpen(false);
+    setPricingMatrixEdits({});
+    if (touched.length === 0) {
+      showToast('No price changes to save');
+      return;
+    }
+    const res = await upsertCatalogProducts(tenantUuid, touched, liveRate);
+    showToast(`Saved pricing tiers for ${touched.length} items: ${res.saved} saved to Supabase${res.failed ? `, ${res.failed} failed (${res.firstError})` : ''}`);
+  };
   // Recalculate Prices / Margin
   const handleRecalculateCost = () => {
     if (!editingProduct) return;
@@ -2741,7 +3034,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                                   </span>
                                                   {showSCPriceColumn && (
                                                     <span className="text-emerald-700 font-medium text-[11px]">
-                                                      ${((prod.sellingPrice || 0) / (prod.secondCurrencyRate || 90000)).toFixed(2)}
+                                                      ${((prod.sellingPrice || 0) / (prod.secondCurrencyRate || liveRate)).toFixed(2)}
                                                     </span>
                                                   )}
                                                   <button
@@ -2926,7 +3219,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       </td>
                       {showSCPriceColumn && (
                         <td className="px-3 py-2 text-right font-medium text-emerald-700">
-                          ${((prod.sellingPrice || 0) / (prod.secondCurrencyRate || 90000)).toFixed(2)}
+                          ${((prod.sellingPrice || 0) / (prod.secondCurrencyRate || liveRate)).toFixed(2)}
                         </td>
                       )}
                       <td className="px-3 py-2 text-right text-slate-600">
@@ -3769,9 +4062,9 @@ export default function AuthenticOmegaProductsServicesView() {
                       <div className="p-2 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-600 flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           <DollarSign className="w-3.5 h-3.5 text-emerald-700" />
-                          <span><strong>Costing Automation:</strong> Input your production cost into <strong>Unit Cost $</strong> or <strong>Unit Cost LL</strong> to automatically synchronize at {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ and protect your target margins.</span>
+                          <span><strong>Costing Automation:</strong> Input your production cost into <strong>Unit Cost $</strong> or <strong>Unit Cost LL</strong> to automatically synchronize at {(editingProduct.secondCurrencyRate || liveRate).toLocaleString()} LL/$ and protect your target margins.</span>
                         </div>
-                        <span className="text-[10px] text-slate-500 font-mono">1 $ = {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL</span>
+                        <span className="text-[10px] text-slate-500 font-mono">1 $ = {(editingProduct.secondCurrencyRate || liveRate).toLocaleString()} LL</span>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -4081,7 +4374,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <label className="block text-slate-700 font-medium mb-1">Second Currency Rate</label>
                           <input
                             type="number"
-                            value={editingProduct.secondCurrencyRate || 90000}
+                            value={editingProduct.secondCurrencyRate || liveRate}
                             onChange={(e) =>
                               setEditingProduct({
                                 ...editingProduct,
@@ -5132,13 +5425,26 @@ export default function AuthenticOmegaProductsServicesView() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-semibold text-xs flex items-center gap-1 shadow-xs cursor-pointer"
-                >
-                  <span>Actions</span>
-                  <ChevronDown className="w-3 h-3" />
-                </button>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsItemActionsOpen((v) => !v)}
+                    className="px-3.5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-semibold text-xs flex items-center gap-1 shadow-xs cursor-pointer"
+                  >
+                    <span>Actions</span>
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                  {isItemActionsOpen && (
+                    <div className="absolute right-0 mt-1 w-52 bg-white border border-slate-300 rounded-sm shadow-lg z-50 text-xs text-slate-800 py-1">
+                      <button type="button" onClick={handlePrintItemBarcodeLabel} className="w-full text-left px-3 py-1.5 hover:bg-slate-100 cursor-pointer">Print Barcode Label</button>
+                      <button type="button" onClick={handleDuplicateItem} className="w-full text-left px-3 py-1.5 hover:bg-slate-100 cursor-pointer">Duplicate Item</button>
+                      <button type="button" onClick={handleViewStockLedger} className="w-full text-left px-3 py-1.5 hover:bg-slate-100 cursor-pointer">View Stock Ledger</button>
+                      <div className="border-t border-slate-200 my-1"></div>
+                      <button type="button" onClick={handleArchiveItem} className="w-full text-left px-3 py-1.5 hover:bg-amber-50 text-amber-800 cursor-pointer">Archive Item</button>
+                      <button type="button" onClick={handleDeleteEditingProduct} className="w-full text-left px-3 py-1.5 hover:bg-rose-50 text-rose-700 cursor-pointer">Delete Item</button>
+                    </div>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() => {
@@ -5180,7 +5486,8 @@ export default function AuthenticOmegaProductsServicesView() {
                 { key: 'usedIn', label: 'Used In' },
                 { key: 'history', label: 'History' },
                 { key: 'sales', label: 'Sales Performance' },
-                { key: 'more', label: 'More' }
+                { key: 'more', label: 'More' },
+                { key: 'logistics', label: 'Logistics & Customs' }
               ].map((tab) => (
                 <button
                   key={tab.key}
@@ -5893,9 +6200,9 @@ export default function AuthenticOmegaProductsServicesView() {
                       <div className="p-2 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-600 flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           <DollarSign className="w-3.5 h-3.5 text-emerald-700" />
-                          <span><strong>Costing Automation:</strong> Input your production cost into <strong>Unit Cost $</strong> or <strong>Unit Cost LL</strong> to automatically synchronize at {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ and protect your target margins.</span>
+                          <span><strong>Costing Automation:</strong> Input your production cost into <strong>Unit Cost $</strong> or <strong>Unit Cost LL</strong> to automatically synchronize at {(editingProduct.secondCurrencyRate || liveRate).toLocaleString()} LL/$ and protect your target margins.</span>
                         </div>
-                        <span className="text-[10px] text-slate-500 font-mono">1 $ = {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL</span>
+                        <span className="text-[10px] text-slate-500 font-mono">1 $ = {(editingProduct.secondCurrencyRate || liveRate).toLocaleString()} LL</span>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -6205,7 +6512,7 @@ export default function AuthenticOmegaProductsServicesView() {
                           <label className="block text-slate-700 font-medium mb-1">Second Currency Rate</label>
                           <input
                             type="number"
-                            value={editingProduct.secondCurrencyRate || 90000}
+                            value={editingProduct.secondCurrencyRate || liveRate}
                             onChange={(e) =>
                               setEditingProduct({
                                 ...editingProduct,
@@ -6498,6 +6805,12 @@ export default function AuthenticOmegaProductsServicesView() {
                     </div>
                   </div>
 
+                                  </>
+              )}
+
+              {/* TAB: LOGISTICS & CUSTOMS */}
+              {activeModalTab === 'logistics' && (
+                <div className="space-y-4">
                   {/* Card 7: Customs, Freight Logistics & POS Interface */}
                   <div className="border border-slate-200 rounded-sm overflow-hidden">
                     <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
@@ -6671,7 +6984,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       </div>
                     </div>
                   </div>
-                </>
+                </div>
               )}
 
               {/* TAB 2: STOCK & REORDER LEVELS */}
@@ -6730,192 +7043,83 @@ export default function AuthenticOmegaProductsServicesView() {
                   {/* SUB-TAB 1: QTY OH (PHYSICAL STOCK LEDGER & VALUATION IMPACT) */}
                   {stockSubTab === 'qtyOH' && (
                     <div className="space-y-4">
-                      {/* Valuation Integrity & COGS Ledger Alert */}
-                      {(editingProduct.unitCostLL > 10000000 || (editingProduct.description?.includes('VINEGAR') && editingProduct.unitCostLL > 1000000)) ? (
-                        <div className="p-3.5 bg-rose-50 border-2 border-rose-400 rounded-sm text-xs text-rose-900 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 font-bold text-rose-800 text-sm">
-                              <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
-                              <span>Critical Data Entry Error: Massive Balance Sheet & COGS Ledger Distortion</span>
+                      {(() => {
+                        const recs: any[] = editingProduct.stockRecords || [];
+                        const totalQty = Number(editingProduct.qtyOH || 0);
+                        const reserved = recs.reduce((a, s) => a + Number(s.reservedQty || 0), 0);
+                        const rateX = editingProduct.secondCurrencyRate || liveRate;
+                        const unitUSD = Number(editingProduct.unitCostUSD) || (Number(editingProduct.unitCostLL) && rateX ? Number(editingProduct.unitCostLL) / rateX : 0);
+                        const fmt = (usd: number) => (stockShowLBP ? `${Math.round(usd * rateX).toLocaleString()} LL` : `$${usd.toFixed(2)}`);
+                        const unitLabel = editingProduct.inventoryFormat || editingProduct.unit || 'UNIT';
+                        return (
+                          <>
+                            <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-sm text-xs">
+                              <span className="text-slate-700">Live balance from the products catalog. Valuation at unit cost <strong>{fmt(unitUSD)}</strong> (1 $ = {Number(rateX).toLocaleString()} LL).</span>
+                              <button type="button" onClick={() => setStockShowLBP((v) => !v)} className="px-2.5 py-1 border border-slate-300 rounded-xs font-semibold bg-white hover:bg-slate-100 cursor-pointer">
+                                Show in {stockShowLBP ? 'USD' : 'LBP'}
+                              </button>
                             </div>
-                            <span className="px-2 py-0.5 bg-rose-600 text-white font-mono text-[10px] font-bold rounded">
-                              48.9B LBP IMPACT
-                            </span>
-                          </div>
-                          <p className="text-slate-700 leading-relaxed text-[11px]">
-                            This item&apos;s unit cost is recorded as <strong>{editingProduct.unitCostLL.toLocaleString()} LBP</strong>. Because you have stock on hand for this item, this erroneous figure severely inflates your total balance-sheet inventory asset valuation. Furthermore, every wholesale or retail sale logs an astronomical false loss of ~48.9 Billion LBP against Cost of Goods Sold (COGS).
-                          </p>
-                          <div className="flex items-center justify-between pt-1 border-t border-rose-200">
-                            <span className="text-[11px] text-slate-600 italic">
-                              Benchmark: Standard White Vinegar 12x500ml costs <strong>543,960 LL ($6.04)</strong>; Apple Vinegar costs ~556,920 LL.
-                            </span>
-                            <button
-                              type="button"
-                              onClick={handleFixValuationCostError}
-                              className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-sm text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition"
-                            >
-                              <RefreshCw className="w-3.5 h-3.5" />
-                              <span>⚡ 1-Click Fix: Align Unit Cost to 543,960 LL ($6.04)</span>
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-sm text-xs text-emerald-900 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                            <span>
-                              <strong>Inventory Valuation Status: Balanced.</strong> Unit Cost is <strong>{editingProduct.unitCostLL.toLocaleString()} LBP (${editingProduct.unitCostUSD?.toFixed(2) || '6.04'} USD)</strong>. Accurate COGS accounting aligned with identical Apple Vinegar benchmark (~556,920 LL).
-                            </span>
-                          </div>
-                          <span className="text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
-                            COGS SYNCED
-                          </span>
-                        </div>
-                      )}
 
-                      {/* Physical Stock Ledger Validation Summary Cards (Screenshot Audited: 12 Total, 2 Reserved, 10 Available) */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        {/* Total Qty OH */}
-                        <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-sm">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-semibold text-slate-600">Total Physical Qty</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold font-mono">
-                              LEDGER SYNCED
-                            </span>
-                          </div>
-                          <div className="text-2xl font-bold font-mono text-slate-900">
-                            {Number(editingProduct.qtyOH || 12).toFixed(2)} <span className="text-sm font-normal text-slate-500">{editingProduct.inventoryFormat || 'BOX'}</span>
-                          </div>
-                          <p className="text-[11px] text-slate-500 mt-1">
-                            Located in <strong>Main Store</strong>. Perfectly matches the background master inventory ledger.
-                          </p>
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-sm">
+                                <div className="text-xs font-semibold text-slate-600 mb-1">Total Physical Qty</div>
+                                <div className="text-2xl font-bold font-mono text-slate-900">{totalQty.toFixed(2)} <span className="text-sm font-normal text-slate-500">{unitLabel}</span></div>
+                              </div>
+                              <div className="p-3.5 bg-amber-50/50 border border-amber-200 rounded-sm">
+                                <div className="text-xs font-semibold text-amber-900 mb-1">Qty Reserved (Committed)</div>
+                                <div className="text-2xl font-bold font-mono text-amber-800">{reserved.toFixed(2)} <span className="text-sm font-normal text-amber-700">{unitLabel}</span></div>
+                              </div>
+                              <div className="p-3.5 bg-emerald-50/50 border border-emerald-200 rounded-sm">
+                                <div className="text-xs font-semibold text-emerald-900 mb-1">Available Qty (Sellable)</div>
+                                <div className="text-2xl font-bold font-mono text-emerald-700">{Math.max(0, totalQty - reserved).toFixed(2)} <span className="text-sm font-normal text-emerald-600">{unitLabel}</span></div>
+                              </div>
+                            </div>
 
-                        {/* Qty Reserved */}
-                        <div className="p-3.5 bg-amber-50/50 border border-amber-200 rounded-sm">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-semibold text-amber-900">Qty Reserved (Committed)</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-bold font-mono">
-                              SALES COMMITMENT
-                            </span>
-                          </div>
-                          <div className="text-2xl font-bold font-mono text-amber-800">
-                            2.00 <span className="text-sm font-normal text-amber-700">{editingProduct.inventoryFormat || 'BOX'}</span>
-                          </div>
-                          <p className="text-[11px] text-slate-600 mt-1">
-                            Locked by unfulfilled sales orders or pending dispatch runs in Omega POS / Supersonic Dispatch.
-                          </p>
-                        </div>
-
-                        {/* Available Qty */}
-                        <div className="p-3.5 bg-emerald-50/50 border border-emerald-200 rounded-sm">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-semibold text-emerald-900">Available Qty (Sellable)</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold font-mono">
-                              NET SELLABLE
-                            </span>
-                          </div>
-                          <div className="text-2xl font-bold font-mono text-emerald-700">
-                            {Math.max(0, Number(editingProduct.qtyOH || 12) - 2).toFixed(2)} <span className="text-sm font-normal text-emerald-600">{editingProduct.inventoryFormat || 'BOX'}</span>
-                          </div>
-                          <p className="text-[11px] text-slate-600 mt-1">
-                            Physical stock minus reserved commitments. Unconditionally available for new customer orders.
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Staging Warehouse Structure Notice */}
-                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm text-xs space-y-1">
-                        <div className="flex items-center gap-1.5 font-semibold text-slate-800">
-                          <Info className="w-3.5 h-3.5 text-primary" />
-                          <span>Warehouse Logistics Structure & Multi-Echelon Staging</span>
-                        </div>
-                        <p className="text-slate-600 text-[11px] leading-relaxed">
-                          This finished production item flows across 3 logical warehouses: <strong>Choueifat Production Plant</strong> (bottling & packaging), <strong>Wholesale Dispatch Staging</strong> (order picking & cross-docking), and <strong>Dispatch Depot</strong> (transit routes). Multi-echelon transfers maintain batch lot numbers and preserve audit records.
-                        </p>
-                      </div>
-
-                      {/* Physical Stock Records Table */}
-                      <div className="border border-slate-200 rounded-sm overflow-hidden">
-                        <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
-                          <span>Physical Stock by Warehouse & Staging Location</span>
-                          <span className="text-[11px] font-normal text-slate-500">
-                            Total Asset Value: {((editingProduct.qtyOH || 12) * (editingProduct.unitCostLL || 543960)).toLocaleString()} LBP
-                          </span>
-                        </div>
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left text-xs border-collapse">
-                            <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-                              <tr>
-                                <th className="px-3 py-2">Branch</th>
-                                <th className="px-3 py-2">Warehouse</th>
-                                <th className="px-3 py-2">Location</th>
-                                <th className="px-3 py-2 text-right">Qty OH</th>
-                                <th className="px-3 py-2 text-right">Reserved</th>
-                                <th className="px-3 py-2 text-right">Available</th>
-                                <th className="px-3 py-2 text-right">Unit Cost LL</th>
-                                <th className="px-3 py-2 text-right">Valuation Total LL</th>
-                                <th className="px-3 py-2 text-center">Status</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-200">
-                              <tr className="hover:bg-slate-50">
-                                <td className="px-3 py-2 font-medium">Beirut HQ</td>
-                                <td className="px-3 py-2 font-semibold text-slate-900">Main Store</td>
-                                <td className="px-3 py-2 text-slate-600">Rack B-04</td>
-                                <td className="px-3 py-2 text-right font-bold text-slate-900 font-mono">
-                                  {Number(editingProduct.qtyOH || 12).toFixed(2)}
-                                </td>
-                                <td className="px-3 py-2 text-right font-mono text-amber-700">2.00</td>
-                                <td className="px-3 py-2 text-right font-bold font-mono text-emerald-700">
-                                  {Math.max(0, Number(editingProduct.qtyOH || 12) - 2).toFixed(2)}
-                                </td>
-                                <td className="px-3 py-2 text-right font-mono">
-                                  {(editingProduct.unitCostLL || 543960).toLocaleString()}
-                                </td>
-                                <td className="px-3 py-2 text-right font-mono font-semibold text-slate-800">
-                                  {((editingProduct.qtyOH || 12) * (editingProduct.unitCostLL || 543960)).toLocaleString()}
-                                </td>
-                                <td className="px-3 py-2 text-center">
-                                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-semibold rounded">
-                                    SYNCED
-                                  </span>
-                                </td>
-                              </tr>
-                              <tr className="hover:bg-slate-50 text-slate-500">
-                                <td className="px-3 py-2 font-medium">Choueifat Plant</td>
-                                <td className="px-3 py-2">Bottling Staging</td>
-                                <td className="px-3 py-2">Zone C-Plant</td>
-                                <td className="px-3 py-2 text-right font-mono">0.00</td>
-                                <td className="px-3 py-2 text-right font-mono">0.00</td>
-                                <td className="px-3 py-2 text-right font-mono">0.00</td>
-                                <td className="px-3 py-2 text-right font-mono">{(editingProduct.unitCostLL || 543960).toLocaleString()}</td>
-                                <td className="px-3 py-2 text-right font-mono">0</td>
-                                <td className="px-3 py-2 text-center">
-                                  <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded">
-                                    EMPTY
-                                  </span>
-                                </td>
-                              </tr>
-                              <tr className="hover:bg-slate-50 text-slate-500">
-                                <td className="px-3 py-2 font-medium">Beirut HQ</td>
-                                <td className="px-3 py-2">Wholesale Dispatch Staging</td>
-                                <td className="px-3 py-2">Dock 1</td>
-                                <td className="px-3 py-2 text-right font-mono">0.00</td>
-                                <td className="px-3 py-2 text-right font-mono">0.00</td>
-                                <td className="px-3 py-2 text-right font-mono">0.00</td>
-                                <td className="px-3 py-2 text-right font-mono">{(editingProduct.unitCostLL || 543960).toLocaleString()}</td>
-                                <td className="px-3 py-2 text-right font-mono">0</td>
-                                <td className="px-3 py-2 text-center">
-                                  <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded">
-                                    EMPTY
-                                  </span>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
+                            <div className="border border-slate-200 rounded-sm overflow-hidden">
+                              <div className="bg-background px-4 py-2 border-b border-slate-200 font-semibold text-slate-800 flex items-center justify-between">
+                                <span>Physical Stock by Warehouse &amp; Location</span>
+                                <span className="text-[11px] font-normal text-slate-500">Total Asset Value: {fmt(totalQty * unitUSD)}</span>
+                              </div>
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-left text-xs border-collapse">
+                                  <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                    <tr>
+                                      <th className="px-3 py-2">Branch</th>
+                                      <th className="px-3 py-2">Warehouse</th>
+                                      <th className="px-3 py-2">Location</th>
+                                      <th className="px-3 py-2 text-right">Qty OH</th>
+                                      <th className="px-3 py-2 text-right">Reserved</th>
+                                      <th className="px-3 py-2 text-right">Available</th>
+                                      <th className="px-3 py-2 text-right">Unit Cost</th>
+                                      <th className="px-3 py-2 text-right">Valuation</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-slate-200">
+                                    {recs.length === 0 ? (
+                                      <tr>
+                                        <td colSpan={8} className="px-3 py-4 text-center text-slate-500">No warehouse stock locations recorded yet for this item.</td>
+                                      </tr>
+                                    ) : (
+                                      recs.map((s, i) => (
+                                        <tr key={i} className="hover:bg-slate-50">
+                                          <td className="px-3 py-2 font-medium">{s.branchName}</td>
+                                          <td className="px-3 py-2 font-semibold text-slate-900">{s.warehouseName}</td>
+                                          <td className="px-3 py-2 text-slate-600">{s.locationName}</td>
+                                          <td className="px-3 py-2 text-right font-bold font-mono">{Number(s.qtyOH || 0).toFixed(2)}</td>
+                                          <td className="px-3 py-2 text-right font-mono text-amber-700">{Number(s.reservedQty || 0).toFixed(2)}</td>
+                                          <td className="px-3 py-2 text-right font-bold font-mono text-emerald-700">{Math.max(0, Number(s.qtyOH || 0) - Number(s.reservedQty || 0)).toFixed(2)}</td>
+                                          <td className="px-3 py-2 text-right font-mono">{fmt(unitUSD)}</td>
+                                          <td className="px-3 py-2 text-right font-mono font-semibold">{fmt(Number(s.qtyOH || 0) * unitUSD)}</td>
+                                        </tr>
+                                      ))
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   )}
 
@@ -6935,7 +7139,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
                       {/* Active Deficit Status Banner */}
                       {(() => {
-                        const avail = Math.max(0, Number(editingProduct.qtyOH || 12) - 2);
+                        const avail = Math.max(0, Number(editingProduct.qtyOH || 0) - reservedQtyLive);
                         const rules = editingProduct.reorderRules || [];
                         const primaryRule = rules[0] || { minLevel: 50, maxStock: 200 };
                         const isDeficit = avail < primaryRule.minLevel;
@@ -7049,7 +7253,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <tbody className="divide-y divide-slate-200">
                               {editingProduct.reorderRules && editingProduct.reorderRules.length > 0 ? (
                                 editingProduct.reorderRules.map((rule) => {
-                                  const avail = Math.max(0, Number(editingProduct.qtyOH || 12) - 2);
+                                  const avail = Math.max(0, Number(editingProduct.qtyOH || 0) - reservedQtyLive);
                                   const isDeficit = avail < rule.minLevel;
                                   const isOverstock = avail > rule.maxStock;
                                   return (
@@ -7476,11 +7680,11 @@ export default function AuthenticOmegaProductsServicesView() {
                     <div className="flex items-center gap-2 text-slate-700">
                       <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
                       <span>
-                        <strong>USD Valuation Safeguard Active:</strong> Unit Cost USD is calculated dynamically by dividing LBP recipe sum by {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL/$ (<strong>${((editingProduct.unitCostLL || 543960) / (editingProduct.secondCurrencyRate || 90000)).toFixed(2)} USD</strong>). Prevents erroneous 1:1 currency duplication.
+                        <strong>USD Valuation Safeguard Active:</strong> Unit Cost USD is calculated dynamically by dividing LBP recipe sum by {(editingProduct.secondCurrencyRate || liveRate).toLocaleString()} LL/$ (<strong>${((editingProduct.unitCostLL || 0) / (editingProduct.secondCurrencyRate || liveRate)).toFixed(2)} USD</strong>). Prevents erroneous 1:1 currency duplication.
                       </span>
                     </div>
                     <span className="text-[10px] font-mono text-slate-500 font-bold">
-                      1 $ = {(editingProduct.secondCurrencyRate || 90000).toLocaleString()} LL
+                      1 $ = {(editingProduct.secondCurrencyRate || liveRate).toLocaleString()} LL
                     </span>
                   </div>
 
@@ -7518,7 +7722,7 @@ export default function AuthenticOmegaProductsServicesView() {
                         <tbody className="divide-y divide-slate-200">
                           {editingProduct.assemblyItems && editingProduct.assemblyItems.length > 0 ? (
                             editingProduct.assemblyItems.map((asm, idx) => {
-                              const rate = editingProduct.secondCurrencyRate || 90000;
+                              const rate = editingProduct.secondCurrencyRate || liveRate;
                               const usdCost = Number((asm.totalCostLL / rate).toFixed(2));
                               return (
                                 <tr key={asm.id} className="hover:bg-slate-50">
@@ -7590,7 +7794,7 @@ export default function AuthenticOmegaProductsServicesView() {
                                 {editingProduct.assemblyItems.reduce((acc, c) => acc + c.totalCostLL, 0).toLocaleString()} LBP
                               </td>
                               <td className="px-3 py-2.5 text-right font-mono text-sm text-primary font-bold">
-                                ${(editingProduct.assemblyItems.reduce((acc, c) => acc + c.totalCostLL, 0) / (editingProduct.secondCurrencyRate || 90000)).toFixed(2)}
+                                ${(editingProduct.assemblyItems.reduce((acc, c) => acc + c.totalCostLL, 0) / (editingProduct.secondCurrencyRate || liveRate)).toFixed(2)}
                               </td>
                               <td></td>
                             </tr>
@@ -7603,7 +7807,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   {/* Financial Synchronization Bar */}
                   <div className="p-3 bg-slate-100 border border-slate-200 rounded-sm flex flex-col md:flex-row items-center justify-between gap-3">
                     <div className="text-xs text-slate-700">
-                      <strong>Synchronize Financials:</strong> Propagate recalculated recipe cost into Master Item Cost (<strong>{editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0).toLocaleString()} LBP</strong> / <strong>${( (editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0) || 0) / (editingProduct.secondCurrencyRate || 90000)).toFixed(2)}</strong>) and calculate 50% target wholesale markup price (<strong>{Math.round((editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0) || 0) * 1.5).toLocaleString()} LBP</strong>).
+                      <strong>Synchronize Financials:</strong> Propagate recalculated recipe cost into Master Item Cost (<strong>{editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0).toLocaleString()} LBP</strong> / <strong>${( (editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0) || 0) / (editingProduct.secondCurrencyRate || liveRate)).toFixed(2)}</strong>) and calculate 50% target wholesale markup price (<strong>{Math.round((editingProduct.assemblyItems?.reduce((acc, c) => acc + c.totalCostLL, 0) || 0) * 1.5).toLocaleString()} LBP</strong>).
                     </div>
                     <button
                       type="button"
@@ -8481,7 +8685,7 @@ export default function AuthenticOmegaProductsServicesView() {
                             <tbody className="divide-y divide-slate-200">
                               {editingProduct.supplierPricings && editingProduct.supplierPricings.length > 0 ? (
                                 editingProduct.supplierPricings.map((sp, idx) => {
-                                  const base = sp.currency === 'USD' ? sp.price * (editingProduct.secondCurrencyRate || 90000) : sp.price;
+                                  const base = sp.currency === 'USD' ? sp.price * (editingProduct.secondCurrencyRate || liveRate) : sp.price;
                                   const effective = Math.round(base * (1 - (sp.discountPct || 0) / 100));
                                   return (
                                     <tr key={sp.id} className="hover:bg-slate-50">
@@ -8863,7 +9067,7 @@ export default function AuthenticOmegaProductsServicesView() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-background p-3 rounded-sm border border-slate-200">
                     <div className="flex items-center gap-3">
                       <Calendar className="w-4 h-4 text-slate-500" />
-                      <span className="font-semibold text-slate-800">Sales Performance Overview: Year 2026</span>
+                      <span className="font-semibold text-slate-800">Sales Performance Overview: Year {curYear} (posted sales invoices only)</span>
                       <button
                         type="button"
                         onClick={handleRefreshPerformance}
@@ -8874,36 +9078,35 @@ export default function AuthenticOmegaProductsServicesView() {
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500">Period:</span>
-                      <select className="px-2.5 py-1 text-xs border border-slate-300 rounded-sm bg-white">
-                        <option value="2026">Year 2026</option>
-                        <option value="2025">Year 2025</option>
-                        <option value="12m">Last 12 Months</option>
-                      </select>
+                      <span className="text-xs text-slate-500">Source: posted sales invoices (is_posted = true)</span>
                     </div>
                   </div>
 
-                  {/* Summary Cards */}
+                  {/* Summary Cards (live, posted invoices only) */}
+                  {livePerf.invoicesCount === 0 && (
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-sm text-xs text-slate-600">
+                      No posted sales invoices found for this item yet.
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div className="bg-white border border-slate-200 rounded-sm p-3">
                       <div className="text-[11px] text-slate-500">Units Sold This Year</div>
-                      <div className="text-lg font-bold text-slate-900 mt-1">2,180 BOT</div>
-                      <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">↑ +14.5% vs 2025</div>
+                      <div className="text-lg font-bold text-slate-900 mt-1">{livePerf.totalQty.toLocaleString()} {editingProduct.unit}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">{livePerf.invoicesCount} posted invoices</div>
                     </div>
                     <div className="bg-white border border-slate-200 rounded-sm p-3">
                       <div className="text-[11px] text-slate-500">Revenue (LL)</div>
-                      <div className="text-lg font-bold text-slate-900 mt-1">98,100,000</div>
-                      <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">↑ +18.2% vs 2025</div>
+                      <div className="text-lg font-bold text-slate-900 mt-1">{Math.round(livePerf.totalRevenueLL).toLocaleString()}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">${liveRate ? (livePerf.totalRevenueLL / liveRate).toFixed(2) : '0.00'} USD</div>
                     </div>
                     <div className="bg-white border border-slate-200 rounded-sm p-3">
-                      <div className="text-[11px] text-slate-500">Gross Margin</div>
-                      <div className="text-lg font-bold text-emerald-700 mt-1">39,944,750</div>
-                      <div className="text-[10px] text-slate-500 font-medium mt-0.5">Profit Margin</div>
+                      <div className="text-[11px] text-slate-500">Gross Margin (LL)</div>
+                      <div className="text-lg font-bold text-emerald-700 mt-1">{Math.round(livePerf.totalRevenueLL - livePerf.totalQty * Number(editingProduct.unitCostLL || 0)).toLocaleString()}</div>
+                      <div className="text-[10px] text-slate-500 font-medium mt-0.5">Revenue minus unit cost</div>
                     </div>
                     <div className="bg-white border border-slate-200 rounded-sm p-3">
-                      <div className="text-[11px] text-slate-500">Average Markup</div>
-                      <div className="text-lg font-bold text-blue-700 mt-1">68.7%</div>
-                      <div className="text-[10px] text-slate-500 font-medium mt-0.5">Target: 65%</div>
+                      <div className="text-[11px] text-slate-500">Margin %</div>
+                      <div className="text-lg font-bold text-blue-700 mt-1">{livePerf.totalRevenueLL > 0 ? (((livePerf.totalRevenueLL - livePerf.totalQty * Number(editingProduct.unitCostLL || 0)) / livePerf.totalRevenueLL) * 100).toFixed(1) : '0.0'}%</div>
                     </div>
                   </div>
 
@@ -8916,19 +9119,19 @@ export default function AuthenticOmegaProductsServicesView() {
                       <div className="flex items-center gap-4 text-[11px]">
                         <div className="flex items-center gap-1">
                           <span className="w-3 h-3 bg-primary rounded-xs inline-block"></span>
-                          <span>2026 (This Year)</span>
+                          <span>{curYear} (This Year)</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <span className="w-3 h-3 bg-slate-300 rounded-xs inline-block"></span>
-                          <span>2025 (Last Year)</span>
+                          <span>{curYear - 1} (Last Year)</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Chart Bars */}
                     <div className="pt-4 flex items-end justify-between gap-2 h-44 border-b border-slate-200 px-2">
-                      {editingProduct.salesPerformance?.map((sp) => {
-                        const maxVal = 300;
+                      {livePerf.months.map((sp) => {
+                        const maxVal = Math.max(1, ...livePerf.months.map((m) => Math.max(m.qtyThisYear, m.qtyLastYear)));
                         const heightThis = Math.min(100, Math.round((sp.qtyThisYear / maxVal) * 100));
                         const heightLast = Math.min(100, Math.round((sp.qtyLastYear / maxVal) * 100));
 
@@ -8937,12 +9140,12 @@ export default function AuthenticOmegaProductsServicesView() {
                             <div className="w-full flex items-end justify-center gap-1 h-full">
                               <div
                                 style={{ height: `${heightThis}%` }}
-                                title={`2026: ${sp.qtyThisYear} units`}
+                                title={`${curYear}: ${sp.qtyThisYear} units`}
                                 className="w-3 bg-primary hover:bg-primary/90 rounded-t-xs transition-all cursor-pointer"
                               ></div>
                               <div
                                 style={{ height: `${heightLast}%` }}
-                                title={`2025: ${sp.qtyLastYear} units`}
+                                title={`${curYear - 1}: ${sp.qtyLastYear} units`}
                                 className="w-3 bg-slate-300 hover:bg-slate-400 rounded-t-xs transition-all cursor-pointer"
                               ></div>
                             </div>
@@ -8959,20 +9162,20 @@ export default function AuthenticOmegaProductsServicesView() {
                       <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
                         <tr>
                           <th className="px-3 py-2">Month</th>
-                          <th className="px-3 py-2 text-right">Qty (2026)</th>
-                          <th className="px-3 py-2 text-right">Sales LL (2026)</th>
-                          <th className="px-3 py-2 text-right">Qty (2025)</th>
-                          <th className="px-3 py-2 text-right">Sales LL (2025)</th>
+                          <th className="px-3 py-2 text-right">Qty ({curYear})</th>
+                          <th className="px-3 py-2 text-right">Sales LL ({curYear})</th>
+                          <th className="px-3 py-2 text-right">Qty ({curYear - 1})</th>
+                          <th className="px-3 py-2 text-right">Sales LL ({curYear - 1})</th>
                           <th className="px-3 py-2 text-right">Growth</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-200">
-                        {editingProduct.salesPerformance?.map((sp) => {
+                        {livePerf.months.map((sp) => {
                           const diff = sp.qtyThisYear - sp.qtyLastYear;
                           const pct = sp.qtyLastYear > 0 ? ((diff / sp.qtyLastYear) * 100).toFixed(1) : '0';
                           return (
                             <tr key={sp.month} className="hover:bg-slate-50">
-                              <td className="px-3 py-1.5 font-medium">{sp.month} 2026</td>
+                              <td className="px-3 py-1.5 font-medium">{sp.month} {curYear}</td>
                               <td className="px-3 py-1.5 text-right font-bold text-slate-900">{sp.qtyThisYear}</td>
                               <td className="px-3 py-1.5 text-right text-slate-700 font-mono">
                                 {sp.salesThisYearLL.toLocaleString()}
@@ -10378,7 +10581,7 @@ export default function AuthenticOmegaProductsServicesView() {
             <div className="p-4 overflow-y-auto space-y-3 flex-1 text-xs">
               {OMEGA_BOM_TEMPLATES.map((tmpl) => {
                 const isSelected = selectedSameAsTemplateId === tmpl.id;
-                const rate = editingProduct?.secondCurrencyRate || 90000;
+                const rate = editingProduct?.secondCurrencyRate || liveRate;
                 const usd = (tmpl.totalCostLL / rate).toFixed(2);
 
                 return (
@@ -10444,7 +10647,7 @@ export default function AuthenticOmegaProductsServicesView() {
             {/* Modal Footer */}
             <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
               <span className="text-[11px] text-slate-500">
-                Target Currency Exchange: 1 $ = {(editingProduct?.secondCurrencyRate || 90000).toLocaleString()} LL
+                Target Currency Exchange: 1 $ = {(editingProduct?.secondCurrencyRate || liveRate).toLocaleString()} LL
               </span>
               <div className="flex gap-2">
                 <button
@@ -10722,266 +10925,76 @@ export default function AuthenticOmegaProductsServicesView() {
           Direct Pixel-Perfect Clone of User's Uploaded Screenshot
           ======================================================================= */}
       {isInventoryProductionsReportOpen && (
-        <div
-          className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
-          style={{ zIndex: 90000 }}
-        >
-          <div
-            className="bg-white border border-slate-400 w-full max-w-2xl text-slate-900 shadow-2xl rounded-sm overflow-hidden flex flex-col max-h-[92vh]"
-            style={{ zIndex: 90001 }}
-          >
-            {/* Modal Title Bar */}
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in" style={{ zIndex: 90000 }}>
+          <div className="bg-white border border-slate-400 w-full max-w-3xl text-slate-900 shadow-2xl rounded-sm overflow-hidden flex flex-col max-h-[92vh]" style={{ zIndex: 90001 }}>
             <div className="px-4 py-2.5 border-b border-slate-200 flex items-center justify-between bg-background">
-              <h3 className="text-base font-semibold text-slate-800">Inventory Productions</h3>
-              <button
-                type="button"
-                onClick={() => setIsInventoryProductionsReportOpen(false)}
-                className="text-slate-400 hover:text-slate-700 text-2xl leading-none cursor-pointer"
-                title="Close Window"
-              >
-                ×
+              <h3 className="text-base font-semibold text-slate-800">Inventory Productions (Bill of Materials)</h3>
+              <button type="button" onClick={() => setIsInventoryProductionsReportOpen(false)} className="text-slate-400 hover:text-slate-700 text-2xl leading-none cursor-pointer" title="Close Window">
+                Ã—
               </button>
             </div>
 
-            {/* Action Bar (Print / Export Buttons matching screenshot top-right) */}
             <div className="px-6 py-2.5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
-              {/* Report View Selector */}
-              <div className="flex items-center gap-1.5 text-xs">
-                <span className="text-slate-500 font-medium mr-1">Report View:</span>
-                <button
-                  type="button"
-                  onClick={() => setInventoryProductionsReportMode('omega_anomaly')}
-                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
-                    inventoryProductionsReportMode === 'omega_anomaly'
-                      ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  Omega Anomaly (CWV500MLB106 - Exact Photo)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setInventoryProductionsReportMode('case_assembly')}
-                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
-                    inventoryProductionsReportMode === 'case_assembly'
-                      ? 'bg-blue-100 text-blue-900 border border-blue-300'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  Forward Case BOM (12-Pack)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setInventoryProductionsReportMode('pallet_master')}
-                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
-                    inventoryProductionsReportMode === 'pallet_master'
-                      ? 'bg-purple-100 text-purple-900 border border-purple-300'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  Export Pallet (100 Boxes)
-                </button>
-              </div>
-
-              {/* Exact Dark Action Buttons from Screenshot */}
+              <span className="text-xs text-slate-500">Live assembly records from the tenant catalog ({bomProducts.length} assembled items)</span>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handlePrintInventoryProductionsReport}
-                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
-                >
+                <button type="button" onClick={handlePrintInventoryProductionsReport} className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition">
                   Print
                 </button>
-                <button
-                  type="button"
-                  onClick={handleExportInventoryProductionsReport}
-                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
-                >
+                <button type="button" onClick={handleExportInventoryProductionsReport} className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition">
                   Export
                 </button>
               </div>
             </div>
 
-            {/* Document Preview Sheet (Pixel-Perfect Physical Print Sheet) */}
             <div className="p-6 overflow-y-auto bg-slate-100/70 flex-1">
-              <div className="bg-white border border-slate-300 rounded-xs shadow-xs p-8 max-w-xl mx-auto min-h-[500px] flex flex-col justify-between font-sans text-xs">
-                <div>
-                  {/* Company Header (Centered Blue) */}
-                  <div className="text-center font-bold text-blue-700 text-sm tracking-wide">
-                    Zeit w zaytoun ljanoub
-                  </div>
-
-                  {/* Report Title (Centered Bold) */}
-                  <div className="text-center font-bold text-slate-900 text-sm mt-3">
-                    Inventory Items Ingredients
-                  </div>
-
-                  {/* Date and Page Header */}
-                  <div className="flex items-center justify-between text-[11px] text-slate-800 font-mono mt-4">
-                    <span>13-Sep-2026</span>
-                    <span>Page 1 of 1</span>
-                  </div>
-
-                  {/* Solid Dividing Rule */}
-                  <div className="border-b-2 border-slate-900 mt-1"></div>
-
-                  {/* Column Headers */}
-                  <div className="grid grid-cols-12 text-[11px] font-bold text-slate-900 py-1.5">
-                    <span className="col-span-3">Product Code</span>
-                    <span className="col-span-4">Product Description</span>
-                    <span className="col-span-1 text-right">Qty</span>
-                    <span className="col-span-1 text-center">Unit</span>
-                    <span className="col-span-1 text-right">Cost</span>
-                    <span className="col-span-2 text-right">Avg. Cost</span>
-                  </div>
-
-                  {/* Solid Dividing Rule */}
-                  <div className="border-b border-slate-900"></div>
-
-                  {/* Report Body Content (Mode Switchable) */}
-                  {inventoryProductionsReportMode === 'omega_anomaly' && (
-                    <div className="mt-2 text-[11px]">
-                      {/* Parent Product Header */}
-                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
-                        <div>
-                          <span className="underline font-bold">Product Code:</span>{' '}
-                          <span className="font-mono">CWV500MLB106</span>
-                        </div>
-                        <div>
-                          <span className="underline font-bold">Description:</span>{' '}
-                          <span>White Vinegar 500ml</span>
-                        </div>
-                      </div>
-
-                      {/* Consumed Child Items (The Inverted Box Anomaly) */}
-                      <div className="grid grid-cols-12 py-1 text-slate-800 font-mono items-center">
-                        <span className="col-span-3 text-[10px]">CWV500ML*12B106</span>
-                        <span className="col-span-4 font-sans text-[11px]">White Vinegar 500ml Case (12 Bottles)</span>
-                        <span className="col-span-1 text-right font-bold">0.08</span>
-                        <span className="col-span-1 text-center font-sans">BOX</span>
-                        <span className="col-span-1 text-right">45,692.64</span>
-                        <span className="col-span-2 text-right">45,692.64</span>
-                      </div>
-
-                      {/* Dashed Subtotal Rule */}
-                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
-
-                      {/* Total By Product */}
-                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
-                        <span className="col-span-7">Total By Product:</span>
-                        <span className="col-span-2"></span>
-                        <span className="col-span-1 text-right font-mono">45,692.64</span>
-                        <span className="col-span-2 text-right font-mono">45,692.64</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {inventoryProductionsReportMode === 'case_assembly' && (
-                    <div className="mt-2 text-[11px]">
-                      {/* Parent Product Header */}
-                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
-                        <div>
-                          <span className="underline font-bold">Product Code:</span>{' '}
-                          <span className="font-mono">CWV500ML*12B106</span>
-                        </div>
-                        <div>
-                          <span className="underline font-bold">Description:</span>{' '}
-                          <span>White Vinegar 500ml Case (12 Bottles)</span>
-                        </div>
-                      </div>
-
-                      {/* True Manufacturing Components */}
-                      <div className="space-y-1">
-                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
-                          <span className="col-span-3 text-[10px]">VIN-1LTR</span>
-                          <span className="col-span-4 font-sans text-[11px]">COMMERCIAL WHITE VINEGAR 1 LITRE</span>
-                          <span className="col-span-1 text-right font-bold">6.00</span>
-                          <span className="col-span-1 text-center font-sans">LTR</span>
-                          <span className="col-span-1 text-right">15,660.00</span>
-                          <span className="col-span-2 text-right">93,960.00</span>
-                        </div>
-                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
-                          <span className="col-span-3 text-[10px]">BOT-500ML</span>
-                          <span className="col-span-4 font-sans text-[11px]">Empty Glass Bottle 500ml</span>
-                          <span className="col-span-1 text-right font-bold">12.00</span>
-                          <span className="col-span-1 text-center font-sans">BOT</span>
-                          <span className="col-span-1 text-right">30,000.00</span>
-                          <span className="col-span-2 text-right">360,000.00</span>
-                        </div>
-                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
-                          <span className="col-span-3 text-[10px]">SERV-01</span>
-                          <span className="col-span-4 font-sans text-[11px]">SERVICES 1 (Choueifat Labor & Line)</span>
-                          <span className="col-span-1 text-right font-bold">1.00</span>
-                          <span className="col-span-1 text-center font-sans">SERV</span>
-                          <span className="col-span-1 text-right">90,000.00</span>
-                          <span className="col-span-2 text-right">90,000.00</span>
-                        </div>
-                      </div>
-
-                      {/* Dashed Subtotal Rule */}
-                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
-
-                      {/* Total By Product */}
-                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
-                        <span className="col-span-7">Total By Product:</span>
-                        <span className="col-span-2"></span>
-                        <span className="col-span-1 text-right font-mono">543,960.00</span>
-                        <span className="col-span-2 text-right font-mono">543,960.00</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {inventoryProductionsReportMode === 'pallet_master' && (
-                    <div className="mt-2 text-[11px]">
-                      {/* Parent Product Header */}
-                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
-                        <div>
-                          <span className="underline font-bold">Product Code:</span>{' '}
-                          <span className="font-mono">PALLET-WV500ML</span>
-                        </div>
-                        <div>
-                          <span className="underline font-bold">Description:</span>{' '}
-                          <span>White Vinegar 500ml Pallet (100 Boxes)</span>
-                        </div>
-                      </div>
-
-                      {/* Pallet Master Linkage */}
-                      <div className="grid grid-cols-12 py-1 text-slate-800 font-mono items-center">
-                        <span className="col-span-3 text-[10px]">CWV500ML*12B106</span>
-                        <span className="col-span-4 font-sans text-[11px]">White Vinegar 500ml Case (12 Bottles)</span>
-                        <span className="col-span-1 text-right font-bold">100.00</span>
-                        <span className="col-span-1 text-center font-sans">BOX</span>
-                        <span className="col-span-1 text-right">543,960.00</span>
-                        <span className="col-span-2 text-right">54,396,000.00</span>
-                      </div>
-
-                      {/* Dashed Subtotal Rule */}
-                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
-
-                      {/* Total By Product */}
-                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
-                        <span className="col-span-7">Total By Product:</span>
-                        <span className="col-span-2"></span>
-                        <span className="col-span-1 text-right font-mono">54,396,000.00</span>
-                        <span className="col-span-2 text-right font-mono">54,396,000.00</span>
-                      </div>
-                    </div>
-                  )}
+              <div className="bg-white border border-slate-300 rounded-xs shadow-xs p-8 max-w-2xl mx-auto min-h-[300px] font-sans text-xs">
+                <div className="text-center font-bold text-blue-700 text-sm tracking-wide">{(currentTenant as any)?.name || 'Vanguard ERP'}</div>
+                <div className="text-center font-bold text-slate-900 text-sm mt-3">Inventory Items Ingredients</div>
+                <div className="flex items-center justify-between text-[11px] text-slate-800 font-mono mt-4">
+                  <span>{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                  <span>Page 1 of 1</span>
                 </div>
-
-                {/* Footer Section */}
-                <div className="pt-24">
-                  {/* Solid Dividing Rule */}
-                  <div className="border-b-2 border-slate-900 mb-1"></div>
-
-                  <div className="flex items-center justify-between text-[10px] text-slate-800">
-                    <span className="font-mono font-bold">REP_I_0041</span>
-                    <span className="text-slate-700 font-medium">
-                      Copyright © 2026 Vanguard ERP. All Rights Reserved.
-                    </span>
-                    <span className="text-slate-700 font-mono">&quot;vanguard-erp-lb.vercel.app&quot;</span>
-                  </div>
+                <div className="border-b-2 border-slate-900 mt-1"></div>
+                <div className="grid grid-cols-12 text-[11px] font-bold text-slate-900 py-1.5">
+                  <span className="col-span-3">Code</span>
+                  <span className="col-span-4">Description</span>
+                  <span className="col-span-1 text-right">Qty</span>
+                  <span className="col-span-1 text-center">Unit</span>
+                  <span className="col-span-1 text-right">Cost $</span>
+                  <span className="col-span-2 text-right">Total $</span>
                 </div>
+                <div className="border-b border-slate-900"></div>
+
+                {bomProducts.length === 0 ? (
+                  <div className="py-10 text-center text-slate-500 text-[12px]">No Bill of Materials defined yet. Add components in an item&apos;s Item Assembly tab.</div>
+                ) : (
+                  bomProducts.map((p: any) => {
+                    const total = (p.assemblyItems || []).reduce((a: number, c: any) => a + Number(c.totalCostLL || 0), 0);
+                    return (
+                      <div key={p.id} className="mt-2 text-[11px]">
+                        <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
+                          <div><span className="underline font-bold">Product Code:</span> <span className="font-mono">{p.code}</span></div>
+                          <div><span className="underline font-bold">Description:</span> <span>{p.description}</span></div>
+                        </div>
+                        {(p.assemblyItems || []).map((a: any) => (
+                          <div key={a.id} className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
+                            <span className="col-span-3 text-[10px]">{a.rawMaterialCode}</span>
+                            <span className="col-span-4 font-sans text-[11px]">{a.rawMaterialName}</span>
+                            <span className="col-span-1 text-right font-bold">{Number(a.qtyNeeded || 0).toFixed(2)}</span>
+                            <span className="col-span-1 text-center font-sans">{a.unit}</span>
+                            <span className="col-span-1 text-right">{(Number(a.unitCostLL || 0) / liveRate).toFixed(2)}</span>
+                            <span className="col-span-2 text-right">{(Number(a.totalCostLL || 0) / liveRate).toFixed(2)}</span>
+                          </div>
+                        ))}
+                        <div className="border-b border-dashed border-slate-700 my-1.5"></div>
+                        <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
+                          <span className="col-span-10">Total By Product:</span>
+                          <span className="col-span-2 text-right font-mono">{(total / liveRate).toFixed(2)}</span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>
@@ -11486,6 +11499,14 @@ export default function AuthenticOmegaProductsServicesView() {
                 <button
                   type="button"
                   disabled={isMaintenanceRunning}
+                  onClick={handleReconcileStock}
+                  className="px-3.5 py-1.5 border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-50 text-slate-800 rounded-xs font-semibold cursor-pointer"
+                >
+                  Reconcile qty_on_hand
+                </button>
+                <button
+                  type="button"
+                  disabled={isMaintenanceRunning}
                   onClick={handleRunItemMaintenance}
                   className="px-4 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
@@ -11498,42 +11519,47 @@ export default function AuthenticOmegaProductsServicesView() {
         </div>
       )}
 
-      {/* 4. Items Pricing Modal */}
+      {/* 4. Items Pricing Modal (live products, USD with live LBP conversion) */}
       {isItemsPricingModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-sm shadow-2xl w-full max-w-5xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-6xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
             <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <List className="w-4 h-4 text-emerald-400" />
-                <h3 className="font-bold">Items Pricing (B2B Wholesale Tiers Rapid-Entry Matrix)</h3>
+                <h3 className="font-bold">Items Pricing (Tier 1-4 Rapid-Entry Matrix, USD)</h3>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsItemsPricingModalOpen(false)}
-                className="text-slate-300 hover:text-white"
-              >
+              <button type="button" onClick={() => setIsItemsPricingModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="p-4 overflow-y-auto space-y-3 flex-1">
-              <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-xs border border-slate-200">
-                <span className="text-slate-700 text-xs">
-                  Rapid volume discount tier editor for B2B wholesale depots and Choueifat dispatch.
-                </span>
+              <div className="flex items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xs border border-slate-200">
+                <input
+                  type="text"
+                  value={pricingSearch}
+                  onChange={(e) => setPricingSearch(e.target.value)}
+                  placeholder="Filter by description or code..."
+                  className="flex-1 px-2.5 py-1 border border-slate-300 rounded-xs bg-white focus:outline-none focus:border-blue-600"
+                />
+                <span className="text-slate-600">1 $ = {Number(liveRate).toLocaleString()} LL</span>
                 <button
                   type="button"
                   onClick={() => {
-                    const edits: any = {};
-                    products.slice(0, 15).forEach((p) => {
+                    const q = pricingSearch.trim().toLowerCase();
+                    const rows = products.filter((p) => !q || p.description?.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q)).slice(0, 200);
+                    const edits: any = { ...pricingMatrixEdits };
+                    rows.forEach((p) => {
+                      const cur = edits[p.id] || { sp1: tierUsd(p, 1), sp2: tierUsd(p, 2), sp3: tierUsd(p, 3), sp4: tierUsd(p, 4) };
                       edits[p.id] = {
-                        sp1: Math.round(p.sellingPrice1LL * 1.05),
-                        sp2: Math.round(p.sellingPrice2LL * 1.05),
-                        sp3: Math.round(p.sellingPrice3LL * 1.05)
+                        sp1: Number((cur.sp1 * 1.05).toFixed(2)),
+                        sp2: Number((cur.sp2 * 1.05).toFixed(2)),
+                        sp3: Number((cur.sp3 * 1.05).toFixed(2)),
+                        sp4: Number((cur.sp4 * 1.05).toFixed(2))
                       };
                     });
                     setPricingMatrixEdits(edits);
-                    showToast('Populated matrix with blanket +5% increase across tiers');
+                    showToast('Applied +5% across all tiers on the listed items');
                   }}
                   className="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-100 rounded-xs text-[11px] font-semibold text-slate-700 cursor-pointer"
                 >
@@ -11541,103 +11567,65 @@ export default function AuthenticOmegaProductsServicesView() {
                 </button>
               </div>
 
-              <div className="border border-slate-200 rounded-xs overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
-                    <tr>
-                      <th className="px-3 py-2">Item Description</th>
-                      <th className="px-3 py-2">Code</th>
-                      <th className="px-3 py-2 text-right">Cost LL</th>
-                      <th className="px-3 py-2 text-right">SP 1 (Retail)</th>
-                      <th className="px-3 py-2 text-right">SP 2 (Wholesale)</th>
-                      <th className="px-3 py-2 text-right">SP 3 (Distributor)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {products.slice(0, 20).map((prod) => {
-                      const edit = pricingMatrixEdits[prod.id];
-                      return (
-                        <tr key={prod.id} className="hover:bg-slate-50">
-                          <td className="px-3 py-2 font-medium text-slate-900">{prod.description}</td>
-                          <td className="px-3 py-2 font-mono text-[11px] text-slate-600">{prod.code}</td>
-                          <td className="px-3 py-2 text-right text-slate-600 font-mono">
-                            {Number(prod.cost).toLocaleString()}
-                          </td>
-                          <td className="px-3 py-1.5 text-right">
-                            <input
-                              type="number"
-                              value={edit?.sp1 ?? prod.sellingPrice1LL}
-                              onChange={(e) => {
-                                const val = Number(e.target.value);
-                                setPricingMatrixEdits((prev) => ({
-                                  ...prev,
-                                  [prod.id]: {
-                                    sp1: val,
-                                    sp2: prev[prod.id]?.sp2 ?? prod.sellingPrice2LL,
-                                    sp3: prev[prod.id]?.sp3 ?? prod.sellingPrice3LL
-                                  }
-                                }));
-                              }}
-                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
-                            />
-                          </td>
-                          <td className="px-3 py-1.5 text-right">
-                            <input
-                              type="number"
-                              value={edit?.sp2 ?? prod.sellingPrice2LL}
-                              onChange={(e) => {
-                                const val = Number(e.target.value);
-                                setPricingMatrixEdits((prev) => ({
-                                  ...prev,
-                                  [prod.id]: {
-                                    sp1: prev[prod.id]?.sp1 ?? prod.sellingPrice1LL,
-                                    sp2: val,
-                                    sp3: prev[prod.id]?.sp3 ?? prod.sellingPrice3LL
-                                  }
-                                }));
-                              }}
-                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
-                            />
-                          </td>
-                          <td className="px-3 py-1.5 text-right">
-                            <input
-                              type="number"
-                              value={edit?.sp3 ?? prod.sellingPrice3LL}
-                              onChange={(e) => {
-                                const val = Number(e.target.value);
-                                setPricingMatrixEdits((prev) => ({
-                                  ...prev,
-                                  [prod.id]: {
-                                    sp1: prev[prod.id]?.sp1 ?? prod.sellingPrice1LL,
-                                    sp2: prev[prod.id]?.sp2 ?? prod.sellingPrice2LL,
-                                    sp3: val
-                                  }
-                                }));
-                              }}
-                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              {products.length === 0 ? (
+                <div className="p-6 text-center text-slate-500 border border-slate-200 rounded-xs">No products in the live catalog yet. Add or import items first.</div>
+              ) : (
+                <div className="border border-slate-200 rounded-xs overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
+                      <tr>
+                        <th className="px-3 py-2">Item Description</th>
+                        <th className="px-3 py-2">Code</th>
+                        <th className="px-3 py-2 text-right">Cost $</th>
+                        <th className="px-3 py-2 text-right">Tier 1 $</th>
+                        <th className="px-3 py-2 text-right">Tier 2 $</th>
+                        <th className="px-3 py-2 text-right">Tier 3 $</th>
+                        <th className="px-3 py-2 text-right">Tier 4 $</th>
+                        <th className="px-3 py-2 text-right">Tier 1 LL</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      {products
+                        .filter((p) => {
+                          const q = pricingSearch.trim().toLowerCase();
+                          return !q || p.description?.toLowerCase().includes(q) || p.code?.toLowerCase().includes(q);
+                        })
+                        .slice(0, 200)
+                        .map((prod) => {
+                          const e = pricingMatrixEdits[prod.id];
+                          const costUsd = Number((prod as any).unitCostUSD) || (liveRate ? Number(prod.unitCostLL || 0) / liveRate : 0);
+                          const val = (n: 1 | 2 | 3 | 4) => (e ? (e as any)[`sp${n}`] : tierUsd(prod, n));
+                          return (
+                            <tr key={prod.id} className="hover:bg-slate-50">
+                              <td className="px-3 py-2 font-medium text-slate-900">{prod.description}</td>
+                              <td className="px-3 py-2 font-mono text-[11px] text-slate-600">{prod.code}</td>
+                              <td className="px-3 py-2 text-right text-slate-600 font-mono">{costUsd.toFixed(2)}</td>
+                              {([1, 2, 3, 4] as const).map((n) => (
+                                <td key={n} className="px-3 py-1.5 text-right">
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    value={val(n)}
+                                    onChange={(ev) => setTier(prod, n, Number(ev.target.value))}
+                                    className="w-24 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
+                                  />
+                                </td>
+                              ))}
+                              <td className="px-3 py-2 text-right font-mono text-slate-600">{Math.round(val(1) * liveRate).toLocaleString()}</td>
+                            </tr>
+                          );
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
 
             <div className="p-4 bg-background border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsItemsPricingModalOpen(false)}
-                className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
-              >
+              <button type="button" onClick={() => setIsItemsPricingModalOpen(false)} className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer">
                 Cancel
               </button>
-              <button
-                type="button"
-                onClick={handleSaveItemsPricingMatrix}
-                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
-              >
+              <button type="button" onClick={handleSaveItemsPricingMatrix} className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs">
                 <Save className="w-3.5 h-3.5" />
                 <span>Save Pricing Matrix</span>
               </button>
@@ -12115,58 +12103,69 @@ export default function AuthenticOmegaProductsServicesView() {
                 <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
                 <h3 className="font-bold">Import From Excel (Bulk Injection Engine)</h3>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsImportExcelModalOpen(false)}
-                className="text-slate-300 hover:text-white"
-              >
+              <button type="button" onClick={() => setIsImportExcelModalOpen(false)} className="text-slate-300 hover:text-white">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="p-4 space-y-3.5">
               <p className="text-[11.5px] text-slate-700 leading-relaxed">
-                The bulk data injection engine is the fastest way to upload new commercial recipes or modify existing wholesale tiers by mapping a formatted spreadsheet directly into the Omega catalog.
+                Upload a spreadsheet to create or update catalog items in Supabase. Existing items are matched by Code. Prices and costs are read in USD.
               </p>
 
-              {/* Upload Dropzone */}
-              <div className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xs p-6 text-center space-y-2 cursor-pointer transition bg-slate-50">
+              <label
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsImportDragOver(true);
+                }}
+                onDragLeave={() => setIsImportDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsImportDragOver(false);
+                  handleImportFile(e.dataTransfer.files?.[0]);
+                }}
+                className={`block border-2 border-dashed rounded-xs p-6 text-center space-y-2 cursor-pointer transition ${
+                  isImportDragOver ? 'border-blue-600 bg-blue-50' : 'border-slate-300 hover:border-blue-500 bg-slate-50'
+                }`}
+              >
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  className="hidden"
+                  onChange={(e) => {
+                    handleImportFile(e.target.files?.[0]);
+                    e.target.value = '';
+                  }}
+                />
                 <Upload className="w-8 h-8 text-slate-400 mx-auto" />
-                <div className="text-xs font-semibold text-slate-800">
-                  Drop Excel (.xlsx, .xls) or CSV spreadsheet here
-                </div>
+                <div className="text-xs font-semibold text-slate-800">Drop Excel (.xlsx, .xls) or CSV spreadsheet here</div>
                 <span className="text-[10.5px] text-slate-500 block">or click to browse local files</span>
-              </div>
+                {importFileName && (
+                  <span className="text-[11px] text-emerald-700 font-semibold block">
+                    {importFileName}: {importPreview.length} rows ready
+                  </span>
+                )}
+              </label>
 
               <div className="flex items-center justify-between text-[11px] bg-slate-100 p-2.5 rounded-xs text-slate-700">
-                <span>Standard schema: Code, Description, Group, Selling Price, Cost, Unit, Barcode</span>
-                <button
-                  type="button"
-                  onClick={() => showToast('Downloaded standard inventory import template (Excel)')}
-                  className="font-semibold text-blue-700 hover:underline cursor-pointer"
-                >
+                <span>Columns: Code, Description, Category, Group, Selling Price, Cost, Unit, Barcode, Qty</span>
+                <button type="button" onClick={downloadImportTemplate} className="font-semibold text-blue-700 hover:underline cursor-pointer">
                   Download Template
                 </button>
               </div>
 
               <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setIsImportExcelModalOpen(false)}
-                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
-                >
+                <button type="button" onClick={() => setIsImportExcelModalOpen(false)} className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer">
                   Cancel
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsImportExcelModalOpen(false);
-                    showToast('Processed Excel import payload: 42 recipe rows mapped & synchronized.');
-                  }}
-                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  disabled={isImportBusy || importPreview.length === 0}
+                  onClick={handleProcessImport}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5" />
-                  <span>Upload &amp; Process</span>
+                  <span>{isImportBusy ? 'Working...' : 'Upload & Process'}</span>
                 </button>
               </div>
             </div>
