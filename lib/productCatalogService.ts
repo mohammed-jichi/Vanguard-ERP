@@ -95,13 +95,17 @@ export async function upsertCatalogProduct(tenantUuid: string, p: any, rate: num
 
     const write = async (payload: any) =>
       existing?.id
-        ? supabase.from('products').update(payload).eq('id', existing.id)
-        : supabase.from('products').insert(payload);
+        ? supabase.from('products').update(payload).eq('id', existing.id).select('id')
+        : supabase.from('products').insert(payload).select('id');
 
-    let res = await write({ ...core, record: recordBody });
+    const noRows = (r: any) => !r.error && (!r.data || r.data.length === 0);
+    const rlsMsg = 'No rows were written to public.products (blocked by RLS policy?)';
+    let res: any = await write({ ...core, record: recordBody });
+    if (noRows(res)) return { ok: false, error: rlsMsg, fullFidelity: false };
     if (!res.error) return { ok: true, fullFidelity: true };
     if (/record/i.test(res.error.message || '')) {
       res = await write(core);
+      if (noRows(res)) return { ok: false, error: rlsMsg, fullFidelity: false };
       if (!res.error) return { ok: true, fullFidelity: false };
     }
     return { ok: false, error: res.error.message, fullFidelity: false };

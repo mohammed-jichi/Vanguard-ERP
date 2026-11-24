@@ -1442,29 +1442,43 @@ export default function AuthenticOmegaProductsServicesView() {
   }, []);
 
   // Divisions matching currently selected categories
-  const availableDivisions = useMemo(() => {
-    const allCats = selectedCategories.includes('All');
-    const divs = INITIAL_OMEGA_INV_DIVISIONS.filter(
-      (d) =>
-        allCats ||
-        selectedCategories.includes(d.CATEGORYNAME) ||
-        (selectedCategories.includes('Raw Materials') && d.CATEGORYNAME === 'Raw Materials')
-    );
-    const uniqueNames: string[] = [];
-    divs.forEach((d) => {
-      if (!uniqueNames.includes(d.DIVISIONNAME)) uniqueNames.push(d.DIVISIONNAME);
+const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u0629', '\u0639\u0631\u0648\u0636', 'Raw Materials'];
+  const catMatches = (p: AuthenticProductRecord) => selectedCategories.includes('All') || selectedCategories.includes(p.categoryName);
+  const divMatches = (p: AuthenticProductRecord) => selectedDivisions.includes('All') || selectedDivisions.includes(p.divisionName);
+
+  // Category tabs derived from live products (clean defaults appear once any item exists)
+  const availableCategories = useMemo(() => {
+    if (products.length === 0) return [] as { id: string; name: string; count: number }[];
+    const names: string[] = [...DEFAULT_CATEGORY_TABS];
+    products.forEach((p) => {
+      if (p.categoryName && !names.includes(p.categoryName)) names.push(p.categoryName);
     });
-    return uniqueNames;
-  }, [selectedCategories]);
+    return names.map((name) => ({ id: name, name, count: products.filter((p) => p.categoryName === name).length }));
+  }, [products]);
 
-  // Groups matching currently selected divisions
+  // Divisions present in the selected categories
+  const availableDivisions = useMemo(() => {
+    const names: string[] = [];
+    products.forEach((p) => {
+      if (catMatches(p) && p.divisionName && !names.includes(p.divisionName)) names.push(p.divisionName);
+    });
+    return names;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, selectedCategories]);
+
+  // Groups present in the selected categories and divisions
   const availableGroups = useMemo(() => {
-    if (selectedDivisions.includes('All')) {
-      return INITIAL_OMEGA_INV_GROUPS.filter((g) => availableDivisions.includes(g.DIVISIONNAME));
-    }
-    return INITIAL_OMEGA_INV_GROUPS.filter((g) => selectedDivisions.includes(g.DIVISIONNAME));
-  }, [selectedDivisions, availableDivisions]);
-
+    const map = new Map<string, { ID: number; GROUPNAME: string; DIVISIONNAME: string; itemsCount: number }>();
+    products.forEach((p) => {
+      if (!catMatches(p) || !divMatches(p) || !p.groupName) return;
+      const cur = map.get(p.groupName);
+      if (cur) cur.itemsCount++;
+      else map.set(p.groupName, { ID: map.size + 1, GROUPNAME: p.groupName, DIVISIONNAME: p.divisionName, itemsCount: 1 });
+    });
+    return Array.from(map.values());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, selectedCategories, selectedDivisions]);
+  const divisionCount = (d: string) => products.filter((p) => catMatches(p) && p.divisionName === d).length;
   // Update selectedDivisions when categories change
   useEffect(() => {
     if (selectedDivisions.includes('All')) return;
@@ -1512,6 +1526,10 @@ export default function AuthenticOmegaProductsServicesView() {
     if (catName === 'All') { setSelectedCategories(['All']); setSelectedDivisions(['All']); setSelectedGroups(['All']); return; }
     setSelectedDivisions(['All']);
     setSelectedGroups(['All']);
+    if (!isMultiCategory && selectedCategories.length === 1 && selectedCategories[0] === catName) {
+      setSelectedCategories(['All']);
+      return;
+    }
     if (isMultiCategory) {
       if (selectedCategories.includes('All')) { setSelectedCategories([catName]); return; }
       if (selectedCategories.includes(catName)) {
@@ -1739,11 +1757,11 @@ export default function AuthenticOmegaProductsServicesView() {
       secondLangItemComment: '',
       internalNote: '',
       categoryId: 2,
-      categoryName: selectedCategories[0] && selectedCategories[0] !== 'All' ? selectedCategories[0] : 'Retail',
+      categoryName: selectedCategories[0] && selectedCategories[0] !== 'All' ? selectedCategories[0] : '\u0645\u0641\u0631\u0642',
       divisionId: 5,
-      divisionName: selectedDivisions[0] && selectedDivisions[0] !== 'All' ? selectedDivisions[0] : 'Retail Distillates & Molasses',
+      divisionName: selectedDivisions[0] && selectedDivisions[0] !== 'All' ? selectedDivisions[0] : 'General',
       groupId: 14,
-      groupName: selectedGroups[0] && selectedGroups[0] !== 'All' ? selectedGroups[0] : 'Retail Distillates 250ml',
+      groupName: selectedGroups[0] && selectedGroups[0] !== 'All' ? selectedGroups[0] : 'General',
       sellingFunction: 'Revenue',
       defaultLocationId: 12,
       defaultLocationName: 'Showroom',
@@ -2084,15 +2102,16 @@ export default function AuthenticOmegaProductsServicesView() {
       const rows: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
       const mapped = rows
         .map((r) => ({
-          code: String(pickImport(r, ['code', 'sku', 'itemcode', 'productcode'])).trim(),
-          description: String(pickImport(r, ['description', 'name', 'itemname', 'desc', 'productname'])).trim(),
+          code: String(pickImport(r, ['code', 'sku', 'itemcode', 'productcode', 'itemno', 'itemnumber', 'plu', 'ref', 'reference'])).trim(),
+          description: String(pickImport(r, ['description', 'name', 'arabicname', 'namearabic', 'itemname', 'itemdescription', 'desc', 'productname', 'nameen', 'namear'])).trim(),
+          division: String(pickImport(r, ['division', 'divisionname'])).trim(),
           group: String(pickImport(r, ['group', 'groupname'])).trim(),
           category: String(pickImport(r, ['category', 'categoryname'])).trim(),
-          price: Number(pickImport(r, ['sellingprice', 'sellingpriceusd', 'price', 'sp1', 'retailprice'])) || 0,
-          cost: Number(pickImport(r, ['cost', 'costusd', 'unitcost'])) || 0,
-          unit: String(pickImport(r, ['unit', 'uom'])).trim(),
+          price: Number(pickImport(r, ['sellingprice', 'sellingpriceusd', 'sellingprice1', 'price', 'sp1', 'retailprice', 'unitprice', 'saleprice'])) || 0,
+          cost: Number(pickImport(r, ['cost', 'costusd', 'unitcost', 'purchaseprice', 'avgcost'])) || 0,
+          unit: String(pickImport(r, ['unit', 'uom', 'unitofmeasure'])).trim(),
           barcode: String(pickImport(r, ['barcode'])).trim(),
-          qty: Number(pickImport(r, ['qty', 'qtyoh', 'stock', 'quantity'])) || 0
+          qty: Number(pickImport(r, ['qty', 'qtyoh', 'stock', 'quantity', 'onhand', 'qtyonhand', 'balance'])) || 0
         }))
         .filter((r) => r.code || r.description);
       setImportPreview(mapped);
@@ -2119,6 +2138,7 @@ export default function AuthenticOmegaProductsServicesView() {
         description: r.description || base.description,
         barcode: r.barcode || base.barcode,
         unit: r.unit || base.unit,
+        divisionName: r.division || base.divisionName,
         groupName: r.group || base.groupName,
         categoryName: r.category || base.categoryName
       };
@@ -2145,6 +2165,7 @@ export default function AuthenticOmegaProductsServicesView() {
       return [...touched.filter((t) => !ids.has(t.id)), ...prev.map((p) => touchedMap.get(p.id) || p)];
     });
     const res = await upsertCatalogProducts(tenantUuid, touched, liveRate);
+    if (res.failed > 0) console.error('Excel import upsert errors:', res.firstError);
     showToast(`Imported ${touched.length} items: ${res.saved} saved to Supabase${res.failed ? `, ${res.failed} failed (${res.firstError})` : ''}${res.fullFidelity ? '' : ' - core fields only (run schema_products_catalog_extension.sql for full details)'}`);
     setImportPreview([]);
     setImportFileName('');
@@ -2802,8 +2823,7 @@ export default function AuthenticOmegaProductsServicesView() {
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <div className="flex items-center gap-1.5 flex-1 overflow-x-auto">
-            <button type="button" onClick={() => handleCategoryClick('All')} className={`px-3 py-1 text-[11px] font-semibold rounded-xs cursor-pointer whitespace-nowrap ${selectedCategories.includes('All') ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs' : 'text-slate-600 hover:bg-slate-200/60'}`}>All</button>
-            {OMEGA_PRODUCT_CATEGORIES.map((cat) => {
+            {availableCategories.map((cat) => {
               const isSelected = selectedCategories.includes(cat.name);
               return (
                 <button
@@ -2818,6 +2838,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 >
                   {isSelected && isMultiCategory && <Check className="w-3 h-3 text-blue-600" />}
                   <span>{cat.name}</span>
+                  <span className="text-[10px] px-1.5 rounded-full bg-slate-200 text-slate-700">{cat.count}</span>
                 </button>
               );
             })}
@@ -2857,6 +2878,7 @@ export default function AuthenticOmegaProductsServicesView() {
                 >
                   {isSelected && isMultiDivision && <Check className="w-3 h-3 text-blue-600" />}
                   <span>{divName}</span>
+                  <span className="text-[10px] px-1.5 rounded-full bg-slate-200 text-slate-700">{divisionCount(divName)}</span>
                 </button>
               );
             })}
