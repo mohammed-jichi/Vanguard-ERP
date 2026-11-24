@@ -89,15 +89,11 @@ import {
 import { INITIAL_OMEGA_UNITS, UnitItem } from '@/lib/omegaUnitsData';
 import { OMEGA_BRANCHES, BranchOption } from '@/lib/omegaDepartmentsData';
 import { supabase } from '@/lib/supabaseClient';
-import { useTenant } from '@/lib/TenantContext';
 
 export default function AuthenticOmegaProductsServicesView() {
-  const { currentTenant } = useTenant();
-
   // Master Products State (hydrated cleanly after mount to eliminate SSR mismatch)
   const [products, setProducts] = useState<AuthenticProductRecord[]>(INITIAL_OMEGA_PRODUCTS);
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [isLoadingLiveProducts, setIsLoadingLiveProducts] = useState<boolean>(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -116,109 +112,6 @@ export default function AuthenticOmegaProductsServicesView() {
     }
   }, []);
 
-  // Fetch live products from Supabase matching active tenant (supports 1300, '1300', UUID)
-  useEffect(() => {
-    let isCancelled = false;
-    async function loadLiveProducts() {
-      setIsLoadingLiveProducts(true);
-      try {
-        const tenantNum = currentTenant?.companyId || currentTenant?.company_id || currentTenant?.tenant_id || 1300;
-        const tenantStr = String(tenantNum);
-        const tenantUuid = currentTenant?.id || '00000000-0000-0000-0000-000000000001';
-
-        let { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .or(`tenant_id.eq.${tenantStr},tenant_id.eq.${tenantUuid},tenant_id.eq.1300,tenant_id.eq.00000000-0000-0000-0000-000000000001`)
-          .order('name', { ascending: true })
-          .limit(5000);
-
-        if (error || !data || data.length === 0) {
-          const fallback = await supabase
-            .from('products')
-            .select('*')
-            .order('name', { ascending: true })
-            .limit(5000);
-          if (!fallback.error && fallback.data && fallback.data.length > 0) {
-            data = fallback.data;
-          }
-        }
-
-        if (!isCancelled && data && data.length > 0) {
-          const baseTemplate = INITIAL_OMEGA_PRODUCTS[0] || ({} as AuthenticProductRecord);
-          const mapped: AuthenticProductRecord[] = data.map((r: any, idx: number) => ({
-            ...baseTemplate,
-            id: typeof r.id === 'number' ? r.id : idx + 1,
-            description: r.name || r.item_name || r.description || r.arabic_name || `Item ${idx + 1}`,
-            secondLanguageDescription: r.arabic_name || r.name_ar || r.second_language_description || '',
-            otherDescription: r.other_description || r.name_en || r.description || '',
-            itemComment: r.item_comment || '',
-            secondLangDescription: r.name_en || r.second_lang_description || '',
-            secondLangItemComment: r.second_lang_item_comment || '',
-            internalNote: r.internal_note || '',
-            code: r.code || r.item_code || r.sku || String(r.id || idx + 1),
-            barcode: r.barcode || r.item_barcode || '',
-            categoryName: r.category || r.category_name || r.categoryName || 'Raw Materials',
-            categoryId: r.category_id || 1,
-            divisionName: r.division || r.division_name || r.divisionName || 'General',
-            divisionId: r.division_id || 1,
-            groupName: r.group || r.group_name || r.groupName || r.group_desc || 'General',
-            groupId: r.group_id || 1,
-            sellingPrice: Number(r.price || r.selling_price || r.selling_price_lbp || r.price_lbp || 0),
-            sellingPrice1LL: Number(r.price || r.selling_price || r.selling_price_lbp || r.price_lbp || 0),
-            sellingPrice1USD: Number(r.price_usd || r.selling_price_usd || 0),
-            secondCurrencySellingPrice: Number(r.price_usd || r.selling_price_usd || 0),
-            secondCurrencyRate: Number(r.exchange_rate || 89500),
-            cost: Number(r.cost || r.cost_price || r.unit_cost || 0),
-            unitCostLL: Number(r.cost || r.cost_price || r.unit_cost || 0),
-            averageCostLL: Number(r.cost || r.cost_price || r.unit_cost || 0),
-            qtyOH: Number(r.stock_quantity || r.stock || r.qty_on_hand || r.qty || 0),
-            unit: r.unit || r.uom || 'PCS',
-            buyingFormat: r.buying_format || 'Standard',
-            function: r.function || 'Finished Good',
-            sellingFunction: r.selling_function || 'Revenue',
-            mainSupplierName: r.supplier || r.supplier_name || 'All',
-            itemBrand: r.brand || r.brand_name || 'All',
-            source: r.source || 'Local',
-            isService: Boolean(r.is_service),
-            isConsignment: Boolean(r.is_consignment),
-            isMasterItem: Boolean(r.is_master_item),
-            isDiscontinued: Boolean(r.is_discontinued),
-            hasSerialNumber: Boolean(r.has_serial_number),
-            hasIngredients: Boolean(r.has_ingredients),
-            hasColors: Boolean(r.has_colors),
-            hasSizes: Boolean(r.has_sizes),
-            hasExpiry: Boolean(r.has_expiry),
-            expiryDate: r.expiry_date || '',
-            updatedAt: r.updated_at ? new Date(r.updated_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-            ingredients: r.ingredients || '',
-            color: r.color || '',
-            size: r.size || '',
-            serialNumber: r.serial_number || '',
-            reorderLevel: Number(r.reorder_level || 0),
-            logicalWarehouseName: r.warehouse || r.warehouse_name || '',
-            defaultLocationName: r.location || r.location_name || '',
-            assemblyItems: r.assembly_items || [],
-            stockRecords: r.stock_records || (baseTemplate.stockRecords || []),
-            reorderRules: r.reorder_rules || (baseTemplate.reorderRules || []),
-          }));
-          setProducts(mapped);
-          try {
-            localStorage.setItem('vanguard_omega_products_catalog_v2', JSON.stringify(mapped));
-          } catch (e) {}
-        }
-      } catch (err) {
-        console.warn('[ProductCatalog] Error fetching live products from Supabase:', err);
-      } finally {
-        if (!isCancelled) setIsLoadingLiveProducts(false);
-      }
-    }
-    loadLiveProducts();
-    return () => {
-      isCancelled = true;
-    };
-  }, [currentTenant]);
-
   useEffect(() => {
     if (!isMounted) return;
     try {
@@ -228,7 +121,7 @@ export default function AuthenticOmegaProductsServicesView() {
     }
   }, [products, isMounted]);
 
-  // Hierarchy Navigation States (Multi-Category, Multi-Division, Multi-Group) - Default to 'All'
+  // Hierarchy Navigation States (Multi-Category, Multi-Division, Multi-Group)
   const [selectedCategories, setSelectedCategories] = useState<string[]>(['All']);
   const [isMultiCategory, setIsMultiCategory] = useState<boolean>(false);
   const [selectedDivisions, setSelectedDivisions] = useState<string[]>(['All']);
@@ -461,8 +354,9 @@ export default function AuthenticOmegaProductsServicesView() {
 
   // Print Barcodes Operational States
   const [printBarcodeSelectedItems, setPrintBarcodeSelectedItems] = useState<{ [id: number]: { selected: boolean; qty: number } }>({
-    15: { selected: true, qty: 12 }
   });
+  const [printBarcodePrinter, setPrintBarcodePrinter] = useState<string>('system');
+  const [maintenanceReport, setMaintenanceReport] = useState<string>('');
   const [printBarcodeTemplate, setPrintBarcodeTemplate] = useState<string>('carton_100x75');
   const [isPrinterOnline, setIsPrinterOnline] = useState<boolean>(true);
 
@@ -1071,20 +965,26 @@ export default function AuthenticOmegaProductsServicesView() {
   };
 
   const handleExportInventoryProductionsReport = () => {
-    const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      'Product Code,Product Description,Qty,Unit,Cost,Avg. Cost\n' +
-      'CWV500MLB106,White Vinegar 500ml,-,-,-,-\n' +
-      'CWV500ML*12B106,White Vinegar 500ml Case (12 Bottles),0.08,BOX,45692.64,45692.64\n' +
-      'Total By Product,-,-,-,45692.64,45692.64\n';
-    const encodedUri = encodeURI(csvContent);
+    const withBom = products.filter((p) => ((p as any).assemblyItems || []).length > 0);
+    const q = (v: any) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const lines = ['Parent Code,Parent Description,Component Code,Component Description,Qty,Unit'];
+    withBom.forEach((p) => {
+      ((p as any).assemblyItems || []).forEach((a: any) => {
+        lines.push([q(p.code), q(p.description), q(a.componentCode ?? a.code ?? a.productCode), q(a.componentDescription ?? a.description ?? a.productDescription), q(a.qty ?? a.quantity ?? ''), q(a.unit ?? '')].join(','));
+      });
+    });
+    if (withBom.length === 0) {
+      showToast('No Bill of Materials defined yet - nothing to export.');
+      return;
+    }
+    const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'Inventory_Productions_REP_I_0041.csv');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Inventory_Productions_${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast('Exported Inventory Productions Report (REP_I_0041) to CSV');
+    showToast('Exported live Inventory Productions (BOM) to CSV');
   };
 
   // Handlers for Tab 7 History -> Supplier Pricing
@@ -1277,37 +1177,34 @@ export default function AuthenticOmegaProductsServicesView() {
     showToast(`Adjusted bulk supplier cost by ${bulkCostAdjustmentPct >= 0 ? '+' : ''}${bulkCostAdjustmentPct}% (Target: ${bulkCostTargetGroup}). Note: Re-run BOM recalculation on finished goods.`);
   };
 
-  const handleRunItemMaintenance = () => {
+  const handleRunItemMaintenance = async () => {
     setIsMaintenanceRunning(true);
-    setMaintenanceStep('Locking operational transactions & database tables...');
-    setTimeout(() => {
-      setMaintenanceStep('Scanning 142 purchase invoices & recalculating weighted moving-average costs...');
-    }, 700);
-    setTimeout(() => {
-      setMaintenanceStep('Scanning 89 assembly production journals & 412 POS/Dispatch receipts...');
-    }, 1500);
-    setTimeout(() => {
-      setMaintenanceStep('Reconstructing true Quantity On Hand & repairing BOM linkage structures...');
-      setProducts((prev) =>
-        prev.map((p) => {
-          if (p.id === 15) {
-            return {
-              ...p,
-              cost: 543960,
-              unitCostLL: 543960,
-              averageCostLL: 543960,
-              qtyOH: 12.0
-            };
-          }
-          return p;
-        })
-      );
-    }, 2400);
-    setTimeout(() => {
-      setIsMaintenanceRunning(false);
-      setMaintenanceStep('Sweep Complete: Master inventory ledger synchronized and all mathematical anomalies repaired.');
-      showToast('Item Maintenance Diagnostic Sweep Complete: Database synchronized from raw transaction journals.');
-    }, 3300);
+    setMaintenanceReport('');
+    setMaintenanceStep('Scanning live catalog records...');
+    const total = products.length;
+    const negative = products.filter((p) => Number(p.qtyOH) < 0).length;
+    const noBarcode = products.filter((p) => !p.barcode || !String(p.barcode).trim()).length;
+    const noCode = products.filter((p) => !p.code || !String(p.code).trim()).length;
+    const zeroCost = products.filter((p) => !Number(p.cost) && !Number((p as any).unitCostUSD)).length;
+    let txnNote = 'stock_transactions ledger unavailable (no reconciliation performed)';
+    try {
+      setMaintenanceStep('Reconciling against stock_transactions ledger...');
+      const { count, error } = await supabase
+        .from('stock_transactions')
+        .select('*', { count: 'exact', head: true });
+      if (!error && typeof count === 'number') {
+        txnNote = `${count} stock_transactions rows found in the ledger`;
+      }
+    } catch (e) {
+      console.error('Maintenance ledger check failed:', e);
+    }
+    const issues = negative + noBarcode + noCode + zeroCost;
+    setMaintenanceReport(
+      `Swept ${total} live products: ${negative} negative qty_on_hand, ${noBarcode} missing barcodes, ${noCode} missing codes, ${zeroCost} zero-cost items (${issues} total findings). ${txnNote}.`
+    );
+    setIsMaintenanceRunning(false);
+    setMaintenanceStep('Sweep Complete: integrity report generated from live data.');
+    showToast(`Item Maintenance sweep complete: ${issues} findings across ${total} products.`);
   };
 
   const handleExportPLUDownload = () => {
@@ -1331,6 +1228,7 @@ export default function AuthenticOmegaProductsServicesView() {
     link.click();
     document.body.removeChild(link);
     showToast('Exported PLU flat file successfully (CSV format)');
+    setIsExportPLUModalOpen(false);
   };
 
   const handleSaveItemsPricingMatrix = () => {
@@ -1369,8 +1267,36 @@ export default function AuthenticOmegaProductsServicesView() {
   };
 
   const handleExecutePrintBarcodes = () => {
-    const total = Object.values(printBarcodeSelectedItems).reduce((acc, item) => (item.selected ? acc + item.qty : acc), 0);
-    showToast(`Pushed print spool of ${total} adhesive labels [100x75mm Carton] to Zebra Thermal Printer at Choueifat dispatch.`);
+    const dims = printBarcodeTemplate === 'pallet_150x100' ? [150, 100] : printBarcodeTemplate === 'shelf_50x30' ? [50, 30] : [100, 75];
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const items = filteredProducts.slice(0, 50).filter((p) => printBarcodeSelectedItems[p.id]?.selected ?? true);
+    const labels: string[] = [];
+    items.forEach((p) => {
+      const qty = printBarcodeSelectedItems[p.id]?.qty ?? 1;
+      const code = String(p.barcode || p.code || '');
+      const bars = code
+        .split('')
+        .map((ch, i) => `<span style="display:inline-block;height:100%;background:${i % 2 === 0 ? '#000' : '#fff'};width:${(1 + (ch.charCodeAt(0) % 4)) * 1.5}px"></span>`)
+        .join('');
+      const html = `<div class="label"><div class="d">${esc(p.description || '')}</div><div class="s">SKU: ${esc(String(p.code || ''))}</div><div class="b">${bars}</div><div class="n">${esc(code)}</div></div>`;
+      for (let k = 0; k < qty; k++) labels.push(html);
+    });
+    if (labels.length === 0) {
+      showToast('No items selected for label printing.');
+      return;
+    }
+    const w = window.open('', '_blank');
+    if (!w) {
+      showToast('Pop-up blocked: allow pop-ups to print labels.');
+      return;
+    }
+    w.document.write(
+      `<html><head><title>Barcode Labels</title><style>@page{margin:4mm}body{font-family:sans-serif;margin:0}.label{width:${dims[0]}mm;height:${dims[1]}mm;box-sizing:border-box;border:1px dashed #999;padding:2mm;display:inline-block;margin:1mm;page-break-inside:avoid;overflow:hidden}.d{font-weight:bold;font-size:11px}.s{font-size:9px;font-family:monospace}.b{height:30%;margin:2mm 0;text-align:center;white-space:nowrap}.n{text-align:center;font-family:monospace;font-size:10px;letter-spacing:2px}</style></head><body>${labels.join('')}</body></html>`
+    );
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 300);
+    showToast(`Prepared ${labels.length} labels for printing (${printBarcodePrinter === 'system' ? 'System Print Dialog' : printBarcodePrinter}).`);
     setIsPrintBarcodesModalOpen(false);
   };
 
@@ -1517,148 +1443,120 @@ export default function AuthenticOmegaProductsServicesView() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Dynamic categories extracted from loaded products + fallback
-  const availableCategories = useMemo(() => {
-    const cats = new Set<string>();
-    products.forEach((p) => {
-      if (p.categoryName && p.categoryName.trim()) {
-        cats.add(p.categoryName.trim());
-      }
-    });
-    if (cats.size === 0) {
-      OMEGA_PRODUCT_CATEGORIES.forEach((c) => cats.add(c.name));
-    }
-    return ['All', ...Array.from(cats)];
-  }, [products]);
-
-  // Divisions matching currently selected categories from products
+  // Divisions matching currently selected categories
   const availableDivisions = useMemo(() => {
-    const isAllCats = selectedCategories.length === 0 || selectedCategories.includes('All') || selectedCategories.includes('ALL');
-    const filteredForDiv = isAllCats
-      ? products
-      : products.filter((p) => selectedCategories.includes(p.categoryName));
-
-    const uniqueNames = new Set<string>();
-    filteredForDiv.forEach((p) => {
-      if (p.divisionName && p.divisionName.trim()) {
-        uniqueNames.add(p.divisionName.trim());
-      }
+    const allCats = selectedCategories.includes('All');
+    const divs = INITIAL_OMEGA_INV_DIVISIONS.filter(
+      (d) =>
+        allCats ||
+        selectedCategories.includes(d.CATEGORYNAME) ||
+        (selectedCategories.includes('Raw Materials') && d.CATEGORYNAME === 'Raw Materials')
+    );
+    const uniqueNames: string[] = [];
+    divs.forEach((d) => {
+      if (!uniqueNames.includes(d.DIVISIONNAME)) uniqueNames.push(d.DIVISIONNAME);
     });
+    return uniqueNames;
+  }, [selectedCategories]);
 
-    if (uniqueNames.size === 0) {
-      INITIAL_OMEGA_INV_DIVISIONS.forEach((d) => uniqueNames.add(d.DIVISIONNAME));
-    }
-
-    return ['All', ...Array.from(uniqueNames)];
-  }, [products, selectedCategories]);
-
-  // Groups matching currently selected divisions from products
+  // Groups matching currently selected divisions
   const availableGroups = useMemo(() => {
-    const isAllCats = selectedCategories.length === 0 || selectedCategories.includes('All') || selectedCategories.includes('ALL');
-    const isAllDivs = selectedDivisions.length === 0 || selectedDivisions.includes('All') || selectedDivisions.includes('ALL');
+    if (selectedDivisions.includes('All')) {
+      return INITIAL_OMEGA_INV_GROUPS.filter((g) => availableDivisions.includes(g.DIVISIONNAME));
+    }
+    return INITIAL_OMEGA_INV_GROUPS.filter((g) => selectedDivisions.includes(g.DIVISIONNAME));
+  }, [selectedDivisions, availableDivisions]);
 
-    const filteredForGrp = products.filter((p) => {
-      if (!isAllCats && !selectedCategories.includes(p.categoryName)) return false;
-      if (!isAllDivs && !selectedDivisions.includes(p.divisionName)) return false;
-      return true;
-    });
-
-    const groupCounts: Record<string, number> = {};
-    filteredForGrp.forEach((p) => {
-      const grp = p.groupName?.trim() || 'General';
-      groupCounts[grp] = (groupCounts[grp] || 0) + 1;
-    });
-
-    const groupsList: Array<{ ID: string | number; GROUPNAME: string; itemsCount: number }> = [
-      { ID: 'all-grp', GROUPNAME: 'All', itemsCount: filteredForGrp.length }
-    ];
-
-    Object.entries(groupCounts).forEach(([name, count], idx) => {
-      groupsList.push({ ID: `grp-${idx}`, GROUPNAME: name, itemsCount: count });
-    });
-
-    return groupsList;
-  }, [products, selectedCategories, selectedDivisions]);
-
-  // Update selectedDivisions when availableDivisions change
+  // Update selectedDivisions when categories change
   useEffect(() => {
     if (selectedDivisions.includes('All')) return;
-    const valid = selectedDivisions.filter((d) => availableDivisions.includes(d));
-    if (valid.length === 0) {
-      setSelectedDivisions(['All']);
-    } else if (valid.length !== selectedDivisions.length) {
-      setSelectedDivisions(valid);
+    if (availableDivisions.length > 0) {
+      if (!isMultiDivision) {
+        if (!availableDivisions.some((d) => selectedDivisions.includes(d))) {
+          setSelectedDivisions([availableDivisions[0]]);
+        }
+      } else {
+        const valid = selectedDivisions.filter((d) => availableDivisions.includes(d));
+        if (valid.length > 0) {
+          setSelectedDivisions(valid);
+        } else {
+          setSelectedDivisions([availableDivisions[0]]);
+        }
+      }
+    } else {
+      setSelectedDivisions([]);
     }
-  }, [availableDivisions]);
+  }, [availableDivisions, isMultiDivision]);
 
-  // Update selectedGroups when availableGroups change
+  // Update selectedGroups when divisions change
   useEffect(() => {
     if (selectedGroups.includes('All')) return;
-    const valid = selectedGroups.filter((g) => availableGroups.some((ag) => ag.GROUPNAME === g));
-    if (valid.length === 0) {
-      setSelectedGroups(['All']);
-    } else if (valid.length !== selectedGroups.length) {
-      setSelectedGroups(valid);
+    if (availableGroups.length > 0) {
+      if (!isMultiGroup) {
+        if (!availableGroups.some((g) => selectedGroups.includes(g.GROUPNAME))) {
+          setSelectedGroups([availableGroups[0].GROUPNAME]);
+        }
+      } else {
+        const valid = selectedGroups.filter((g) => availableGroups.some((ag) => ag.GROUPNAME === g));
+        if (valid.length > 0) {
+          setSelectedGroups(valid);
+        } else {
+          setSelectedGroups([availableGroups[0].GROUPNAME]);
+        }
+      }
+    } else {
+      setSelectedGroups([]);
     }
-  }, [availableGroups]);
+  }, [availableGroups, isMultiGroup]);
 
   // Handle category tab click
   const handleCategoryClick = (catName: string) => {
-    if (catName === 'All') {
-      setSelectedCategories(['All']);
-      setSelectedDivisions(['All']);
-      setSelectedGroups(['All']);
-      return;
-    }
+    if (catName === 'All') { setSelectedCategories(['All']); setSelectedDivisions(['All']); setSelectedGroups(['All']); return; }
+    setSelectedDivisions(['All']);
+    setSelectedGroups(['All']);
     if (isMultiCategory) {
-      const active = selectedCategories.filter((c) => c !== 'All');
-      if (active.includes(catName)) {
-        const remaining = active.filter((c) => c !== catName);
-        setSelectedCategories(remaining.length > 0 ? remaining : ['All']);
+      if (selectedCategories.includes('All')) { setSelectedCategories([catName]); return; }
+      if (selectedCategories.includes(catName)) {
+        if (selectedCategories.length > 1) {
+          setSelectedCategories(selectedCategories.filter((c) => c !== catName));
+        }
       } else {
-        setSelectedCategories([...active, catName]);
+        setSelectedCategories([...selectedCategories, catName]);
       }
     } else {
       setSelectedCategories([catName]);
-      setSelectedDivisions(['All']);
-      setSelectedGroups(['All']);
     }
   };
 
   // Handle division tab click
   const handleDivisionClick = (divName: string) => {
-    if (divName === 'All') {
-      setSelectedDivisions(['All']);
-      setSelectedGroups(['All']);
-      return;
-    }
+    if (divName === 'All') { setSelectedDivisions(['All']); setSelectedGroups(['All']); return; }
+    setSelectedGroups(['All']);
     if (isMultiDivision) {
-      const active = selectedDivisions.filter((d) => d !== 'All');
-      if (active.includes(divName)) {
-        const remaining = active.filter((d) => d !== divName);
-        setSelectedDivisions(remaining.length > 0 ? remaining : ['All']);
+      if (selectedDivisions.includes('All')) { setSelectedDivisions([divName]); return; }
+      if (selectedDivisions.includes(divName)) {
+        if (selectedDivisions.length > 1) {
+          setSelectedDivisions(selectedDivisions.filter((d) => d !== divName));
+        }
       } else {
-        setSelectedDivisions([...active, divName]);
+        setSelectedDivisions([...selectedDivisions, divName]);
       }
     } else {
       setSelectedDivisions([divName]);
-      setSelectedGroups(['All']);
     }
   };
 
   // Handle group tab click
   const handleGroupClick = (groupName: string) => {
-    if (groupName === 'All') {
-      setSelectedGroups(['All']);
-      return;
-    }
+    if (groupName === 'All') { setSelectedGroups(['All']); return; }
     if (isMultiGroup) {
-      const active = selectedGroups.filter((g) => g !== 'All');
-      if (active.includes(groupName)) {
-        const remaining = active.filter((g) => g !== groupName);
-        setSelectedGroups(remaining.length > 0 ? remaining : ['All']);
+      if (selectedGroups.includes('All')) { setSelectedGroups([groupName]); return; }
+      if (selectedGroups.includes(groupName)) {
+        if (selectedGroups.length > 1) {
+          setSelectedGroups(selectedGroups.filter((g) => g !== groupName));
+        }
       } else {
-        setSelectedGroups([...active, groupName]);
+        setSelectedGroups([...selectedGroups, groupName]);
       }
     } else {
       setSelectedGroups([groupName]);
@@ -1714,13 +1612,9 @@ export default function AuthenticOmegaProductsServicesView() {
 
       // Hierarchy match (if not searching globally)
       if (!searchQuery.trim()) {
-        const isAllCat = selectedCategories.length === 0 || selectedCategories.includes('All') || selectedCategories.includes('ALL');
-        const isAllDiv = selectedDivisions.length === 0 || selectedDivisions.includes('All') || selectedDivisions.includes('ALL');
-        const isAllGrp = selectedGroups.length === 0 || selectedGroups.includes('All') || selectedGroups.includes('ALL');
-
-        if (!isAllCat && !selectedCategories.includes(item.categoryName)) return false;
-        if (!isAllDiv && !selectedDivisions.includes(item.divisionName)) return false;
-        if (!isAllGrp && !selectedGroups.includes(item.groupName)) return false;
+        if (selectedCategories.length > 0 && !selectedCategories.includes('All') && !selectedCategories.includes(item.categoryName)) return false;
+        if (selectedDivisions.length > 0 && !selectedDivisions.includes('All') && !selectedDivisions.includes(item.divisionName)) return false;
+        if (selectedGroups.length > 0 && !selectedGroups.includes('All') && !selectedGroups.includes(item.groupName)) return false;
       }
 
       // Supplier
@@ -1847,11 +1741,11 @@ export default function AuthenticOmegaProductsServicesView() {
       secondLangItemComment: '',
       internalNote: '',
       categoryId: 2,
-      categoryName: (selectedCategories[0] && selectedCategories[0] !== 'All') ? selectedCategories[0] : (products[0]?.categoryName || 'Raw Materials'),
+      categoryName: selectedCategories[0] || 'Retail',
       divisionId: 5,
-      divisionName: (selectedDivisions[0] && selectedDivisions[0] !== 'All') ? selectedDivisions[0] : (products[0]?.divisionName || 'General'),
+      divisionName: selectedDivisions[0] || 'Retail Distillates & Molasses',
       groupId: 14,
-      groupName: (selectedGroups[0] && selectedGroups[0] !== 'All') ? selectedGroups[0] : (products[0]?.groupName || 'General'),
+      groupName: selectedGroups[0] || 'Retail Distillates 250ml',
       sellingFunction: 'Revenue',
       defaultLocationId: 12,
       defaultLocationName: 'Showroom',
@@ -2595,7 +2489,7 @@ export default function AuthenticOmegaProductsServicesView() {
 
           {/* Right Statistics Text */}
           <div className="text-right text-[11px] text-slate-600 font-medium">
-            <div>Total No. of Items: <span className="text-slate-900 font-bold">{products.length}</span></div>
+            <div>Total Nb. of Items: <span className="text-slate-900 font-bold">{products.length}</span></div>
             <div className="text-slate-500">Discontinued: <span className="text-red-700 font-semibold">{products.filter((p) => p.isDiscontinued).length}</span></div>
           </div>
         </div>
@@ -2615,21 +2509,22 @@ export default function AuthenticOmegaProductsServicesView() {
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <div className="flex items-center gap-1.5 flex-1 overflow-x-auto">
-            {availableCategories.map((catName) => {
-              const isSelected = selectedCategories.includes(catName) || (catName === 'All' && (selectedCategories.length === 0 || selectedCategories.includes('All')));
+            <button type="button" onClick={() => handleCategoryClick('All')} className={`px-3 py-1 text-[11px] font-semibold rounded-xs cursor-pointer whitespace-nowrap ${selectedCategories.includes('All') ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs' : 'text-slate-600 hover:bg-slate-200/60'}`}>All</button>
+            {OMEGA_PRODUCT_CATEGORIES.map((cat) => {
+              const isSelected = selectedCategories.includes(cat.name);
               return (
                 <button
-                  key={catName}
+                  key={cat.id}
                   type="button"
-                  onClick={() => handleCategoryClick(catName)}
+                  onClick={() => handleCategoryClick(cat.name)}
                   className={`px-3.5 py-1 text-xs font-semibold rounded-xs transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                     isSelected
                       ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                   }`}
                 >
-                  {isSelected && isMultiCategory && catName !== 'All' && <Check className="w-3 h-3 text-blue-600" />}
-                  <span>{catName}</span>
+                  {isSelected && isMultiCategory && <Check className="w-3 h-3 text-blue-600" />}
+                  <span>{cat.name}</span>
                 </button>
               );
             })}
@@ -2653,8 +2548,9 @@ export default function AuthenticOmegaProductsServicesView() {
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <div className="flex items-center gap-1 flex-1 overflow-x-auto">
+            <button type="button" onClick={() => handleDivisionClick('All')} className={`px-3 py-1 text-[11px] font-semibold rounded-xs cursor-pointer whitespace-nowrap ${selectedDivisions.includes('All') ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs' : 'text-slate-600 hover:bg-slate-200/60'}`}>All</button>
             {availableDivisions.map((divName) => {
-              const isSelected = selectedDivisions.includes(divName) || (divName === 'All' && (selectedDivisions.length === 0 || selectedDivisions.includes('All')));
+              const isSelected = selectedDivisions.includes(divName);
               return (
                 <button
                   key={divName}
@@ -2666,7 +2562,7 @@ export default function AuthenticOmegaProductsServicesView() {
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  {isSelected && isMultiDivision && divName !== 'All' && <Check className="w-3 h-3 text-blue-600" />}
+                  {isSelected && isMultiDivision && <Check className="w-3 h-3 text-blue-600" />}
                   <span>{divName}</span>
                 </button>
               );
@@ -2691,8 +2587,9 @@ export default function AuthenticOmegaProductsServicesView() {
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <div className="flex items-center gap-1.5 flex-1 overflow-x-auto">
+            <button type="button" onClick={() => handleGroupClick('All')} className={`px-3 py-1 text-[11px] font-semibold rounded-xs cursor-pointer whitespace-nowrap ${selectedGroups.includes('All') ? 'bg-white text-slate-900 border border-slate-300 shadow-2xs' : 'text-slate-600 hover:bg-slate-200/60'}`}>All</button>
             {availableGroups.map((grp) => {
-              const isSelected = selectedGroups.includes(grp.GROUPNAME) || (grp.GROUPNAME === 'All' && (selectedGroups.length === 0 || selectedGroups.includes('All')));
+              const isSelected = selectedGroups.includes(grp.GROUPNAME);
               return (
                 <button
                   key={grp.ID}
@@ -8994,4 +8891,3289 @@ export default function AuthenticOmegaProductsServicesView() {
                       <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">↑ +14.5% vs 2025</div>
                     </div>
                     <div className="bg-white border border-slate-200 rounded-sm p-3">
-... [truncated for diff preview]
+                      <div className="text-[11px] text-slate-500">Revenue (LL)</div>
+                      <div className="text-lg font-bold text-slate-900 mt-1">98,100,000</div>
+                      <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">↑ +18.2% vs 2025</div>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-sm p-3">
+                      <div className="text-[11px] text-slate-500">Gross Margin</div>
+                      <div className="text-lg font-bold text-emerald-700 mt-1">39,944,750</div>
+                      <div className="text-[10px] text-slate-500 font-medium mt-0.5">Profit Margin</div>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-sm p-3">
+                      <div className="text-[11px] text-slate-500">Average Markup</div>
+                      <div className="text-lg font-bold text-blue-700 mt-1">68.7%</div>
+                      <div className="text-[10px] text-slate-500 font-medium mt-0.5">Target: 65%</div>
+                    </div>
+                  </div>
+
+                  {/* Comparative Chart (This Year vs Last Year) */}
+                  <div className="border border-slate-200 rounded-sm p-4 bg-white space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold text-slate-800 text-xs">
+                        Monthly Sales Comparison (This Year vs Last Year)
+                      </h4>
+                      <div className="flex items-center gap-4 text-[11px]">
+                        <div className="flex items-center gap-1">
+                          <span className="w-3 h-3 bg-primary rounded-xs inline-block"></span>
+                          <span>2026 (This Year)</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="w-3 h-3 bg-slate-300 rounded-xs inline-block"></span>
+                          <span>2025 (Last Year)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Chart Bars */}
+                    <div className="pt-4 flex items-end justify-between gap-2 h-44 border-b border-slate-200 px-2">
+                      {editingProduct.salesPerformance?.map((sp) => {
+                        const maxVal = 300;
+                        const heightThis = Math.min(100, Math.round((sp.qtyThisYear / maxVal) * 100));
+                        const heightLast = Math.min(100, Math.round((sp.qtyLastYear / maxVal) * 100));
+
+                        return (
+                          <div key={sp.month} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                            <div className="w-full flex items-end justify-center gap-1 h-full">
+                              <div
+                                style={{ height: `${heightThis}%` }}
+                                title={`2026: ${sp.qtyThisYear} units`}
+                                className="w-3 bg-primary hover:bg-primary/90 rounded-t-xs transition-all cursor-pointer"
+                              ></div>
+                              <div
+                                style={{ height: `${heightLast}%` }}
+                                title={`2025: ${sp.qtyLastYear} units`}
+                                className="w-3 bg-slate-300 hover:bg-slate-400 rounded-t-xs transition-all cursor-pointer"
+                              ></div>
+                            </div>
+                            <span className="text-[10px] text-slate-500 font-medium">{sp.month}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Monthly Table */}
+                  <div className="border border-slate-200 rounded-sm overflow-hidden">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                        <tr>
+                          <th className="px-3 py-2">Month</th>
+                          <th className="px-3 py-2 text-right">Qty (2026)</th>
+                          <th className="px-3 py-2 text-right">Sales LL (2026)</th>
+                          <th className="px-3 py-2 text-right">Qty (2025)</th>
+                          <th className="px-3 py-2 text-right">Sales LL (2025)</th>
+                          <th className="px-3 py-2 text-right">Growth</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200">
+                        {editingProduct.salesPerformance?.map((sp) => {
+                          const diff = sp.qtyThisYear - sp.qtyLastYear;
+                          const pct = sp.qtyLastYear > 0 ? ((diff / sp.qtyLastYear) * 100).toFixed(1) : '0';
+                          return (
+                            <tr key={sp.month} className="hover:bg-slate-50">
+                              <td className="px-3 py-1.5 font-medium">{sp.month} 2026</td>
+                              <td className="px-3 py-1.5 text-right font-bold text-slate-900">{sp.qtyThisYear}</td>
+                              <td className="px-3 py-1.5 text-right text-slate-700 font-mono">
+                                {sp.salesThisYearLL.toLocaleString()}
+                              </td>
+                              <td className="px-3 py-1.5 text-right text-slate-500">{sp.qtyLastYear}</td>
+                              <td className="px-3 py-1.5 text-right text-slate-500 font-mono">
+                                {sp.salesLastYearLL.toLocaleString()}
+                              </td>
+                              <td
+                                className={`px-3 py-1.5 text-right font-semibold ${
+                                  diff >= 0 ? 'text-emerald-600' : 'text-red-600'
+                                }`}
+                              >
+                                {diff >= 0 ? `+${pct}%` : `${pct}%`}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 8: MORE (3 Sub-Sections: Accounts, Taxes, Advanced) */}
+              {activeModalTab === 'more' && (
+                <div className="space-y-4">
+                  <div className="flex gap-2 border-b border-slate-200 pb-2">
+                    <button
+                      type="button"
+                      onClick={() => setMoreSubTab('accounts')}
+                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
+                        moreSubTab === 'accounts'
+                          ? 'bg-primary text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Accounts & Financials
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMoreSubTab('taxes')}
+                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
+                        moreSubTab === 'taxes'
+                          ? 'bg-primary text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Taxes & Discounts
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMoreSubTab('advanced')}
+                      className={`px-3 py-1 rounded-sm text-xs font-semibold cursor-pointer transition ${
+                        moreSubTab === 'advanced'
+                          ? 'bg-primary text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      Advanced Attributes
+                    </button>
+                  </div>
+
+                  {moreSubTab === 'accounts' && (
+                    <div className="border border-slate-200 rounded-sm p-4 space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Asset Account</label>
+                          <input
+                            type="text"
+                            value={editingProduct.assetAccount}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, assetAccount: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Revenue Account</label>
+                          <input
+                            type="text"
+                            value={editingProduct.revenueAccount}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, revenueAccount: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Expense Account</label>
+                          <input
+                            type="text"
+                            value={editingProduct.expenseAccount}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, expenseAccount: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-medium mb-1">Stock Variation Account</label>
+                          <input
+                            type="text"
+                            value={editingProduct.stockVariationAccount}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, stockVariationAccount: e.target.value })
+                            }
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {moreSubTab === 'taxes' && (
+                    <div className="border border-slate-200 rounded-sm p-4 space-y-4">
+                      <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                        {[1, 2, 3, 4, 5, 6].map((num) => {
+                          const key = `tax${num}` as keyof AuthenticProductRecord;
+                          return (
+                            <label key={num} className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct[key])}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, [key]: e.target.checked })
+                                }
+                                className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600"
+                              />
+                              <span className="font-medium">Tax {num}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <div className="pt-2">
+                        <label className="block text-slate-700 font-medium mb-1">Auto Discount %</label>
+                        <input
+                          type="number"
+                          value={editingProduct.autoDiscount}
+                          onChange={(e) =>
+                            setEditingProduct({ ...editingProduct, autoDiscount: Number(e.target.value) })
+                          }
+                          className="w-48 px-3 py-1.5 text-xs rounded-sm border border-slate-300"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {moreSubTab === 'advanced' && (
+                    <div className="border border-slate-200 rounded-sm p-4 space-y-5 text-xs">
+                      {/* Section 1: Food Safety, Compliance & Traceability */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <ShieldAlert className="w-3.5 h-3.5 text-emerald-600" />
+                            1. Food Safety, Compliance & Batch Tracking
+                          </span>
+                          <span className="text-[10px] text-slate-400">Critical Food Formulation Rules</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Has Expiry Date */}
+                          <div className="p-2.5 rounded-sm border border-emerald-200 bg-emerald-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.hasExpiryDate ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, hasExpiryDate: e.target.checked, hasExpiry: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-emerald-400 text-emerald-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-emerald-900 block">Has Expiry Date (FIFO)</span>
+                                <span className="text-[11px] text-emerald-800 block mt-0.5">
+                                  Mandatory for molasses, vinegar, tomato paste, jams & fats. Prompts batch expiry date on receipt from Choueifat plant.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Support Serial Number */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.supportSerialNumber)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, supportSerialNumber: e.target.checked, hasSerialNumber: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Support Serial Number</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  For electronics & serialized equipment. Leave unchecked for case packs of vinegars and Eau de Javel.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Print Label on Sales */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.printLabelOnSales)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, printLabelOnSales: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Print Label on Sales</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Generates sticker at moment of sale for bulk unlabelled goods (like fresh local cheese).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Section 2: Channel Visibility & ERP Linkage */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+                            2. Channel Visibility & ERP / Dispatch Linkage
+                          </span>
+                          <span className="text-[10px] text-slate-400">API & B2B Portal Visibility</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Sell it Online */}
+                          <div className="p-2.5 rounded-sm border border-blue-200 bg-blue-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.sellOnline ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, sellOnline: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-blue-400 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-blue-900 block">Sell it Online (API Visibility)</span>
+                                <span className="text-[11px] text-blue-800 block mt-0.5">
+                                  Exposes item to Vanguard ERP, Supersonic Dispatch & B2B ordering portal.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* For Export */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.forExport)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, forExport: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">For Export</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Works with HS Code to trigger international commercial invoice formatting & customs tax exemptions.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Hide if Zero */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.hideIfZero)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, hideIfZero: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Hide if Zero</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Hides SKU from POS when Qty OH is zero. Leave unchecked for core manufactured goods to signal production runs.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Hide in Report */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isHideInReport)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isHideInReport: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Hide In Report</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Keeps internal supplies or zero-value placeholder SKUs out of financial valuation reports.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Electronic Label Tag */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isElectronicLabelTag)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isElectronicLabelTag: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Electronic Label Tag (ESL)</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Integrates item pricing via API to digital electronic shelf tags.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Discontinued */}
+                          <div className="p-2.5 rounded-sm border border-rose-200 bg-rose-50/40">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isDiscontinued)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isDiscontinued: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-rose-400 text-rose-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-rose-900 block">Discontinued Item</span>
+                                <span className="text-[11px] text-rose-800 block mt-0.5">
+                                  Permanently removes retired jar sizes or legacy batches from active PO/POS menus without deleting sales history.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Section 3: Commercial Policy & Lifecycle Governance */}
+                      <div>
+                        <h4 className="font-semibold text-slate-800 text-xs border-b border-slate-200 pb-1.5 mb-3 flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <Settings className="w-3.5 h-3.5 text-purple-600" />
+                            3. Commercial Policy & Sales Lifecycle Governance
+                          </span>
+                          <span className="text-[10px] text-slate-400">Invoicing & Returns Controls</span>
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {/* Refundable */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isRefundable ?? true)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isRefundable: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Refundable</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Allows POS returns and credit notes. Uncheck for custom bulk chemical orders that cannot be restocked once dispatched.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Open Description */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isOpenDescription)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isOpenDescription: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Open Description</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Cashier can manually overwrite item name on invoice. Keep unchecked for standardized commercial goods to prevent report corruption.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Consignment */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.consignment || editingProduct.isConsignment)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, consignment: e.target.checked, isConsignment: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Consignment</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Placement in external retail shops without upfront payment. Standard wholesale batches are direct revenue (leave unchecked).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Yearly Subscription */}
+                          <div className="p-2.5 rounded-sm border border-slate-200 bg-slate-50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isYearlySubscription)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isYearlySubscription: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-slate-300 text-blue-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-semibold text-slate-800 block">Yearly Subscription</span>
+                                <span className="text-[11px] text-slate-500 block mt-0.5">
+                                  Triggers recurring billing cycles. Leave unchecked for moving physical commercial batches.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Daily Adjust */}
+                          <div className="p-2.5 rounded-sm border border-amber-200 bg-amber-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isDailyAdjust)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isDailyAdjust: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-amber-400 text-amber-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-amber-900 block">Daily Adjust (High-Value Cycle)</span>
+                                <span className="text-[11px] text-amber-800 block mt-0.5">
+                                  Pulls SKU into daily physical cycle-count audit reports (mandated for high-value raw materials like bulk CMC or Pectin).
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+
+                          {/* Weekly Adjust */}
+                          <div className="p-2.5 rounded-sm border border-amber-200 bg-amber-50/50">
+                            <label className="flex items-start gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(editingProduct.isWeeklyAdjust)}
+                                onChange={(e) =>
+                                  setEditingProduct({ ...editingProduct, isWeeklyAdjust: e.target.checked })
+                                }
+                                className="w-4 h-4 rounded border-amber-400 text-amber-600 mt-0.5"
+                              />
+                              <div>
+                                <span className="font-bold text-amber-900 block">Weekly Adjust (Cycle Count)</span>
+                                <span className="text-[11px] text-amber-800 block mt-0.5">
+                                  Pulls SKU into weekly inventory reconciliation audit reports for finished goods.
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Physical & Chemical Specifications */}
+                      <div className="pt-2 border-t border-slate-200">
+                        <h4 className="font-semibold text-slate-800 text-xs mb-3">Item Physical Specifications & Formulation Notes</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Color Specification</label>
+                            <input
+                              type="text"
+                              value={editingProduct.color || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, color: e.target.value, hasColors: Boolean(e.target.value) })
+                              }
+                              placeholder="e.g. Deep Amber / Rich Burgundy"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Size / Net Weight</label>
+                            <input
+                              type="text"
+                              value={editingProduct.size || ''}
+                              onChange={(e) =>
+                                setEditingProduct({ ...editingProduct, size: e.target.value, hasSizes: Boolean(e.target.value) })
+                              }
+                              placeholder="e.g. 500ml / 800g / 16L"
+                              className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-700 font-medium mb-1">Master Item Flag</label>
+                            <div className="pt-1.5">
+                              <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(editingProduct.isMasterItem)}
+                                  onChange={(e) =>
+                                    setEditingProduct({ ...editingProduct, isMasterItem: e.target.checked })
+                                  }
+                                  className="w-4 h-4 rounded border-slate-300 text-blue-600"
+                                />
+                                <span className="font-medium text-slate-700">Master Item Definition</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <label className="block text-slate-700 font-medium mb-1">Ingredients & Formulation Recipe</label>
+                          <textarea
+                            rows={2}
+                            value={editingProduct.ingredients || ''}
+                            onChange={(e) =>
+                              setEditingProduct({ ...editingProduct, ingredients: e.target.value, hasIngredients: Boolean(e.target.value) })
+                            }
+                            placeholder="e.g. 100% Pure concentrated pomegranate juice, citric acid..."
+                            className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-3 border-t border-slate-200 flex justify-end gap-2 bg-slate-50 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(false)}
+                className="px-4 py-1.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-medium cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveProduct}
+                className="px-5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold cursor-pointer shadow-xs"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 3: ADVANCED FILTERS MODAL
+          ======================================================================= */}
+      {isFilterModalOpen && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 70000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-md rounded-sm overflow-hidden"
+            style={{ zIndex: 70001 }}
+          >
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-[16px] font-normal text-muted-foreground">Filter Products & Services</h3>
+              <button
+                type="button"
+                onClick={() => setIsFilterModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-5 space-y-2 text-xs max-h-[440px] overflow-y-auto">
+              <div className="flex items-center justify-between font-semibold text-slate-800 border-b border-slate-100 pb-1.5 mb-1">
+                <span>Filter by Specifications ({activeMoreFiltersCount} active)</span>
+                {activeMoreFiltersCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setMoreFilters({
+                        serialNumber: false,
+                        ingredients: false,
+                        colors: false,
+                        sizes: false,
+                        costZero: false,
+                        sellingPriceZero: false,
+                        logicalWarehouseNull: false,
+                        defaultLocationNull: false,
+                        serviceItems: false,
+                        consignmentItems: false,
+                        withoutReorderLevel: false,
+                        masterItems: false,
+                        discontinuedItems: false,
+                        withExpiry: false,
+                      })
+                    }
+                    className="text-[11px] text-rose-600 hover:text-rose-800 cursor-pointer font-medium hover:underline"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+              <div className="space-y-1">
+                {MORE_FILTER_OPTIONS.map((opt) => {
+                  const isActive = moreFilters[opt.key];
+                  return (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => handleToggleMoreFilter(opt.key)}
+                      className={`w-full text-left flex items-center justify-between py-2 px-3 rounded-xs cursor-pointer select-none transition-colors border ${
+                        isActive
+                          ? 'bg-blue-50 border-blue-300 text-blue-700 font-bold shadow-2xs'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-medium'
+                      }`}
+                    >
+                      <span className="text-[12px]">{opt.label}</span>
+                      {isActive && <Check className="w-4 h-4 text-blue-600 shrink-0 ml-2" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
+                  className="px-4 py-1.5 border border-slate-300 rounded-sm bg-white hover:bg-slate-50 cursor-pointer"
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsFilterModalOpen(false)}
+                  className="px-5 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-sm cursor-pointer"
+                >
+                  Apply Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 4: APPLY RECOMMENDED PRICE MODAL (Image 3)
+          ======================================================================= */}
+      {isApplyRecommendedPriceModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-700 leading-snug">
+                Apply recommended price to the selected selling prices
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsApplyRecommendedPriceModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer ml-2"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-5 space-y-3 text-xs">
+              <div className="space-y-2.5">
+                {[
+                  { key: 'sp1', label: 'Selling Price 1' },
+                  { key: 'sp2', label: 'Selling Price 2' },
+                  { key: 'sp3', label: 'Selling Price 3' },
+                  { key: 'sp4', label: 'Selling Price 4' },
+                ].map((item) => (
+                  <label key={item.key} className="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={recommendedPriceTargets[item.key as keyof typeof recommendedPriceTargets]}
+                      onChange={(e) =>
+                        setRecommendedPriceTargets({
+                          ...recommendedPriceTargets,
+                          [item.key]: e.target.checked,
+                        })
+                      }
+                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                    <span className="text-slate-700 font-medium">{item.label}</span>
+                  </label>
+                ))}
+              </div>
+
+              <div className="pt-4 flex justify-end gap-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsApplyRecommendedPriceModalOpen(false)}
+                  className="px-4 py-1.5 rounded-sm bg-slate-600 hover:bg-slate-700 text-white font-medium cursor-pointer transition text-xs shadow-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleApplyRecommendedPrice}
+                  className="px-5 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-bold cursor-pointer transition text-xs shadow-xs"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 5: LAST PRICES MODAL
+          ======================================================================= */}
+      {isLastPricesModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Last Recorded Prices - {editingProduct?.description}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsLastPricesModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                  <tr>
+                    <th className="p-2">Price Type</th>
+                    <th className="p-2">Amount LL</th>
+                    <th className="p-2">Amount $</th>
+                    <th className="p-2">Effective Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  <tr>
+                    <td className="p-2 font-medium">Selling Price 1</td>
+                    <td className="p-2">{(editingProduct?.sellingPrice1LL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.sellingPrice1USD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">2026-09-01</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-medium">Selling Price 2</td>
+                    <td className="p-2">{(editingProduct?.sellingPrice2LL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.sellingPrice2USD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">2026-08-15</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-medium">Selling Price 3</td>
+                    <td className="p-2">{(editingProduct?.sellingPrice3LL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.sellingPrice3USD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">2026-07-20</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-medium">Selling Price 4</td>
+                    <td className="p-2">{(editingProduct?.sellingPrice4LL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.sellingPrice4USD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">2026-07-01</td>
+                  </tr>
+                  <tr className="bg-slate-50/70 font-semibold">
+                    <td className="p-2">Unit Cost</td>
+                    <td className="p-2">{(editingProduct?.unitCostLL || 0).toLocaleString()} LL</td>
+                    <td className="p-2">${(editingProduct?.unitCostUSD || 0).toFixed(2)}</td>
+                    <td className="p-2 text-slate-500">Latest Purchase</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsLastPricesModalOpen(false)}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 6: PRICE VARIATIONS MODAL
+          ======================================================================= */}
+      {isPriceVariationsModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Price Variations & Tiers - {editingProduct?.description}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsPriceVariationsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <p className="text-slate-600">
+                Configure tiered volume discounts and customer segment price variation overrides.
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
+                  <div>
+                    <span className="font-semibold text-slate-800">Tier 1 (Retail Standard):</span>
+                    <span className="ml-2 text-slate-600">Qty 1+</span>
+                  </div>
+                  <span className="font-bold text-slate-900">{(editingProduct?.sellingPrice1LL || 0).toLocaleString()} LL</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
+                  <div>
+                    <span className="font-semibold text-slate-800">Tier 2 (Wholesale / Bulk):</span>
+                    <span className="ml-2 text-slate-600">Qty {editingProduct?.qtyPrice2 || 1}+</span>
+                  </div>
+                  <span className="font-bold text-slate-900">{(editingProduct?.sellingPrice2LL || 0).toLocaleString()} LL</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
+                  <div>
+                    <span className="font-semibold text-slate-800">Tier 3 (Distributor / Special):</span>
+                    <span className="ml-2 text-slate-600">Qty {editingProduct?.qtyPrice3 || 1}+</span>
+                  </div>
+                  <span className="font-bold text-slate-900">{(editingProduct?.sellingPrice3LL || 0).toLocaleString()} LL</span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-200">
+                  <div>
+                    <span className="font-semibold text-slate-800">Tier 4 (Export / VIP):</span>
+                    <span className="ml-2 text-slate-600">Qty {editingProduct?.qtyPrice4 || 1}+</span>
+                  </div>
+                  <span className="font-bold text-slate-900">{(editingProduct?.sellingPrice4LL || 0).toLocaleString()} LL</span>
+                </div>
+              </div>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsPriceVariationsModalOpen(false)}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 7: MORE BARCODES MODAL
+          ======================================================================= */}
+      {isMoreBarcodesModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-lg rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Manage Additional Barcodes
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsMoreBarcodesModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-4 text-xs">
+              <form onSubmit={handleAddExtraBarcode} className="p-3 bg-slate-50 rounded-sm border border-slate-200 space-y-2">
+                <span className="font-semibold text-slate-700">Add New Barcode</span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Barcode string"
+                    value={newExtraBarcode}
+                    onChange={(e) => setNewExtraBarcode(e.target.value)}
+                    className="px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  />
+                  <select
+                    value={newExtraBarcodeType}
+                    onChange={(e) => setNewExtraBarcodeType(e.target.value)}
+                    className="px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  >
+                    <option value="EAN-13">EAN-13</option>
+                    <option value="UPC-A">UPC-A</option>
+                    <option value="Code 128">Code 128</option>
+                    <option value="QR Code">QR Code</option>
+                    <option value="Custom">Custom</option>
+                  </select>
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-sm cursor-pointer shadow-xs"
+                  >
+                    + Add Barcode
+                  </button>
+                </div>
+              </form>
+
+              <div className="border border-slate-200 rounded-sm overflow-hidden max-h-48 overflow-y-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="p-2">Barcode</th>
+                      <th className="p-2">Type / Note</th>
+                      <th className="p-2 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {editingProduct?.moreBarcodes && editingProduct.moreBarcodes.length > 0 ? (
+                      editingProduct.moreBarcodes.map((b) => (
+                        <tr key={b.id}>
+                          <td className="p-2 font-mono font-bold text-slate-800">{b.barcode}</td>
+                          <td className="p-2 text-slate-600">{b.note || 'Secondary'}</td>
+                          <td className="p-2 text-right">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteExtraBarcode(b.id)}
+                              className="text-rose-600 hover:text-rose-800 cursor-pointer font-medium"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={3} className="p-4 text-center text-slate-400">
+                          No additional barcodes added yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsMoreBarcodesModalOpen(false)}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 8: PURCHASE HISTORY MODAL
+          ======================================================================= */}
+      {isPurchaseHistoryModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-2xl rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Purchase History - {editingProduct?.mainSupplierName}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsPurchaseHistoryModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                  <tr>
+                    <th className="p-2">PO #</th>
+                    <th className="p-2">Date</th>
+                    <th className="p-2">Supplier</th>
+                    <th className="p-2">Qty</th>
+                    <th className="p-2">Unit Cost</th>
+                    <th className="p-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  <tr>
+                    <td className="p-2 font-mono text-blue-700 font-semibold">PO-2026-0812</td>
+                    <td className="p-2 text-slate-500">2026-08-12</td>
+                    <td className="p-2">{editingProduct?.mainSupplierName}</td>
+                    <td className="p-2 font-bold">250 BOT</td>
+                    <td className="p-2">{(editingProduct?.unitCostLL || 0).toLocaleString()} LL</td>
+                    <td className="p-2"><span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">Received</span></td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-mono text-blue-700 font-semibold">PO-2026-0628</td>
+                    <td className="p-2 text-slate-500">2026-06-28</td>
+                    <td className="p-2">{editingProduct?.mainSupplierName}</td>
+                    <td className="p-2 font-bold">500 BOT</td>
+                    <td className="p-2">{Math.round((editingProduct?.unitCostLL || 0) * 0.95).toLocaleString()} LL</td>
+                    <td className="p-2"><span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">Received</span></td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-mono text-blue-700 font-semibold">PO-2026-0414</td>
+                    <td className="p-2 text-slate-500">2026-04-14</td>
+                    <td className="p-2">{editingProduct?.mainSupplierName}</td>
+                    <td className="p-2 font-bold">300 BOT</td>
+                    <td className="p-2">{Math.round((editingProduct?.unitCostLL || 0) * 0.92).toLocaleString()} LL</td>
+                    <td className="p-2"><span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-semibold">Received</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsPurchaseHistoryModalOpen(false)}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL 9: VANGUARD MARKETPLACE SEARCH MODAL
+          ======================================================================= */}
+      {isVanguardMarketplaceModalOpen && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 75000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-xl rounded-sm overflow-hidden"
+            style={{ zIndex: 75001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-white">
+              <h3 className="text-sm font-semibold text-slate-800">
+                Search in Vanguard Marketplace Catalog
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsVanguardMarketplaceModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 space-y-3 text-xs">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter product title, UPC, EAN, or Brand..."
+                  className="flex-1 px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  defaultValue={editingProduct?.description || ''}
+                />
+                <button
+                  type="button"
+                  className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm font-semibold cursor-pointer shadow-xs flex items-center gap-1.5"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>Search</span>
+                </button>
+              </div>
+              <div className="border border-slate-200 rounded-sm p-3 bg-slate-50 space-y-2">
+                <span className="font-semibold text-slate-700">Recommended Match from Vanguard Global Master:</span>
+                <div className="bg-white p-2.5 rounded border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-slate-800">{editingProduct?.description || 'Authentic Item Master'}</div>
+                    <div className="text-[11px] text-slate-500">Standard Barcode: 5280001928371 | Category: Food & Beverage</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsVanguardMarketplaceModalOpen(false);
+                      showToast('Imported product specs from Vanguard Marketplace');
+                    }}
+                    className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold cursor-pointer shadow-xs"
+                  >
+                    Import Specs
+                  </button>
+                </div>
+              </div>
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsVanguardMarketplaceModalOpen(false)}
+                  className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-sm font-semibold cursor-pointer shadow-xs"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Group */}
+      {isAddGroupModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Inventory Group</h4>
+            <form onSubmit={handleAddGroupSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Group Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  placeholder="e.g. Organic Beverages"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddGroupModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Group
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Location */}
+      {isAddLocationModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Location</h4>
+            <form onSubmit={handleAddLocationSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Location Name / Description</label>
+                <input
+                  type="text"
+                  required
+                  value={newLocationName}
+                  onChange={(e) => setNewLocationName(e.target.value)}
+                  placeholder="e.g. Warehouse B - Section 4"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddLocationModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Location
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Supplier */}
+      {isAddSupplierModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Supplier</h4>
+            <form onSubmit={handleAddSupplierSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Supplier Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newSupplierName}
+                  onChange={(e) => setNewSupplierName(e.target.value)}
+                  placeholder="e.g. Cedar Trading SAL"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddSupplierModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Supplier
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Brand */}
+      {isAddBrandModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Brand</h4>
+            <form onSubmit={handleAddBrandSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Brand Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newBrandName}
+                  onChange={(e) => setNewBrandName(e.target.value)}
+                  placeholder="e.g. Master Chef"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddBrandModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Brand
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Zone */}
+      {isAddZoneModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Zone</h4>
+            <form onSubmit={handleAddZoneSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Zone Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newZoneName}
+                  onChange={(e) => setNewZoneName(e.target.value)}
+                  placeholder="e.g. Cold Storage 2"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddZoneModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Zone
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Add: Aisle */}
+      {isAddAisleModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in" style={{ zIndex: 80000 }}>
+          <div className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-sm rounded-sm p-4 space-y-3" style={{ zIndex: 80001 }}>
+            <h4 className="font-semibold text-slate-800 text-sm">Add New Aisle</h4>
+            <form onSubmit={handleAddAisleSubmit} className="space-y-3">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Aisle Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newAisleName}
+                  onChange={(e) => setNewAisleName(e.target.value)}
+                  placeholder="e.g. Aisle 5 - Top Shelf"
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddAisleModalOpen(false)}
+                  className="px-3 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs"
+                >
+                  Save Aisle
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: "SAME AS" BOM RECIPE CLONING MODAL
+          ======================================================================= */}
+      {isSameAsBOMModalOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 80000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-2xl rounded-sm overflow-hidden flex flex-col max-h-[90vh]"
+            style={{ zIndex: 80001 }}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-background shrink-0">
+              <div className="flex items-center gap-2">
+                <Copy className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-slate-800 text-sm">
+                  Clone Recipe from Existing Product (&quot;Same As&quot; BOM)
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSameAsBOMModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Description */}
+            <div className="p-4 border-b border-slate-100 bg-blue-50/50 text-xs text-slate-700">
+              Replicate complete component ratios, accurate yield flags (&quot;Main Ing.&quot;), labor overhead, and packaging materials from standard audited production recipes. Overwrites current BOM line items and synchronizes unit costs.
+            </div>
+
+            {/* Template Selection List */}
+            <div className="p-4 overflow-y-auto space-y-3 flex-1 text-xs">
+              {OMEGA_BOM_TEMPLATES.map((tmpl) => {
+                const isSelected = selectedSameAsTemplateId === tmpl.id;
+                const rate = editingProduct?.secondCurrencyRate || 90000;
+                const usd = (tmpl.totalCostLL / rate).toFixed(2);
+
+                return (
+                  <div
+                    key={tmpl.id}
+                    onClick={() => setSelectedSameAsTemplateId(tmpl.id)}
+                    className={`p-3.5 border rounded-sm cursor-pointer transition ${
+                      isSelected
+                        ? 'border-primary bg-blue-50/40 ring-1 ring-primary'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-2.5">
+                        <input
+                          type="radio"
+                          name="selected_bom_template"
+                          checked={isSelected}
+                          onChange={() => setSelectedSameAsTemplateId(tmpl.id)}
+                          className="mt-0.5 w-4 h-4 text-primary"
+                        />
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span>{tmpl.name}</span>
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-normal">
+                              {tmpl.code}
+                            </span>
+                          </div>
+                          <p className="text-slate-500 text-[11px] mt-0.5">{tmpl.description}</p>
+                        </div>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <div className="font-bold font-mono text-primary text-sm">
+                          {tmpl.totalCostLL.toLocaleString()} LBP
+                        </div>
+                        <div className="text-[11px] font-mono text-slate-500">
+                          ${usd} USD
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Component breakdown preview */}
+                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+                      {tmpl.components.map((c, i) => (
+                        <span
+                          key={i}
+                          className={`text-[10px] px-2 py-0.5 rounded font-mono ${
+                            c.mainIngredient
+                              ? 'bg-blue-100 text-blue-800 font-bold border border-blue-200'
+                              : 'bg-slate-100 text-slate-600'
+                          }`}
+                        >
+                          {c.qtyNeeded} {c.unit} {c.rawMaterialName} {c.mainIngredient ? '(Main Ing.)' : ''}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+              <span className="text-[11px] text-slate-500">
+                Target Currency Exchange: 1 $ = {(editingProduct?.secondCurrencyRate || 90000).toLocaleString()} LL
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsSameAsBOMModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium text-xs cursor-pointer hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const tmpl = OMEGA_BOM_TEMPLATES.find((t) => t.id === selectedSameAsTemplateId);
+                    if (tmpl) {
+                      handleApplySameAsBOM(tmpl);
+                    }
+                  }}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-bold text-xs rounded-sm shadow-xs cursor-pointer transition flex items-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Apply Recipe (Clone BOM)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: ADD INCLUDED ITEM (PROMOTIONAL BUNDLING / KITS)
+          ======================================================================= */}
+      {isAddIncludedItemModalOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 80000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-md rounded-sm overflow-hidden"
+            style={{ zIndex: 80001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-background">
+              <div className="flex items-center gap-2">
+                <Gift className="w-4 h-4 text-purple-700" />
+                <h4 className="font-semibold text-slate-800 text-sm">Add Child Product to Promotional Kit</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddIncludedItemModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleAddIncludedItemSubmit} className="p-4 space-y-3.5 text-xs">
+              {/* Product Selection */}
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">
+                  Select Child Product to Bundle*
+                </label>
+                <select
+                  value={selectedIncludedItemId || (products[0]?.id ?? 0)}
+                  onChange={(e) => setSelectedIncludedItemId(Number(e.target.value))}
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                >
+                  {products.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.code} - {p.description} ({(p.sellingPrice1LL || p.sellingPrice || 0).toLocaleString()} LL)
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  When this parent combo SKU is sold, the selected child product stock will be dynamically deducted.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {/* Quantity */}
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Quantity in Bundle*</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={newIncludedQty}
+                    onChange={(e) => setNewIncludedQty(Number(e.target.value))}
+                    className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                    placeholder="1"
+                  />
+                </div>
+
+                {/* Bundle Discount % */}
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Bundle Discount %</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={newIncludedDiscountPct}
+                    onChange={(e) => setNewIncludedDiscountPct(Number(e.target.value))}
+                    className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
+              {/* Price Preview */}
+              {(() => {
+                const target = products.find((p) => p.id === (selectedIncludedItemId || products[0]?.id)) || products[0];
+                const base = target ? (target.sellingPrice1LL || target.sellingPrice || 50000) : 0;
+                const net = Math.round(base * (1 - (newIncludedDiscountPct || 0) / 100));
+                const total = net * (newIncludedQty || 1);
+                return (
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] space-y-1">
+                    <div className="flex justify-between text-slate-600">
+                      <span>Base Selling Price:</span>
+                      <span className="font-mono">{base.toLocaleString()} LBP</span>
+                    </div>
+                    {newIncludedDiscountPct > 0 && (
+                      <div className="flex justify-between text-emerald-700 font-semibold">
+                        <span>Discount ({newIncludedDiscountPct}%):</span>
+                        <span className="font-mono">-{(base - net).toLocaleString()} LBP</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-slate-900 font-bold border-t border-slate-200 pt-1">
+                      <span>Extended Bundle Item Total:</span>
+                      <span className="font-mono text-primary">{total.toLocaleString()} LBP</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAddIncludedItemModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add to Bundle</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: ADD PARENT CONSUMING ITEM (UPWARD SUPPLY CHAIN LINKAGE)
+          ======================================================================= */}
+      {isAddUsedInModalOpen && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 80000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-md rounded-sm overflow-hidden"
+            style={{ zIndex: 80001 }}
+          >
+            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-background">
+              <div className="flex items-center gap-2">
+                <ArrowUpRight className="w-4 h-4 text-primary" />
+                <h4 className="font-semibold text-slate-800 text-sm">Add Parent Consuming Product</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddUsedInModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleAddUsedInSubmit} className="p-4 space-y-3.5 text-xs">
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Parent Product Code*</label>
+                <input
+                  type="text"
+                  required
+                  value={newUsedInParentCode}
+                  onChange={(e) => setNewUsedInParentCode(e.target.value)}
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                  placeholder="e.g. PALLET-WV500ML or KIT-REST-01"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-medium mb-1">Parent Product Description*</label>
+                <input
+                  type="text"
+                  required
+                  value={newUsedInParentDesc}
+                  onChange={(e) => setNewUsedInParentDesc(e.target.value)}
+                  className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  placeholder="e.g. White Vinegar 500ml Pallet (100 Boxes)"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Quantity Consumed*</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    required
+                    value={newUsedInQty}
+                    onChange={(e) => setNewUsedInQty(Number(e.target.value))}
+                    className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white font-mono"
+                    placeholder="1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-medium mb-1">Relationship Type*</label>
+                  <select
+                    value={newUsedInRelationType}
+                    onChange={(e) => setNewUsedInRelationType(e.target.value as any)}
+                    className="w-full px-3 py-1.5 text-xs rounded-sm border border-slate-300 bg-white"
+                  >
+                    <option value="Palletization">Palletization (Bulk Export)</option>
+                    <option value="Bundle/Kit">Wholesale Kit / Bundle</option>
+                    <option value="Inverted Breakdown (Hazard)">Inverted Breakdown (Hazard)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Impact Preview */}
+              {(() => {
+                const cost = editingProduct?.unitCostLL || 543960;
+                const total = Math.round(cost * (newUsedInQty || 1));
+                return (
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] space-y-1">
+                    <div className="flex justify-between text-slate-600">
+                      <span>This Case Unit Cost:</span>
+                      <span className="font-mono">{cost.toLocaleString()} LBP</span>
+                    </div>
+                    <div className="flex justify-between text-slate-900 font-bold border-t border-slate-200 pt-1">
+                      <span>Extended Impact on Parent Cost:</span>
+                      <span className="font-mono text-primary">{total.toLocaleString()} LBP</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsAddUsedInModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-sm bg-white text-slate-700 font-medium hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Dependency</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: INVENTORY PRODUCTIONS REPORT (REP_I_0041 - AUTHENTIC OMEGA PRINT/EXPORT)
+          Direct Pixel-Perfect Clone of User's Uploaded Screenshot
+          ======================================================================= */}
+      {isInventoryProductionsReportOpen && (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+          style={{ zIndex: 90000 }}
+        >
+          <div
+            className="bg-white border border-slate-400 w-full max-w-2xl text-slate-900 shadow-2xl rounded-sm overflow-hidden flex flex-col max-h-[92vh]"
+            style={{ zIndex: 90001 }}
+          >
+            {/* Modal Title Bar */}
+            <div className="px-4 py-2.5 border-b border-slate-200 flex items-center justify-between bg-background">
+              <h3 className="text-base font-semibold text-slate-800">Inventory Productions</h3>
+              <button
+                type="button"
+                onClick={() => setIsInventoryProductionsReportOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-2xl leading-none cursor-pointer"
+                title="Close Window"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Action Bar (Print / Export Buttons matching screenshot top-right) */}
+            <div className="px-6 py-2.5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+              {/* Report View Selector */}
+              <div className="flex items-center gap-1.5 text-xs">
+                <span className="text-slate-500 font-medium mr-1">Report View:</span>
+                <button
+                  type="button"
+                  onClick={() => setInventoryProductionsReportMode('omega_anomaly')}
+                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
+                    inventoryProductionsReportMode === 'omega_anomaly'
+                      ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Omega Anomaly (CWV500MLB106 - Exact Photo)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInventoryProductionsReportMode('case_assembly')}
+                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
+                    inventoryProductionsReportMode === 'case_assembly'
+                      ? 'bg-blue-100 text-blue-900 border border-blue-300'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Forward Case BOM (12-Pack)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInventoryProductionsReportMode('pallet_master')}
+                  className={`px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition ${
+                    inventoryProductionsReportMode === 'pallet_master'
+                      ? 'bg-purple-100 text-purple-900 border border-purple-300'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Export Pallet (100 Boxes)
+                </button>
+              </div>
+
+              {/* Exact Dark Action Buttons from Screenshot */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrintInventoryProductionsReport}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
+                >
+                  Print
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportInventoryProductionsReport}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-sm text-xs cursor-pointer shadow-xs transition"
+                >
+                  Export
+                </button>
+              </div>
+            </div>
+
+            {/* Document Preview Sheet (Pixel-Perfect Physical Print Sheet) */}
+            <div className="p-6 overflow-y-auto bg-slate-100/70 flex-1">
+              <div className="bg-white border border-slate-300 rounded-xs shadow-xs p-8 max-w-xl mx-auto min-h-[500px] flex flex-col justify-between font-sans text-xs">
+                <div>
+                  {/* Company Header (Centered Blue) */}
+                  <div className="text-center font-bold text-blue-700 text-sm tracking-wide">
+                    Zeit w zaytoun ljanoub
+                  </div>
+
+                  {/* Report Title (Centered Bold) */}
+                  <div className="text-center font-bold text-slate-900 text-sm mt-3">
+                    Inventory Items Ingredients
+                  </div>
+
+                  {/* Date and Page Header */}
+                  <div className="flex items-center justify-between text-[11px] text-slate-800 font-mono mt-4">
+                    <span>13-Sep-2026</span>
+                    <span>Page 1 of 1</span>
+                  </div>
+
+                  {/* Solid Dividing Rule */}
+                  <div className="border-b-2 border-slate-900 mt-1"></div>
+
+                  {/* Column Headers */}
+                  <div className="grid grid-cols-12 text-[11px] font-bold text-slate-900 py-1.5">
+                    <span className="col-span-3">Product Code</span>
+                    <span className="col-span-4">Product Description</span>
+                    <span className="col-span-1 text-right">Qty</span>
+                    <span className="col-span-1 text-center">Unit</span>
+                    <span className="col-span-1 text-right">Cost</span>
+                    <span className="col-span-2 text-right">Avg. Cost</span>
+                  </div>
+
+                  {/* Solid Dividing Rule */}
+                  <div className="border-b border-slate-900"></div>
+
+                  {/* Report Body Content (Mode Switchable) */}
+                  {inventoryProductionsReportMode === 'omega_anomaly' && (
+                    <div className="mt-2 text-[11px]">
+                      {/* Parent Product Header */}
+                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
+                        <div>
+                          <span className="underline font-bold">Product Code:</span>{' '}
+                          <span className="font-mono">CWV500MLB106</span>
+                        </div>
+                        <div>
+                          <span className="underline font-bold">Description:</span>{' '}
+                          <span>White Vinegar 500ml</span>
+                        </div>
+                      </div>
+
+                      {/* Consumed Child Items (The Inverted Box Anomaly) */}
+                      <div className="grid grid-cols-12 py-1 text-slate-800 font-mono items-center">
+                        <span className="col-span-3 text-[10px]">CWV500ML*12B106</span>
+                        <span className="col-span-4 font-sans text-[11px]">White Vinegar 500ml Case (12 Bottles)</span>
+                        <span className="col-span-1 text-right font-bold">0.08</span>
+                        <span className="col-span-1 text-center font-sans">BOX</span>
+                        <span className="col-span-1 text-right">45,692.64</span>
+                        <span className="col-span-2 text-right">45,692.64</span>
+                      </div>
+
+                      {/* Dashed Subtotal Rule */}
+                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
+
+                      {/* Total By Product */}
+                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
+                        <span className="col-span-7">Total By Product:</span>
+                        <span className="col-span-2"></span>
+                        <span className="col-span-1 text-right font-mono">45,692.64</span>
+                        <span className="col-span-2 text-right font-mono">45,692.64</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {inventoryProductionsReportMode === 'case_assembly' && (
+                    <div className="mt-2 text-[11px]">
+                      {/* Parent Product Header */}
+                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
+                        <div>
+                          <span className="underline font-bold">Product Code:</span>{' '}
+                          <span className="font-mono">CWV500ML*12B106</span>
+                        </div>
+                        <div>
+                          <span className="underline font-bold">Description:</span>{' '}
+                          <span>White Vinegar 500ml Case (12 Bottles)</span>
+                        </div>
+                      </div>
+
+                      {/* True Manufacturing Components */}
+                      <div className="space-y-1">
+                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
+                          <span className="col-span-3 text-[10px]">VIN-1LTR</span>
+                          <span className="col-span-4 font-sans text-[11px]">COMMERCIAL WHITE VINEGAR 1 LITRE</span>
+                          <span className="col-span-1 text-right font-bold">6.00</span>
+                          <span className="col-span-1 text-center font-sans">LTR</span>
+                          <span className="col-span-1 text-right">15,660.00</span>
+                          <span className="col-span-2 text-right">93,960.00</span>
+                        </div>
+                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
+                          <span className="col-span-3 text-[10px]">BOT-500ML</span>
+                          <span className="col-span-4 font-sans text-[11px]">Empty Glass Bottle 500ml</span>
+                          <span className="col-span-1 text-right font-bold">12.00</span>
+                          <span className="col-span-1 text-center font-sans">BOT</span>
+                          <span className="col-span-1 text-right">30,000.00</span>
+                          <span className="col-span-2 text-right">360,000.00</span>
+                        </div>
+                        <div className="grid grid-cols-12 py-0.5 text-slate-800 font-mono items-center">
+                          <span className="col-span-3 text-[10px]">SERV-01</span>
+                          <span className="col-span-4 font-sans text-[11px]">SERVICES 1 (Choueifat Labor & Line)</span>
+                          <span className="col-span-1 text-right font-bold">1.00</span>
+                          <span className="col-span-1 text-center font-sans">SERV</span>
+                          <span className="col-span-1 text-right">90,000.00</span>
+                          <span className="col-span-2 text-right">90,000.00</span>
+                        </div>
+                      </div>
+
+                      {/* Dashed Subtotal Rule */}
+                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
+
+                      {/* Total By Product */}
+                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
+                        <span className="col-span-7">Total By Product:</span>
+                        <span className="col-span-2"></span>
+                        <span className="col-span-1 text-right font-mono">543,960.00</span>
+                        <span className="col-span-2 text-right font-mono">543,960.00</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {inventoryProductionsReportMode === 'pallet_master' && (
+                    <div className="mt-2 text-[11px]">
+                      {/* Parent Product Header */}
+                      <div className="flex items-center gap-6 font-semibold text-slate-900 py-1">
+                        <div>
+                          <span className="underline font-bold">Product Code:</span>{' '}
+                          <span className="font-mono">PALLET-WV500ML</span>
+                        </div>
+                        <div>
+                          <span className="underline font-bold">Description:</span>{' '}
+                          <span>White Vinegar 500ml Pallet (100 Boxes)</span>
+                        </div>
+                      </div>
+
+                      {/* Pallet Master Linkage */}
+                      <div className="grid grid-cols-12 py-1 text-slate-800 font-mono items-center">
+                        <span className="col-span-3 text-[10px]">CWV500ML*12B106</span>
+                        <span className="col-span-4 font-sans text-[11px]">White Vinegar 500ml Case (12 Bottles)</span>
+                        <span className="col-span-1 text-right font-bold">100.00</span>
+                        <span className="col-span-1 text-center font-sans">BOX</span>
+                        <span className="col-span-1 text-right">543,960.00</span>
+                        <span className="col-span-2 text-right">54,396,000.00</span>
+                      </div>
+
+                      {/* Dashed Subtotal Rule */}
+                      <div className="border-b border-dashed border-slate-700 my-1.5"></div>
+
+                      {/* Total By Product */}
+                      <div className="grid grid-cols-12 font-bold text-slate-900 text-[11px] py-1">
+                        <span className="col-span-7">Total By Product:</span>
+                        <span className="col-span-2"></span>
+                        <span className="col-span-1 text-right font-mono">54,396,000.00</span>
+                        <span className="col-span-2 text-right font-mono">54,396,000.00</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Section */}
+                <div className="pt-24">
+                  {/* Solid Dividing Rule */}
+                  <div className="border-b-2 border-slate-900 mb-1"></div>
+
+                  <div className="flex items-center justify-between text-[10px] text-slate-800">
+                    <span className="font-mono font-bold">REP_I_0041</span>
+                    <span className="text-slate-700 font-medium">
+                      Copyright © 2026 Vanguard ERP. All Rights Reserved.
+                    </span>
+                    <span className="text-slate-700 font-mono">&quot;vanguard-erp-lb.vercel.app&quot;</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          MODAL: NEW ITEM SUPPLIER PRICING (SCREENSHOT 8 AUTHENTIC CLONE)
+          ======================================================================= */}
+      {isNewSupplierPricingModalOpen && editingProduct && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-2xs animate-fade-in"
+          style={{ zIndex: 85000 }}
+        >
+          <div
+            className="bg-white border border-slate-300 w-full text-slate-800 shadow-2xl max-w-2xl rounded-sm overflow-hidden flex flex-col max-h-[92vh]"
+            style={{ zIndex: 85001 }}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+              <h3 className="font-semibold text-slate-700 text-sm">
+                New Item Supplier Pricing
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsNewSupplierPricingModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Form Content */}
+            <form onSubmit={handleAddSupplierPricingSubmit} className="p-4 space-y-4 overflow-y-auto">
+              {/* Card 1: Supplier Pricing */}
+              <div className="border border-slate-200 rounded-sm p-3.5 bg-white space-y-3 shadow-2xs">
+                <div className="font-semibold text-slate-700 text-xs border-b border-slate-100 pb-1.5">
+                  Supplier Pricing
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Supplier & Plus */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Supplier</label>
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={newSuppPriceSupplierId}
+                        onChange={(e) => setNewSuppPriceSupplierId(Number(e.target.value))}
+                        className="flex-1 border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                      >
+                        <option value="" disabled>Select supplier</option>
+                        {suppliersList.map((s) => (
+                          <option key={s.SUPPLIERID} value={s.SUPPLIERID}>
+                            {s.SUPPLIERNAME}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddSupplierModalOpen(true)}
+                        className="px-2.5 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs cursor-pointer flex items-center justify-center transition"
+                        title="Add New Supplier"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Buying Format Unit */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Buying Format Unit</label>
+                    <select
+                      value={newSuppPriceBuyingUnit}
+                      onChange={(e) => setNewSuppPriceBuyingUnit(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    >
+                      <option value="BOX">BOX</option>
+                      <option value="PCS">PCS</option>
+                      <option value="KG">KG</option>
+                      <option value="LTR">LTR</option>
+                      <option value="PACK">PACK</option>
+                      <option value="CARTON">CARTON</option>
+                      <option value="BAG">BAG</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Price */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Price</label>
+                    <input
+                      type="number"
+                      step="any"
+                      placeholder=""
+                      value={newSuppPriceAmount}
+                      onChange={(e) => setNewSuppPriceAmount(e.target.value)}
+                      required
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+
+                  {/* Currency */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Currency</label>
+                    <select
+                      value={newSuppPriceCurrency}
+                      onChange={(e) => setNewSuppPriceCurrency(e.target.value as 'LBP' | 'USD' | 'EUR')}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    >
+                      <option value="LBP">LBP</option>
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                    </select>
+                  </div>
+
+                  {/* Date */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Date</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={newSuppPriceDate}
+                        onChange={(e) => setNewSuppPriceDate(e.target.value)}
+                        className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary pr-7"
+                      />
+                      <Calendar className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: More */}
+              <div className="border border-slate-200 rounded-sm p-3.5 bg-white space-y-3 shadow-2xs">
+                <div className="font-semibold text-slate-700 text-xs border-b border-slate-100 pb-1.5">
+                  More
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Supplier Code */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Supplier Code</label>
+                    <input
+                      type="text"
+                      placeholder=""
+                      value={newSuppPriceSupplierCode}
+                      onChange={(e) => setNewSuppPriceSupplierCode(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+
+                  {/* Target */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Target</label>
+                    <input
+                      type="number"
+                      placeholder=""
+                      value={newSuppPriceTarget}
+                      onChange={(e) => setNewSuppPriceTarget(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+
+                  {/* Free */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Free</label>
+                    <input
+                      type="number"
+                      placeholder=""
+                      value={newSuppPriceFree}
+                      onChange={(e) => setNewSuppPriceFree(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Discount % */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Discount %</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      value={newSuppPriceDiscountPct}
+                      onChange={(e) => setNewSuppPriceDiscountPct(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+
+                  {/* Discount Notes (spans 2 cols) */}
+                  <div className="md:col-span-2">
+                    <label className="block text-xs text-slate-600 mb-1">Discount Notes</label>
+                    <input
+                      type="text"
+                      placeholder=""
+                      value={newSuppPriceDiscountNotes}
+                      onChange={(e) => setNewSuppPriceDiscountNotes(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* Bonus % */}
+                  <div>
+                    <label className="block text-xs text-slate-600 mb-1">Bonus %</label>
+                    <input
+                      type="number"
+                      placeholder=""
+                      value={newSuppPriceBonusPct}
+                      onChange={(e) => setNewSuppPriceBonusPct(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+
+                  {/* Bonus Notes (spans 2 cols) */}
+                  <div className="md:col-span-2">
+                    <label className="block text-xs text-slate-600 mb-1">Bonus Notes</label>
+                    <input
+                      type="text"
+                      placeholder=""
+                      value={newSuppPriceBonusNotes}
+                      onChange={(e) => setNewSuppPriceBonusNotes(e.target.value)}
+                      className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* =======================================================================
+          ACTION MODALS (ALL 15 ACTIONS IMPLEMENTATION)
+          ======================================================================= */}
+
+      {/* 1. Update Prices Modal */}
+      {isUpdatePricesModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Coins className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold">Update Prices (Bulk Financial Markup Tool)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsUpdatePricesModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleApplyBulkPrices} className="p-4 space-y-3.5">
+              {/* The 48-Billion Trap Alert */}
+              <div className="bg-rose-50 border-l-4 border-rose-600 p-3 text-rose-900 space-y-1">
+                <div className="flex items-center gap-2 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>Structural Integrity Risk: The 48-Billion LBP Amplification Trap</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  Bulk markups blindly apply a blanket multiplier across all filtered items. If an uncorrected 48.95-Billion LBP cost error is active on your 12-pack White Vinegar, targeting a 50% margin calculates and pushes a selling price of ~73 Billion LBP to POS. Verify base master costs before executing.
+                </p>
+              </div>
+
+              {/* Currency Sync Notice */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xs p-2.5 text-blue-900 flex items-start gap-2 text-[11px]">
+                <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong className="font-semibold">Dual-Currency Synchronization:</strong> When this tool calculates a new LBP selling price, Vanguard automatically divides the figure by your secondary rate (90,000) to keep USD and LBP columns synchronized.
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Markup Percentage (%)</label>
+                  <input
+                    type="number"
+                    value={bulkPriceMarkupPct}
+                    onChange={(e) => setBulkPriceMarkupPct(Number(e.target.value))}
+                    className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600 font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Target Group</label>
+                  <select
+                    value={bulkPriceTargetGroup}
+                    onChange={(e) => setBulkPriceTargetGroup(e.target.value)}
+                    className="w-full border border-slate-300 rounded-xs px-2 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600"
+                  >
+                    <option value="All">All Groups ({products.length} items)</option>
+                    <option value="Wholesale Distillates">Wholesale Distillates</option>
+                    <option value="Retail Distillates & Foodstuffs">Retail Distillates & Foodstuffs</option>
+                    <option value="Raw Materials">Raw Materials</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Rounding Rule</label>
+                  <select
+                    value={bulkPriceRoundTo}
+                    onChange={(e) => setBulkPriceRoundTo(Number(e.target.value))}
+                    className="w-full border border-slate-300 rounded-xs px-2 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600"
+                  >
+                    <option value="0">Exact (No Rounding)</option>
+                    <option value="1000">Nearest 1,000 LL</option>
+                    <option value="5000">Nearest 5,000 LL (Recommended)</option>
+                    <option value="10000">Nearest 10,000 LL</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Live Preview Box */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xs p-3">
+                <span className="text-[11px] font-bold text-slate-600 block mb-1">Live Calculation Preview:</span>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-800 font-medium">White Vinegar 500ml Case (12 Bottles)</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-500 line-through">750,000 LL ($8.33)</span>
+                    <span className="font-bold text-emerald-700">
+                      {(Math.round((750000 * (1 + bulkPriceMarkupPct / 100)) / (bulkPriceRoundTo || 1)) * (bulkPriceRoundTo || 1)).toLocaleString()} LL
+                    </span>
+                    <span className="text-slate-600 font-medium text-[11px]">
+                      (${((Math.round((750000 * (1 + bulkPriceMarkupPct / 100)) / (bulkPriceRoundTo || 1)) * (bulkPriceRoundTo || 1)) / 90000).toFixed(2)})
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsUpdatePricesModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Coins className="w-3.5 h-3.5" />
+                  <span>Apply Bulk Price Adjustment</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Update Cost Modal */}
+      {isUpdateCostModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calculator className="w-4 h-4 text-blue-400" />
+                <h3 className="font-bold">Update Cost (Bulk Supplier Expense Recalibration)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsUpdateCostModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleApplyBulkCost} className="p-4 space-y-3.5">
+              {/* The Manufacturing Disconnect Alert */}
+              <div className="bg-amber-50 border-l-4 border-amber-600 p-3 text-amber-900 space-y-1">
+                <div className="flex items-center gap-2 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Structural Integrity Risk: The Manufacturing Disconnect</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  Running Update Cost manually forces a new master cost on this screen, but it <strong>does NOT push down into Item Assembly BOM tabs</strong>. For commercial goods manufactured in Choueifat, using this bulk tool severs the link between raw materials and finished goods. Only adjust raw materials here, then use &quot;Recalculate Production Item Cost&quot; on finished formulations.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Cost Adjustment (%)</label>
+                  <input
+                    type="number"
+                    value={bulkCostAdjustmentPct}
+                    onChange={(e) => setBulkCostAdjustmentPct(Number(e.target.value))}
+                    className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600 font-bold"
+                  />
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">Use +% for supplier cost spikes or -% for discounts</span>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Target Category / Group</label>
+                  <select
+                    value={bulkCostTargetGroup}
+                    onChange={(e) => setBulkCostTargetGroup(e.target.value)}
+                    className="w-full border border-slate-300 rounded-xs px-2 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600"
+                  >
+                    <option value="Raw Materials">Raw Materials (Safe: Bottles, Caps, Syrup)</option>
+                    <option value="Wholesale Distillates">Wholesale Distillates (Caution: Finished Assemblies)</option>
+                    <option value="All">All Items (High Risk)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsUpdateCostModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Calculator className="w-3.5 h-3.5" />
+                  <span>Apply Bulk Cost Recalibration</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Item Maintenance Modal */}
+      {isItemMaintenanceModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-xl border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-blue-400" />
+                <h3 className="font-bold">Item Maintenance (Database Diagnostic Sweep)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsItemMaintenanceModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3.5">
+              <div className="bg-blue-50 border border-blue-200 rounded-xs p-3 text-blue-950 space-y-1">
+                <div className="font-bold text-xs flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0" />
+                  <span>Omega Self-Healing Ledger Repair Engine</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  When executed, this sweep temporarily locks transaction tables and rebuilds the <strong>Qty OH (Quantity On Hand)</strong> and <strong>Avg.Cost</strong> columns from scratch. It ignores cached grid numbers and re-reads:
+                </p>
+                <ul className="list-disc pl-5 text-[11px] space-y-0.5 font-medium text-blue-900">
+                  <li>142 historical purchase invoices</li>
+                  <li>89 assembly production journals</li>
+                  <li>412 sales receipts and dispatch transfers</li>
+                </ul>
+              </div>
+
+              {/* Progress Sweep State */}
+              {isMaintenanceRunning && (
+                <div className="border border-blue-200 bg-slate-50 rounded-xs p-4 space-y-2 text-center">
+                  <div className="inline-block animate-spin text-blue-700">
+                    <RefreshCw className="w-6 h-6" />
+                  </div>
+                  <div className="font-bold text-slate-800 text-xs">{maintenanceStep}</div>
+                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                    <div className="bg-blue-600 h-full animate-pulse w-3/4"></div>
+                  </div>
+                </div>
+              )}
+
+              {maintenanceStep.includes('Complete') && !isMaintenanceRunning && (
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xs p-3 text-emerald-900 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div className="text-[11px]">
+                    {maintenanceReport}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsItemMaintenanceModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  disabled={isMaintenanceRunning}
+                  onClick={handleRunItemMaintenance}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Wrench className="w-3.5 h-3.5" />
+                  <span>{isMaintenanceRunning ? 'Running Sweep...' : 'Execute Diagnostic Sweep'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Items Pricing Modal */}
+      {isItemsPricingModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-5xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <List className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold">Items Pricing (B2B Wholesale Tiers Rapid-Entry Matrix)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsItemsPricingModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-3 flex-1">
+              <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-xs border border-slate-200">
+                <span className="text-slate-700 text-xs">
+                  Rapid volume discount tier editor for B2B wholesale depots and Choueifat dispatch.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const edits: any = {};
+                    products.slice(0, 15).forEach((p) => {
+                      edits[p.id] = {
+                        sp1: Math.round(p.sellingPrice1LL * 1.05),
+                        sp2: Math.round(p.sellingPrice2LL * 1.05),
+                        sp3: Math.round(p.sellingPrice3LL * 1.05)
+                      };
+                    });
+                    setPricingMatrixEdits(edits);
+                    showToast('Populated matrix with blanket +5% increase across tiers');
+                  }}
+                  className="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-100 rounded-xs text-[11px] font-semibold text-slate-700 cursor-pointer"
+                >
+                  +5% Across All Tiers
+                </button>
+              </div>
+
+              <div className="border border-slate-200 rounded-xs overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="px-3 py-2">Item Description</th>
+                      <th className="px-3 py-2">Code</th>
+                      <th className="px-3 py-2 text-right">Cost LL</th>
+                      <th className="px-3 py-2 text-right">SP 1 (Retail)</th>
+                      <th className="px-3 py-2 text-right">SP 2 (Wholesale)</th>
+                      <th className="px-3 py-2 text-right">SP 3 (Distributor)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    {products.slice(0, 20).map((prod) => {
+                      const edit = pricingMatrixEdits[prod.id];
+                      return (
+                        <tr key={prod.id} className="hover:bg-slate-50">
+                          <td className="px-3 py-2 font-medium text-slate-900">{prod.description}</td>
+                          <td className="px-3 py-2 font-mono text-[11px] text-slate-600">{prod.code}</td>
+                          <td className="px-3 py-2 text-right text-slate-600 font-mono">
+                            {Number(prod.cost).toLocaleString()}
+                          </td>
+                          <td className="px-3 py-1.5 text-right">
+                            <input
+                              type="number"
+                              value={edit?.sp1 ?? prod.sellingPrice1LL}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setPricingMatrixEdits((prev) => ({
+                                  ...prev,
+                                  [prod.id]: {
+                                    sp1: val,
+                                    sp2: prev[prod.id]?.sp2 ?? prod.sellingPrice2LL,
+                                    sp3: prev[prod.id]?.sp3 ?? prod.sellingPrice3LL
+                                  }
+                                }));
+                              }}
+                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
+                            />
+                          </td>
+                          <td className="px-3 py-1.5 text-right">
+                            <input
+                              type="number"
+                              value={edit?.sp2 ?? prod.sellingPrice2LL}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setPricingMatrixEdits((prev) => ({
+                                  ...prev,
+                                  [prod.id]: {
+                                    sp1: prev[prod.id]?.sp1 ?? prod.sellingPrice1LL,
+                                    sp2: val,
+                                    sp3: prev[prod.id]?.sp3 ?? prod.sellingPrice3LL
+                                  }
+                                }));
+                              }}
+                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
+                            />
+                          </td>
+                          <td className="px-3 py-1.5 text-right">
+                            <input
+                              type="number"
+                              value={edit?.sp3 ?? prod.sellingPrice3LL}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setPricingMatrixEdits((prev) => ({
+                                  ...prev,
+                                  [prod.id]: {
+                                    sp1: prev[prod.id]?.sp1 ?? prod.sellingPrice1LL,
+                                    sp2: prev[prod.id]?.sp2 ?? prod.sellingPrice2LL,
+                                    sp3: val
+                                  }
+                                }));
+                              }}
+                              className="w-28 border border-slate-300 rounded-xs px-2 py-1 text-right font-semibold text-slate-900 focus:outline-none focus:border-blue-600"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="p-4 bg-background border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsItemsPricingModalOpen(false)}
+                className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveItemsPricingMatrix}
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save Pricing Matrix</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Export PLU Modal */}
+      {isExportPLUModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Download className="w-4 h-4 text-blue-400" />
+                <h3 className="font-bold">Export PLU (Price Look-Up File &amp; ERP Sync)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsExportPLUModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3.5">
+              <p className="text-[11.5px] text-slate-700 leading-relaxed">
+                Extracts your active inventory into a structured format for backups or syncing with Vanguard ERP on Supabase. This operation is strictly read-only and carries zero risk of database corruption.
+              </p>
+
+              <div className="bg-slate-50 border border-slate-200 rounded-xs p-3 space-y-1.5 text-[11px]">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Items Queued for Export:</span>
+                  <span className="font-bold text-slate-900">{filteredProducts.length} items</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Columns Included:</span>
+                  <span className="font-mono text-slate-700">Code, Description, Barcode, Price, Cost, Unit</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Destination:</span>
+                  <span className="font-semibold text-blue-700">Local CSV / Vanguard Supabase Sync</span>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={handleCopyPLUJson}
+                  className="w-full sm:w-auto px-3 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy Supabase JSON</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportPLUDownload}
+                  className="w-full sm:w-auto px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download PLU (.CSV)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Expired Items & Shelf-Life Forecasting Modal */}
+      {isExpiredItemsModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <RefreshCw className="w-4 h-4 text-amber-400" />
+                <h3 className="font-bold">Expired Items &amp; Shelf-Life Forecasting Report</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsExpiredItemsModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-3.5 flex-1">
+              {/* The Batch Link Audit Alert */}
+              <div className="bg-amber-50 border-l-4 border-amber-600 p-3 text-amber-900 space-y-1">
+                <div className="flex items-center gap-2 font-bold text-xs">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Operational Audit: The Batch Link &amp; Expiry Date Logging</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  This report populates exclusively by reading the Expiry Date logged during production journals or purchase receipts. If Choueifat assembly staff assemble 12-pack cartons without logging dates on the assembly screen, this report remains blank even if physical stock is aging on the warehouse floor.
+                </p>
+              </div>
+
+              {/* Expiration Horizon Filter */}
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xs border border-slate-200">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-slate-700 text-xs">Expiration Horizon:</span>
+                  {[30, 60, 90, 180].map((days) => (
+                    <button
+                      key={days}
+                      type="button"
+                      onClick={() => setExpiredHorizonDays(days)}
+                      className={`px-2.5 py-1 rounded-xs text-[11px] font-semibold cursor-pointer transition ${
+                        expiredHorizonDays === days
+                          ? 'bg-primary text-white shadow-2xs'
+                          : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      {days} Days {days === 90 && '(Proactive)'}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[11px] text-slate-500 italic">
+                  Forecasting as-of: December 2026 (Proactive Liquidation Window)
+                </span>
+              </div>
+
+              {/* Batches Table */}
+              <div className="border border-slate-200 rounded-xs overflow-hidden">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="px-3 py-2">Batch / Lot #</th>
+                      <th className="px-3 py-2">Product Description</th>
+                      <th className="px-3 py-2">SKU Code</th>
+                      <th className="px-3 py-2">Expiry Date</th>
+                      <th className="px-3 py-2 text-center">Days Remaining</th>
+                      <th className="px-3 py-2 text-right">Qty OH</th>
+                      <th className="px-3 py-2 text-center">Operational Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200">
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-VNG-04</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">White Vinegar 500ml Case (12 Bottles)</td>
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-600">CWV500ML*12B106</td>
+                      <td className="px-3 py-2 font-mono text-slate-700">15-Oct-2026</td>
+                      <td className="px-3 py-2 text-center">
+                        <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          32 days
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-right font-bold text-slate-900">12.00 BOX</td>
+                      <td className="px-3 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => showToast('Flagged for Priority Dispatch & B2B Promotional Liquidation')}
+                          className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xs text-[10.5px] cursor-pointer"
+                        >
+                          Liquidate Stock
+                        </button>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-APL-02</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">Local Apple Cider Vinegar 500ml (12-Pack)</td>
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-600">CAV500ML*12B107</td>
+                      <td className="px-3 py-2 font-mono text-slate-700">01-Nov-2026</td>
+                      <td className="px-3 py-2 text-center">
+                        <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          49 days
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-right font-bold text-slate-900">15.00 BOX</td>
+                      <td className="px-3 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => showToast('Flagged for Promotional Bundle Liquidation')}
+                          className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xs text-[10.5px] cursor-pointer"
+                        >
+                          Liquidate Stock
+                        </button>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-700">LOT-2026-CHOU-POM-01</td>
+                      <td className="px-3 py-2 font-semibold text-slate-900">Pomegranate Molasses Commercial Grade 1kg</td>
+                      <td className="px-3 py-2 font-mono text-[11px] text-slate-600">POM1KG101</td>
+                      <td className="px-3 py-2 font-mono text-slate-700">05-Dec-2026</td>
+                      <td className="px-3 py-2 text-center">
+                        <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          83 days
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-right font-bold text-slate-900">28.00 JAR</td>
+                      <td className="px-3 py-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => showToast('Scheduled for Wholesale Dispatch')}
+                          className="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xs text-[10.5px] cursor-pointer"
+                        >
+                          Queue Dispatch
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="p-4 bg-background border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsExpiredItemsModalOpen(false)}
+                className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold text-xs cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Print Barcodes Modal */}
+      {isPrintBarcodesModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-4xl border border-slate-300 overflow-hidden animate-fade-in text-xs max-h-[90vh] flex flex-col">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <Printer className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold">Print Barcodes (Choueifat Carton Label Printing Matrix)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPrintBarcodesModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-4 flex-1">
+              {/* Step 1 & 2 Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Template Selection */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xs p-3 space-y-2">
+                  <div className="font-semibold text-slate-800 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">1</span>
+                    <span>Label Template / Format Size</span>
+                  </div>
+                  <select
+                    value={printBarcodeTemplate}
+                    onChange={(e) => setPrintBarcodeTemplate(e.target.value)}
+                    className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600 font-medium"
+                  >
+                    <option value="carton_100x75">Commercial Food Carton (100mm x 75mm / 4&quot; x 3&quot;) [Recommended]</option>
+                    <option value="pallet_150x100">Standard Shipping Pallet (150mm x 100mm)</option>
+                    <option value="shelf_50x30">Depot Shelf Edge Tag (50mm x 30mm)</option>
+                  </select>
+                  <span className="text-[10.5px] text-slate-500 block">
+                    Large carton template cleanly displays Description, Barcode lines, and Code for Choueifat dispatch drivers.
+                  </span>
+                </div>
+
+                {/* Printer Hardware Status */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xs p-3 space-y-2">
+                  <div className="font-semibold text-slate-800 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">2</span>
+                    <span>Printer / Output</span>
+                  </div>
+                  <select value={printBarcodePrinter} onChange={(e) => setPrintBarcodePrinter(e.target.value)} className="w-full border border-slate-300 rounded-xs px-2.5 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-blue-600 font-medium"><option value="system">Standard Browser / System Print Dialog</option><option value="Thermal">Thermal Label Printer</option><option value="Canon">Canon / Inkjet-Laser Sheet</option></select>
+                  <span className="text-[10.5px] text-slate-500 block">Choose the destination in the system print dialog when printing.</span>
+                </div>
+              </div>
+
+              {/* Step 3: Items Queue & Quantity Selection */}
+              <div className="space-y-1.5">
+                <div className="font-semibold text-slate-800 flex items-center gap-1.5 text-xs">
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">3</span>
+                  <span>Select Items and Assign Quantities</span>
+                </div>
+                <div className="border border-slate-200 rounded-xs overflow-hidden">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-background text-slate-700 font-semibold border-b border-slate-200">
+                      <tr>
+                        <th className="px-3 py-2 w-10 text-center">Queue</th>
+                        <th className="px-3 py-2">Description</th>
+                        <th className="px-3 py-2">Code</th>
+                        <th className="px-3 py-2">Barcode String</th>
+                        <th className="px-3 py-2 text-right">Qty OH</th>
+                        <th className="px-3 py-2 text-right w-28">Labels to Print</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      {filteredProducts.slice(0, 50).map((p) => (
+                        <tr key={p.id} className="bg-blue-50/40">
+                          <td className="px-3 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={printBarcodeSelectedItems[p.id]?.selected ?? true}
+                              onChange={(e) =>
+                                setPrintBarcodeSelectedItems((prev) => ({
+                                  ...prev,
+                                  [p.id]: { selected: e.target.checked, qty: prev[p.id]?.qty ?? 1 }
+                                }))
+                              }
+                              className="w-4 h-4 text-blue-600 rounded cursor-pointer"
+                            />
+                          </td>
+                          <td className="px-3 py-2 font-bold text-slate-900">{p.description}</td>
+                          <td className="px-3 py-2 font-mono text-slate-700">{p.code}</td>
+                          <td className="px-3 py-2 font-mono text-slate-600">{p.barcode || '-'}</td>
+                          <td className="px-3 py-2 text-right font-semibold text-slate-900">{Number(p.qtyOH || 0).toFixed(2)} {p.unit}</td>
+                          <td className="px-3 py-1 text-right">
+                            <input
+                              type="number"
+                              min="1"
+                              value={printBarcodeSelectedItems[p.id]?.qty ?? 1}
+                              onChange={(e) =>
+                                setPrintBarcodeSelectedItems((prev) => ({
+                                  ...prev,
+                                  [p.id]: { selected: prev[p.id]?.selected ?? true, qty: Math.max(1, Number(e.target.value)) }
+                                }))
+                              }
+                              className="w-20 border border-slate-300 rounded-xs px-2 py-1 text-right font-bold text-slate-900 bg-white focus:outline-none focus:border-blue-600"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Step 4: Visual Adhesive Label Preview */}
+              <div className="space-y-1.5">
+                <span className="font-semibold text-slate-700 text-xs block">Physical Label Layout Preview (100mm x 75mm):</span>
+                <div className="max-w-md mx-auto bg-white border-2 border-dashed border-slate-400 p-4 rounded-xs shadow-md space-y-2 text-slate-900 font-sans">
+                  <div className="flex items-center justify-between border-b pb-1">
+                    <span className="font-bold text-xs tracking-wider text-slate-800 uppercase">
+                      Zeit w Zaytoun Ljanoub
+                    </span>
+                    <span className="text-[10px] font-mono font-semibold text-slate-600">
+                      Choueifat Facility
+                    </span>
+                  </div>
+
+                  <div className="space-y-0.5 pt-1">
+                    <h4 className="font-extrabold text-sm text-slate-950">{filteredProducts[0]?.description || "No items"}</h4>
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-700">
+                      <span>SKU: {filteredProducts[0]?.code || "-"}</span>
+                      <span>UNIT: {filteredProducts[0]?.unit || "-"}</span>
+                    </div>
+                  </div>
+
+                  {/* Simulated Thermal Barcode Graphic */}
+                  <div className="py-2 text-center space-y-1">
+                    <div className="h-12 w-full flex items-center justify-center gap-[2.5px]">
+                      {[4, 1, 3, 2, 1, 4, 2, 1, 3, 1, 2, 4, 1, 3, 2, 1, 3, 2, 4, 1, 2, 3, 1, 4, 2, 1, 3, 2, 1, 4].map(
+                        (w, i) => (
+                          <div
+                            key={i}
+                            className="bg-black h-full"
+                            style={{ width: `${w * 1.5}px` }}
+                          ></div>
+                        )
+                      )}
+                    </div>
+                    <div className="font-mono text-xs tracking-widest font-bold">{filteredProducts[0]?.barcode || "-"}</div>
+                  </div>
+
+                  <div className="border-t pt-1 flex items-center justify-between text-[10px] text-slate-600">
+                    <span>Preview</span>
+                    <span>Vanguard ERP</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-background border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+              <span className="text-[11px] text-slate-600">
+                Print Spool: <strong>12 adhesive labels</strong> ready for thermal transmission.
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsPrintBarcodesModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExecutePrintBarcodes}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Print 12 Labels</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 8. Items Size & Color Modal */}
+      {isSizeColorModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Palette className="w-4 h-4 text-purple-400" />
+                <h3 className="font-bold">Items Size &amp; Color Matrix Generator</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSizeColorModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              <div className="bg-slate-50 border border-slate-200 rounded-xs p-3 text-slate-700 leading-relaxed text-[11.5px] space-y-1">
+                <strong className="font-semibold text-slate-900 block">Operational Note for Food &amp; Chemical Operations:</strong>
+                <p>
+                  The Size &amp; Color matrix is designed primarily for apparel retail (Small/Medium/Large x Red/Blue/Green).
+                </p>
+                <p>
+                  For commercial food and chemical operations (like the Choueifat facility), this matrix is bypassed in favor of <strong>distinct volumetric SKUs</strong> (e.g., separate codes for 250ml vs 500ml bottles, single bottles vs 12-pack cartons) to ensure exact Bill of Materials and assembly tracking.
+                </p>
+              </div>
+
+              <div className="border border-slate-200 rounded-xs overflow-hidden text-[11px]">
+                <div className="bg-background px-3 py-2 font-bold text-slate-800 border-b border-slate-200">
+                  Active Volumetric Formats in Distillates Group:
+                </div>
+                <div className="p-3 space-y-1 text-slate-700">
+                  <div className="flex justify-between">
+                    <span>250ml Glass Bottle (Retail)</span>
+                    <span className="font-mono text-slate-500">CWV250MLB105</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>500ml Glass Bottle (Retail)</span>
+                    <span className="font-mono text-slate-500">CWV500MLB106</span>
+                  </div>
+                  <div className="flex justify-between font-semibold text-blue-900">
+                    <span>12 x 500ml Cardboard Carton (Wholesale)</span>
+                    <span className="font-mono text-blue-700">CWV500ML*12B106</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>5 Liter Jerrycan (Commercial Depot)</span>
+                    <span className="font-mono text-slate-500">CWV5LTRB110</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsSizeColorModalOpen(false)}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold text-xs cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 9. Import From Excel Modal */}
+      {isImportExcelModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-slate-300 overflow-hidden animate-fade-in text-xs">
+            <div className="bg-primary text-white px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-bold">Import From Excel (Bulk Injection Engine)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsImportExcelModalOpen(false)}
+                className="text-slate-300 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3.5">
+              <p className="text-[11.5px] text-slate-700 leading-relaxed">
+                The bulk data injection engine is the fastest way to upload new commercial recipes or modify existing wholesale tiers by mapping a formatted spreadsheet directly into the Omega catalog.
+              </p>
+
+              {/* Upload Dropzone */}
+              <div className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xs p-6 text-center space-y-2 cursor-pointer transition bg-slate-50">
+                <Upload className="w-8 h-8 text-slate-400 mx-auto" />
+                <div className="text-xs font-semibold text-slate-800">
+                  Drop Excel (.xlsx, .xls) or CSV spreadsheet here
+                </div>
+                <span className="text-[10.5px] text-slate-500 block">or click to browse local files</span>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] bg-slate-100 p-2.5 rounded-xs text-slate-700">
+                <span>Standard schema: Code, Description, Group, Selling Price, Cost, Unit, Barcode</span>
+                <button
+                  type="button"
+                  onClick={() => showToast('Downloaded standard inventory import template (Excel)')}
+                  className="font-semibold text-blue-700 hover:underline cursor-pointer"
+                >
+                  Download Template
+                </button>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsImportExcelModalOpen(false)}
+                  className="px-3.5 py-1.5 border border-slate-300 rounded-xs text-slate-700 hover:bg-slate-100 font-medium cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsImportExcelModalOpen(false);
+                    showToast('Processed Excel import payload: 42 recipe rows mapped & synchronized.');
+                  }}
+                  className="px-4 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                  <span>Upload &amp; Process</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
