@@ -17,3 +17,7 @@ create table if not exists public.stock_transactions (
   created_at timestamptz not null default now()
 );
 create index if not exists stock_transactions_tenant_sku_idx on public.stock_transactions (tenant_id, sku);
+
+-- Lock the ledger down: RLS on, no anon policies (service role bypasses RLS).
+alter table public.stock_transactions enable row level security;
+
