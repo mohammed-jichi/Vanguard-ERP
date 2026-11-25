@@ -14,8 +14,8 @@ export async function POST(request: Request) {
     const kind = body?.kind;
     const items = body?.items;
 
-    if (!['brands', 'branches'].includes(kind) || !Array.isArray(items)) {
-      return NextResponse.json({ success: false, error: "Body must include kind ('brands'|'branches') and items[]" }, { status: 400 });
+    if (!['brands', 'branches', 'license_modules'].includes(kind) || !Array.isArray(items)) {
+      return NextResponse.json({ success: false, error: "Body must include kind ('brands'|'branches'|'license_modules') and items[]" }, { status: 400 });
     }
 
     const supabase = getSupabaseServerClient();

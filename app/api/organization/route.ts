@@ -65,34 +65,39 @@ export async function GET(request: Request) {
     }
 
     const flags: Record<string, any> = data.feature_flags || {};
+    const tenantCode = data.company_id ? String(data.company_id) : '1300';
 
-    // Live users for this tenant (first identity table that answers wins; no fabricated fallbacks)
-    let activeUsersCount = 0;
-    let erpUsersCount = 0;
-    let teamMembersCount = 0;
-    let usersResolved = false;
-    for (const table of ['users', 'profiles', 'employees']) {
-      if (usersResolved) break;
-      try {
-        const { data: rows, error: usersErr } = await supabase.from(table).select('*').eq('tenant_id', targetId).limit(5000);
-        if (usersErr || !rows) continue;
-        const active = rows.filter((u: any) => String(u.status || (u.is_active === false ? 'INACTIVE' : 'ACTIVE')).toUpperCase() !== 'INACTIVE');
-        activeUsersCount = active.length;
-        erpUsersCount = active.filter((u: any) => ['admin', 'manager', 'erp', 'accountant', 'owner', 'super_admin'].includes(String(u.role || '').toLowerCase())).length;
-        teamMembersCount = Math.max(0, activeUsersCount - erpUsersCount);
-        usersResolved = true;
-      } catch (e) {
-        // try next table
+    // ERP users: the global `users` table has no tenant column, so the tenant roster lives in feature_flags.erp_users
+    const erpUsers: any[] = Array.isArray(flags.erp_users) ? flags.erp_users : [];
+
+    // Team members: live HR staff rows (employees) for this tenant UUID
+    const staffMeta: Record<string, any> = flags.staff_meta && typeof flags.staff_meta === 'object' ? flags.staff_meta : {};
+    let teamMembers: any[] = [];
+    try {
+      const { data: staffRows, error: staffErr } = await supabase
+        .from('employees')
+        .select('id, full_name, phone, is_active, employee_code, created_at')
+        .eq('tenant_id', targetId)
+        .order('created_at', { ascending: true })
+        .limit(5000);
+      if (!staffErr && staffRows) {
+        teamMembers = staffRows.map((e: any) => ({
+          id: e.id,
+          name: e.full_name,
+          phone: e.phone || '',
+          email: staffMeta[e.id]?.email || '',
+          role: staffMeta[e.id]?.role || 'Staff',
+          status: e.is_active === false ? 'Inactive' : 'Active',
+          code: e.employee_code || ''
+        }));
       }
+    } catch (e) {
+      // leave empty
     }
-    if (!usersResolved && flags.team_metrics) {
-      activeUsersCount = Number(flags.team_metrics.active_users) || 0;
-      erpUsersCount = Number(flags.team_metrics.erp_users) || 0;
-      teamMembersCount = Number(flags.team_metrics.team_members) || 0;
-    }
+    const activeErp = erpUsers.filter((u: any) => String(u.status || 'Active') !== 'Inactive').length;
+    const activeTeam = teamMembers.filter((m: any) => m.status !== 'Inactive').length;
 
     // Brands & branches persisted in feature_flags; otherwise derived from the tenant record itself
-    const tenantCode = data.company_id ? String(data.company_id) : '1300';
     const brands: any[] = Array.isArray(flags.brands) && flags.brands.length > 0
       ? flags.brands
       : [{ id: 'brand-1', name: data.brand_name_en || data.name, status: 'Active' }];
@@ -106,25 +111,35 @@ export async function GET(request: Request) {
           status: 'Active'
         }];
 
-    // Licenses: tenant-defined modules win; dates stay null (open-ended) unless explicitly set
-    const defaultModules = [
-      { id: 'core-accounting', name: 'Vanguard Accounting', category: 'Financials & General Ledger', licenseCount: 1, allocatedQty: '1', status: 'ACTIVE', description: 'Multi-currency general ledger, journal vouchers, audit trail and trial balance.' },
-      { id: 'cloud-back-office', name: 'Vanguard Cloud Back Office', category: 'Back Office Management', licenseCount: 1, allocatedQty: '1', status: 'ACTIVE', description: 'Cloud controllership console, centralized configuration and enterprise administration.' },
-      { id: 'cloud-inventory', name: 'Vanguard Cloud Inventory Management', category: 'Warehouse & Stock', licenseCount: 1, allocatedQty: '1', status: 'ACTIVE', description: 'Stock management, receiving, adjustments, batch formulations and warehouse transfers.' },
-      { id: 'sales-workstations', name: 'Vanguard ERP Sales Workstations', category: 'Sales Distribution', licenseCount: 1, allocatedQty: '1', status: 'ACTIVE', description: 'Commercial sales distribution workstations, quotations and van sales dispatch.' },
-      { id: 'pos-workstations', name: 'POS Workstations', category: 'Point of Sale', licenseCount: 4, allocatedQty: '4', status: 'ACTIVE', description: 'Touch counter retail and wholesale checkout terminals with scale integrations.' }
+    // Official Vanguard module entitlements; seat counts / enablement / dates come from feature_flags.license_modules
+    const canonicalModules = [
+      { id: 'core-accounting', name: 'Vanguard Accounting & General Ledger', category: 'Financials & General Ledger', licenseCount: 1, description: 'Multi-currency general ledger, journal vouchers, audit trail and trial balance.' },
+      { id: 'cloud-back-office', name: 'Vanguard Cloud Back Office & Inventory', category: 'Back Office & Warehouse', licenseCount: 1, description: 'Cloud controllership console, configuration, stock management, receiving and warehouse transfers.' },
+      { id: 'sales-workstations', name: 'Vanguard ERP Sales & Billing Workstations', category: 'Sales Distribution', licenseCount: 1, description: 'Sales and billing workstations, quotations and invoicing.' },
+      { id: 'pos-workstations', name: 'Vanguard POS & Cash Register Terminals', category: 'Point of Sale', licenseCount: 4, description: 'Touch counter checkout terminals and cash registers with scale integrations.' },
+      { id: 'dispatch-fleet', name: 'Vanguard SuperSonic Dispatch & Fleet Portal', category: 'Dispatch & Fleet', licenseCount: 1, description: 'Delivery dispatch, driver portal and fleet tracking.' }
     ];
-    const licenseModules = (Array.isArray(flags.license_modules) && flags.license_modules.length > 0 ? flags.license_modules : defaultModules).map((mod: any) => ({
-      ...mod,
-      name: String(mod.name || '').replace(/^Omega\b/, 'Vanguard'),
-      purchaseDate: mod.purchaseDate || null,
-      renewalDate: mod.renewalDate || null
-    }));
+    const stored: any[] = Array.isArray(flags.license_modules) ? flags.license_modules : [];
+    const licenseModules = canonicalModules.map((mod) => {
+      const s = stored.find((x: any) => x && x.id === mod.id) || {};
+      const count = Number(s.licenseCount);
+      return {
+        ...mod,
+        licenseCount: Number.isFinite(count) && s.licenseCount !== undefined && s.licenseCount !== '' ? count : mod.licenseCount,
+        allocatedQty: String(s.licenseCount !== undefined && s.licenseCount !== '' ? s.licenseCount : mod.licenseCount),
+        enabled: s.enabled !== false,
+        status: s.enabled === false ? 'DISABLED' : 'ACTIVE',
+        purchaseDate: s.purchaseDate || null,
+        renewalDate: s.renewalDate || null
+      };
+    });
 
     const responseData = {
       ...data,
       brands,
       branches,
+      erp_users: erpUsers,
+      team_members: teamMembers,
       license_modules: licenseModules,
       license_tier: flags.license_tier || 'Enterprise License',
       validity: flags.license_expires_at || 'Open-ended',
@@ -132,9 +147,9 @@ export async function GET(request: Request) {
       metrics: {
         brandsCount: brands.length,
         branchesCount: branches.length,
-        activeUsersCount,
-        teamMembersCount,
-        erpUsersCount,
+        activeUsersCount: activeErp + activeTeam,
+        teamMembersCount: activeTeam,
+        erpUsersCount: activeErp,
       }
     };
 
