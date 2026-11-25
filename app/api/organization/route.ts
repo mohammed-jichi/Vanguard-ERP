@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient, SUPABASE_URL } from '@/lib/supabaseClient';
+import { GET as getUsersRoute } from '@/app/api/users/route';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -67,9 +68,24 @@ export async function GET(request: Request) {
     const flags: Record<string, any> = data.feature_flags || {};
     const tenantCode = data.company_id ? String(data.company_id) : '1300';
 
-    // ERP users: the global `users` table has no tenant column, so the tenant roster lives in feature_flags.erp_users
-    const erpUsers: any[] = Array.isArray(flags.erp_users) ? flags.erp_users : [];
-
+    // ERP users: read-only reflection of the Users & Security settings module (/api/users), sanitized
+    let erpUsers: any[] = [];
+    try {
+      const usersRes = await getUsersRoute(new Request(`http://internal/api/users?tenantId=${encodeURIComponent(targetId)}`));
+      const usersJson: any = await usersRes.json();
+      const list: any[] = Array.isArray(usersJson?.users) ? usersJson.users : [];
+      erpUsers = list.map((u: any) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email || '',
+        phone: u.contact || '',
+        role: u.role || '',
+        status: u.status === 'INACTIVE' ? 'Inactive' : 'Active',
+        code: u.user_code || ''
+      }));
+    } catch (e) {
+      // leave empty
+    }
     // Team members: live HR staff rows (employees) for this tenant UUID
     const staffMeta: Record<string, any> = flags.staff_meta && typeof flags.staff_meta === 'object' ? flags.staff_meta : {};
     let teamMembers: any[] = [];
@@ -134,13 +150,27 @@ export async function GET(request: Request) {
       };
     });
 
+    // Seats in use, derived from live users by role (approximation: one seat per active matching person)
+    const seatPatterns: Record<string, RegExp> = {
+      'core-accounting': /admin|account|finance|owner/i,
+      'cloud-back-office': /admin|manager|warehouse|inventory|owner/i,
+      'sales-workstations': /sales|billing|admin|manager|owner/i,
+      'pos-workstations': /cashier|pos/i,
+      'dispatch-fleet': /driver|dispatch|fleet/i
+    };
+    const seatPeople = [...erpUsers, ...teamMembers].filter((p: any) => p.status !== 'Inactive');
+    const licenseModulesWithSeats = licenseModules.map((m: any) => ({
+      ...m,
+      seatsUsed: seatPeople.filter((p: any) => seatPatterns[m.id]?.test(String(p.role || ''))).length
+    }));
+
     const responseData = {
       ...data,
       brands,
       branches,
       erp_users: erpUsers,
       team_members: teamMembers,
-      license_modules: licenseModules,
+      license_modules: licenseModulesWithSeats,
       license_tier: flags.license_tier || 'Enterprise License',
       validity: flags.license_expires_at || 'Open-ended',
       renewal_date: flags.license_expires_at || null,
