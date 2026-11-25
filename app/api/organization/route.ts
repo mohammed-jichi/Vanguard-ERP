@@ -64,111 +64,74 @@ export async function GET(request: Request) {
       );
     }
 
-    // Compute live metrics from Supabase users / feature_flags
-    let teamMembersCount = 4;
-    let erpUsersCount = 2;
-    let activeUsersCount = 6;
-    let brandsCount = 1;
-    let branchesCount = 1;
+    const flags: Record<string, any> = data.feature_flags || {};
 
-    try {
-      const { data: usersData } = await supabase
-        .from('users')
-        .select('id, role, status')
-        .or(`tenant_id.eq.${targetId},tenant_id.eq.1300`);
-
-      if (usersData && usersData.length > 0) {
-        activeUsersCount = usersData.filter(u => u.status !== 'INACTIVE').length || usersData.length;
-        erpUsersCount = usersData.filter(u => ['admin', 'manager', 'erp', 'accountant'].includes(String(u.role || '').toLowerCase())).length;
-        teamMembersCount = Math.max(0, activeUsersCount - erpUsersCount) || 4;
-      } else if (data.feature_flags?.team_metrics) {
-        teamMembersCount = Number(data.feature_flags.team_metrics.team_members) || 4;
-        erpUsersCount = Number(data.feature_flags.team_metrics.erp_users) || 2;
-        activeUsersCount = Number(data.feature_flags.team_metrics.active_users) || 6;
-        brandsCount = Number(data.feature_flags.team_metrics.brands_count) || 1;
-        branchesCount = Number(data.feature_flags.team_metrics.branches_count) || 1;
+    // Live users for this tenant (first identity table that answers wins; no fabricated fallbacks)
+    let activeUsersCount = 0;
+    let erpUsersCount = 0;
+    let teamMembersCount = 0;
+    let usersResolved = false;
+    for (const table of ['users', 'profiles', 'employees']) {
+      if (usersResolved) break;
+      try {
+        const { data: rows, error: usersErr } = await supabase.from(table).select('*').eq('tenant_id', targetId).limit(5000);
+        if (usersErr || !rows) continue;
+        const active = rows.filter((u: any) => String(u.status || (u.is_active === false ? 'INACTIVE' : 'ACTIVE')).toUpperCase() !== 'INACTIVE');
+        activeUsersCount = active.length;
+        erpUsersCount = active.filter((u: any) => ['admin', 'manager', 'erp', 'accountant', 'owner', 'super_admin'].includes(String(u.role || '').toLowerCase())).length;
+        teamMembersCount = Math.max(0, activeUsersCount - erpUsersCount);
+        usersResolved = true;
+      } catch (e) {
+        // try next table
       }
-    } catch (e) {
-      // fallback
+    }
+    if (!usersResolved && flags.team_metrics) {
+      activeUsersCount = Number(flags.team_metrics.active_users) || 0;
+      erpUsersCount = Number(flags.team_metrics.erp_users) || 0;
+      teamMembersCount = Number(flags.team_metrics.team_members) || 0;
     }
 
-    const licenseModules = (data.feature_flags?.license_modules || [
-      {
-        id: 'core-accounting',
-        name: 'Vanguard Core Accounting',
-        category: 'Financials & General Ledger',
-        licenseCount: '1',
-        allocatedQty: '1 Workstation / Unlimited Ent.',
-        status: 'ACTIVE',
-        tier: 'Perpetual Enterprise License',
-        renewalDate: 'Lifetime Perpetual',
-        duration: 'Perpetual / Never Expires',
-        description: 'Multi-currency dual-ledger engine, automated PCA & IFRS fiscal chart of accounts, tax return generators, and balance sheet auditing.'
-      },
-      {
-        id: 'cloud-back-office',
-        name: 'Vanguard Cloud Back Office',
-        category: 'HQ Management & Controllership',
-        licenseCount: '1',
-        allocatedQty: '1 Workstation / Unlimited Ent.',
-        status: 'ACTIVE',
-        tier: 'Perpetual Enterprise License',
-        renewalDate: 'Lifetime Perpetual',
-        duration: 'Perpetual / Never Expires',
-        description: 'Master controllership console, multi-tenant workspace routing, cross-departmental operations inbox, and executive BI analytics.'
-      },
-      {
-        id: 'cloud-inventory',
-        name: 'Vanguard Cloud Inventory Management',
-        category: 'Warehouse & Operations Center',
-        licenseCount: '1',
-        allocatedQty: '1 Workstation / Unlimited Ent.',
-        status: 'ACTIVE',
-        tier: 'Perpetual Enterprise License',
-        renewalDate: 'Lifetime Perpetual',
-        duration: 'Perpetual / Never Expires',
-        description: 'Real-time multi-depot stock balance, olive oil tank volume tracking, batch formulation assembly, and automated reorder triggers.'
-      },
-      {
-        id: 'sales-workstations',
-        name: 'Vanguard ERP Sales Workstations',
-        category: 'Commercial Distribution & CRM',
-        licenseCount: '1',
-        allocatedQty: '1 Workstation / Unlimited Ent.',
-        status: 'ACTIVE',
-        tier: 'Perpetual Enterprise License',
-        renewalDate: 'Lifetime Perpetual',
-        duration: 'Perpetual / Never Expires',
-        description: 'Enterprise commercial distribution, B2B wholesale quotation lifecycle, van sales dispatch, and credit limit validations.'
-      },
-      {
-        id: 'pos-workstations',
-        name: 'POS Workstations',
-        category: 'Retail Point-of-Sale (V-POS)',
-        licenseCount: '4',
-        allocatedQty: '4 Workstations / Unlimited Ent.',
-        status: 'ACTIVE',
-        tier: 'Perpetual Enterprise License',
-        renewalDate: 'Lifetime Perpetual',
-        duration: 'Perpetual / Never Expires',
-        description: 'Touch-optimized fast retail terminals, electronic scale barcode decoding, cash drawer kicks, and dual-currency receipts.'
-      }
-    ]).map((mod: any) => ({
+    // Brands & branches persisted in feature_flags; otherwise derived from the tenant record itself
+    const tenantCode = data.company_id ? String(data.company_id) : '1300';
+    const brands: any[] = Array.isArray(flags.brands) && flags.brands.length > 0
+      ? flags.brands
+      : [{ id: 'brand-1', name: data.brand_name_en || data.name, status: 'Active' }];
+    const branches: any[] = Array.isArray(flags.branches)
+      ? flags.branches
+      : [{
+          id: `${tenantCode}-01`,
+          brandId: brands[0].id,
+          name: `${data.name} - Main`,
+          address: [data.headquarters_address || data.address, data.city, data.country].filter(Boolean).join(', '),
+          status: 'Active'
+        }];
+
+    // Licenses: tenant-defined modules win; dates stay null (open-ended) unless explicitly set
+    const defaultModules = [
+      { id: 'core-accounting', name: 'Vanguard Accounting', category: 'Financials & General Ledger', licenseCount: 1, allocatedQty: '1', status: 'ACTIVE', description: 'Multi-currency general ledger, journal vouchers, audit trail and trial balance.' },
+      { id: 'cloud-back-office', name: 'Vanguard Cloud Back Office', category: 'Back Office Management', licenseCount: 1, allocatedQty: '1', status: 'ACTIVE', description: 'Cloud controllership console, centralized configuration and enterprise administration.' },
+      { id: 'cloud-inventory', name: 'Vanguard Cloud Inventory Management', category: 'Warehouse & Stock', licenseCount: 1, allocatedQty: '1', status: 'ACTIVE', description: 'Stock management, receiving, adjustments, batch formulations and warehouse transfers.' },
+      { id: 'sales-workstations', name: 'Vanguard ERP Sales Workstations', category: 'Sales Distribution', licenseCount: 1, allocatedQty: '1', status: 'ACTIVE', description: 'Commercial sales distribution workstations, quotations and van sales dispatch.' },
+      { id: 'pos-workstations', name: 'POS Workstations', category: 'Point of Sale', licenseCount: 4, allocatedQty: '4', status: 'ACTIVE', description: 'Touch counter retail and wholesale checkout terminals with scale integrations.' }
+    ];
+    const licenseModules = (Array.isArray(flags.license_modules) && flags.license_modules.length > 0 ? flags.license_modules : defaultModules).map((mod: any) => ({
       ...mod,
-      tier: 'Perpetual Enterprise License',
-      renewalDate: 'Lifetime Perpetual',
-      duration: 'Perpetual / Never Expires'
+      name: String(mod.name || '').replace(/^Omega\b/, 'Vanguard'),
+      purchaseDate: mod.purchaseDate || null,
+      renewalDate: mod.renewalDate || null
     }));
 
     const responseData = {
       ...data,
+      brands,
+      branches,
       license_modules: licenseModules,
-      license_tier: 'Perpetual Enterprise License',
-      validity: 'Lifetime Perpetual',
-      renewal_date: 'Lifetime Perpetual',
+      license_tier: flags.license_tier || 'Enterprise License',
+      validity: flags.license_expires_at || 'Open-ended',
+      renewal_date: flags.license_expires_at || null,
       metrics: {
-        brandsCount,
-        branchesCount,
+        brandsCount: brands.length,
+        branchesCount: branches.length,
         activeUsersCount,
         teamMembersCount,
         erpUsersCount,
