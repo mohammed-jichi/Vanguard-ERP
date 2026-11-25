@@ -2,6 +2,8 @@
 import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo } from 'react';
+import { useTenantFlag } from '@/lib/useTenantFlag';
+import { useTenant } from '@/lib/TenantContext';
 import Link from 'next/link';
 import {
   Pencil,
@@ -49,7 +51,8 @@ export default function PaymentTypesView() {
   const [activeView, setActiveView] = useState<'types' | 'bills'>('types');
 
   // Main data state
-  const [paymentTypes, setPaymentTypes] = useState<OmegaPaymentType[]>(INITIAL_PAYMENT_TYPES);
+  const { currentTenant } = useTenant();
+  const [paymentTypes, setPaymentTypes] = useTenantFlag<OmegaPaymentType[]>('payment_types', INITIAL_PAYMENT_TYPES);
   const [currencies, setCurrencies] = useState<OmegaCurrency[]>(OMEGA_CURRENCIES);
   const [paymentBills, setPaymentBills] = useState<OmegaPaymentBill[]>(INITIAL_PAYMENT_BILLS);
 
@@ -691,7 +694,7 @@ export default function PaymentTypesView() {
                     <tr>
                       <td colSpan={8} className="px-4 py-2.5 text-xs text-slate-500 text-center">
                         Showing {filteredPaymentTypes.length} of {paymentTypes.length} Payment Types | Active Database:
-                        Zeit w zaytoun ljanoub S.A.R.L
+                        {currentTenant?.name || 'Vanguard ERP'}
                       </td>
                     </tr>
                   </tfoot>

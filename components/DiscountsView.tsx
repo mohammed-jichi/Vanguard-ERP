@@ -2,6 +2,7 @@
 import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo } from 'react';
+import { useTenantFlag } from '@/lib/useTenantFlag';
 import Link from 'next/link';
 import {
   Pencil,
@@ -34,7 +35,7 @@ interface ToastState {
 export default function DiscountsView() {
   const { t } = useLanguage();
   // Main state
-  const [discountsList, setDiscountsList] = useState<OmegaDiscount[]>(INITIAL_DISCOUNTS);
+  const [discountsList, setDiscountsList] = useTenantFlag<OmegaDiscount[]>('discounts', INITIAL_DISCOUNTS);
   const [searchVal, setSearchVal] = useState<string>('');
   const [selectedBranchId, setSelectedBranchId] = useState<number | 'all'>('all');
   const [sorting, setSorting] = useState<{ field: 'DISCBRANCHID' | 'DISCDESCRIPTION'; dir: 'asc' | 'desc' }>({

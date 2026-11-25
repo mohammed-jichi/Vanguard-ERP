@@ -2,6 +2,7 @@
 import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTenantFlag } from '@/lib/useTenantFlag';
 import Link from 'next/link';
 import {
   Pencil,
@@ -17,6 +18,9 @@ import {
   OmegaCurrency,
   INITIAL_CURRENCIES
 } from '@/lib/omegaZoneAndCurrencyData';
+import { useTenant } from '@/lib/TenantContext';
+import { getTenantExchangeRate } from '@/lib/currencyEngine';
+import { resolveTenantUuid } from '@/lib/productCatalogService';
 
 interface ToastState {
   show: boolean;
@@ -26,18 +30,19 @@ interface ToastState {
 
 export default function CurrencySetupView() {
   const { t } = useLanguage();
-  const [currencies, setCurrencies] = useState<OmegaCurrency[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('vanguard_currencies');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return INITIAL_CURRENCIES;
-  });
-
+  const { currentTenant } = useTenant();
+  const liveRate = getTenantExchangeRate(currentTenant);
+  const [storedCurrencies, setStoredCurrencies] = useTenantFlag<OmegaCurrency[]>('currency_setup', []);
+  // The USD (secondary) row always mirrors the tenant's live exchange rate used across the ERP
+  const currencies = useMemo(
+    () => (storedCurrencies.length ? storedCurrencies : INITIAL_CURRENCIES).map((c) => (c.maincurrency === 2 ? { ...c, RATE: liveRate, BACKRATE: liveRate } : c)),
+    [storedCurrencies, liveRate]
+  );
+  const setCurrencies = (next: OmegaCurrency[] | ((prev: OmegaCurrency[]) => OmegaCurrency[])) =>
+    setStoredCurrencies((prev) => {
+      const base = prev.length ? prev : INITIAL_CURRENCIES;
+      return typeof next === 'function' ? (next as (p: OmegaCurrency[]) => OmegaCurrency[])(base) : next;
+    });
   const [searchVal, setSearchVal] = useState<string>('');
   const [sorting, setSorting] = useState<{ field: 'DESCRIPTION' | 'maincurrency'; dir: 'asc' | 'desc' }>({
     field: 'maincurrency',
@@ -52,15 +57,6 @@ export default function CurrencySetupView() {
       setToast(prev => ({ ...prev, show: false }));
     }, 3500);
   };
-
-  // Sync to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('vanguard_currencies', JSON.stringify(currencies));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [currencies]);
 
   // Modal States
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -242,6 +238,25 @@ export default function CurrencySetupView() {
     setShowEditModal(false);
     setEditingRow(null);
     showToast('Currency saved', 'success');
+    if (editingRow.maincurrency === 2) {
+      void saveTenantExchangeRate(posRateNum);
+    }
+  };
+
+  const saveTenantExchangeRate = async (rate: number) => {
+    try {
+      const res = await fetch('/api/currency-rate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: resolveTenantUuid(currentTenant), rate })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.success) throw new Error(json.error || 'Could not save the exchange rate');
+      showToast('Exchange rate saved. Reloading so the whole ERP uses the new rate...', 'success');
+      setTimeout(() => window.location.reload(), 1200);
+    } catch (e: any) {
+      showToast(`Exchange rate was not saved: ${e?.message || e}`, 'error');
+    }
   };
 
   // Confirm Delete

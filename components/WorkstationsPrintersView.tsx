@@ -885,7 +885,7 @@ export default function WorkstationsPrintersView() {
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
-                      Check 2 (Kitchen / Second)
+                      Check 2 (Secondary)
                     </label>
                     <select
                       value={wsCheck2}
@@ -992,7 +992,7 @@ export default function WorkstationsPrintersView() {
                   value={prDescription}
                   onChange={e => setPrDescription(e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                  placeholder={t('eg_invoice_kitchen_bar', 'e.g. Invoice, Kitchen, Bar')}
+                  placeholder={t('eg_invoice_kitchen_bar', 'e.g. Invoice, Receipt')}
                 />
               </div>
 

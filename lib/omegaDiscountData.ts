@@ -32,72 +32,7 @@ export interface GroupDiscountException {
   status: boolean;
 }
 
-export const INITIAL_DISCOUNTS: OmegaDiscount[] = [
-  {
-    ID: 4513,
-    DISCBRANCHID: 1,
-    BRAND_ID: 9606,
-    BRANCHID: 1,
-    DISCDESCRIPTION: 'DISCOUNT',
-    PERCENT: 0,
-    DISCOUNTTAX: 0,
-    DISCOUNTSERVICE: null,
-    TYPEDISCOUNT: 1,
-    OPENORFIX: 0,
-    MESSAGEONINVID: null,
-    DISCFIDELITY: null,
-    NOTACTIVE: 0,
-    branch_excp: []
-  },
-  {
-    ID: 4514,
-    DISCBRANCHID: 2,
-    BRAND_ID: 9606,
-    BRANCHID: 1,
-    DISCDESCRIPTION: 'DISCOUNT 100%',
-    PERCENT: 100,
-    DISCOUNTTAX: 0,
-    DISCOUNTSERVICE: null,
-    TYPEDISCOUNT: 1,
-    OPENORFIX: 1,
-    MESSAGEONINVID: null,
-    DISCFIDELITY: null,
-    NOTACTIVE: 0,
-    branch_excp: []
-  },
-  {
-    ID: 4515,
-    DISCBRANCHID: 3,
-    BRAND_ID: 9606,
-    BRANCHID: 1,
-    DISCDESCRIPTION: 'AMOUNT DISCOUNT',
-    PERCENT: 0,
-    DISCOUNTTAX: 0,
-    DISCOUNTSERVICE: null,
-    TYPEDISCOUNT: 2,
-    OPENORFIX: 0,
-    MESSAGEONINVID: null,
-    DISCFIDELITY: null,
-    NOTACTIVE: 0,
-    branch_excp: []
-  },
-  {
-    ID: 4516,
-    DISCBRANCHID: 4,
-    BRAND_ID: 9606,
-    BRANCHID: 1,
-    DISCDESCRIPTION: 'Disc $',
-    PERCENT: null,
-    DISCOUNTTAX: 0,
-    DISCOUNTSERVICE: null,
-    TYPEDISCOUNT: 2,
-    OPENORFIX: 0,
-    MESSAGEONINVID: null,
-    DISCFIDELITY: null,
-    NOTACTIVE: 0,
-    branch_excp: []
-  }
-];
+export const INITIAL_DISCOUNTS: OmegaDiscount[] = [];
 
 export const DISCOUNT_TYPE_OPTIONS = [
   { value: 1, description: 'Percentage (%)' },
@@ -117,7 +52,7 @@ export const INVOICE_MESSAGES: InvoiceMessage[] = [
     FORBRANCH: 0,
     BRANCHID: 1,
     MESSAGETITLE: 'Thank You',
-    MESSAGEDESC: 'Thank you for visiting Zeit w zaytoun ljanoub!',
+    MESSAGEDESC: 'Thank you for visiting Main Branch!',
     STATUS: 1
   },
   {
@@ -145,7 +80,7 @@ export const INVOICE_MESSAGES: InvoiceMessage[] = [
 export const OMEGA_BRANCHES = [
   {
     BRANCHID: 1,
-    BARANCHNAME: '22901 - Zeit w zaytoun ljanoub',
+    BARANCHNAME: '1300 - Main Branch',
     CITY: 'Kfarchima',
     MAINCURRENCY: '$',
     SECONDCURRENCY: 'LL'

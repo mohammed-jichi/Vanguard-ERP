@@ -8,7 +8,6 @@ import {
   OmegaScreenItem,
   OmegaPredefinedCategory,
   OMEGA_INITIAL_SCREENS,
-  OMEGA_GROUPS,
   OMEGA_INITIAL_SHOWLABELS_SCREEN1,
   OMEGA_PREDEFINED_CATEGORIES,
   OMEGA_COLORS,
@@ -18,6 +17,7 @@ import {
 import { useTenant } from '@/lib/TenantContext';
 import { useTenantFacilities } from '@/lib/tenantFacilities';
 import { supabase } from '@/lib/supabase';
+import { fetchCatalogRows, resolveTenantUuid } from '@/lib/productCatalogService';
 
 interface ToastState {
   show: boolean;
@@ -27,39 +27,34 @@ interface ToastState {
 
 export default function ScreensView() {
   const { currentTenant } = useTenant();
+  // Group palette comes from the live product catalog (products.record.groupName), not a hardcoded list
+  const [liveGroups, setLiveGroups] = useState<OmegaGroup[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { rows } = await fetchCatalogRows(resolveTenantUuid(currentTenant));
+        const names: string[] = [];
+        rows.forEach((r: any) => {
+          const g = r?.record?.groupName;
+          if (g && !names.includes(g)) names.push(g);
+        });
+        if (!cancelled) setLiveGroups(names.map((n, i) => ({ GRIDBRANCHID: i + 1, GROUPNAME: n, GRPICTURE: null })));
+      } catch (e) {
+        console.warn('Could not load catalog groups for the screen designer:', e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentTenant?.id]);
   // Navigation & View Mode
   const [viewMode, setViewMode] = useState<'list' | 'setup'>('list');
   const [screensList, setScreensList] = useState<OmegaScreen[]>(OMEGA_INITIAL_SCREENS);
   const [selectedScreenId, setSelectedScreenId] = useState<number>(1);
 
   // Layout storage for all screens: Map from screenId to 40-cell array
-  const [screensLayoutMap, setScreensLayoutMap] = useState<Record<number, OmegaScreenItem[]>>({
-    1: OMEGA_INITIAL_SHOWLABELS_SCREEN1,
-    2: Array.from({ length: 40 }, (_, idx) => ({
-      LABELNUMBER: idx + 1,
-      LABELNAME: idx < 12 ? `جبنة صنف ${idx + 1}` : '',
-      STATUS: idx < 12 ? -1 : 0,
-      COLOR: '15395833',
-      PIC: null,
-      PRODUCTID: 900 + idx,
-      VBRED: 249,
-      VBGREEN: 235,
-      VBBLUE: 234,
-      SCREEN_DET_ID: 2
-    })),
-    3: Array.from({ length: 40 }, (_, idx) => ({
-      LABELNUMBER: idx + 1,
-      LABELNAME: idx < 15 ? `زيتون صنف ${idx + 1}` : '',
-      STATUS: idx < 15 ? -1 : 0,
-      COLOR: '15395833',
-      PIC: null,
-      PRODUCTID: 100 + idx,
-      VBRED: 235,
-      VBGREEN: 245,
-      VBBLUE: 234,
-      SCREEN_DET_ID: 3
-    }))
-  });
+  const [screensLayoutMap, setScreensLayoutMap] = useState<Record<number, OmegaScreenItem[]>>({});
 
   // Mount hydration from Supabase
   useEffect(() => {
@@ -75,11 +70,11 @@ export default function ScreensView() {
           .eq('id', targetId)
           .maybeSingle();
 
-        if (data?.feature_flags?.touch_screens && Array.isArray(data.feature_flags.touch_screens) && data.feature_flags.touch_screens.length > 0) {
-          setScreensList(data.feature_flags.touch_screens);
+        if (data?.feature_flags?.pos_screens && Array.isArray(data.feature_flags.pos_screens) && data.feature_flags.pos_screens.length > 0) {
+          setScreensList(data.feature_flags.pos_screens);
         }
-        if (data?.feature_flags?.touch_screen_layouts && typeof data.feature_flags.touch_screen_layouts === 'object') {
-          setScreensLayoutMap(data.feature_flags.touch_screen_layouts);
+        if (data?.feature_flags?.pos_screen_layouts && typeof data.feature_flags.pos_screen_layouts === 'object') {
+          setScreensLayoutMap(data.feature_flags.pos_screen_layouts);
         }
       } catch (err) {
         console.warn('Notice loading touch screens from database:', err);
@@ -106,8 +101,8 @@ export default function ScreensView() {
         .update({
           feature_flags: {
             ...existingFlags,
-            touch_screens: newScreens,
-            ...(newLayouts ? { touch_screen_layouts: newLayouts } : {})
+            pos_screens: newScreens,
+            ...(newLayouts ? { pos_screen_layouts: newLayouts } : {})
           },
           updated_at: new Date().toISOString()
         })
@@ -238,20 +233,20 @@ export default function ScreensView() {
   const groupAutocompleteSuggestions = useMemo(() => {
     if (!newScreenName.trim() || newScreenName.length < 2) return [];
     const q = newScreenName.toLowerCase();
-    return OMEGA_GROUPS.filter(g => g.GROUPNAME.toLowerCase().includes(q)).slice(0, 5);
+    return liveGroups.filter(g => g.GROUPNAME.toLowerCase().includes(q)).slice(0, 5);
   }, [newScreenName]);
 
   // Left Panel Items (filtered)
   const leftPanelFilteredGroups = useMemo(() => {
-    if (!leftPanelSearch.trim()) return OMEGA_GROUPS;
+    if (!leftPanelSearch.trim()) return liveGroups;
     const q = leftPanelSearch.toLowerCase();
-    return OMEGA_GROUPS.filter(g => g.GROUPNAME.toLowerCase().includes(q));
+    return liveGroups.filter(g => g.GROUPNAME.toLowerCase().includes(q));
   }, [leftPanelSearch]);
 
   // Derived items from the active group or screen
   const leftPanelItemsForGroup = useMemo(() => {
     if (!selectedGroupId) return [];
-    const grp = OMEGA_GROUPS.find(g => g.GRIDBRANCHID === selectedGroupId);
+    const grp = liveGroups.find(g => g.GRIDBRANCHID === selectedGroupId);
     const grpName = grp ? grp.GROUPNAME : 'Item';
     // Generate realistic sub-items for this group
     return [
@@ -468,8 +463,8 @@ export default function ScreensView() {
 
   const handleAutomaticSetup = () => {
     // Fill first 40 items from active group or default catalog
-    const grp = OMEGA_GROUPS.find(g => g.GRIDBRANCHID === (selectedGroupId || 50));
-    const prefix = grp ? grp.GROUPNAME : 'منتج زهرة';
+    const grp = liveGroups.find(g => g.GRIDBRANCHID === (selectedGroupId || 50));
+    const prefix = grp ? grp.GROUPNAME : 'Item';
     const updated = [...currentShowlabels];
 
     for (let i = 0; i < 40; i++) {
@@ -593,7 +588,7 @@ export default function ScreensView() {
     const newScreens: OmegaScreen[] = [];
 
     for (const gid of selectedIds) {
-      const grp = OMEGA_GROUPS.find(g => g.GRIDBRANCHID === gid);
+      const grp = liveGroups.find(g => g.GRIDBRANCHID === gid);
       if (grp) {
         newScreens.push({
           ID: 7350 + nextId,
@@ -1291,7 +1286,7 @@ export default function ScreensView() {
                     type="button"
                     onClick={() => {
                       const all: Record<number, boolean> = {};
-                      OMEGA_GROUPS.forEach(g => (all[g.GRIDBRANCHID] = true));
+                      liveGroups.forEach(g => (all[g.GRIDBRANCHID] = true));
                       setSelectedGroupsForScreens(all);
                     }}
                     className="text-blue-600 hover:underline font-bold"
@@ -1311,7 +1306,7 @@ export default function ScreensView() {
 
               {/* Groups Checkbox Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 p-2 bg-slate-50 rounded-lg border border-slate-200 max-h-80 overflow-y-auto">
-                {OMEGA_GROUPS.filter(g => !groupModalSearch.trim() || g.GROUPNAME.toLowerCase().includes(groupModalSearch.toLowerCase())).map(grp => {
+                {liveGroups.filter(g => !groupModalSearch.trim() || g.GROUPNAME.toLowerCase().includes(groupModalSearch.toLowerCase())).map(grp => {
                   const checked = !!selectedGroupsForScreens[grp.GRIDBRANCHID];
                   return (
                     <label

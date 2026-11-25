@@ -42,6 +42,9 @@ import {
 import VMenuQrGeneratorConsole from '@/components/modules/sales/VMenuQrGeneratorConsole';
 import { getBranchData, getAllBranchesList, BranchInfo } from '@/lib/branchData';
 import { useTenant } from '@/lib/TenantContext';
+import { supabase } from '@/lib/supabaseClient';
+import { resolveTenantUuid } from '@/lib/productCatalogService';
+import { getTenantExchangeRate } from '@/lib/currencyEngine';
 
 export default function AuthenticVanguardSalesDashboard() {
   const { currentTenant, isModuleEnabled } = useTenant();
@@ -51,8 +54,8 @@ export default function AuthenticVanguardSalesDashboard() {
   // Filters
   const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [selectedCurrency, setSelectedCurrency] = useState<'LBP' | 'USD'>('LBP');
-  const [selectedYear, setSelectedYear] = useState('2026');
-  const [selectedMonth, setSelectedMonth] = useState('9'); // September
+  const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
+  const [selectedMonth, setSelectedMonth] = useState(String(new Date().getMonth() + 1)); // current live month
   const [selectedDay, setSelectedDay] = useState('ALL');
   
   // Dynamic Branch Resolution
@@ -176,7 +179,7 @@ export default function AuthenticVanguardSalesDashboard() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const usdRate = 89500;
+  const usdRate = getTenantExchangeRate(currentTenant);
 
   // Format Helper matching exact screenshot
   const formatVal = (lbpAmount: number, forceFormat?: 'full' | 'short') => {
@@ -240,30 +243,127 @@ export default function AuthenticVanguardSalesDashboard() {
     { id: 'Q4', label: 'Fourth Quarter' },
   ];
 
-  // Days list (September)
+  // Days list for the selected month (live calendar)
+  const dayMonthNum = /^\d+$/.test(selectedMonth) && selectedMonth !== '0' ? Number(selectedMonth) : new Date().getMonth() + 1;
+  const daysInSelectedMonth = new Date(Number(selectedYear), dayMonthNum, 0).getDate();
   const daysList = [
     { id: 'ALL', label: 'All Days' },
-    { id: '1', label: 'Tuesday 1' },
-    { id: '2', label: 'Wednesday 2' },
-    { id: '3', label: 'Thursday 3' },
-    { id: '4', label: 'Friday 4' },
-    { id: '5', label: 'Saturday 5' },
-    { id: '6', label: 'Sunday 6' },
-    { id: '7', label: 'Monday 7' },
-    { id: '8', label: 'Tuesday 8' },
-    { id: '9', label: 'Wednesday 9' },
-    { id: '10', label: 'Thursday 10' },
-    { id: '11', label: 'Friday 11' },
-    { id: '12', label: 'Saturday 12' },
-    { id: '13', label: 'Sunday 13' },
-    { id: '14', label: 'Monday 14' },
-    { id: '15', label: 'Tuesday 15' },
+    ...Array.from({ length: daysInSelectedMonth }, (_, i) => ({
+      id: String(i + 1),
+      label: `${new Date(Number(selectedYear), dayMonthNum - 1, i + 1).toLocaleDateString('en-US', { weekday: 'long' })} ${i + 1}`
+    }))
   ];
+  // ---- Live posted sales (tenants.feature_flags sales invoices, is_posted === true) ----
+  const [livePosted, setLivePosted] = useState<any[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await supabase.from('tenants').select('feature_flags').eq('id', resolveTenantUuid(currentTenant)).maybeSingle();
+        const flags: any = data?.feature_flags || {};
+        const raw: any[] = [...(flags.sales_invoices_directory || []), ...(flags.sales_invoices || [])];
+        const seen = new Set<string>();
+        const list: any[] = [];
+        raw.forEach((inv) => {
+          const key = String(inv.id || inv.invoiceNumber || inv.invoice_number || '');
+          if (key && seen.has(key)) return;
+          if (key) seen.add(key);
+          if (!(inv.is_posted === true || inv.posted === true)) return;
+          const d = new Date(inv.createdAtIso || inv.createdAt || inv.date);
+          if (isNaN(d.getTime())) return;
+          const sign = inv.docType === 'CREDIT_NOTE' || inv.doc_type === 'CREDIT_NOTE' ? -1 : 1;
+          const rate = Number(inv.exchange_rate) || usdRate;
+          const toLL = (v: number) => (String(inv.currency || 'USD').toUpperCase() === 'USD' ? v * rate : v) * sign;
+          const total = toLL(Number(inv.total_amount ?? inv.grandTotal ?? inv.total ?? 0));
+          const cats: Record<string, number> = {};
+          (inv.items || []).forEach((l: any) => {
+            const name = l.category || l.categoryName || l.group || l.groupName;
+            if (name) cats[name] = (cats[name] || 0) + toLL(Number(l.total ?? (Number(l.qty) || 0) * (Number(l.unitPrice) || 0)));
+          });
+          list.push({ ts: d.getTime(), year: d.getFullYear(), month: d.getMonth(), hour: d.getHours(), total, cats });
+        });
+        if (!cancelled) setLivePosted(list);
+      } catch (e) {
+        console.warn('[SalesDashboard] live posted sales load failed:', e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTenant?.id]);
 
-  // Monthly Revenue Data (derived dynamically from selected branch)
-  const monthlyBarData = currentBranchData.monthlyBarData;
+  const shortLabel = (v: number) => (v >= 1e9 ? `${(v / 1e9).toFixed(1)}B` : v >= 1e6 ? `${Math.round(v / 1e6)}M` : v > 0 ? `${Math.round(v / 1e3)}K` : '0');
+  const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const liveStats = useMemo(() => {
+    const year = Number(selectedYear);
+    const cur = new Array(12).fill(0);
+    const prev = new Array(12).fill(0);
+    const cats: Record<string, number> = {};
+    const hours: Record<number, { sum: number; n: number }> = {};
+    let invoiceCount = 0;
+    livePosted.forEach((p) => {
+      if (p.year === year) {
+        cur[p.month] += p.total;
+        invoiceCount++;
+        Object.entries(p.cats as Record<string, number>).forEach(([k, v]) => (cats[k] = (cats[k] || 0) + v));
+        const h = hours[p.hour] || { sum: 0, n: 0 };
+        h.sum += p.total;
+        h.n += 1;
+        hours[p.hour] = h;
+      } else if (p.year === year - 1) {
+        prev[p.month] += p.total;
+      }
+    });
+    const months = MONTH_NAMES.map((month, i) => ({
+      month,
+      val: Math.round(cur[i]),
+      ly: Math.round(prev[i]),
+      label: shortLabel(cur[i]),
+      pct: prev[i] > 0 ? `${cur[i] >= prev[i] ? '+' : ''}${(((cur[i] - prev[i]) / prev[i]) * 100).toFixed(1)}%` : cur[i] > 0 ? '+100.0%' : '0.0%'
+    }));
+    const active = months.filter((m) => m.val > 0);
+    const best = active.length ? active.reduce((a, b) => (b.val > a.val ? b : a)) : null;
+    const softest = active.length ? active.reduce((a, b) => (b.val < a.val ? b : a)) : null;
+    const growth = (m: { val: number; ly: number }) => (m.ly > 0 ? (m.val - m.ly) / m.ly : m.val > 0 ? 1 : -Infinity);
+    const topYoy = active.length ? active.reduce((a, b) => (growth(b) > growth(a) ? b : a)) : null;
+    const nowYear = new Date().getFullYear();
+    const doneUpTo = year === nowYear ? new Date().getMonth() : 12; // completed months only
+    const yoyCur = months.slice(0, doneUpTo).reduce((s, m) => s + m.val, 0);
+    const yoyPrev = months.slice(0, doneUpTo).reduce((s, m) => s + m.ly, 0);
+    const catEntries = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+    const catTotal = catEntries.reduce((s, [, v]) => s + v, 0);
+    const hourEntries = Object.entries(hours).map(([h, v]) => ({ hour: Number(h), avg: v.sum / v.n, n: v.n })).sort((a, b) => b.n - a.n || b.avg - a.avg);
+    return {
+      months,
+      best,
+      softest,
+      topYoy,
+      yoyCur,
+      yoyPrev,
+      yoyPct: yoyPrev > 0 ? ((yoyCur - yoyPrev) / yoyPrev) * 100 : yoyCur > 0 ? 100 : 0,
+      topCat: catEntries[0] ? { name: catEntries[0][0], amount: catEntries[0][1], share: catTotal > 0 ? (catEntries[0][1] / catTotal) * 100 : 0 } : null,
+      peak: hourEntries[0] || null,
+      invoiceCount
+    };
+  }, [livePosted, selectedYear]);
+
+  const monthlyBarData = liveStats.months;
   const totalAnnualSales = monthlyBarData.reduce((acc, m) => acc + m.val, 0);
-
+  const totalLastYear = monthlyBarData.reduce((acc, m) => acc + m.ly, 0);
+  const totalYoyText = totalLastYear > 0 ? `${totalAnnualSales >= totalLastYear ? '+' : ''}${(((totalAnnualSales - totalLastYear) / totalLastYear) * 100).toFixed(1)}%` : totalAnnualSales > 0 ? '+100.0%' : '0.0%';
+  const chartMax = Math.max(1, ...monthlyBarData.map((m) => m.val));
+  const chartTop = chartMax / 0.85;
+  const emptyHL = 'No posted sales yet';
+  const fmtYoy = (m: { val: number; ly: number } | null) => (m ? (m.ly > 0 ? `${m.val >= m.ly ? '+' : ''}${(((m.val - m.ly) / m.ly) * 100).toFixed(1)}% YoY` : m.val > 0 ? 'New vs last year' : '0.0% YoY') : '');
+  const highlightCards = [
+    { key: 'yoy', label: 'Revenue YoY', color: '#1976d2', tip: 'Completed-month YoY: net sales this year vs the same completed months last year. The current month is excluded until complete.', value: liveStats.yoyCur > 0 || liveStats.yoyPrev > 0 ? `${liveStats.yoyPct >= 0 ? '+' : ''}${liveStats.yoyPct.toFixed(1)}%` : '0.0%', sub: `${selectedYear}: ${formatVal(liveStats.yoyCur, 'short')} | ${Number(selectedYear) - 1}: ${formatVal(liveStats.yoyPrev, 'short')}` },
+    { key: 'best', label: 'Best Month', color: '#2e7d32', tip: 'Month with the highest total posted sales in the selected year.', value: liveStats.best ? liveStats.best.month : '-', sub: liveStats.best ? `${formatVal(liveStats.best.val, 'short')} | ${fmtYoy(liveStats.best)}` : emptyHL },
+    { key: 'softest', label: 'Softest Month', color: '#f59e0b', tip: 'Lowest posted sales among months with activity.', value: liveStats.softest ? liveStats.softest.month : '-', sub: liveStats.softest ? `${formatVal(liveStats.softest.val, 'short')} | ${fmtYoy(liveStats.softest)}` : emptyHL },
+    { key: 'topyoy', label: 'Top YoY Month', color: '#0f766e', tip: 'Highest year-over-year growth versus the previous year.', value: liveStats.topYoy ? liveStats.topYoy.month : '-', sub: liveStats.topYoy ? `${formatVal(liveStats.topYoy.val, 'short')} | ${fmtYoy(liveStats.topYoy)}` : emptyHL },
+    { key: 'category', label: 'Best Category', color: '#7c3aed', tip: 'Category with the highest revenue contribution (from invoice line categories).', value: liveStats.topCat ? liveStats.topCat.name : '-', sub: liveStats.topCat ? `${formatVal(liveStats.topCat.amount, 'short')} | ${liveStats.topCat.share.toFixed(1)}% Share` : emptyHL },
+    { key: 'peakhour', label: 'Peak Hour', color: '#64748b', tip: 'Hour with the most posted invoices.', value: liveStats.peak ? `${String(liveStats.peak.hour).padStart(2, '0')}:00` : '-', sub: liveStats.peak ? `${formatVal(liveStats.peak.avg, 'short')} avg | ${liveStats.peak.n} Orders` : emptyHL }
+  ];
   // Helper for generating SVG Pie Chart
   const renderPieSvg = (slices: { name: string; amount: number; color: string; pct: number }[]) => {
     let cumulative = 0;
@@ -1194,181 +1294,27 @@ export default function AuthenticVanguardSalesDashboard() {
               </div>
               <div className="vanguard-panel-body performance-highlights-panel">
                 <div className="performance-highlights-grid">
-                  
-                  {/* Card 1: Revenue YoY */}
-                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#1976d2' }}>
-                    <div className="performance-highlight-top">
-                      <span className="performance-highlight-label">Revenue YoY</span>
-                      <div 
-                        className="cursor-pointer p-0.5"
-                        onMouseEnter={() => setHoveredHighlightCard('yoy')}
-                        onMouseLeave={() => setHoveredHighlightCard(null)}
-                      >
-                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
+                  {highlightCards.map((card) => (
+                    <div key={card.key} className="performance-highlight-card relative group" style={{ borderTopColor: card.color }}>
+                      <div className="performance-highlight-top">
+                        <span className="performance-highlight-label">{card.label}</span>
+                        <div className="cursor-pointer p-0.5" onMouseEnter={() => setHoveredHighlightCard(card.key)} onMouseLeave={() => setHoveredHighlightCard(null)}>
+                          <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
+                        </div>
+                      </div>
+                      {hoveredHighlightCard === card.key && (
+                        <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-56 border border-slate-700 leading-tight">
+                          {card.tip}
+                        </div>
+                      )}
+                      <div className="performance-highlight-value my-1">
+                        <span>{card.value}</span>
+                      </div>
+                      <div className="performance-highlight-sub leading-tight">
+                        <span>{card.sub}</span>
                       </div>
                     </div>
-                    {hoveredHighlightCard === 'yoy' && (
-                      <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-64 border border-slate-700 leading-tight">
-                        Completed-month YoY: Net Sales from 2026 Jan-Aug vs 2025 Jan-Aug. Current month is excluded until it is complete.
-                      </div>
-                    )}
-                    <div className="performance-highlight-value my-1">
-                      <span>+100.0%</span>
-                      <svg className="w-3 h-3 inline-block ml-1" viewBox="0 0 12 12" focusable="false">
-                        <path fill="#008a35" d="M6 1 L11 10 H1 Z" />
-                      </svg>
-                    </div>
-                    <div className="performance-highlight-sub leading-tight">
-                      <span>2026 Jan-Aug 10.7 B LL</span>
-                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
-                      <span>2025 Jan-Aug 0.00 LL</span>
-                    </div>
-                  </div>
-
-                  {/* Card 2: Best Month */}
-                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#2e7d32' }}>
-                    <div className="performance-highlight-top">
-                      <span className="performance-highlight-label">Best Month</span>
-                      <div 
-                        className="cursor-pointer p-0.5"
-                        onMouseEnter={() => setHoveredHighlightCard('best')}
-                        onMouseLeave={() => setHoveredHighlightCard(null)}
-                      >
-                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
-                      </div>
-                    </div>
-                    {hoveredHighlightCard === 'best' && (
-                      <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-56 border border-slate-700 leading-tight">
-                        Month with highest total net sales in the selected year.
-                      </div>
-                    )}
-                    <div className="performance-highlight-value my-1">
-                      <span>January</span>
-                      <svg className="w-3 h-3 inline-block ml-1" viewBox="0 0 12 12" focusable="false">
-                        <path fill="#008a35" d="M6 1 L11 10 H1 Z" />
-                      </svg>
-                    </div>
-                    <div className="performance-highlight-sub leading-tight">
-                      <span>3.1 B LL</span>
-                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
-                      <span>+100.0% YoY</span>
-                    </div>
-                  </div>
-
-                  {/* Card 3: Softest Month */}
-                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#f59e0b' }}>
-                    <div className="performance-highlight-top">
-                      <span className="performance-highlight-label">Softest Month</span>
-                      <div 
-                        className="cursor-pointer p-0.5"
-                        onMouseEnter={() => setHoveredHighlightCard('softest')}
-                        onMouseLeave={() => setHoveredHighlightCard(null)}
-                      >
-                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
-                      </div>
-                    </div>
-                    {hoveredHighlightCard === 'softest' && (
-                      <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-56 border border-slate-700 leading-tight">
-                        Lowest net sales month recorded among active months.
-                      </div>
-                    )}
-                    <div className="performance-highlight-value my-1">
-                      <span>May</span>
-                      <svg className="w-3 h-3 inline-block ml-1" viewBox="0 0 12 12" focusable="false">
-                        <path fill="#008a35" d="M6 1 L11 10 H1 Z" />
-                      </svg>
-                    </div>
-                    <div className="performance-highlight-sub leading-tight">
-                      <span>192.6 M LL</span>
-                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
-                      <span>+100.0% YoY</span>
-                    </div>
-                  </div>
-
-                  {/* Card 4: Top YoY Month */}
-                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#0f766e' }}>
-                    <div className="performance-highlight-top">
-                      <span className="performance-highlight-label">Top YoY Month</span>
-                      <div 
-                        className="cursor-pointer p-0.5"
-                        onMouseEnter={() => setHoveredHighlightCard('topyoy')}
-                        onMouseLeave={() => setHoveredHighlightCard(null)}
-                      >
-                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
-                      </div>
-                    </div>
-                    {hoveredHighlightCard === 'topyoy' && (
-                      <div className="absolute top-7 left-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-56 border border-slate-700 leading-tight">
-                        Highest Year-over-Year growth compared to the previous year.
-                      </div>
-                    )}
-                    <div className="performance-highlight-value my-1">
-                      <span>January</span>
-                      <svg className="w-3 h-3 inline-block ml-1" viewBox="0 0 12 12" focusable="false">
-                        <path fill="#008a35" d="M6 1 L11 10 H1 Z" />
-                      </svg>
-                    </div>
-                    <div className="performance-highlight-sub leading-tight">
-                      <span>3.1 B LL</span>
-                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
-                      <span>+100.0% YoY</span>
-                    </div>
-                  </div>
-
-                  {/* Card 5: Best Category */}
-                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#7c3aed' }}>
-                    <div className="performance-highlight-top">
-                      <span className="performance-highlight-label">Best Category</span>
-                      <div 
-                        className="cursor-pointer p-0.5"
-                        onMouseEnter={() => setHoveredHighlightCard('category')}
-                        onMouseLeave={() => setHoveredHighlightCard(null)}
-                      >
-                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
-                      </div>
-                    </div>
-                    {hoveredHighlightCard === 'category' && (
-                      <div className="absolute top-7 right-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-48 border border-slate-700 leading-tight">
-                        Category with the highest revenue contribution.
-                      </div>
-                    )}
-                    <div className="performance-highlight-value my-1">
-                      <span>Retail</span>
-                    </div>
-                    <div className="performance-highlight-sub leading-tight">
-                      <span>57.1 M LL</span>
-                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
-                      <span>42.4% Share</span>
-                    </div>
-                  </div>
-
-                  {/* Card 6: Peak Hour */}
-                  <div className="performance-highlight-card relative group" style={{ borderTopColor: '#64748b' }}>
-                    <div className="performance-highlight-top">
-                      <span className="performance-highlight-label">Peak Hour</span>
-                      <div 
-                        className="cursor-pointer p-0.5"
-                        onMouseEnter={() => setHoveredHighlightCard('peakhour')}
-                        onMouseLeave={() => setHoveredHighlightCard(null)}
-                      >
-                        <Info className="w-3.5 h-3.5 text-slate-400 hover:text-slate-700" />
-                      </div>
-                    </div>
-                    {hoveredHighlightCard === 'peakhour' && (
-                      <div className="absolute top-7 right-0 z-30 bg-slate-900/95 text-white text-[10.5px] rounded px-2.5 py-1.5 shadow-xl pointer-events-none whitespace-normal w-48 border border-slate-700 leading-tight">
-                        Hour of highest average transaction volume.
-                      </div>
-                    )}
-                    <div className="performance-highlight-value my-1">
-                      <span>10:00</span>
-                    </div>
-                    <div className="performance-highlight-sub leading-tight">
-                      <span>7.3 M LL avg</span>
-                      <span className="performance-highlight-separator font-bold text-slate-800 mx-1">┃</span>
-                      <span>12 Orders</span>
-                    </div>
-                  </div>
-
+                  ))}
                 </div>
               </div>
             </div>
@@ -1393,14 +1339,14 @@ export default function AuthenticVanguardSalesDashboard() {
                 {/* Legend */}
                 <div className="flex items-center justify-center gap-2 mb-3 text-xs text-slate-700">
                   <span className="w-3 h-3 bg-emerald-700 rounded-sm inline-block"></span>
-                  <span className="font-medium">Southern Olive Oil Products S.A.R.L</span>
+                  <span className="font-medium">{currentTenant?.name || 'Vanguard ERP'}</span>
                 </div>
 
                 {/* Vertical Bars Container with Authentic Highcharts Gridlines */}
                 <div className="relative h-60 px-6 pt-4 pb-2 border-b border-slate-200">
                   {/* Background Horizontal Gridlines matching Video V2 */}
                   <div className="absolute inset-x-6 top-4 bottom-7 flex flex-col justify-between pointer-events-none">
-                    {['4B', '3B', '2B', '1B', '0'].map((tick, tIdx) => (
+                    {[1, 0.75, 0.5, 0.25, 0].map((f) => (f === 0 ? '0' : formatVal(chartTop * f, 'short'))).map((tick, tIdx) => (
                       <div key={tIdx} className="w-full flex items-center">
                         <span className="text-[9.5px] text-slate-400 font-medium w-6 text-right pr-2 select-none -mt-2">
                           {tick}
@@ -1413,7 +1359,7 @@ export default function AuthenticVanguardSalesDashboard() {
                   {/* Bars Container */}
                   <div className="relative z-10 h-full flex items-end justify-between gap-2 pl-6">
                     {monthlyBarData.map((d, i) => {
-                      const maxVal = 3500000000;
+                      const maxVal = chartMax;
                       const heightPct = d.val > 0 ? (d.val / maxVal) * 85 : 0;
                       const isHovered = hoveredSummaryMonth === d.month;
 
@@ -1432,7 +1378,7 @@ export default function AuthenticVanguardSalesDashboard() {
                               </div>
                               <div className="flex items-center gap-1.5 text-slate-200">
                                 <span className="w-2.5 h-2.5 bg-emerald-700 rounded-sm inline-block flex-shrink-0" />
-                                <span>Southern Olive Oil Products S.A.R.L:</span>
+                                <span>{currentTenant?.name || 'Vanguard ERP'}:</span>
                                 <span className="font-bold text-white ml-auto">
                                   {d.val > 0 ? `${d.val.toLocaleString()}.00` : '0.00'}
                                 </span>
@@ -1488,7 +1434,7 @@ export default function AuthenticVanguardSalesDashboard() {
                     </thead>
                     <tbody>
                       <tr>
-                        <th className="text-left font-semibold sticky-col bg-white">Southern Olive Oil Products S.A.R.L</th>
+                        <th className="text-left font-semibold sticky-col bg-white">{currentTenant?.name || 'Vanguard ERP'}</th>
                         {monthlyBarData.map((m, idx) => (
                           <td key={idx} className="monthly-revenue-cell">
                             {m.val > 0 ? (
@@ -1498,13 +1444,13 @@ export default function AuthenticVanguardSalesDashboard() {
                                   <span className="text-emerald-600 text-[10px]">▲</span>
                                 </div>
                                 <div className="monthly-revenue-previous">
-                                  LY 0 ({m.pct})
+                                  LY {(m.ly || 0).toLocaleString()} ({m.pct})
                                 </div>
                               </div>
                             ) : (
                               <div>
                                 <div className="font-semibold text-slate-500">0</div>
-                                <div className="monthly-revenue-previous">LY 0 (0.0%)</div>
+                                <div className="monthly-revenue-previous">LY {(m.ly || 0).toLocaleString()} (0.0%)</div>
                               </div>
                             )}
                           </td>
@@ -1515,7 +1461,7 @@ export default function AuthenticVanguardSalesDashboard() {
                             <span className="text-emerald-600 text-[10px]">▲</span>
                           </div>
                           <div className="monthly-revenue-previous font-normal">
-                            LY 0 (+100.0%)
+                            LY {totalLastYear.toLocaleString()} ({totalYoyText})
                           </div>
                         </td>
                       </tr>
@@ -1530,13 +1476,13 @@ export default function AuthenticVanguardSalesDashboard() {
                                   <span className="text-emerald-600 text-[10px]">▲</span>
                                 </div>
                                 <div className="monthly-revenue-previous">
-                                  LY 0 ({m.pct})
+                                  LY {(m.ly || 0).toLocaleString()} ({m.pct})
                                 </div>
                               </div>
                             ) : (
                               <div>
                                 <div className="font-semibold text-slate-500">0</div>
-                                <div className="monthly-revenue-previous">LY 0 (0.0%)</div>
+                                <div className="monthly-revenue-previous">LY {(m.ly || 0).toLocaleString()} (0.0%)</div>
                               </div>
                             )}
                           </td>
@@ -1547,7 +1493,7 @@ export default function AuthenticVanguardSalesDashboard() {
                             <span className="text-emerald-600 text-[10px]">▲</span>
                           </div>
                           <div className="monthly-revenue-previous font-normal">
-                            LY 0 (+100.0%)
+                            LY {totalLastYear.toLocaleString()} ({totalYoyText})
                           </div>
                         </td>
                       </tr>
@@ -2660,7 +2606,7 @@ export default function AuthenticVanguardSalesDashboard() {
                   </thead>
                   <tbody>
                     <tr>
-                      <th className="text-left font-semibold sticky-col bg-white">Southern Olive Oil Products S.A.R.L</th>
+                      <th className="text-left font-semibold sticky-col bg-white">{currentTenant?.name || 'Vanguard ERP'}</th>
                       <td className="text-right">142,231,750</td>
                       <td className="text-right">93,855,800</td>
                       <td className="text-right">2,619,850</td>
@@ -3607,7 +3553,7 @@ export default function AuthenticVanguardSalesDashboard() {
                 <div className="flex flex-wrap items-center gap-3">
                   <span><strong>License Tier:</strong> Enterprise Unlimited</span>
                   <span>|</span>
-                  <span><strong>Account:</strong> Southern Olive Oil Products S.A.R.L</span>
+                  <span><strong>Account:</strong> {currentTenant?.name || 'Vanguard ERP'}</span>
                   <span>|</span>
                   <span><strong>Key:</strong> <code className="text-amber-300 font-mono font-bold">VNG-LIC-2026-SOUTHERN-OLIVE-ULTIMATE-UNLIMITED-X992</code></span>
                   <span>|</span>

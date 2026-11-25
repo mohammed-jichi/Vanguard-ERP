@@ -2,6 +2,7 @@
 import { useLanguage } from '@/lib/LanguageContext';
 
 import React, { useState } from 'react';
+import { useTenantFlag } from '@/lib/useTenantFlag';
 import Link from 'next/link';
 import {
   Save,
@@ -25,7 +26,7 @@ interface ToastState {
 
 export default function PriceModesView() {
   const { t } = useLanguage();
-  const [modes, setModes] = useState<OmegaPriceMode[]>(INITIAL_PRICE_MODES);
+  const [modes, setModes] = useTenantFlag<OmegaPriceMode[]>('price_modes', INITIAL_PRICE_MODES);
   const [selectedBranchId, setSelectedBranchId] = useState<number>(1);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 

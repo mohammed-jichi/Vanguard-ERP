@@ -23,23 +23,26 @@ export interface OmegaBranchEod {
   cashier: string;
 }
 
+const formatEodDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+/** Neutral starting state: no invoices, today's live date. Real figures are hydrated from tenants.feature_flags. */
 export const INITIAL_EOD_BRANCHES: OmegaBranchEod[] = [
   {
     BRANCHID: 1,
-    BARANCHNAME: 'Southern Olive and Oil Products - Main',
-    OMEGA_CUSTID: 22901,
-    end_of_day: 'Sep 05, 2026',
+    BARANCHNAME: 'Main Branch',
+    OMEGA_CUSTID: 1300,
+    end_of_day: formatEodDate(new Date()),
     status: 'Pending EOD',
-    invoicesCount: 142,
-    grossSales: 5290.00,
-    netSales: 4765.77,
-    cashUsd: 3120.00,
-    cashLbp: 144500000,
-    cardPayments: 510.00,
-    omnichannel: 230.00,
-    taxVat: 524.23,
-    voidsCount: 3,
-    discounts: 110.00,
-    cashier: 'Mohammed Jichi (Cashier Thermal)'
+    invoicesCount: 0,
+    grossSales: 0,
+    netSales: 0,
+    cashUsd: 0,
+    cashLbp: 0,
+    cardPayments: 0,
+    omnichannel: 0,
+    taxVat: 0,
+    voidsCount: 0,
+    discounts: 0,
+    cashier: '\u2014'
   }
 ];

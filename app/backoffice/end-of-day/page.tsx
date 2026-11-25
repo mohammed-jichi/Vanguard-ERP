@@ -26,6 +26,7 @@ import { useTenant } from '@/lib/TenantContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 import { OmegaBranchEod, INITIAL_EOD_BRANCHES } from '@/lib/omegaEndOfDayData';
+import { resolveTenantUuid } from '@/lib/productCatalogService';
 
 export default function EndOfDayPage() {
   const { currentTenant } = useTenant();
@@ -38,93 +39,76 @@ export default function EndOfDayPage() {
   const [zReportModalOpen, setZReportModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; title: string; text: string } | null>(null);
   const [activeTab, setActiveTab] = useState<'closing' | 'matrix' | 'reconciliation' | 'history'>('closing');
+  const [eodLog, setEodLog] = useState<any[]>([]);
+  const [lastZReference, setLastZReference] = useState<string>('');
+  const fmtEodDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
-  // Hydrate with live real-time transactions from Supabase on mount
   useEffect(() => {
     let isMounted = true;
 
     async function loadLiveRegisterData() {
       try {
-        const tenantId = currentTenant?.id || 'tenant_vanguard_default';
+        const tenantId = resolveTenantUuid(currentTenant);
+        const { data: tenantData } = await supabase.from('tenants').select('name, feature_flags').eq('id', tenantId).maybeSingle();
+        const flags: any = tenantData?.feature_flags || {};
 
-        // 1. Fetch live sales invoices from sales_invoices table
-        const { data: dbInvoices, error: invErr } = await supabase
-          .from('sales_invoices')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(500);
+        // Last closing recorded in tenants.feature_flags (defaults to today's live date when none exists)
+        const lastClosedIso: string | null = flags.last_end_of_day || flags.last_eod_closing?.closed_at || null;
+        const lastClosedMs = lastClosedIso ? new Date(lastClosedIso).getTime() : 0;
+        const log: any[] = Array.isArray(flags.end_of_day_log) ? flags.end_of_day_log : [];
 
-        // 2. Fetch live tenant workstation feature flags (e.g. sales_invoices_directory)
-        const { data: tenantData } = await supabase
-          .from('tenants')
-          .select('feature_flags')
-          .eq('id', tenantId)
-          .single();
-
-        const flags = tenantData?.feature_flags || {};
-        const localInvoices: any[] = flags.sales_invoices_directory || flags.sales_invoices || [];
-
-        // Combine unique records by invoice identifier
+        const invoices: any[] = flags.sales_invoices_directory || flags.sales_invoices || [];
         const seen = new Set<string>();
-        const combined: any[] = [];
-
-        [...(dbInvoices || []), ...localInvoices].forEach((inv) => {
-          const invKey = String(inv.invoice_number || inv.invoiceNo || inv.id || '');
-          if (invKey && !seen.has(invKey)) {
-            seen.add(invKey);
-            combined.push(inv);
+        const posted: any[] = [];
+        let voids = 0;
+        invoices.forEach((inv) => {
+          const key = String(inv.invoice_number || inv.invoiceNumber || inv.id || '');
+          if (key && seen.has(key)) return;
+          if (key) seen.add(key);
+          const ts = new Date(inv.createdAtIso || inv.createdAt || inv.date).getTime();
+          if (lastClosedMs && !(ts > lastClosedMs)) return;
+          const status = String(inv.status || '').toLowerCase();
+          if (/void|cancel/.test(status)) {
+            voids++;
+            return;
           }
+          if (inv.is_posted === true || inv.posted === true || inv.status === 'Posted') posted.push(inv);
         });
 
-        // 3. Posted-Only Integrity: Aggregate strictly transactions where is_posted === true or status === 'Posted'
-        const postedInvoices = combined.filter((inv) => {
-          return inv.is_posted === true || inv.posted === true || inv.status === 'Posted';
+        let gross = 0, net = 0, vat = 0, disc = 0, cashUsd = 0, cashLbp = 0, card = 0, online = 0;
+        posted.forEach((inv) => {
+          const total = Number(inv.total_amount ?? inv.grandTotal ?? inv.total ?? 0);
+          const subtotal = Number(inv.subtotal_amount ?? inv.subtotal ?? total / 1.11);
+          const tax = Number(inv.tax_amount ?? inv.tax ?? total - subtotal);
+          const discount = Number(inv.discount_amount ?? inv.discount ?? 0);
+          const curr = String(inv.currency || 'USD').toUpperCase();
+          const pay = String(inv.payment_method || inv.paymentType || inv.payments?.[0]?.type || 'CASH').toUpperCase();
+          gross += total;
+          net += subtotal;
+          vat += tax;
+          disc += discount;
+          if (pay.includes('CARD') || pay.includes('VISA') || pay.includes('MASTERCARD')) card += total;
+          else if (pay.includes('WHISH') || pay.includes('ONLINE') || pay.includes('OMT') || pay.includes('WALLET')) online += total;
+          else if (curr === 'LBP') cashLbp += total;
+          else cashUsd += total;
         });
 
-        if (postedInvoices.length > 0 && isMounted) {
-          let gross = 0;
-          let net = 0;
-          let vat = 0;
-          let disc = 0;
-          let cashUsd = 0;
-          let cashLbp = 0;
-          let card = 0;
-          let online = 0;
+        if (!isMounted) return;
+        setEodLog(log);
+        if (flags.last_eod_closing?.reference) setLastZReference(String(flags.last_eod_closing.reference));
 
-          postedInvoices.forEach((inv) => {
-            const total = Number(inv.total_amount ?? inv.total ?? 0);
-            const subtotal = Number(inv.subtotal_amount ?? inv.subtotal ?? (total / 1.11));
-            const tax = Number(inv.tax_amount ?? inv.tax ?? (total - subtotal));
-            const discount = Number(inv.discount_amount ?? inv.discount ?? 0);
-            const curr = String(inv.currency || 'USD').toUpperCase();
-            const pay = String(inv.payment_method || inv.paymentType || 'CASH').toUpperCase();
-
-            gross += total;
-            net += subtotal;
-            vat += tax;
-            disc += discount;
-
-            if (pay.includes('CARD') || pay.includes('VISA') || pay.includes('MASTERCARD')) {
-              card += total;
-            } else if (pay.includes('WHISH') || pay.includes('ONLINE') || pay.includes('OMT') || pay.includes('WALLET')) {
-              online += total;
-            } else {
-              if (curr === 'LBP') {
-                cashLbp += total;
-              } else {
-                cashUsd += total;
-              }
-            }
-          });
-
-          const activeCashier = flags.active_pos_shift?.cashierName || 'Direct Counter (POS-01)';
-
-          setBranches((prev) =>
-            prev.map((b) => {
-              if (b.BRANCHID === 1) {
-                return {
+        const todayStr = fmtEodDate(new Date());
+        const lastClosedStr = lastClosedIso ? fmtEodDate(new Date(lastClosedIso)) : todayStr;
+        setBranches((prev) =>
+          prev.map((b) =>
+            b.BRANCHID === 1
+              ? {
                   ...b,
-                  invoicesCount: postedInvoices.length,
+                  BARANCHNAME: tenantData?.name ? `${tenantData.name} - Main` : b.BARANCHNAME,
+                  OMEGA_CUSTID: Number(currentTenant?.companyId) || b.OMEGA_CUSTID,
+                  end_of_day: lastClosedStr,
+                  status: lastClosedIso && lastClosedStr === todayStr && posted.length === 0 ? 'Closed' : 'Pending EOD',
+                  invoicesCount: posted.length,
                   grossSales: Math.round(gross * 100) / 100,
                   netSales: Math.round(net * 100) / 100,
                   taxVat: Math.round(vat * 100) / 100,
@@ -133,25 +117,22 @@ export default function EndOfDayPage() {
                   cashLbp: Math.round(cashLbp),
                   cardPayments: Math.round(card * 100) / 100,
                   omnichannel: Math.round(online * 100) / 100,
-                  cashier: activeCashier,
-                };
-              }
-              return b;
-            })
-          );
-        }
+                  voidsCount: voids,
+                  cashier: flags.active_pos_shift?.cashierName || '\u2014'
+                }
+              : b
+          )
+        );
       } catch (err) {
         console.warn('[EndOfDayPage] Live register data sync error:', err);
       }
     }
 
     loadLiveRegisterData();
-
     return () => {
       isMounted = false;
     };
   }, [currentTenant?.id]);
-
   const selectedBranch = branches.find(b => b.BRANCHID === selectedBranchId) || branches[0];
 
   const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -171,81 +152,63 @@ export default function EndOfDayPage() {
     setConfirmModalOpen(true);
   };
 
+  const postTenantFlag = async (key: string, value: any, append = false) => {
+    const res = await fetch('/api/tenant-flags', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: resolveTenantUuid(currentTenant), key, value, append })
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.success) throw new Error(json.error || `Could not save ${key}`);
+  };
+
   const executeEndOfDay = async () => {
     setConfirmModalOpen(false);
     setLoading(true);
 
     try {
-      // Advance date to next business day
-      const today = new Date();
-      const nextDateStr = today.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-      const tenantId = currentTenant?.id || 'tenant_vanguard_default';
+      const closedAt = new Date();
+      const closedIso = closedAt.toISOString();
+      const closedDate = fmtEodDate(closedAt);
+      const ymd = closedIso.slice(0, 10).replace(/-/g, '');
+      const seq = String(eodLog.filter((e) => String(e.reference || '').includes(ymd)).length + 1).padStart(2, '0');
+      const entry = {
+        reference: `Z-${ymd}-${seq}`,
+        closed_at: closedIso,
+        closed_date: closedDate,
+        status: 'Finalized',
+        branch_id: selectedBranchId,
+        branch_name: selectedBranch.BARANCHNAME,
+        closed_by: 'Vanguard Operator',
+        invoices_count: selectedBranch.invoicesCount,
+        net_sales: selectedBranch.netSales,
+        tax_vat: selectedBranch.taxVat,
+        gross_sales: selectedBranch.grossSales
+      };
 
-      // Persist EOD closing state to Supabase tenant feature flags
-      const { data: tenantData } = await supabase
-        .from('tenants')
-        .select('feature_flags')
-        .eq('id', tenantId)
-        .single();
+      // Persist to tenants.feature_flags first; only update the screen once saved.
+      await postTenantFlag('last_end_of_day', closedIso);
+      await postTenantFlag('last_eod_closing', entry);
+      await postTenantFlag('end_of_day_log', entry, true);
 
-      const currentFlags = tenantData?.feature_flags || {};
-      await supabase
-        .from('tenants')
-        .update({
-          feature_flags: {
-            ...currentFlags,
-            last_eod_closing: {
-              closed_at: today.toISOString(),
-              closed_date: nextDateStr,
-              status: 'Closed',
-              branch_id: selectedBranchId,
-              closed_by: 'Vanguard Operator',
-              gross_sales: selectedBranch.grossSales,
-              invoices_count: selectedBranch.invoicesCount,
-            },
-          },
-        })
-        .eq('id', tenantId);
-
+      setEodLog((prev) => [entry, ...prev]);
+      setLastZReference(entry.reference);
       setBranches((prev) =>
-        prev.map((b) => {
-          if (b.BRANCHID === selectedBranchId) {
-            return {
-              ...b,
-              end_of_day: nextDateStr,
-              status: 'Closed',
-            };
-          }
-          return b;
-        })
-      );
-
-      showToast('success', 'Success', 'End of day done successfully!');
-      setZReportModalOpen(true);
-    } catch (err) {
-      console.warn('[executeEndOfDay] Persistence error:', err);
-      // Fallback local state update
-      const today = new Date();
-      const nextDateStr = today.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-      setBranches((prev) =>
-        prev.map((b) => {
-          if (b.BRANCHID === selectedBranchId) {
-            return {
-              ...b,
-              end_of_day: nextDateStr,
-              status: 'Closed',
-            };
-          }
-          return b;
-        })
+        prev.map((b) =>
+          b.BRANCHID === selectedBranchId
+            ? { ...b, end_of_day: closedDate, status: 'Closed', invoicesCount: 0, grossSales: 0, netSales: 0, taxVat: 0, discounts: 0, cashUsd: 0, cashLbp: 0, cardPayments: 0, omnichannel: 0, voidsCount: 0 }
+            : b
+        )
       );
       showToast('success', 'Success', 'End of day done successfully!');
       setZReportModalOpen(true);
+    } catch (err: any) {
+      console.error('[executeEndOfDay] Persistence error:', err);
+      showToast('error', 'End of Day failed', err?.message || 'Could not save the closing to the database.');
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-background text-foreground font-sans pb-16">
       <style jsx global>{`
@@ -705,39 +668,24 @@ export default function EndOfDayPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="bg-white">
-                    <td className="font-mono font-bold text-blue-700">Z-2026-0904-01</td>
-                    <td className="font-mono">2026-09-04 23:45</td>
-                    <td className="font-semibold">Southern Olive Oil Products S.A.R.L</td>
-                    <td>Hiba Aloulou</td>
-                    <td className="font-mono text-right">142</td>
-                    <td className="font-mono text-right font-semibold">$4,765.77</td>
-                    <td className="font-mono text-right text-emerald-700">$524.23</td>
-                    <td className="font-mono text-right font-black text-slate-900">$5,290.00</td>
-                    <td><span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">{t('Finalized', 'Finalized')}</span></td>
-                  </tr>
-                  <tr className="bg-slate-50/70">
-                    <td className="font-mono font-bold text-blue-700">Z-2026-0903-01</td>
-                    <td className="font-mono">2026-09-03 23:40</td>
-                    <td className="font-semibold">Southern Olive Oil Products S.A.R.L</td>
-                    <td>Hiba Aloulou</td>
-                    <td className="font-mono text-right">138</td>
-                    <td className="font-mono text-right font-semibold">$4,612.61</td>
-                    <td className="font-mono text-right text-emerald-700">$507.39</td>
-                    <td className="font-mono text-right font-black text-slate-900">$5,120.00</td>
-                    <td><span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">{t('Finalized', 'Finalized')}</span></td>
-                  </tr>
-                  <tr className="bg-white">
-                    <td className="font-mono font-bold text-blue-700">Z-2026-0902-01</td>
-                    <td className="font-mono">2026-09-02 23:35</td>
-                    <td className="font-semibold">Southern Olive Oil Products S.A.R.L</td>
-                    <td>Hiba Aloulou</td>
-                    <td className="font-mono text-right">129</td>
-                    <td className="font-mono text-right font-semibold">$4,324.32</td>
-                    <td className="font-mono text-right text-emerald-700">$475.68</td>
-                    <td className="font-mono text-right font-black text-slate-900">$4,800.00</td>
-                    <td><span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">{t('Finalized', 'Finalized')}</span></td>
-                  </tr>
+                  {eodLog.length === 0 && (
+                    <tr>
+                      <td colSpan={9} className="text-center text-slate-500 py-6">{t('No end-of-day closings recorded yet.', 'No end-of-day closings recorded yet.')}</td>
+                    </tr>
+                  )}
+                  {eodLog.map((e, i) => (
+                    <tr key={e.reference || i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'}>
+                      <td className="font-mono font-bold text-blue-700">{e.reference}</td>
+                      <td className="font-mono">{e.closed_at ? new Date(e.closed_at).toLocaleString('en-GB') : e.closed_date}</td>
+                      <td className="font-semibold">{e.branch_name}</td>
+                      <td>{e.closed_by}</td>
+                      <td className="font-mono text-right">{e.invoices_count}</td>
+                      <td className="font-mono text-right font-semibold">${Number(e.net_sales || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      <td className="font-mono text-right text-emerald-700">${Number(e.tax_vat || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      <td className="font-mono text-right font-black text-slate-900">${Number(e.gross_sales || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      <td><span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">{t(e.status || 'Finalized', e.status || 'Finalized')}</span></td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -868,10 +816,10 @@ export default function EndOfDayPage() {
             <div className="mt-4 p-5 bg-card border border-dashed border-slate-300 rounded-lg font-mono text-xs text-slate-800 space-y-2">
               <div className="text-center pb-2 border-b border-dashed border-slate-300">
                 <div className="font-black text-sm">{selectedBranch.BARANCHNAME}</div>
-                <div className="text-[11px] text-slate-500 mt-0.5">SOUTHERN OLIVE OIL PRODUCTS S.A.R.L - POS REG #1</div>
+                <div className="text-[11px] text-slate-500 mt-0.5">{String(selectedBranch.BARANCHNAME).toUpperCase()}</div>
                 <div className="text-[10px] text-slate-400">TAX MOF: 7489201 | CR: 104928-LB</div>
                 <div className="font-bold text-xs mt-1.5">*** {t('FISCAL END OF DAY (Z-REPORT)', '*** FISCAL END OF DAY (Z-REPORT) ***')} ***</div>
-                <div className="text-[10.5px] text-slate-600">{t('Z-Report Reference:', 'Z-Report Reference:')} #Z-20260904-001</div>
+                <div className="text-[10.5px] text-slate-600">{t('Z-Report Reference:', 'Z-Report Reference:')} {lastZReference ? `#${lastZReference}` : '\u2014'}</div>
                 <div className="text-[10.5px] text-slate-600">{t('Closing Timestamp:', 'Closing Timestamp:')} {new Date().toLocaleString()}</div>
               </div>
 

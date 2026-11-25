@@ -1,7 +1,7 @@
 /**
  * Omega ERP / Vanguard ERP - Zone Setup & Currency Setup Models & Live Seed Data
  * Section: Currency Setup (CurrSetupView) & Call Center Zone Setup (CallCenterZoneSetupView)
- * Branch: 1300-01 - Choueifat Main Facility
+ * Branch: 1300-01 - Main Branch
  */
 
 export interface OmegaBranchOption {
@@ -10,7 +10,7 @@ export interface OmegaBranchOption {
 }
 
 export const OMEGA_BRANCHES: OmegaBranchOption[] = [
-  { BRANCHID: 1, BARANCHNAME: '1300-01 - Choueifat Main Facility' }
+  { BRANCHID: 1, BARANCHNAME: '1300-01 - Main Branch' }
 ];
 
 // ==========================================
@@ -31,58 +31,8 @@ export interface OmegaCurrency {
 }
 
 export const INITIAL_CURRENCIES: OmegaCurrency[] = [
-  {
-    ID: 1,
-    BRAND_ID: 9606,
-    BRANCHID: 1,
-    DESCRIPTION: 'LBP',
-    RATE: 1,
-    SYNBOL: 'LL',
-    ASYNBOL: 'LL',
-    DIGITNUMBER: 0,
-    BACKRATE: 1,
-    DECIMALNBRINV: 0,
-    maincurrency: 1
-  },
-  {
-    ID: 2,
-    BRAND_ID: 9606,
-    BRANCHID: 1,
-    DESCRIPTION: 'USD',
-    RATE: 90000,
-    SYNBOL: '$',
-    ASYNBOL: '$',
-    DIGITNUMBER: 2,
-    BACKRATE: 90000,
-    DECIMALNBRINV: 0,
-    maincurrency: 2
-  },
-  {
-    ID: 4088,
-    BRAND_ID: 9606,
-    BRANCHID: 1,
-    DESCRIPTION: 'EURO',
-    RATE: 2000,
-    SYNBOL: 'EU',
-    ASYNBOL: 'EU',
-    DIGITNUMBER: 2,
-    BACKRATE: 2000,
-    DECIMALNBRINV: 0,
-    maincurrency: 3
-  },
-  {
-    ID: 4089,
-    BRAND_ID: 9606,
-    BRANCHID: 1,
-    DESCRIPTION: 'Lebanese Pound',
-    RATE: 90000,
-    SYNBOL: 'L.B',
-    ASYNBOL: 'L.B.P',
-    DIGITNUMBER: 0,
-    BACKRATE: 90000,
-    DECIMALNBRINV: null,
-    maincurrency: 3
-  }
+  { ID: 1, BRAND_ID: 0, BRANCHID: 1, DESCRIPTION: 'LBP', RATE: 1, SYNBOL: 'LL', ASYNBOL: 'LL', DIGITNUMBER: 0, BACKRATE: 1, DECIMALNBRINV: 0, maincurrency: 1 },
+  { ID: 2, BRAND_ID: 0, BRANCHID: 1, DESCRIPTION: 'USD', RATE: 89500, SYNBOL: '$', ASYNBOL: '$', DIGITNUMBER: 2, BACKRATE: 89500, DECIMALNBRINV: 0, maincurrency: 2 }
 ];
 
 // ==========================================
@@ -134,63 +84,4 @@ export const LEBANON_CITIES: OmegaCity[] = [
   { id: 20, name: 'Tripoli', country_id: 115 }
 ];
 
-export const INITIAL_ZONES: OmegaCallCenterZone[] = [
-  {
-    ID: 1,
-    ZONE: 'Beirut & Suburbs',
-    AREACODE: '01',
-    TOBRANCH: 1,
-    BARANCHNAME: 'Main Branch',
-    PRINTERNAME: 'Cashier Thermal',
-    DELIVERYCHARGE: '3.00',
-    cities: [
-      { CITYID: 1, name: 'Beirut' },
-      { CITYID: 2, name: 'Achrafieh' },
-      { CITYID: 3, name: 'Hamra' },
-      { CITYID: 4, name: 'Verdun' }
-    ]
-  },
-  {
-    ID: 2,
-    ZONE: 'Mount Lebanon - South Suburbs',
-    AREACODE: '05',
-    TOBRANCH: 1,
-    BARANCHNAME: 'Main Branch',
-    PRINTERNAME: 'Kitchen Barcode',
-    DELIVERYCHARGE: '2.00',
-    cities: [
-      { CITYID: 5, name: 'Kfarchima' },
-      { CITYID: 6, name: 'Choueifat' },
-      { CITYID: 7, name: 'Hadath' },
-      { CITYID: 8, name: 'Baabda' }
-    ]
-  },
-  {
-    ID: 3,
-    ZONE: 'South Lebanon - Saida & Coastal',
-    AREACODE: '07',
-    TOBRANCH: 1,
-    BARANCHNAME: 'Main Branch',
-    PRINTERNAME: 'Dispatch Printer',
-    DELIVERYCHARGE: '4.00',
-    cities: [
-      { CITYID: 9, name: 'Saida' },
-      { CITYID: 10, name: 'Ghazieh' },
-      { CITYID: 11, name: 'Sarafand' }
-    ]
-  },
-  {
-    ID: 4,
-    ZONE: 'South Lebanon - Tyre & Nabatieh',
-    AREACODE: '07',
-    TOBRANCH: 1,
-    BARANCHNAME: 'Main Branch',
-    PRINTERNAME: 'Main Dispatch',
-    DELIVERYCHARGE: '5.00',
-    cities: [
-      { CITYID: 12, name: 'Tyre' },
-      { CITYID: 13, name: 'Nabatieh' },
-      { CITYID: 14, name: 'Zahrani' }
-    ]
-  }
-];
+export const INITIAL_ZONES: OmegaCallCenterZone[] = [];
