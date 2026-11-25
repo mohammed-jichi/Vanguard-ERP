@@ -93,7 +93,7 @@ export async function GET(request: Request) {
       const { data: staffRows, error: staffErr } = await supabase
         .from('employees')
         .select('id, full_name, phone, is_active, employee_code, created_at')
-        .eq('tenant_id', targetId)
+        .or(targetId === '00000000-0000-0000-0000-000000000001' ? `tenant_id.eq.${targetId},tenant_id.is.null` : `tenant_id.eq.${targetId}`)
         .order('created_at', { ascending: true })
         .limit(5000);
       if (!staffErr && staffRows) {

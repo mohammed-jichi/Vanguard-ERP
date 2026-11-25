@@ -5,6 +5,8 @@ import { getSupabaseServerClient } from '@/lib/supabaseClient';
 
 const DB_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DB_DIR, 'vanguard_accounting_db.json');
+const DEFAULT_TENANT_UUID = '00000000-0000-0000-0000-000000000001';
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(req: NextRequest) {
   try {
@@ -166,46 +168,41 @@ export async function POST(req: NextRequest) {
         persistedToSupabase = true;
       }
 
-      // 3. Persist to Supabase employees table (HR Master Record sync using service role)
-      // 3. Persist to Supabase employees table (HR Master Record sync using service role)
-      try {
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(empCode);
-        const basePayload: Record<string, any> = {
-          employee_code: empCode,
-          full_name: employeeName || employeeRecord?.fullName || `${employeeRecord?.firstName || ''} ${employeeRecord?.lastName || ''}`.trim() || 'Employee',
-          phone: employeeRecord?.phone || null,
-          national_id: employeeRecord?.nationalId || null,
-          is_active: isActiveVal,
-        };
-        if (employeeRecord?.dateHired) {
-          basePayload.hire_date = employeeRecord.dateHired;
-        }
-        if (isUuid) {
-          basePayload.id = empCode;
-        }
+      // 3. Persist to public.employees (tenant-scoped). Errors are surfaced to the caller, never swallowed.
+      const isUuid = UUID_RE.test(empCode);
+      const rowTenantId = String(employeeRecord?.tenant_id || DEFAULT_TENANT_UUID);
+      const coreRow: Record<string, any> = {
+        tenant_id: rowTenantId,
+        employee_code: empCode,
+        full_name: employeeName || employeeRecord?.fullName || `${employeeRecord?.firstName || ''} ${employeeRecord?.lastName || ''}`.trim() || 'Employee',
+        phone: employeeRecord?.phone || null,
+        is_active: isActiveVal,
+      };
+      if (isUuid) coreRow.id = empCode;
+      const extendedRow: Record<string, any> = { ...coreRow };
+      if (employeeRecord?.nationalId) extendedRow.national_id = employeeRecord.nationalId;
+      if (employeeRecord?.dateHired) extendedRow.hire_date = employeeRecord.dateHired;
 
-        const { data: upsertData, error: empErr } = await supabaseServer
+      const upsertEmployee = (row: Record<string, any>) =>
+        supabaseServer
           .from('employees')
-          .upsert(basePayload, { onConflict: isUuid ? 'id' : 'employee_code' })
+          .upsert(row, { onConflict: isUuid ? 'id' : 'employee_code' })
           .select()
           .maybeSingle();
 
-        if (empErr) {
-          console.error('[API /api/hr/sync-workstation] Supabase employees table error:', {
-            message: empErr.message,
-            details: empErr.details,
-            hint: empErr.hint,
-            code: empErr.code,
-          });
-        } else {
-          savedEmployeeRow = upsertData;
-          persistedToSupabase = true;
-          console.log('[API /api/hr/sync-workstation] Supabase employees row persisted successfully:', savedEmployeeRow?.id || empCode);
-        }
-      } catch (empEx: any) {
-        console.error('[API /api/hr/sync-workstation] Supabase employees table exception:', empEx);
+      let { data: upsertData, error: empErr } = await upsertEmployee(extendedRow);
+      if (empErr && Object.keys(extendedRow).length > Object.keys(coreRow).length && /column|schema cache/i.test(empErr.message || '')) {
+        // Optional columns (national_id / hire_date) are not on the live table: keep them in tenants.feature_flags.hr_employees
+        ({ data: upsertData, error: empErr } = await upsertEmployee(coreRow));
       }
-
+      if (empErr) {
+        throw new Error(`Employee was not saved to public.employees: ${empErr.message}${empErr.hint ? ` (${empErr.hint})` : ''}`);
+      }
+      if (!upsertData) {
+        throw new Error('Employee was not saved to public.employees (no row returned - blocked by an RLS policy?)');
+      }
+      savedEmployeeRow = upsertData;
+      persistedToSupabase = true;
       // 4. Guaranteed Supabase JSONB persistence via tenants.feature_flags (survives hard reload)
       try {
         const tenantId = employeeRecord?.tenant_id || '00000000-0000-0000-0000-000000000001';
@@ -262,6 +259,12 @@ export async function POST(req: NextRequest) {
                 ...existingFlags,
                 employee_schedules: existingSchedules,
                 hr_employees: existingEmployees,
+                staff_meta: {
+                  ...(existingFlags.staff_meta || {}),
+                  ...(savedEmployeeRow?.id
+                    ? { [savedEmployeeRow.id]: { role: employeeRecord?.designation || employeeRecord?.department || 'Staff', email: employeeRecord?.email || '' } }
+                    : {}),
+                },
               },
               updated_at: now,
             })
@@ -321,21 +324,24 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const supabaseServer = getSupabaseServerClient();
+    const tenantParam = new URL(req.url).searchParams.get('tenantId') || '';
+    const tenantId = UUID_RE.test(tenantParam) ? tenantParam : DEFAULT_TENANT_UUID;
 
     // 1. Fetch remote employees from Supabase table
     const { data: empRows } = await supabaseServer
       .from('employees')
       .select('*')
+      .or(tenantId === DEFAULT_TENANT_UUID ? `tenant_id.eq.${tenantId},tenant_id.is.null` : `tenant_id.eq.${tenantId}`)
       .order('created_at', { ascending: false });
 
     // 2. Fetch remote schedules & rich hr_employees from tenants.feature_flags
     const { data: tenantData } = await supabaseServer
       .from('tenants')
       .select('feature_flags')
-      .eq('id', '00000000-0000-0000-0000-000000000001')
+      .eq('id', tenantId)
       .maybeSingle();
 
     const flags = tenantData?.feature_flags || {};

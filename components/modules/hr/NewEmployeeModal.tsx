@@ -729,7 +729,11 @@ export default function NewEmployeeModal({
       const fullName = `${cleanFirstName} ${cleanLastName}`.trim();
       const allEmployees = HRPersonnelService.getEmployees();
       const target = initialData || employee || initialEmployee;
-      const nextId = target?.id || `EMP-${(allEmployees.length + 1).toString().padStart(3, '0')}`;
+      const maxEmpNo = allEmployees.reduce((m, e) => {
+        const mm = /^EMP-(\d+)$/.exec(String(e.id));
+        return mm ? Math.max(m, parseInt(mm[1], 10)) : m;
+      }, 0);
+      const nextId = target?.id || `EMP-${(maxEmpNo + 1).toString().padStart(3, '0')}`;
 
       // Attendance MAC ID: coerce 'Pending Device Sync', 'Select...', or empty to null
       const rawMac = sanitized.attendanceMacId;

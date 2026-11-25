@@ -376,6 +376,13 @@ const LOCAL_STORAGE_KEY = 'vanguard_hr_personnel_records_omega_v2';
 const DAY_OFF_STORAGE_KEY = 'vanguard_hr_day_off_records_v1';
 
 export class HRPersonnelService {
+  private static tenantId: string | undefined;
+
+  /** Active tenant UUID used to scope every employees read/write. */
+  public static setTenantId(id?: string) {
+    this.tenantId = id;
+  }
+
   public static getEmployees(): HREmployeeRecord[] {
     if (typeof window === 'undefined') {
       return [];
@@ -444,6 +451,7 @@ export class HRPersonnelService {
 
     const employeePayload = {
       ...empWithoutActive,
+      tenant_id: this.tenantId || (empWithoutActive as any).tenant_id,
       is_active: isActive,
       schedule_template: scheduleTemplate,
       schedule: scheduleConfig,
@@ -555,7 +563,7 @@ export class HRPersonnelService {
         let serverDbEmployees: any[] = [];
 
         try {
-          const apiRes = await fetch('/api/hr/sync-workstation');
+          const apiRes = await fetch(this.tenantId ? `/api/hr/sync-workstation?tenantId=${encodeURIComponent(this.tenantId)}` : '/api/hr/sync-workstation');
           if (apiRes.ok) {
             const apiData = await apiRes.json();
             if (apiData.remoteSchedules) remoteSchedules = apiData.remoteSchedules;

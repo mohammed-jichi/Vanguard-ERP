@@ -10,6 +10,7 @@ import {
 import { dispatchMasterHRAction } from '@/lib/hrMasterActionDispatcher';
 import NewEmployeeModal, { DEPARTMENTS_MASTER_KEYS, DESIGNATIONS_MASTER_KEYS } from './NewEmployeeModal';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenant } from '@/lib/TenantContext';
 import {
   Search,
   Filter,
@@ -37,6 +38,8 @@ const TEMPLATES_LIST = [
 
 export default function PersonnelMasterConsole() {
   const { t, isRtl } = useLanguage();
+  const { currentTenant } = useTenant();
+  HRPersonnelService.setTenantId(currentTenant?.id);
   const [employees, setEmployees] = useState<HREmployeeRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -204,6 +207,26 @@ export default function PersonnelMasterConsole() {
       } finally {
         setIsLoading(false);
       }
+    }
+  };
+
+  const handleToggleActive = async (emp: HREmployeeRecord) => {
+    const next = !emp.active;
+    try {
+      setIsLoading(true);
+      const updated = await dispatchMasterHRAction({
+        type: 'SAVE_EMPLOYEE',
+        employee: { ...emp, active: next, isActive: next, is_active: next } as any,
+      });
+      if (Array.isArray(updated)) {
+        setEmployees(updated);
+      }
+      showToast(`${emp.fullName} ${next ? 'activated' : 'deactivated'}.`);
+    } catch (err: any) {
+      console.error('[PersonnelMasterConsole] Toggle active error:', err);
+      showToast(`Could not ${next ? 'activate' : 'deactivate'} ${emp.fullName}: ${err?.message || 'database error'}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -538,6 +561,14 @@ export default function PersonnelMasterConsole() {
                     {/* Actions: Pencil & Trash */}
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleActive(emp)}
+                          title={emp.active ? 'Deactivate Employee' : 'Activate Employee'}
+                          className="px-2 py-1 text-[11px] font-bold text-slate-600 hover:text-primary hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                        >
+                          {emp.active ? 'Deactivate' : 'Activate'}
+                        </button>
                         <button
                           type="button"
                           onClick={() => handleOpenEditEmployee(emp)}
