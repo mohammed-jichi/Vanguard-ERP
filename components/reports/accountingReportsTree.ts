@@ -8,7 +8,7 @@ export interface AccountingReportMeta {
 }
 
 /**
- * Authentic 1:1 Omega tree for "Accounting Reports"
+ * Authentic 1:1 Vanguard tree for "Accounting Reports"
  */
 export const ACCOUNTING_OMEGA_TREE: ReportCategoryGroup[] = [
   {

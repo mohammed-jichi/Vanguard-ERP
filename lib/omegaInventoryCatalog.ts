@@ -1,4 +1,4 @@
-// 100% Authentic Omega Inventory Items Catalog
+// 100% Authentic Vanguard Inventory Items Catalog
 export interface AuthenticInventoryItem {
   id: number;
   code: string;

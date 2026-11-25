@@ -1,5 +1,5 @@
 /**
- * Live Suppliers and Lookup Datasets Scraped Directly from Omega ERP
+ * Live Suppliers and Lookup Datasets Scraped Directly from Vanguard ERP
  * Customer ID: 22901 (Southern Olive Oil Products S.A.R.L)
  */
 

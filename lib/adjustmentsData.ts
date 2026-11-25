@@ -1,4 +1,4 @@
-// Vanguard ERP - Adjustments Master Data Engine (Cloned 100% authentically from Omega ERP)
+// Vanguard ERP - Adjustments Master Data Engine (Cloned 100% authentically from Vanguard ERP)
 
 export interface AdjustmentItemRecord {
   PRODUCTID: number;
@@ -482,7 +482,7 @@ export const SEED_ADJUSTMENT_ITEMS: AdjustmentItemRecord[] = [
   }
 ];
 
-// Pre-seeded Historical Adjustments (Authentic Omega Registry)
+// Pre-seeded Historical Adjustments (Authentic Vanguard Registry)
 export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
   {
     ADJUSTID: 8002604,

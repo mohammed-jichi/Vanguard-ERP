@@ -261,11 +261,11 @@ export default function ScreensView() {
     ].filter(it => !leftPanelSearch.trim() || it.name.toLowerCase().includes(leftPanelSearch.toLowerCase()));
   }, [selectedGroupId, leftPanelSearch]);
 
-  // Map 40 cells into Omega visual order (5 cols x 8 rows)
+  // Map 40 cells into Vanguard visual order (5 cols x 8 rows)
   const touchGridCells = useMemo(() => {
-    // Formula from Omega ERP:
+    // Formula from Vanguard ERP:
     // for i = 0 to 40: if (i % 5 == 0) { line++; vlcc = line; } else { vlcc = vlcc + 8; }
-    // Cell index in showlabels is vlcc - 1 (1-indexed in Omega showlabels)
+    // Cell index in showlabels is vlcc - 1 (1-indexed in Vanguard showlabels)
     const grid: { cellNumber: number; item: OmegaScreenItem | null }[] = [];
     let line = 0;
     let vlcc = 0;
@@ -645,7 +645,7 @@ export default function ScreensView() {
       )}
 
       {/* ========================================================================= */}
-      {/* 1. SCREENS LIST VIEW (Omega ScreensView)                                   */}
+      {/* 1. SCREENS LIST VIEW (Vanguard ScreensView)                                   */}
       {/* ========================================================================= */}
       {viewMode === 'list' && (
         <div className="space-y-4">
@@ -888,7 +888,7 @@ export default function ScreensView() {
       )}
 
       {/* ========================================================================= */}
-      {/* 2. SCREEN SETUP DESIGNER VIEW (Omega ScreenSetup)                          */}
+      {/* 2. SCREEN SETUP DESIGNER VIEW (Vanguard ScreenSetup)                          */}
       {/* ========================================================================= */}
       {viewMode === 'setup' && (
         <div className="space-y-4">

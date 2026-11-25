@@ -3,7 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 7: Bank Reconciliation Workstation
- * Exact Omega ERP Functional Parity:
+ * Exact Vanguard ERP Functional Parity:
  * A. Workflow Step 1: Initial Setup (Inputs + Confirmation Dialog)
  * B. Workflow Step 2: Reconciliation Grid (KPI Widgets, Top Action Bar, 4 Import Statement Modals, Matching Table)
  */
@@ -163,7 +163,7 @@ export function Module7BankReconciliation({
                 <span>{t('bank_reconciliation_workstation_step_1', 'Bank Reconciliation Workstation: Step 1 Setup')}</span>
               </h3>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-border">
-                {t('omega_workflow', 'Omega Workflow')}
+                {t('omega_workflow', 'Vanguard Workflow')}
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">

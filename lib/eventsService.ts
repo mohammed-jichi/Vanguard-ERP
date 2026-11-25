@@ -1,5 +1,5 @@
 // lib/eventsService.ts
-// Authentic Omega ERP Events Service
+// Authentic Vanguard ERP Events Service
 
 import {
   OmegaEventRecord,

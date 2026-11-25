@@ -1,5 +1,5 @@
 // lib/eventsData.ts
-// Authentic Omega ERP Events Data Models & Seed Data
+// Authentic Vanguard ERP Events Data Models & Seed Data
 
 export interface OmegaEventCustomer {
   CUSTOMERID: number;
@@ -306,7 +306,7 @@ export const SEED_EVENT_VENUES: OmegaEventVenueItem[] = [
   }
 ];
 
-// Authentic Seed Resources (matching Omega DB `getResourceSetup`)
+// Authentic Seed Resources (matching Vanguard DB `getResourceSetup`)
 export const SEED_EVENT_RESOURCES: OmegaEventResourceItem[] = [
   {
     id: 1,
@@ -372,7 +372,7 @@ export const SEED_EVENT_RESOURCES: OmegaEventResourceItem[] = [
   }
 ];
 
-// Authentic Seed Employees & Drivers (matching Omega DB `getEmployeesByBranch`)
+// Authentic Seed Employees & Drivers (matching Vanguard DB `getEmployeesByBranch`)
 export const SEED_EMPLOYEES: OmegaEventDriverItem[] = [
   { id: 1, EMPLOYEEID: 1, NAME: 'Nadine Ahmar', SALESMANSTATUS: 1, MOBILETEL: '+961 70 882 101', branchid: 1, role: 'Head of Operations & Logistics', license_number: 'LBN-DRV-0012' },
   { id: 2, EMPLOYEEID: 2, NAME: 'Rana Jichi', SALESMANSTATUS: 1, MOBILETEL: '+961 71 553 490', branchid: 1, role: 'Fleet & Catering Dispatcher', license_number: 'LBN-DRV-0034' },

@@ -5,7 +5,7 @@ import { Printer } from 'lucide-react';
 
 /**
  * Vanguard ERP - Module 4: Accounting Receipt (RV)
- * Exact Omega ERP Functional Parity:
+ * Exact Vanguard ERP Functional Parity:
  * A. Two-Column Split Entry View (Left Card Financial Entries, Right Card Classification & Trigger with strict validation on `Add`)
  * B. Multi-line allocation grid, bottom badges (Total Balance $, Total Balance LBP, Total Payment), Save & Post (Green) and Save (Orange)
  */

@@ -3,7 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 5: Accounts Receivables (AR Aging & CRM Station)
- * Exact Omega ERP Functional Parity:
+ * Exact Vanguard ERP Functional Parity:
  * A. Master Grid (Controls, Sortable Columns, Aging Buckets, 5 Action Icons)
  * B. 3 Comprehensive Modals:
  *    1. Send Statement Of Account Modal (Source emails with tooltip, recipient status table)

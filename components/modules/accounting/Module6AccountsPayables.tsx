@@ -3,7 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 6: Accounts Payables (AP Aging & Supplier Station)
- * Exact Omega ERP Functional Parity:
+ * Exact Vanguard ERP Functional Parity:
  * A. Master Grid with Dynamic Bucket Checkbox Headers ([ ] 7d, 14d, 30d, 60d, 90d, Over Due)
  * B. 3 Action Icons per supplier row (Report/Print, Document -> Accounting Payment, Info -> New Supplier)
  * C. New Supplier Modal (Marketplace search, VAT Reg toggle, Payment Terms modal)

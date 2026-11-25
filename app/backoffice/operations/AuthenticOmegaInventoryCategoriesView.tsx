@@ -23,7 +23,7 @@ import {
   OMEGA_LINKED_CATEGORIES
 } from '@/lib/omegaInventoryCategoryData';
 
-// Authentic Searchable Category Select (Omega erp-select pattern with embedded Search Bar)
+// Authentic Searchable Category Select (Vanguard erp-select pattern with embedded Search Bar)
 interface SearchableCategorySelectProps {
   placeholder?: string;
   value: string;
@@ -488,7 +488,7 @@ export default function AuthenticOmegaInventoryCategoriesView() {
       )}
 
       {/* =========================================================================
-          AUTHENTIC OMEGA HEADER & BREADCRUMB
+          AUTHENTIC VANGUARD HEADER & BREADCRUMB
           ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-slate-200 gap-2">
         <div>
@@ -588,7 +588,7 @@ export default function AuthenticOmegaInventoryCategoriesView() {
       </div>
 
       {/* =========================================================================
-          CATEGORIES TABLE (CLONED EXACTLY FROM OMEGA ERP)
+          CATEGORIES TABLE (CLONED EXACTLY FROM VANGUARD ERP)
           ========================================================================= */}
       <div className="bg-white border border-slate-200 rounded-md overflow-hidden shadow-2xs mb-4">
         <div className="overflow-x-auto">

@@ -440,47 +440,47 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
       )}
 
       {/* =========================================================================
-          VIEW 1: QUICK SETUP (100% AUTHENTIC OMEGA CLOUDPOS ONBOARDING WIZARD)
+          VIEW 1: QUICK SETUP (100% AUTHENTIC VANGUARD CLOUDPOS ONBOARDING WIZARD)
           ========================================================================= */}
       {section === 'quick_setup' && <AuthenticOmegaQuickSetupWizard />}
 
       {/* =========================================================================
-          VIEW 5: INVENTORY CATEGORIES (100% AUTHENTIC OMEGA CLONED VIEW)
+          VIEW 5: INVENTORY CATEGORIES (100% AUTHENTIC VANGUARD CLONED VIEW)
           ========================================================================= */}
       {section === 'categories' && <AuthenticOmegaInventoryCategoriesView />}
 
       {/* =========================================================================
-          VIEW 4: INVENTORY DIVISIONS (100% AUTHENTIC OMEGA CLONED VIEW)
+          VIEW 4: INVENTORY DIVISIONS (100% AUTHENTIC VANGUARD CLONED VIEW)
           ========================================================================= */}
       {section === 'divisions' && <AuthenticOmegaInventoryDivisionsView />}
 
       {/* =========================================================================
-          VIEW 3: INVENTORY GROUPS (100% AUTHENTIC OMEGA CLONED VIEW)
+          VIEW 3: INVENTORY GROUPS (100% AUTHENTIC VANGUARD CLONED VIEW)
           ========================================================================= */}
       {section === 'groups' && <AuthenticOmegaInventoryGroupsView />}
 
       {/* =========================================================================
-          VIEW 6: UNITS (100% AUTHENTIC OMEGA CLONED VIEW)
+          VIEW 6: UNITS (100% AUTHENTIC VANGUARD CLONED VIEW)
           ========================================================================= */}
       {section === 'units' && <AuthenticOmegaUnitsView />}
 
       {/* =========================================================================
-          VIEW 7: LOCATIONS (100% AUTHENTIC OMEGA CLONED VIEW)
+          VIEW 7: LOCATIONS (100% AUTHENTIC VANGUARD CLONED VIEW)
           ========================================================================= */}
       {section === 'locations' && <AuthenticOmegaLocationsView />}
 
       {/* =========================================================================
-          VIEW 8: SUPPLIERS (100% AUTHENTIC OMEGA CLONED VIEW)
+          VIEW 8: SUPPLIERS (100% AUTHENTIC VANGUARD CLONED VIEW)
           ========================================================================= */}
       {section === 'suppliers' && <AuthenticOmegaSuppliersView />}
 
       {/* =========================================================================
-          VIEW 9: DEPARTMENTS (100% AUTHENTIC OMEGA CLONED VIEW)
+          VIEW 9: DEPARTMENTS (100% AUTHENTIC VANGUARD CLONED VIEW)
           ========================================================================= */}
       {section === 'departments' && <AuthenticOmegaDepartmentsView />}
 
       {/* =========================================================================
-          VIEW 1: PRODUCTS & SERVICES (100% AUTHENTIC OMEGA CLONED VIEW)
+          VIEW 1: PRODUCTS & SERVICES (100% AUTHENTIC VANGUARD CLONED VIEW)
           ========================================================================= */}
       {section === 'products_services' && <AuthenticOmegaProductsServicesView />}
 
@@ -498,7 +498,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
                 Inventory Catalog
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
-                Omega ERP System Setup • Southern Olive Oil Products S.A.R.L
+                Vanguard ERP System Setup • Southern Olive Oil Products S.A.R.L
               </p>
             </div>
           </div>
@@ -1015,7 +1015,7 @@ export default function OperationsPrimarySetupViews({ section }: OperationsPrima
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2 text-rose-600 font-bold">
                 <RefreshCw className="w-5 h-5" />
-                <span>Merge Locations (Omega ERP Authentic)</span>
+                <span>Merge Locations (Vanguard ERP Authentic)</span>
               </div>
               <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-700">
                 <X className="w-5 h-5" />

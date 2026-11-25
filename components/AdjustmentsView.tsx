@@ -1294,7 +1294,7 @@ export default function AdjustmentsView() {
           </div>
 
           {/* =========================================================================
-              BOTTOM SAVE & POST TOOLBAR (AUTHENTIC OMEGA BUTTONS)
+              BOTTOM SAVE & POST TOOLBAR (AUTHENTIC VANGUARD BUTTONS)
               ========================================================================= */}
           <div className="flex flex-wrap items-center justify-end gap-2.5 mt-5 pt-4 border-t border-slate-200">
             {/* When fresh / unsaved */}
@@ -1368,7 +1368,7 @@ export default function AdjustmentsView() {
               ========================================================================= */}
           <hr className="my-6 border-slate-200" />
           <div className="text-center text-xs text-slate-500 py-2">
-            <p className="mb-2">{t('download_the_omega_stock_app_to_take', 'Download the Omega Stock App to take your stock count from your mobile device.')}</p>
+            <p className="mb-2">{t('download_the_omega_stock_app_to_take', 'Download the Vanguard Stock App to take your stock count from your mobile device.')}</p>
             <a
               href="https://play.google.com/store/apps/details?id=com.omegasoftware.ostock"
               target="_blank"
@@ -1828,7 +1828,7 @@ export default function AdjustmentsView() {
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-slate-900 text-white">
               <h5 className="font-bold text-sm flex items-center gap-2">
-                <PlayCircle className="w-4 h-4 text-emerald-400" /> {t('omega_stock_adjustments_tutorial', 'Omega Stock Adjustments Tutorial')}
+                <PlayCircle className="w-4 h-4 text-emerald-400" /> {t('omega_stock_adjustments_tutorial', 'Vanguard Stock Adjustments Tutorial')}
               </h5>
               <button
                 type="button"

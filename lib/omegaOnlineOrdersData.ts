@@ -1,5 +1,5 @@
 /**
- * Omega ERP / Vanguard ERP - Online Orders Models & Live Seed Data
+ * Vanguard ERP / Vanguard ERP - Online Orders Models & Live Seed Data
  * Module: Online Orders Control Center (ID: 343, Parent: 1)
  * Branch: 22901 - Zeit w zaytoun ljanoub
  */

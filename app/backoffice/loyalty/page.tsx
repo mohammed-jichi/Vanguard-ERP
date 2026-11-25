@@ -35,7 +35,7 @@ import { getLoyaltyTierTextClass, getReportStatusTextClass } from '@/components/
 import UnifiedLoyaltyManagementConsole from '@/components/modules/loyalty/UnifiedLoyaltyManagementConsole';
 
 // ============================================================================
-// 1. OMEGA LOYALTY REPORT NAVIGATION TREE
+// 1. VANGUARD LOYALTY REPORT NAVIGATION TREE
 // ============================================================================
 
 const LOYALTY_REPORT_TREE: ReportCategoryGroup[] = [

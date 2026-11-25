@@ -721,7 +721,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
       )}
 
       {/* =========================================================================
-          AUTHENTIC OMEGA HEADER & BREADCRUMB
+          AUTHENTIC VANGUARD HEADER & BREADCRUMB
           ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-slate-200 gap-2">
         <div>
@@ -2107,7 +2107,7 @@ export default function AuthenticOmegaInventoryGroupsView() {
                     <strong>Edit Pen Next To Division*:</strong> Edits the selected division directly on the fly.
                   </li>
                   <li>
-                    <strong>Edit Group:</strong> Opens the complete group edit modal matching the authentic Omega CloudPOS system with ID, accounting, tax, and image controls.
+                    <strong>Edit Group:</strong> Opens the complete group edit modal matching the authentic Vanguard CloudPOS system with ID, accounting, tax, and image controls.
                   </li>
                   <li>
                     <strong>Actions &gt; Sorting:</strong> Reorder group display sorting with numeric values or up/down shift controls.

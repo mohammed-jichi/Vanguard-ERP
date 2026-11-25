@@ -140,7 +140,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
   };
 
   // -------------------------------------------------------------
-  // 1. BRANCH INFO STATE (Authentic Omega Screenshot 1)
+  // 1. BRANCH INFO STATE (Authentic Vanguard Screenshot 1)
   // -------------------------------------------------------------
   const [branchName] = useState('Zeit w zaytoun ljanoub');
   const [street, setStreet] = useState('Old Saida Raod');
@@ -184,7 +184,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
   const [invoiceMsg5, setInvoiceMsg5] = useState('');
 
   // -------------------------------------------------------------
-  // 2. CURRENCY SETUP STATE (Authentic Omega Screenshot 2)
+  // 2. CURRENCY SETUP STATE (Authentic Vanguard Screenshot 2)
   // -------------------------------------------------------------
   const [availableCurrencies, setAvailableCurrencies] = useState<string[]>(['LBP', 'USD', 'EUR', 'AED', 'SAR']);
   const [mainCurrency, setMainCurrency] = useState<string>('LBP');
@@ -193,7 +193,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
   const [showOnlyOneCurrencyOnInvoice, setShowOnlyOneCurrencyOnInvoice] = useState<boolean>(false);
 
   // -------------------------------------------------------------
-  // 3. TAX SETUP STATE (Authentic Omega Screenshots 2 & 3)
+  // 3. TAX SETUP STATE (Authentic Vanguard Screenshots 2 & 3)
   // -------------------------------------------------------------
   const [taxes, setTaxes] = useState<TaxRow[]>([
     { id: 1, description: 'TAX 1', rate: 0 },
@@ -205,7 +205,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
   ]);
 
   // -------------------------------------------------------------
-  // 4. PAYMENT TYPES STATE (Authentic Omega Screenshot 3)
+  // 4. PAYMENT TYPES STATE (Authentic Vanguard Screenshot 3)
   // -------------------------------------------------------------
   const [paymentTypes, setPaymentTypes] = useState<PaymentTypeRow[]>([
     { id: 1, description: 'CASH', type: 'Cash', currency: 'LBP' },
@@ -402,7 +402,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
 
   // -------------------------------------------------------------
   // 6. STEP 3: INVENTORY SETUP & TAXONOMY HIERARCHY
-  // Categories -> Divisions -> Groups -> Items (Omega ERP 100% Clone)
+  // Categories -> Divisions -> Groups -> Items (Vanguard ERP 100% Clone)
   // -------------------------------------------------------------
   const [categories, setCategories] = useState<InventoryCategoryRow[]>([
     {
@@ -745,7 +745,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
   const selectedGroup = currentGroups.find((g) => g.id === selectedGroupId) || currentGroups[0] || null;
   const currentItems = selectedGroup ? selectedGroup.items : [];
 
-  // Hierarchy Selection Handlers (Matching Omega ng-click cascade)
+  // Hierarchy Selection Handlers (Matching Vanguard ng-click cascade)
   const handleSelectCategory = (cat: InventoryCategoryRow) => {
     setSelectedCategoryId(cat.id);
     const firstDiv = cat.divisions[0] || null;
@@ -1355,7 +1355,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       </div>
 
       {/* =========================================================================
-          AUTHENTIC OMEGA STEPPER (4 STEPS CONNECTED BY BAR)
+          AUTHENTIC VANGUARD STEPPER (4 STEPS CONNECTED BY BAR)
           1: Company Info | 2: Device Settings | 3: Inventory Setup | 4: Employee Setup
           ========================================================================= */}
       <div className="flex items-center justify-center py-4">
@@ -1422,7 +1422,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       </div>
 
       {/* =========================================================================
-          STEP 1: COMPANY INFO (AUTHENTIC OMEGA ACCORDION WITH 4 SUB-PANELS)
+          STEP 1: COMPANY INFO (AUTHENTIC VANGUARD ACCORDION WITH 4 SUB-PANELS)
           ========================================================================= */}
       {activeStep === 1 && (
         <div className="space-y-4">
@@ -2119,7 +2119,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          STEP 2: DEVICE SETTINGS (AUTHENTIC OMEGA SCREENSHOT 1 & 4)
+          STEP 2: DEVICE SETTINGS (AUTHENTIC VANGUARD SCREENSHOT 1 & 4)
           Card 1: Printers (Logical & Physical) | Card 2: Workstations
           ========================================================================= */}
       {activeStep === 2 && (
@@ -2376,14 +2376,14 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          STEP 3: INVENTORY SETUP & MASTER TAXONOMY (AUTHENTIC OMEGA CLOUDPOS)
-          Categories, Divisions, Groups & Items (Lines 5074-5154 in Omega HTML)
+          STEP 3: INVENTORY SETUP & MASTER TAXONOMY (AUTHENTIC VANGUARD CLOUDPOS)
+          Categories, Divisions, Groups & Items (Lines 5074-5154 in Vanguard HTML)
           ========================================================================= */}
       {activeStep === 3 && (
         <div className="space-y-4 animate-fade-in">
           {/* Main Card: Categories, Divisions, Groups & Items Panel */}
           <div className="bg-white border border-slate-200 rounded-lg shadow-xs overflow-hidden">
-            {/* Header Accordion Bar (Matching Omega .panel-heading) */}
+            {/* Header Accordion Bar (Matching Vanguard .panel-heading) */}
             <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 text-sm font-bold text-slate-800 flex items-center justify-between">
               <span className="text-slate-800">Categories, Divisions, Groups &amp; Items</span>
               <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-primary">
@@ -2742,7 +2742,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
                 </div>
               </div>
 
-              {/* Step Navigation Buttons (Matching Omega lines 5143-5150) */}
+              {/* Step Navigation Buttons (Matching Vanguard lines 5143-5150) */}
               <div className="pt-4 border-t border-slate-200 flex justify-end gap-3">
                 <button
                   type="button"
@@ -2792,7 +2792,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
             <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
             <h3 className="text-lg font-bold text-slate-900">Congratulations! Quick Setup Complete</h3>
             <p className="text-xs text-slate-600 max-w-lg mx-auto">
-              Your Vanguard / Omega ERP deployment is fully synchronized. All branch profiles, multi-currencies, tax tables, payment types, and workstations are operational.
+              Your Vanguard / Vanguard ERP deployment is fully synchronized. All branch profiles, multi-currencies, tax tables, payment types, and workstations are operational.
             </p>
             <div className="pt-2 flex justify-center gap-3">
               <a
@@ -2823,7 +2823,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          MODAL: EDIT TAX CONFIGURATION (AUTHENTIC OMEGA FEATURE)
+          MODAL: EDIT TAX CONFIGURATION (AUTHENTIC VANGUARD FEATURE)
           Fields: ID / Tax Description / Tax Rate*
           Buttons: Apply On All Groups | Apply On All Employee Roles | Save
           ========================================================================= */}
@@ -3242,7 +3242,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          MODAL: LOGICAL WAREHOUSE (AUTHENTIC OMEGA media_1789170497961.png)
+          MODAL: LOGICAL WAREHOUSE (AUTHENTIC VANGUARD media_1789170497961.png)
           ========================================================================= */}
       {isLogicalWarehouseModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
@@ -3340,7 +3340,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          MODAL: PHYSICAL PRINTER (AUTHENTIC OMEGA fetched_CompanyInfo_PhysicalPrinterModify)
+          MODAL: PHYSICAL PRINTER (AUTHENTIC VANGUARD fetched_CompanyInfo_PhysicalPrinterModify)
           ========================================================================= */}
       {isPhysicalPrinterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
@@ -3524,7 +3524,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          MODAL: WORKSTATION EDIT (AUTHENTIC OMEGA media_1789170497972.png & media_1789170497990.png)
+          MODAL: WORKSTATION EDIT (AUTHENTIC VANGUARD media_1789170497972.png & media_1789170497990.png)
           ========================================================================= */}
       {editingWorkstation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in overflow-y-auto">
@@ -4014,7 +4014,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          MODAL 1: NEW / EDIT INVENTORY CATEGORY (AUTHENTIC OMEGA SCREENSHOT 1)
+          MODAL 1: NEW / EDIT INVENTORY CATEGORY (AUTHENTIC VANGUARD SCREENSHOT 1)
           Header: New Inventory Category
           Predefined: Select Predefined Category
           Fields: Category description* | Second Lang Description | Sorting
@@ -4180,7 +4180,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          MODAL 2: NEW / EDIT INVENTORY DIVISION (AUTHENTIC OMEGA SCREENSHOT 2)
+          MODAL 2: NEW / EDIT INVENTORY DIVISION (AUTHENTIC VANGUARD SCREENSHOT 2)
           Header: New Inventory Division
           Fields: Division Name* | Category* (+ button) | Sorting | Second Lang Name
           Image Box: Preview, Select image, Remove
@@ -4345,7 +4345,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          MODAL 3: NEW / EDIT INVENTORY GROUP (AUTHENTIC OMEGA SCREENSHOT 3)
+          MODAL 3: NEW / EDIT INVENTORY GROUP (AUTHENTIC VANGUARD SCREENSHOT 3)
           Header: New Inventory Group
           Fields: Group name* | Other description
           Row 2: Division* (+ button) | Second Lang Name | Sorting
@@ -4666,7 +4666,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
       )}
 
       {/* =========================================================================
-          MODAL 4: NEW / EDIT INVENTORY ITEM (Table 4 Items in Omega Hierarchy)
+          MODAL 4: NEW / EDIT INVENTORY ITEM (Table 4 Items in Vanguard Hierarchy)
           Header: New Inventory Item
           Fields: Item description* | Second Lang Description | Group* (+ button)
                   Barcode | Unit | Selling Price | Cost

@@ -32,7 +32,7 @@ import SearchInventoryItemsModal, { SelectedTransferItemPayload } from '@/compon
 import { OMEGA_INVENTORY_ITEMS, AuthenticInventoryItem } from '@/lib/omegaInventoryCatalog';
 
 // ============================================================================
-// AUTHENTIC OMEGA SEED DATA & INTERFACES
+// AUTHENTIC VANGUARD SEED DATA & INTERFACES
 // ============================================================================
 
 export interface IngredientItem {
@@ -112,7 +112,7 @@ const AUTHENTIC_LOCATIONS = [
   { id: 4, name: 'Manufacture Warehouse' }
 ];
 
-// Initial Single Production Vouchers from Live Omega ERP
+// Initial Single Production Vouchers from Live Vanguard ERP
 const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
   {
     id: 7,
@@ -487,7 +487,7 @@ const INITIAL_SINGLE_ASSEMBLIES: SingleAssemblyRecord[] = [
   }
 ];
 
-// Initial Multiple Production Records from Live Omega ERP
+// Initial Multiple Production Records from Live Vanguard ERP
 const INITIAL_MULTIPLE_ASSEMBLIES: MultipleAssemblyRecord[] = [
   {
     id: 8,
@@ -1211,7 +1211,7 @@ export default function ItemAssemblyView() {
   };
 
   // ==========================================================================
-  // RENDER: FULL-PAGE PRINTABLE DOCUMENT VIEW (MATCHING OMEGA EXACTLY)
+  // RENDER: FULL-PAGE PRINTABLE DOCUMENT VIEW (MATCHING VANGUARD EXACTLY)
   // ==========================================================================
   if (isPrintReportView && reportVoucher) {
     return (
@@ -2529,7 +2529,7 @@ function PreviewSingleProductionsModal({
               <h2 className="text-base font-bold text-slate-900 tracking-tight">
                 Preview Item Assembly Records
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">Live Omega Data</p>
+              <p className="text-xs text-slate-500 mt-0.5">Live Vanguard Data</p>
             </div>
           </div>
           <button
@@ -2734,7 +2734,7 @@ function PreviewMultipleProductionsModal({
               <h2 className="text-base font-bold text-slate-900 tracking-tight">
                 Preview Multiple Item Assembly
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">Omega Live Data</p>
+              <p className="text-xs text-slate-500 mt-0.5">Vanguard Live Data</p>
             </div>
           </div>
           <button

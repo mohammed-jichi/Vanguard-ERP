@@ -1454,7 +1454,7 @@ export default function ProductRequestView() {
       )}
 
       {/* =========================================================================
-          MODAL 8: PRINT VIEW MODAL (1:1 AUTHENTIC OMEGA VOUCHER)
+          MODAL 8: PRINT VIEW MODAL (1:1 AUTHENTIC VANGUARD VOUCHER)
           ========================================================================= */}
       {showPrintModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in">
@@ -1485,7 +1485,7 @@ export default function ProductRequestView() {
               <div className="flex items-start justify-between border-b pb-4 mb-6">
                 <div>
                   <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('product_requisition', 'PRODUCT REQUISITION')}</h2>
-                  <p className="text-xs text-slate-500 font-mono mt-0.5">Omega ERP &bull; Operations Center</p>
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">Vanguard ERP &bull; Operations Center</p>
                 </div>
                 <div className="text-right">
                   <span className="text-base font-extrabold font-mono text-teal-700">{prNumber}</span>

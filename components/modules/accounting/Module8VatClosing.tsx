@@ -3,7 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 8: VAT Closing & Chart of Accounts Hierarchy
- * Exact Omega ERP Functional Parity:
+ * Exact Vanguard ERP Functional Parity:
  * A. VAT Closing Preparation: Checklist Box, Year (2026), VAT Period (Quarterly),
  *    Select Quarter (Q1 -> 31-Mar-2026, Q2 -> 30-Jun-2026, Q3 -> current date, Q4 -> 31-Dec-2026),
  *    VAT Payable Account (4411100000), VAT Receivable Account (4426900000), Notes, Preview button
@@ -172,7 +172,7 @@ export function Module8VatClosing({
                 <span>VAT Period Closing &amp; Chart of Accounts Hierarchy</span>
               </h3>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-border">
-                {t('omega_parity', 'Omega Parity')}
+                {t('omega_parity', 'Vanguard Parity')}
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">

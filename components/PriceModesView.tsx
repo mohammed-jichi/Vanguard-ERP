@@ -170,7 +170,7 @@ export default function PriceModesView() {
           </nav>
         </div>
 
-        {/* Toolbar matching Omega exact markup */}
+        {/* Toolbar matching Vanguard exact markup */}
         <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="w-full sm:w-80">
@@ -196,7 +196,7 @@ export default function PriceModesView() {
           </div>
         </div>
 
-        {/* Weekly Time Matrix Table matching Omega ModesView */}
+        {/* Weekly Time Matrix Table matching Vanguard ModesView */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-700 divide-y divide-slate-200">

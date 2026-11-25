@@ -8,7 +8,7 @@ export interface LoyaltyReportMeta {
 }
 
 /**
- * Authentic 1:1 Omega tree for "Loyalty Management Reports"
+ * Authentic 1:1 Vanguard tree for "Loyalty Management Reports"
  */
 export const LOYALTY_MANAGEMENT_OMEGA_TREE: ReportCategoryGroup[] = [
   {

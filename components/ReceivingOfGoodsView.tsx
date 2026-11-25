@@ -412,7 +412,7 @@ export default function ReceivingOfGoodsView() {
         </div>
       </div>
 
-      {/* CONFIRM RECEIVING OF GOODS MODAL (1:1 OMEGA confirmationModal) */}
+      {/* CONFIRM RECEIVING OF GOODS MODAL (1:1 VANGUARD confirmationModal) */}
       {showInspectionModal && activePr && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in">
           <div className="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-5xl my-6 flex flex-col overflow-hidden max-h-[92vh]">

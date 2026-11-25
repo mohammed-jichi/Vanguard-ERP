@@ -150,7 +150,7 @@ export function generateDuplicateInvoiceQuery(
     whereConditions.push(`(si.tax_amount IS NULL OR si.tax_amount = 0)`);
   }
   if (mode === 'duplicate_invoices') {
-    whereConditions.push(`si.print_count >= 2`); // In authentic Omega, duplicate invoices are those reprinted >= 2 times
+    whereConditions.push(`si.print_count >= 2`); // In authentic Vanguard, duplicate invoices are those reprinted >= 2 times
   }
 
   // Construct SELECT, FROM, GROUP BY, ORDER BY

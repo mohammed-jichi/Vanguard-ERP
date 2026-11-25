@@ -44,7 +44,7 @@ const getInitialAppliedFilters = (): Record<string, any> => {
 };
 
 // ============================================================================
-// 1. DESIGN SYSTEM TYPES & INTERFACES (AUTHENTIC OMEGA ARCHITECTURE)
+// 1. DESIGN SYSTEM TYPES & INTERFACES (AUTHENTIC VANGUARD ARCHITECTURE)
 // ============================================================================
 
 export interface BreadcrumbItem {
@@ -237,7 +237,7 @@ export interface ReportPageLayoutProps {
   children?: React.ReactNode;
   header?: React.ReactNode;
   filters?: React.ReactNode;
-  metrics?: React.ReactNode; // Strictly omitted from display per Omega specification
+  metrics?: React.ReactNode; // Strictly omitted from display per Vanguard specification
   /**
    * Report canvas. Pass a render function to receive the filter values committed
    * via "Filter Report" so the live data fetcher queries with the exact parameters.
@@ -521,7 +521,7 @@ export function ReportSelectFilter({
 }
 
 // ============================================================================
-// 5. SUB-COMPONENT: REPORT FILTERS (BOX WITH OMEGA TOKEN BUTTONS)
+// 5. SUB-COMPONENT: REPORT FILTERS (BOX WITH VANGUARD TOKEN BUTTONS)
 // ============================================================================
 
 export function ReportFilters({
@@ -726,7 +726,7 @@ export function ReportFilters({
 }
 
 // ============================================================================
-// 6. METRIC CARDS (OMITTED FROM DISPLAY PER OMEGA SPECIFICATION)
+// 6. METRIC CARDS (OMITTED FROM DISPLAY PER VANGUARD SPECIFICATION)
 // ============================================================================
 
 export function ReportMetricCards({ metrics = [] }: { metrics?: MetricCardItem[] }) {
@@ -1008,14 +1008,14 @@ const DEFAULT_OMEGA_CATEGORIES: ReportCategoryGroup[] = [
 ];
 
 // ============================================================================
-// 10. MASTER LAYOUT: REPORT PAGE LAYOUT (STRICT 2-COLUMN OMEGA ARCHITECTURE)
+// 10. MASTER LAYOUT: REPORT PAGE LAYOUT (STRICT 2-COLUMN VANGUARD ARCHITECTURE)
 // ============================================================================
 
 export default function ReportPageLayout({
   children,
   header,
   filters,
-  metrics, // Strictly omitted from display per Omega specification
+  metrics, // Strictly omitted from display per Vanguard specification
   table,
   className = '',
   moduleTitle = 'Reports Hub',

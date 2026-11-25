@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// OMEGA LIVE CATALOG & SEED DATA
+// VANGUARD LIVE CATALOG & SEED DATA
 // ============================================================================
 
 interface ReorderProduct {
@@ -2400,7 +2400,7 @@ export default function ReorderGuideView() {
       )}
 
       {/* =========================================================================
-          13. FOOTER (Matching Omega ERP)
+          13. FOOTER (Matching Vanguard ERP)
           ========================================================================= */}
       <footer className="mt-12 text-center text-xs text-slate-400 py-4 border-t border-slate-200">
         <span>{t('copyright_vanguard', '© 2026 Vanguard ERP. All rights reserved.')}</span> | 

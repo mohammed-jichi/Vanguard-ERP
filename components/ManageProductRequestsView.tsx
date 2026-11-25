@@ -876,7 +876,7 @@ export default function ManageProductRequestsView() {
       </div>
 
       {/* =========================================================================
-          MODAL 1: PR DETAILS & APPROVAL MODAL (1:1 AUTHENTIC OMEGA prDetailsModal)
+          MODAL 1: PR DETAILS & APPROVAL MODAL (1:1 AUTHENTIC VANGUARD prDetailsModal)
           ========================================================================= */}
       {showDetailModal && activePrForDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in">
@@ -1054,7 +1054,7 @@ export default function ManageProductRequestsView() {
       )}
 
       {/* =========================================================================
-          MODAL 2: REJECT REASON MODAL (1:1 MATCH OF OMEGA rejectReasonsModal)
+          MODAL 2: REJECT REASON MODAL (1:1 MATCH OF VANGUARD rejectReasonsModal)
           ========================================================================= */}
       {showRejectModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
@@ -1127,7 +1127,7 @@ export default function ManageProductRequestsView() {
       )}
 
       {/* =========================================================================
-          MODAL 3: SUBSTITUTE ITEM MODAL (1:1 OMEGA substituteProductRequestsItemModal)
+          MODAL 3: SUBSTITUTE ITEM MODAL (1:1 VANGUARD substituteProductRequestsItemModal)
           ========================================================================= */}
       {showSubstituteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
@@ -1204,7 +1204,7 @@ export default function ManageProductRequestsView() {
       )}
 
       {/* =========================================================================
-          MODAL 4: PRODUCTIONS REPORT MODAL (1:1 OMEGA productionReportsModal)
+          MODAL 4: PRODUCTIONS REPORT MODAL (1:1 VANGUARD productionReportsModal)
           ========================================================================= */}
       {showProductionsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
@@ -1371,7 +1371,7 @@ export default function ManageProductRequestsView() {
                     <div className="flex justify-between items-center border-b pb-3 mb-4">
                       <div>
                         <h3 className="text-lg font-bold text-slate-900">{t('dispatch_delivery_note', 'DISPATCH & DELIVERY NOTE')}</h3>
-                        <span className="text-xs text-slate-500">{t('omega_erp_operations', 'Omega ERP Operations')}</span>
+                        <span className="text-xs text-slate-500">{t('omega_erp_operations', 'Vanguard ERP Operations')}</span>
                       </div>
                       <div className="text-right font-mono">
                         <span className="text-base font-extrabold text-teal-700">{pr.REQUESTNB}</span>

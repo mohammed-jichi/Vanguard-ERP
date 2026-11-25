@@ -141,7 +141,7 @@ export default function AuthenticOmegaProductsServicesView() {
   const [isSortMenuOpen, setIsSortMenuOpen] = useState<boolean>(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
 
-  // More Filter Checkboxes (14 Authentic Omega ERP Specifications)
+  // More Filter Checkboxes (14 Authentic Vanguard ERP Specifications)
   const [moreFilters, setMoreFilters] = useState<{
     serialNumber: boolean;
     ingredients: boolean;
@@ -265,7 +265,7 @@ export default function AuthenticOmegaProductsServicesView() {
     'Palletization' | 'Bundle/Kit' | 'Inverted Breakdown (Hazard)'
   >('Palletization');
 
-  // Inventory Productions Report Modal (REP_I_0041 - Authentic Omega Print/Export Clone)
+  // Inventory Productions Report Modal (REP_I_0041 - Authentic Vanguard Print/Export Clone)
   const [isInventoryProductionsReportOpen, setIsInventoryProductionsReportOpen] = useState<boolean>(false);
   const [inventoryProductionsReportMode, setInventoryProductionsReportMode] = useState<
     'omega_anomaly' | 'case_assembly' | 'pallet_master'
@@ -322,7 +322,7 @@ export default function AuthenticOmegaProductsServicesView() {
   const [newExtraBarcodeType, setNewExtraBarcodeType] = useState<string>('EAN-13');
   const [newExtraBarcodeNote, setNewExtraBarcodeNote] = useState<string>('Packaging Box');
 
-  // Actions Dropdown Operations States (All 15 Actions from Omega Screenshot)
+  // Actions Dropdown Operations States (All 15 Actions from Vanguard Screenshot)
   const [showBarcodeColumn, setShowBarcodeColumn] = useState<boolean>(false);
   const [isHideZeroQtyActive, setIsHideZeroQtyActive] = useState<boolean>(false);
   const [showSCPriceColumn, setShowSCPriceColumn] = useState<boolean>(false);
@@ -916,7 +916,7 @@ export default function AuthenticOmegaProductsServicesView() {
       ...editingProduct,
       usedInItems: [anomalyLink]
     });
-    showToast('Simulated Omega REP_I_0041 Anomaly: Single bottle consuming 0.08 BOX (Backward Linkage)');
+    showToast('Simulated Vanguard REP_I_0041 Anomaly: Single bottle consuming 0.08 BOX (Backward Linkage)');
   };
 
   const handleRemoveUsedInItem = (id: number) => {
@@ -1127,7 +1127,7 @@ export default function AuthenticOmegaProductsServicesView() {
   };
 
   // ---------------------------------------------------------------------------
-  // Handlers for Toolbar Actions Menu (All 15 Operations from Omega ERP)
+  // Handlers for Toolbar Actions Menu (All 15 Operations from Vanguard ERP)
   // ---------------------------------------------------------------------------
   const handleGenerateBarcodes = () => {
     let count = 0;
@@ -1642,7 +1642,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
       // Source
       if (selectedSource !== 'All' && (item.source || 'Local') !== selectedSource) return false;
 
-      // More Filters (14 Authentic Omega ERP Specifications)
+      // More Filters (14 Authentic Vanguard ERP Specifications)
       if (moreFilters.serialNumber && !item.hasSerialNumber && (!item.serialNumber || item.serialNumber.trim() === '')) return false;
       if (moreFilters.ingredients && !item.hasIngredients && (!item.ingredients || item.ingredients.trim() === '')) return false;
       if (moreFilters.colors && !item.hasColors && (!item.color || item.color.trim() === '')) return false;
@@ -2265,7 +2265,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
             href="#tutorial"
             onClick={(e) => {
               e.preventDefault();
-              showToast('Opening Omega Products Tutorial Video');
+              showToast('Opening Vanguard Products Tutorial Video');
             }}
             className="text-[12px] text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium"
           >
@@ -2389,7 +2389,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
               )}
             </div>
 
-            {/* Actions Dropdown (Authentic 15 Actions from Omega ERP) */}
+            {/* Actions Dropdown (Authentic 15 Actions from Vanguard ERP) */}
             <div className="relative" ref={actionsRef}>
               <button
                 type="button"
@@ -2664,7 +2664,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
               ))}
             </select>
 
-            {/* More Menu Dropdown (14 Authentic Omega ERP Specifications) */}
+            {/* More Menu Dropdown (14 Authentic Vanguard ERP Specifications) */}
             <div className="relative" ref={moreRef}>
               <button
                 type="button"
@@ -3913,7 +3913,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                             </span>
                           </div>
                           <p className="text-slate-700 text-[11px] leading-relaxed">
-                            Buying Format and Inventory Format are both configured as <strong>BOX</strong> with Quantity = 1. If customers or dispatch orders request partial cases (e.g. 3 individual 500ml bottles), Vanguard Dispatch and Omega POS barcode scanners will fail or lock the entire 12-pack case. For split-case retail/wholesale sales, set <strong>Inventory Format to BOT</strong> with <strong>Qty In Buying Format = 12</strong>.
+                            Buying Format and Inventory Format are both configured as <strong>BOX</strong> with Quantity = 1. If customers or dispatch orders request partial cases (e.g. 3 individual 500ml bottles), Vanguard Dispatch and Vanguard POS barcode scanners will fail or lock the entire 12-pack case. For split-case retail/wholesale sales, set <strong>Inventory Format to BOT</strong> with <strong>Qty In Buying Format = 12</strong>.
                           </p>
                           <div className="flex justify-end pt-1">
                             <button
@@ -5239,8 +5239,8 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                       </span>
                     </div>
                     <p className="text-slate-700 text-[11px] leading-relaxed">
-                      Omega enforces a strict <strong>200KB maximum file size</strong>. 
-                      <strong> Main Image:</strong> cropped to <strong>225×225 px</strong> (Omega POS touchscreen grids & Vanguard thumbnail). 
+                      Vanguard enforces a strict <strong>200KB maximum file size</strong>. 
+                      <strong> Main Image:</strong> cropped to <strong>225×225 px</strong> (Vanguard POS touchscreen grids & Vanguard thumbnail). 
                       <strong> Additional Images:</strong> cropped to <strong>200×200 px</strong> (Back-label, nutritional facts & barcode close-ups).
                       Guarantees lightweight payloads for instant loading in Supersonic Dispatch and B2B ordering portals.
                     </p>
@@ -5474,7 +5474,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                     setIsInventoryProductionsReportOpen(true);
                   }}
                   className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary/90 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs cursor-pointer transition"
-                  title="View Authentic Omega Inventory Productions Ingredients Report (REP_I_0041)"
+                  title="View Authentic Vanguard Inventory Productions Ingredients Report (REP_I_0041)"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   <span>Report [REP_I_0041]</span>
@@ -6051,7 +6051,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                             </span>
                           </div>
                           <p className="text-slate-700 text-[11px] leading-relaxed">
-                            Buying Format and Inventory Format are both configured as <strong>BOX</strong> with Quantity = 1. If customers or dispatch orders request partial cases (e.g. 3 individual 500ml bottles), Vanguard Dispatch and Omega POS barcode scanners will fail or lock the entire 12-pack case. For split-case retail/wholesale sales, set <strong>Inventory Format to BOT</strong> with <strong>Qty In Buying Format = 12</strong>.
+                            Buying Format and Inventory Format are both configured as <strong>BOX</strong> with Quantity = 1. If customers or dispatch orders request partial cases (e.g. 3 individual 500ml bottles), Vanguard Dispatch and Vanguard POS barcode scanners will fail or lock the entire 12-pack case. For split-case retail/wholesale sales, set <strong>Inventory Format to BOT</strong> with <strong>Qty In Buying Format = 12</strong>.
                           </p>
                           <div className="flex justify-end pt-1">
                             <button
@@ -7357,8 +7357,8 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                       </span>
                     </div>
                     <p className="text-slate-700 text-[11px] leading-relaxed">
-                      Omega enforces a strict <strong>200KB maximum file size</strong>. 
-                      <strong> Main Image:</strong> cropped to <strong>225×225 px</strong> (Omega POS touchscreen grids & Vanguard thumbnail). 
+                      Vanguard enforces a strict <strong>200KB maximum file size</strong>. 
+                      <strong> Main Image:</strong> cropped to <strong>225×225 px</strong> (Vanguard POS touchscreen grids & Vanguard thumbnail). 
                       <strong> Additional Images:</strong> cropped to <strong>200×200 px</strong> (Back-label, nutritional facts & barcode close-ups).
                       Guarantees lightweight payloads for instant loading in Supersonic Dispatch and B2B ordering portals.
                     </p>
@@ -7854,7 +7854,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                         <span>Architectural Distinction: &quot;Item Assembly&quot; vs. &quot;Included Items&quot;</span>
                       </div>
                       <span className="text-[10px] font-mono bg-blue-100 text-primary px-2 py-0.5 rounded font-bold">
-                        OMEGA ERP INVENTORY ARCHITECTURE
+                        VANGUARD ERP INVENTORY ARCHITECTURE
                       </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-[11px] leading-relaxed">
@@ -8093,7 +8093,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                         <span>The &quot;Where Used&quot; Hierarchy (Reverse Supply Chain View)</span>
                       </div>
                       <span className="text-[10px] font-mono bg-blue-100 text-primary px-2 py-0.5 rounded font-bold">
-                        OMEGA UPWARD DEPENDENCY TRACEABILITY
+                        VANGUARD UPWARD DEPENDENCY TRACEABILITY
                       </span>
                     </div>
 
@@ -8104,7 +8104,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                           <span>1. Upward BOM & Financial Impact Tracking</span>
                         </div>
                         <p className="text-slate-600">
-                          Unlike <em>Item Assembly</em> (which tracks what raw materials create this item), this tab tracks <strong>which larger parent products consume this 12-pack case</strong>. If you modify this box&apos;s Unit Cost, gross weight, or case dimensions, Omega uses these linkages to determine which parent SKUs are structurally or financially impacted.
+                          Unlike <em>Item Assembly</em> (which tracks what raw materials create this item), this tab tracks <strong>which larger parent products consume this 12-pack case</strong>. If you modify this box&apos;s Unit Cost, gross weight, or case dimensions, Vanguard uses these linkages to determine which parent SKUs are structurally or financially impacted.
                         </p>
                       </div>
 
@@ -8133,7 +8133,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 font-bold text-rose-800 text-sm">
                               <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 animate-bounce" />
-                              <span>Critical Risk: Backward Linkage Error Detected (The Omega Database Anomaly)</span>
+                              <span>Critical Risk: Backward Linkage Error Detected (The Vanguard Database Anomaly)</span>
                             </div>
                             <span className="px-2 py-0.5 bg-rose-600 text-white font-mono text-[10px] font-bold rounded animate-pulse">
                               INVERTED BOM HAZARD
@@ -8141,7 +8141,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                           </div>
                           <div className="text-slate-700 text-[11px] leading-relaxed space-y-1">
                             <p>
-                              <strong>As identified in Omega Report <code>REP_I_0041</code>:</strong> Parent Product <strong>CWV500MLB106</strong> (<em>White Vinegar 500ml</em> - single bottle) is configured to consume <strong>0.08 BOX</strong> of this finished 12-pack case.
+                              <strong>As identified in Vanguard Report <code>REP_I_0041</code>:</strong> Parent Product <strong>CWV500MLB106</strong> (<em>White Vinegar 500ml</em> - single bottle) is configured to consume <strong>0.08 BOX</strong> of this finished 12-pack case.
                             </p>
                             <p className="text-rose-900 font-semibold">
                               <strong>Why this is fatal:</strong> Your database relationships are inverted. The system mathematically assumes that producing an individual raw bottle requires consuming a finished 12-pack box. This creates an impossible circular loop, triggers unboxing bottlenecks at POS checkout, and invalidates Choueifat&apos;s forward production batches.
@@ -8245,10 +8245,10 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                           type="button"
                           onClick={handleLoadAnomalyUsedIn}
                           className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-sm font-semibold text-xs flex items-center gap-1 cursor-pointer transition shadow-xs"
-                          title="Simulate the exact Omega REP_I_0041 report anomaly where a single bottle consumes 0.08 Box"
+                          title="Simulate the exact Vanguard REP_I_0041 report anomaly where a single bottle consumes 0.08 Box"
                         >
                           <AlertTriangle className="w-3.5 h-3.5" />
-                          <span>Simulate Omega Anomaly (0.08 Box)</span>
+                          <span>Simulate Vanguard Anomaly (0.08 Box)</span>
                         </button>
                         {editingProduct.usedInItems && editingProduct.usedInItems.length > 0 && (
                           <button
@@ -8266,7 +8266,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                             setIsInventoryProductionsReportOpen(true);
                           }}
                           className="px-3 py-1 bg-primary hover:bg-primary/90 text-white rounded-sm font-bold text-xs flex items-center gap-1.5 cursor-pointer transition shadow-xs"
-                          title="Open the authentic Omega Inventory Productions (REP_I_0041) print report modal"
+                          title="Open the authentic Vanguard Inventory Productions (REP_I_0041) print report modal"
                         >
                           <FileText className="w-3.5 h-3.5" />
                           <span>📄 View Productions Report [REP_I_0041]</span>
@@ -8535,7 +8535,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                           <div className="p-2.5 bg-white border border-rose-200 rounded-xs space-y-1">
                             <div className="font-bold text-slate-900">What Happened (The Receiving Error)</div>
                             <p className="text-slate-700 leading-relaxed">
-                              On <strong>13-Sep-2026 09:15</strong>, user <strong>Mohammed Jichi</strong> entered <strong>Purchase Invoice #120</strong> in the <strong>Purchases Module</strong> at <strong>Zeit w zaytoun ljanoub</strong>. The total invoice amount was accidentally entered into the <code>Unit Cost</code> field (or a barcode scanner misfired). Because Omega automatically updates the moving average cost upon receiving goods, this invoice instantly overwrote master cost with <strong>48,956,400,000.00 LL</strong>.
+                              On <strong>13-Sep-2026 09:15</strong>, user <strong>Mohammed Jichi</strong> entered <strong>Purchase Invoice #120</strong> in the <strong>Purchases Module</strong> at <strong>Zeit w zaytoun ljanoub</strong>. The total invoice amount was accidentally entered into the <code>Unit Cost</code> field (or a barcode scanner misfired). Because Vanguard automatically updates the moving average cost upon receiving goods, this invoice instantly overwrote master cost with <strong>48,956,400,000.00 LL</strong>.
                             </p>
                           </div>
 
@@ -8787,7 +8787,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                           </span>
                         </div>
                         <p className="text-slate-700 text-[11px] leading-relaxed">
-                          <strong>Mechanical Rule:</strong> In Omega ERP and Vanguard ERP, sales rows permanently lock their financial data at the exact moment of the transaction. When a customer checkout occurs, the system stamps the active Cost from the <strong>Main</strong> tab directly onto that receipt line to determine profit margin.
+                          <strong>Mechanical Rule:</strong> In Vanguard ERP and Vanguard ERP, sales rows permanently lock their financial data at the exact moment of the transaction. When a customer checkout occurs, the system stamps the active Cost from the <strong>Main</strong> tab directly onto that receipt line to determine profit margin.
                         </p>
                         <div className="p-2.5 bg-white border border-rose-200 rounded-xs text-[11px] space-y-1">
                           <span className="font-bold text-rose-800 block">
@@ -8822,7 +8822,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                             <span>Cross-Platform Connections (Vanguard ERP Sync)</span>
                           </div>
                           <p className="text-[11px] text-slate-600 leading-relaxed">
-                            • <strong>Central Data Aggregator:</strong> Real-time integration ingesting orders closed in your custom <strong>Next.js Supersonic Dispatch</strong> module via API alongside walk-in retail checkouts at <strong>Omega POS</strong>.<br />
+                            • <strong>Central Data Aggregator:</strong> Real-time integration ingesting orders closed in your custom <strong>Next.js Supersonic Dispatch</strong> module via API alongside walk-in retail checkouts at <strong>Vanguard POS</strong>.<br />
                             • <strong>Payload Integrity:</strong> If a network blip drops a Vanguard API payload, this tab allows you to instantly reconcile missing quantity movement against physical dispatch logs.
                           </p>
                         </div>
@@ -8851,7 +8851,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                                 <option value="all">All Sales Receipts</option>
                                 <option value="corruptedOnly">⚠️ Corrupted Cost Trap Only</option>
                                 <option value="apiOnly">Next.js Dispatch API Only</option>
-                                <option value="posOnly">Omega POS Walk-in Only</option>
+                                <option value="posOnly">Vanguard POS Walk-in Only</option>
                               </select>
                             </div>
 
@@ -10943,7 +10943,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
       )}
 
       {/* =======================================================================
-          MODAL: INVENTORY PRODUCTIONS REPORT (REP_I_0041 - AUTHENTIC OMEGA PRINT/EXPORT)
+          MODAL: INVENTORY PRODUCTIONS REPORT (REP_I_0041 - AUTHENTIC VANGUARD PRINT/EXPORT)
           Direct Pixel-Perfect Clone of User's Uploaded Screenshot
           ======================================================================= */}
       {isInventoryProductionsReportOpen && (
@@ -11476,7 +11476,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
               <div className="bg-blue-50 border border-blue-200 rounded-xs p-3 text-blue-950 space-y-1">
                 <div className="font-bold text-xs flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0" />
-                  <span>Omega Self-Healing Ledger Repair Engine</span>
+                  <span>Vanguard Self-Healing Ledger Repair Engine</span>
                 </div>
                 <p className="text-[11px] leading-relaxed">
                   When executed, this sweep temporarily locks transaction tables and rebuilds the <strong>Qty OH (Quantity On Hand)</strong> and <strong>Avg.Cost</strong> columns from scratch. It ignores cached grid numbers and re-reads:

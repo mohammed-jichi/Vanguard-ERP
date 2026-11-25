@@ -166,7 +166,7 @@ export default function PurchasesView() {
 
   const [notice, setNotice] = useState<string | null>(null);
 
-  // Unpost states (Omega POS pattern)
+  // Unpost states (Vanguard POS pattern)
   const [purchaseToUnpost, setPurchaseToUnpost] = useState<PurchaseInvoice | null>(null);
   const [isConfirmUnpostPurchaseOpen, setIsConfirmUnpostPurchaseOpen] = useState(false);
   const [isUnpostingPurchase, setIsUnpostingPurchase] = useState(false);
@@ -465,7 +465,7 @@ export default function PurchasesView() {
     });
   }, [purchases, filterBranch, filterSupplier, filterStatus, filterTransfer, searchFilter]);
 
-  // Reactive posting selectors (Omega POS pattern)
+  // Reactive posting selectors (Vanguard POS pattern)
   const isCurrentPurchasePosted = useMemo(() => {
     if (!activeEditingInvoiceId) return false;
     const found = purchases.find((p) => p.id === activeEditingInvoiceId || p.invoiceNumber === activeEditingInvoiceId);
@@ -1970,7 +1970,7 @@ export default function PurchasesView() {
               </div>
             </div>
 
-            {/* Bottom Actions: Unpost (Rose) OR Save (Orange) & Save & Post (Green) matching Omega POS pattern */}
+            {/* Bottom Actions: Unpost (Rose) OR Save (Orange) & Save & Post (Green) matching Vanguard POS pattern */}
             <div className="flex items-center justify-end gap-3 pt-2">
               {isCurrentPurchasePosted ? (
                 <>
@@ -2205,7 +2205,7 @@ export default function PurchasesView() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 3: UNPOST PURCHASE INVOICE CONFIRMATION (OMEGA POS LEDGER CONTROL)  */}
+      {/* MODAL 3: UNPOST PURCHASE INVOICE CONFIRMATION (VANGUARD POS LEDGER CONTROL)  */}
       {/* ========================================================================= */}
       {isConfirmUnpostPurchaseOpen && purchaseToUnpost && (
 

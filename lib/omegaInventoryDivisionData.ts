@@ -1,4 +1,4 @@
-// Authentic Omega ERP Inventory Divisions Data & Types
+// Authentic Vanguard ERP Inventory Divisions Data & Types
 
 export interface InventoryDivisionItem {
   ID: number;

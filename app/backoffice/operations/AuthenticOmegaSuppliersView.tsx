@@ -523,7 +523,7 @@ export default function AuthenticOmegaSuppliersView() {
     showToast(`Suppliers merged successfully: "${fromSup?.SUPPLIERNAME}" into "${toSup?.SUPPLIERNAME}"`);
   };
 
-  // Format date helper matching Omega: "03 Apr, 2026"
+  // Format date helper matching Vanguard: "03 Apr, 2026"
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -918,7 +918,7 @@ export default function AuthenticOmegaSuppliersView() {
           </table>
         </div>
 
-        {/* Bottom Pagination matching Omega: « 1 » */}
+        {/* Bottom Pagination matching Vanguard: « 1 » */}
         <div className="px-4 py-3 border-t border-slate-200 bg-white flex items-center justify-center">
           <div className="flex items-center gap-1 text-xs">
             <span className="px-2.5 py-1 text-slate-400 select-none">«</span>
@@ -977,7 +977,7 @@ export default function AuthenticOmegaSuppliersView() {
                       />
                       <button
                         type="button"
-                        title={t('search_in_omega_marketplace', 'Search in Omega Marketplace')}
+                        title={t('search_in_omega_marketplace', 'Search in Vanguard Marketplace')}
                         className="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-sm flex items-center justify-center cursor-pointer transition shadow-2xs"
                       >
                         <Search className="w-4 h-4" />

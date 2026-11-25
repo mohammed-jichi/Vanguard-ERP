@@ -361,7 +361,7 @@ export default function WorkstationsPrintersView() {
       return;
     }
 
-    const brandObj = PRINTER_BRANDS.find(b => b.id === prBrandId) || { id: 1, description: 'Omega' };
+    const brandObj = PRINTER_BRANDS.find(b => b.id === prBrandId) || { id: 1, description: 'Vanguard' };
 
     let updated: OmegaPhysicalPrinter[];
     if (editingPrinter) {
@@ -463,7 +463,7 @@ export default function WorkstationsPrintersView() {
           </nav>
         </div>
 
-        {/* Toolbar matching Omega DevicePreferencesView */}
+        {/* Toolbar matching Vanguard DevicePreferencesView */}
         <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
           <div className="w-full sm:w-80">
             <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">
@@ -483,7 +483,7 @@ export default function WorkstationsPrintersView() {
           </div>
         </div>
 
-        {/* Tab Navigation matching Omega exact markup */}
+        {/* Tab Navigation matching Vanguard exact markup */}
         <div className="flex border-b border-slate-200 gap-2">
           <button
             type="button"
@@ -630,7 +630,7 @@ export default function WorkstationsPrintersView() {
                       <td className="px-4 py-3 font-bold text-slate-900">{row.DESCRIPTION}</td>
                       <td className="px-4 py-3">
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200">
-                          {row.type?.description || 'Omega'}
+                          {row.type?.description || 'Vanguard'}
                         </span>
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-blue-700">
@@ -669,7 +669,7 @@ export default function WorkstationsPrintersView() {
       </div>
 
       {/* ========================================================================= */}
-      {/* MODAL 1: WORKSTATION MODIFY (Exact Omega Template) */}
+      {/* MODAL 1: WORKSTATION MODIFY (Exact Vanguard Template) */}
       {/* ========================================================================= */}
       {showWorkstationModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
@@ -961,7 +961,7 @@ export default function WorkstationsPrintersView() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 2: PHYSICAL PRINTER MODIFY (Exact Omega Template) */}
+      {/* MODAL 2: PHYSICAL PRINTER MODIFY (Exact Vanguard Template) */}
       {/* ========================================================================= */}
       {showPrinterModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">

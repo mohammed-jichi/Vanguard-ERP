@@ -251,7 +251,7 @@ export class AdjustmentsService {
     lastname?: string;
   }): AdjustmentHeaderRecord {
     const saved = this.saveAdjustment(payload);
-    saved.POSTED = -1; // Posted in Omega (-1)
+    saved.POSTED = -1; // Posted in Vanguard (-1)
     saved.STATUS = 'True';
     saved.has_acctransfer = true;
     saved.VOUCHER_ID = `JV-${new Date().getFullYear()}-${String(saved.ADJUSTID).padStart(3, '0')}`;

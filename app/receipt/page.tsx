@@ -51,7 +51,7 @@ function ReceiptPageContent() {
     let targetCId = customerIdParam ? Number(customerIdParam) : 9;
     let targetEName = eventNameParam || '';
 
-    // Check LocalStorage fallback (matching Omega ERP `EVNT_FOR_CustomersRecView`)
+    // Check LocalStorage fallback (matching Vanguard ERP `EVNT_FOR_CustomersRecView`)
     if (typeof window !== 'undefined') {
       const storedEventId = localStorage.getItem('EVNT_FOR_CustomersRecView');
       if (storedEventId && !targetEName) {

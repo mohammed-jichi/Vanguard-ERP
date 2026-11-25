@@ -1,4 +1,4 @@
-// Authentic Omega ERP Inventory Groups Data & Types
+// Authentic Vanguard ERP Inventory Groups Data & Types
 
 export interface InventoryGroupItem {
   ID: number;

@@ -490,7 +490,7 @@ export default function ProductReqPreparationView() {
             <div className="p-6 font-mono text-xs text-slate-900 space-y-4">
               <div className="text-center border-b pb-3">
                 <h3 className="text-base font-bold">{t('kitchen_preparation_ticket', 'KITCHEN PREPARATION TICKET')}</h3>
-                <p className="text-[11px] text-slate-500">{t('omega_erp_operations', 'Omega ERP Operations')}</p>
+                <p className="text-[11px] text-slate-500">{t('omega_erp_operations', 'Vanguard ERP Operations')}</p>
                 <div className="text-lg font-extrabold text-teal-700 mt-1">{printingPr.REQUESTNB}</div>
               </div>
 

@@ -1,4 +1,4 @@
-// Vanguard ERP - Omega ERP Payment Types Live Simulation Data
+// Vanguard ERP - Vanguard ERP Payment Types Live Simulation Data
 // Extracted from Customer 22901 (منتوجات زيت وزيتون الجنوب ش.م.م - Zeit w zaytoun ljanoub)
 
 export interface OmegaPaymentType {

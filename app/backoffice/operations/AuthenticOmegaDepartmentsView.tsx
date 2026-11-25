@@ -22,7 +22,7 @@ import {
 
 export default function AuthenticOmegaDepartmentsView() {
   // ---------------------------------------------------------------------------
-  // Departments State (synced with localStorage & fallback to initial Omega data)
+  // Departments State (synced with localStorage & fallback to initial Vanguard data)
   // ---------------------------------------------------------------------------
   const [departments, setDepartments] = useState<DepartmentItem[]>(() => {
     if (typeof window !== 'undefined') {
@@ -807,7 +807,7 @@ export default function AuthenticOmegaDepartmentsView() {
       )}
 
       {/* =======================================================================
-          MODAL: COLOR PICKER (48 Colors Palette from Omega Template)
+          MODAL: COLOR PICKER (48 Colors Palette from Vanguard Template)
           ======================================================================= */}
       {isColorPickerOpen && (
         <div

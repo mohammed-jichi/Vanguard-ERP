@@ -183,7 +183,7 @@ function HRPageContent() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 font-sans bg-background min-h-screen text-slate-800" dir={dir}>
-      {/* When viewing Personnel (Default), render Exact Omega Personnel Master View without SaaS pill bars */}
+      {/* When viewing Personnel (Default), render Exact Vanguard Personnel Master View without SaaS pill bars */}
       {activeTab === 'employees' ? (
         <PersonnelMasterConsole />
       ) : (

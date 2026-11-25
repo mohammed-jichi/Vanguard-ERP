@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Reason not found' }, { status: 404 });
     }
 
-    // Omega returns 1 on success
+    // Vanguard returns 1 on success
     return new NextResponse('1', {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

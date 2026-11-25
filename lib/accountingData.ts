@@ -1,7 +1,7 @@
 /**
  * Vanguard ERP - Accounting & Finance Data Engine
- * Harvested and reverse-engineered from Omega Software ERP (Customer ID 22901 - Southern Olive Oil Products S.A.R.L)
- * Enriched with full Omega Lebanese Standard Chart of Accounts (COA) & Sub Classes 3 & 4.
+ * Harvested and reverse-engineered from Vanguard Software ERP (Customer ID 22901 - Southern Olive Oil Products S.A.R.L)
+ * Enriched with full Vanguard Lebanese Standard Chart of Accounts (COA) & Sub Classes 3 & 4.
  */
 
 export interface AccountClass {
@@ -249,7 +249,7 @@ export interface BankStatementTransaction {
 export const LBP_RATE = 89500;
 
 // ==============================================================================
-// 1. AUTHENTIC OMEGA ERP MASTER CATALOG DATA & CLASSES
+// 1. AUTHENTIC VANGUARD ERP MASTER CATALOG DATA & CLASSES
 // ==============================================================================
 
 export const OMEGA_ACCOUNT_CLASSES: AccountClass[] = [
@@ -358,7 +358,7 @@ export const OMEGA_SUB_CLASSES_4: AccountGroup4[] = [
 ];
 
 // ==============================================================================
-// 2. SEED CHART OF ACCOUNTS (FULL LEBANESE / OMEGA STANDARDS - MODULE 8.D)
+// 2. SEED CHART OF ACCOUNTS (FULL LEBANESE / VANGUARD STANDARDS - MODULE 8.D)
 // ==============================================================================
 
 export const INITIAL_ACCOUNT_DETAILS: AccountDetail[] = [

@@ -862,7 +862,7 @@ export default function PurchaseOrderView() {
           ========================================================================= */}
       {showPreviewList ? (
         <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 py-4">
-          {/* OMEGA AUTHENTIC HEADER */}
+          {/* VANGUARD AUTHENTIC HEADER */}
           <div className="header mb-4">
             <h1 className="text-[24px] font-normal text-primary m-0 mb-1 leading-tight tracking-tight">
               {t('purchase_order', 'Purchase Order')}
@@ -878,7 +878,7 @@ export default function PurchaseOrderView() {
             </div>
           </div>
 
-          {/* OMEGA AUTHENTIC TWO-ROW FILTER BAR */}
+          {/* VANGUARD AUTHENTIC TWO-ROW FILTER BAR */}
           <div className="bg-white rounded border border-border p-3.5 mb-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
             {/* ROW 1 */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-center mb-2.5">
@@ -1013,7 +1013,7 @@ export default function PurchaseOrderView() {
             </div>
           </div>
 
-          {/* OMEGA AUTHENTIC PREVIEW TABLE (MATCHING PICTURE 1) */}
+          {/* VANGUARD AUTHENTIC PREVIEW TABLE (MATCHING PICTURE 1) */}
           <div className="bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-[13px] text-left border-collapse">
@@ -1035,7 +1035,7 @@ export default function PurchaseOrderView() {
                     /* EMPTY ROW STATE - IDENTICAL TO PICTURE 1 */
                     <tr>
                       <td colSpan={9} className="py-12 text-center text-slate-400 bg-white">
-                        {/* Clean subtle divider spacing exactly matching Omega ERP empty list */}
+                        {/* Clean subtle divider spacing exactly matching Vanguard ERP empty list */}
                       </td>
                     </tr>
                   ) : (
@@ -1090,7 +1090,7 @@ export default function PurchaseOrderView() {
               </table>
             </div>
 
-            {/* OMEGA PAGINATION « 1 » (EXACTLY MATCHING PICTURE 1) */}
+            {/* VANGUARD PAGINATION « 1 » (EXACTLY MATCHING PICTURE 1) */}
             <div className="py-3 px-4 border-t border-border flex justify-center items-center bg-white">
               <div className="inline-flex items-center gap-1 text-[12px]">
                 <button
@@ -1148,7 +1148,7 @@ export default function PurchaseOrderView() {
             </div>
           </div>
 
-          {/* TOP ACTION TOOLBAR (IDENTICAL TO OMEGA ERP) */}
+          {/* TOP ACTION TOOLBAR (IDENTICAL TO VANGUARD ERP) */}
           <div className="bg-white border border-border rounded p-2 mb-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-1.5">
               {/* Supporting Document */}
@@ -1714,7 +1714,7 @@ export default function PurchaseOrderView() {
               )}
             </div>
 
-            {/* TOTALS SUMMARY TABLE (MATCHING OMEGA EXACTLY) */}
+            {/* TOTALS SUMMARY TABLE (MATCHING VANGUARD EXACTLY) */}
             <div className="lg:col-span-6 bg-white border border-border rounded shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
               <table className="w-full text-[13px] border-collapse">
                 <tbody>
@@ -1769,10 +1769,10 @@ export default function PurchaseOrderView() {
             </div>
           </div>
 
-          {/* BOTTOM FORM ACTION BUTTONS (IDENTICAL TO OMEGA ERP) */}
+          {/* BOTTOM FORM ACTION BUTTONS (IDENTICAL TO VANGUARD ERP) */}
           <div className="bg-white border border-border rounded p-3 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              {/* Omega Orange Save Button */}
+              {/* Vanguard Orange Save Button */}
               <button
                 type="button"
                 onClick={() => handleSaveOrder(false)}

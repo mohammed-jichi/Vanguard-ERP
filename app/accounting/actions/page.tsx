@@ -2,7 +2,7 @@
 
 /**
  * Vanguard ERP - Accounting Module Actions Console
- * Full 8-Module Omega ERP Blueprint:
+ * Full 8-Module Vanguard ERP Blueprint:
  * 1. Module 1: Journal Vouchers (JV)
  * 2. Module 2: Accounting Purchase & Expenses
  * 3. Module 3: Accounting Payment (PV)

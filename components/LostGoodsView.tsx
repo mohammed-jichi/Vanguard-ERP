@@ -32,7 +32,7 @@ import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabaseClient';
 
 // ============================================================================
-// AUTHENTIC OMEGA SEED DATA & INTERFACES
+// AUTHENTIC VANGUARD SEED DATA & INTERFACES
 // ============================================================================
 
 export interface LostGoodsItem {
@@ -84,7 +84,7 @@ const AUTHENTIC_REASONS = [
   { id: 5, name: 'Inventory Variance / Missing' }
 ];
 
-// 11 authentic vouchers directly extracted from live Omega ERP
+// 11 authentic vouchers directly extracted from live Vanguard ERP
 const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
   {
     ser: 132,
@@ -1436,7 +1436,7 @@ export default function LostGoodsView() {
       />
 
       {/* ======================================================================
-          MODAL 2: PREVIEW LOST GOODS MODAL (CLONED FROM OMEGA LIVE)
+          MODAL 2: PREVIEW LOST GOODS MODAL (CLONED FROM VANGUARD LIVE)
           ====================================================================== */}
       {isPreviewModalOpen && (
         <PreviewLostGoodsModal
@@ -1530,7 +1530,7 @@ export default function LostGoodsView() {
 }
 
 // ============================================================================
-// SUB-MODAL 1: PREVIEW LOST GOODS MODAL (OMEGA CLONE)
+// SUB-MODAL 1: PREVIEW LOST GOODS MODAL (VANGUARD CLONE)
 // ============================================================================
 
 interface PreviewModalProps {
@@ -1614,7 +1614,7 @@ function PreviewLostGoodsModal({
               {t('preview_lost_goods_inventory_items', 'Preview Lost Goods Inventory Items')}
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              {t('preview_lost_goods_inventory_item', 'Preview Lost Goods Inventory Item records from Omega ERP database')}
+              {t('preview_lost_goods_inventory_item', 'Preview Lost Goods Inventory Item records from Vanguard ERP database')}
             </p>
           </div>
           <button
@@ -1971,7 +1971,7 @@ function AddReasonModal({ isOpen, onClose, onAdd }: AddReasonModalProps) {
 }
 
 // ============================================================================
-// SUB-MODAL 4: IMPORT CSV MODAL (MATCHING OMEGA #importWastage)
+// SUB-MODAL 4: IMPORT CSV MODAL (MATCHING VANGUARD #importWastage)
 // ============================================================================
 
 interface ImportCsvModalProps {

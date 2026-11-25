@@ -16,7 +16,7 @@ import { UnitItem, INITIAL_OMEGA_UNITS } from '@/lib/omegaUnitsData';
 
 export default function AuthenticOmegaUnitsView() {
   // ---------------------------------------------------------------------------
-  // Units State (synced with localStorage & fallback to authentic Omega data)
+  // Units State (synced with localStorage & fallback to authentic Vanguard data)
   // ---------------------------------------------------------------------------
   const [units, setUnits] = useState<UnitItem[]>(() => {
     if (typeof window !== 'undefined') {
@@ -329,7 +329,7 @@ export default function AuthenticOmegaUnitsView() {
           </table>
         </div>
 
-        {/* Footer Pagination matching Omega layout */}
+        {/* Footer Pagination matching Vanguard layout */}
         <div className="py-4 border-t border-slate-100 flex items-center justify-center text-xs text-slate-500">
           <div className="inline-flex items-center rounded border border-slate-200 overflow-hidden bg-white shadow-2xs">
             <button className="px-2.5 py-1 text-slate-400 hover:bg-slate-50 cursor-not-allowed">

@@ -519,7 +519,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
       )}
 
       {/* =========================================================================
-          TOP ACTION BAR & TITLE (MATCHING OMEGA ERP / VANGUARD HYBRID)
+          TOP ACTION BAR & TITLE (MATCHING VANGUARD ERP / VANGUARD HYBRID)
           ========================================================================= */}
       <div className="bg-white border border-slate-200 p-5 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xs">
         <div>
@@ -540,7 +540,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
                 {section === 'request_reject_reasons' && 'Request Reject Reasons'}
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
-                Authentic Omega ERP Operations Module • Southern Olive Oil Products S.A.R.L
+                Authentic Vanguard ERP Operations Module • Southern Olive Oil Products S.A.R.L
               </p>
             </div>
           </div>
@@ -710,7 +710,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
       )}
 
       {/* =========================================================================
-          VIEW 1: PRODUCT REQUEST (AUTHENTIC OMEGA TABLE)
+          VIEW 1: PRODUCT REQUEST (AUTHENTIC VANGUARD TABLE)
           ========================================================================= */}
       {section === 'product_request' && (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
@@ -1045,7 +1045,7 @@ export default function OperationsProductRequestViews({ section }: OperationsPro
           ========================================================================= */}
       {section === 'product_req_reports' && (
         <div className="space-y-4">
-          {/* Dynamic Filter Controls (Exact Omega ERP Match) */}
+          {/* Dynamic Filter Controls (Exact Vanguard ERP Match) */}
           <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-xs space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-3">

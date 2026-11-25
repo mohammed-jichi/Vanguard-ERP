@@ -1,6 +1,6 @@
 /**
- * Live Cloned Inventory Units from Omega ERP (UnitsCtrl / getAllUnits)
- * Total: 19 Units matching exact database records from Omega ERP
+ * Live Cloned Inventory Units from Vanguard ERP (UnitsCtrl / getAllUnits)
+ * Total: 19 Units matching exact database records from Vanguard ERP
  */
 
 export interface UnitItem {

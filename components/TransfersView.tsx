@@ -2455,7 +2455,7 @@ export default function TransfersView() {
       )}
 
       {/* =========================================================================
-          MODAL 6: SEARCH INVENTORY ITEMS (100% AUTHENTIC OMEGA CLONE)
+          MODAL 6: SEARCH INVENTORY ITEMS (100% AUTHENTIC VANGUARD CLONE)
           ========================================================================= */}
       <SearchInventoryItemsModal
         isOpen={isSearchInventoryModalOpen}

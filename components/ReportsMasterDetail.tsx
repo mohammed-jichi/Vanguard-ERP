@@ -1197,7 +1197,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </select>
                   )}
 
-                  {/* DYNAMIC FILTERS PER REPORT TYPE (OMEGA ERP MATCHING) */}
+                  {/* DYNAMIC FILTERS PER REPORT TYPE (VANGUARD ERP MATCHING) */}
                   {(selectedReport === 'Transactions by Date' || selectedReport === 'Transactions by Salesman' || selectedReport === 'Credit Sales') && (
                     <>
                       <label className="flex items-center gap-2 text-[13px] font-bold text-slate-800 ml-2 cursor-pointer">
@@ -1558,7 +1558,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     </div>
                   </div>
 
-                  {/* Right side: Action Toolbar (Omega ERP report-actions matching) */}
+                  {/* Right side: Action Toolbar (Vanguard ERP report-actions matching) */}
                   <div className="flex items-center gap-1.5 shrink-0 relative">
                     <button 
                       type="button"
@@ -7353,7 +7353,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           </div>
         )}
 
-        {/* CUSTOM CATEGORY MODAL (OMEGA ERP MATCHING) */}
+        {/* CUSTOM CATEGORY MODAL (VANGUARD ERP MATCHING) */}
         {isCustomCategoryOpen && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex justify-center items-center z-[70] p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl flex flex-col overflow-hidden border border-slate-200">
@@ -7510,7 +7510,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
           </div>
         )}
 
-        {/* REPORTS BUILDER MODAL (OMEGA ERP MATCHING openReportBuilder) */}
+        {/* REPORTS BUILDER MODAL (VANGUARD ERP MATCHING openReportBuilder) */}
         {isReportBuilderOpen && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex justify-center items-center z-[70] p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden border border-slate-200">

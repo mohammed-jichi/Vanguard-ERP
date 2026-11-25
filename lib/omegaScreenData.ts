@@ -1,4 +1,4 @@
-// Omega ERP Live Fixtures & Simulation Data
+// Vanguard ERP Live Fixtures & Simulation Data
 // Extracted from Customer 22901 (Southern Olive Oil Products / زيتون وزيت)
 
 export interface OmegaScreenItem {

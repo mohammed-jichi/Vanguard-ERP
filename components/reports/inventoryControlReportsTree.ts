@@ -11,7 +11,7 @@ export interface InventoryReportMeta {
 }
 
 /**
- * Authentic 1:1 Omega tree for "Inventory Reports" (Operations Center)
+ * Authentic 1:1 Vanguard tree for "Inventory Reports" (Operations Center)
  */
 export const INVENTORY_CONTROL_OMEGA_TREE: ReportCategoryGroup[] = [
   {
@@ -189,7 +189,7 @@ export const INVENTORY_CONTROL_OMEGA_TREE: ReportCategoryGroup[] = [
 ];
 
 /**
- * Authentic Omega report code catalog mappings
+ * Authentic Vanguard report code catalog mappings
  */
 const KNOWN_INVENTORY_CODES: Record<string, string> = {
   'Purchase With all Details': 'REP_PUR_001',

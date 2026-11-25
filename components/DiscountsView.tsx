@@ -274,7 +274,7 @@ export default function DiscountsView() {
           </nav>
         </div>
 
-        {/* Filter Toolbar matching Omega exact markup */}
+        {/* Filter Toolbar matching Vanguard exact markup */}
         <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
             {/* Search Input */}
@@ -451,7 +451,7 @@ export default function DiscountsView() {
       </div>
 
       {/* ========================================================================= */}
-      {/* MODAL 1: NEW DISCOUNT (Exact Omega Template) */}
+      {/* MODAL 1: NEW DISCOUNT (Exact Vanguard Template) */}
       {/* ========================================================================= */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
@@ -632,7 +632,7 @@ export default function DiscountsView() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 2: EDIT DISCOUNT (Exact Omega Template) */}
+      {/* MODAL 2: EDIT DISCOUNT (Exact Vanguard Template) */}
       {/* ========================================================================= */}
       {showEditModal && editingDiscount && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
@@ -813,7 +813,7 @@ export default function DiscountsView() {
               </form>
 
               {/* ========================================================= */}
-              {/* GROUPS RESTRICTION SECTION (From Omega fetched template) */}
+              {/* GROUPS RESTRICTION SECTION (From Vanguard fetched template) */}
               {/* ========================================================= */}
               <div className="pt-4 border-t border-slate-200">
                 <form onSubmit={handleSaveGroupRestrictions} className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50/50">

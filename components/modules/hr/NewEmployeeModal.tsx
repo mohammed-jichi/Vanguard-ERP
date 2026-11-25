@@ -1942,7 +1942,7 @@ export default function NewEmployeeModal({
                   </select>
                 </div>
 
-                {/* Branches Table with Exact Omega Interaction Logic */}
+                {/* Branches Table with Exact Vanguard Interaction Logic */}
                 <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
                   <table className="w-full text-left border-collapse">
                     <thead>

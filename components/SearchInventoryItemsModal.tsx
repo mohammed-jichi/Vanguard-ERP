@@ -407,7 +407,7 @@ export default function SearchInventoryItemsModal({
         </div>
 
         {/* =========================================================================
-            3. CATEGORY CAROUSEL TABS (Matching Omega ERP)
+            3. CATEGORY CAROUSEL TABS (Matching Vanguard ERP)
             ========================================================================= */}
         <div className="border-y border-slate-200 bg-white flex items-center px-1">
           <button
@@ -582,7 +582,7 @@ export default function SearchInventoryItemsModal({
         </div>
 
         {/* =========================================================================
-            NEW INVENTORY ITEM CREATION MODAL (Authentic Omega NewItemInv)
+            NEW INVENTORY ITEM CREATION MODAL (Authentic Vanguard NewItemInv)
             ========================================================================= */}
         {isNewItemModalOpen && (
           <NewInventoryItemModal

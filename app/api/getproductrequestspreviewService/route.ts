@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Product request not found' }, { status: 404 });
   }
 
-  // Omega returns format with prdetails or pr array
+  // Vanguard returns format with prdetails or pr array
   return NextResponse.json({
     ...pr,
     prdetails: pr.items,

@@ -22,6 +22,10 @@ const ALLOWED_KEYS = new Set([
   'invoice_messages',
   'call_center_zones',
   'devices_printers',
+  'closing_checklists',
+  'tutorials_url',
+  'last_month_closed',
+  'eom_log',
   'pos_screen_layouts',
   'currency_setup'
 ]);

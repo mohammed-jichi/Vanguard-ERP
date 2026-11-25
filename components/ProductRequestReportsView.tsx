@@ -242,7 +242,7 @@ export default function ProductRequestReportsView() {
       )}
 
       <div className="content p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-        {/* Header matching Omega */}
+        {/* Header matching Vanguard */}
         <div className="header border-b border-slate-200 pb-4">
           <div className="flex items-center justify-between">
             <div>
@@ -948,7 +948,7 @@ export default function ProductRequestReportsView() {
       </div>
 
       {/* =========================================================================
-          EXPORT MODAL (matching Omega bootbox export)
+          EXPORT MODAL (matching Vanguard bootbox export)
           ========================================================================= */}
       {showExportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">

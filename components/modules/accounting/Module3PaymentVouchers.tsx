@@ -3,7 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 3: Accounting Payment (PV)
- * Exact Omega ERP Functional Parity:
+ * Exact Vanguard ERP Functional Parity:
  * A. Header & Three-Column Layout (Card 1 Accounts with live balance, Card 2 Notes, Card 3 Execution Details)
  * B. Payment Structure & Metrics (One vs Multiple, Currency, Badges, Save & Post)
  * C. Preview Payment Modal

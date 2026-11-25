@@ -257,7 +257,7 @@ export default function PersonnelMasterConsole() {
       )}
 
       {/* ==================================================================== */}
-      {/* 1. HEADER & BREADCRUMB (Strict Omega Design)                         */}
+      {/* 1. HEADER & BREADCRUMB (Strict Vanguard Design)                         */}
       {/* ==================================================================== */}
       <div>
         <h1 className="text-2xl font-black text-slate-900 tracking-tight">Personnel</h1>
@@ -443,7 +443,7 @@ export default function PersonnelMasterConsole() {
       </div>
 
       {/* ==================================================================== */}
-      {/* 4. PERSONNEL TABLE (Strict Omega Columns)                            */}
+      {/* 4. PERSONNEL TABLE (Strict Vanguard Columns)                            */}
       {/* ==================================================================== */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">

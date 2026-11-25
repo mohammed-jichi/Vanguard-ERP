@@ -1,5 +1,5 @@
 /**
- * Omega ERP / Vanguard ERP - End of Day Models & Live Seed Data
+ * Vanguard ERP / Vanguard ERP - End of Day Models & Live Seed Data
  * Module: EndOfDayView (ID: 190, Parent: 1)
  * Branch: 22901 - Zeit w zaytoun ljanoub
  */

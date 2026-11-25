@@ -18,7 +18,7 @@ export interface ReportSidebarNavProps {
 }
 
 /**
- * Authentic Omega 2-Column Report Navigation Tree
+ * Authentic Vanguard 2-Column Report Navigation Tree
  * Features:
  * - Dynamic "Recently Viewed" history tracked via localStorage under vanguard_recent_reports_sales or vanguard_recent_reports_inventory (max 5 items, deduplicated).
  * - Multi-level hierarchy support: handles both flat categories and nested sub-groups verbatim.
@@ -265,7 +265,7 @@ export default function ReportSidebarNav({
         )}
 
         {/* =================================================================
-            2. CATEGORIES & SUB-SECTIONS (Match 1:1 authentic Omega hierarchy)
+            2. CATEGORIES & SUB-SECTIONS (Match 1:1 authentic Vanguard hierarchy)
             ================================================================= */}
         {nonRecentCategories.map((group) => {
           const isExpanded = !!expandedGroups[group.title];

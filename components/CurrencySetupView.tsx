@@ -33,9 +33,16 @@ export default function CurrencySetupView() {
   const { currentTenant } = useTenant();
   const liveRate = getTenantExchangeRate(currentTenant);
   const [storedCurrencies, setStoredCurrencies] = useTenantFlag<OmegaCurrency[]>('currency_setup', []);
-  // The USD (secondary) row always mirrors the tenant's live exchange rate used across the ERP
+  // USD is the MAIN base currency (rate 1); LBP is the SECOND currency and always mirrors the tenant's live exchange rate
   const currencies = useMemo(
-    () => (storedCurrencies.length ? storedCurrencies : INITIAL_CURRENCIES).map((c) => (c.maincurrency === 2 ? { ...c, RATE: liveRate, BACKRATE: liveRate } : c)),
+    () =>
+      (storedCurrencies.length ? storedCurrencies : INITIAL_CURRENCIES).map((c) =>
+        c.DESCRIPTION === 'USD'
+          ? { ...c, maincurrency: 1, RATE: 1, BACKRATE: 1 }
+          : c.DESCRIPTION === 'LBP'
+            ? { ...c, maincurrency: 2, RATE: liveRate, BACKRATE: liveRate }
+            : c
+      ),
     [storedCurrencies, liveRate]
   );
   const setCurrencies = (next: OmegaCurrency[] | ((prev: OmegaCurrency[]) => OmegaCurrency[])) =>
@@ -238,7 +245,7 @@ export default function CurrencySetupView() {
     setShowEditModal(false);
     setEditingRow(null);
     showToast('Currency saved', 'success');
-    if (editingRow.maincurrency === 2) {
+    if (editingRow.DESCRIPTION === 'LBP') {
       void saveTenantExchangeRate(posRateNum);
     }
   };

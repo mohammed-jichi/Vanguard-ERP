@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const id = body.evnt_type_id || body.id;
     const result = EventsService.deleteEventType(Number(id));
-    // Omega returns numeric code: 1 = success, 0 = not allowed
+    // Vanguard returns numeric code: 1 = success, 0 = not allowed
     return NextResponse.json(result.code);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

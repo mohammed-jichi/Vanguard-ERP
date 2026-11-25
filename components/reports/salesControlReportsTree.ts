@@ -9,7 +9,7 @@ export interface SalesReportMeta {
 }
 
 /**
- * Authentic 1:1 Omega tree for "Sales Control Reports" verbatim hierarchy & casing
+ * Authentic 1:1 Vanguard tree for "Sales Control Reports" verbatim hierarchy & casing
  */
 export const SALES_CONTROL_OMEGA_TREE: ReportCategoryGroup[] = [
   {
@@ -247,7 +247,7 @@ export const SALES_CONTROL_OMEGA_TREE: ReportCategoryGroup[] = [
 ];
 
 /**
- * Authentic Omega report code catalog mappings
+ * Authentic Vanguard report code catalog mappings
  */
 const KNOWN_REPORT_CODES: Record<string, string> = {
   'Transactions by Date': 'REP_S_00247',

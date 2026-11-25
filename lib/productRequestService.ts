@@ -754,7 +754,7 @@ export class ProductRequestService {
     return pr;
   }
 
-  // 19. Paginated Reject Reasons (Omega Match)
+  // 19. Paginated Reject Reasons (Vanguard Match)
   public static getRejectReasonsPaginated(
     page: number = 1,
     searchValue: string = '',

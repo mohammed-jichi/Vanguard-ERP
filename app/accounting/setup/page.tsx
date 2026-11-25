@@ -2,7 +2,7 @@
 
 /**
  * Vanguard ERP - Accounting Module Setup & Configurations
- * Complete functional parity with Omega ERP: Chart of Accounts (PCG Hierarchy),
+ * Complete functional parity with Vanguard ERP: Chart of Accounts (PCG Hierarchy),
  * Account Auxiliaries (Classes, Headers 1-4), JV Setup, Currency Setup & Rates,
  * and Departments & Cost Centers.
  * Strictly adheres to Vanguard's Design System tokens and clean English interface.
@@ -599,7 +599,7 @@ function AccountingSetupContent({ initialTab, initialAuxSubTab }: AccountingSetu
           {(auxSubTab === 'H2' || auxSubTab === 'H3' || auxSubTab === 'H4') && (
             <div className="p-8 text-center text-xs text-muted-foreground bg-muted/40 rounded-xl border border-border">
               <Layers className="w-8 h-8 text-primary mx-auto mb-2 opacity-80" />
-              <p className="font-bold text-foreground">{t('aux_level_formatted_title', 'Auxiliary Level Formatted to Omega ERP Specifications')}</p>
+              <p className="font-bold text-foreground">{t('aux_level_formatted_title', 'Auxiliary Level Formatted to Vanguard ERP Specifications')}</p>
               <p className="text-muted-foreground mt-1">{t('aux_level_formatted_desc', 'Automatic parent reference codes are generated when assigning detailed subsidiary accounts.')}</p>
             </div>
           )}

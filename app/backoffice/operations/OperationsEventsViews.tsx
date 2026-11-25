@@ -69,7 +69,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
     type: 'desc'
   });
 
-  // Calendar date state (Default to September 2026 to match live Omega screenshots)
+  // Calendar date state (Default to September 2026 to match live Vanguard screenshots)
   const [currentDate, setCurrentDate] = useState<Date>(new Date(2026, 8, 11)); // Sep 11, 2026
 
   // Events & auxiliary data
@@ -315,14 +315,14 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
     setViewType('new_event');
   };
 
-  // Edit existing event - opens in new tab matching Omega ERP
+  // Edit existing event - opens in new tab matching Vanguard ERP
   const handleEditEvent = (ev: OmegaEventRecord) => {
     if (typeof window !== 'undefined') {
       window.open('/editEvent?id=' + ev.evnt_id, '_blank');
     }
   };
 
-  // Save Event with full Omega validation logic
+  // Save Event with full Vanguard validation logic
   const handleSaveNewEvent = () => {
     const errors: string[] = [];
 
@@ -494,7 +494,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
     for (let day = 1; day <= totalDaysInMonth; day++) {
       const d = new Date(year, month, day);
       const str = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      // Today highlight matches Sep 11, 2026 from Omega screenshot 2
+      // Today highlight matches Sep 11, 2026 from Vanguard screenshot 2
       const isToday = day === 11 && month === 8 && year === 2026;
       cells.push({
         date: d,
@@ -976,7 +976,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
 
       {/* Main Container */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-4">
-        {/* Breadcrumb matching Omega */}
+        {/* Breadcrumb matching Vanguard */}
         <div className="text-xs text-muted-foreground mb-1">
           <Link prefetch={false} href="/backoffice" className="text-primary hover:underline">
             Home
@@ -1018,7 +1018,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         </h1>
 
         {/* ------------------------------------------------------------- */}
-        {/* STANDALONE VIEW: EVENT VENUES (MATCHING OMEGA EXACT TABLE)   */}
+        {/* STANDALONE VIEW: EVENT VENUES (MATCHING VANGUARD EXACT TABLE)   */}
         {/* ------------------------------------------------------------- */}
         {activeSection === 'event_venues' && (
           <div className="bg-white rounded border border-border shadow-sm p-4 mb-6">
@@ -1052,7 +1052,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   </div>
                 </div>
 
-                {/* Table matching Omega exact EventVenues page */}
+                {/* Table matching Vanguard exact EventVenues page */}
                 <div className="table-responsive border border-border rounded overflow-hidden">
                   <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
                     <thead className="bg-background text-foreground font-semibold border-b border-border">
@@ -1225,7 +1225,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         )}
 
         {/* ------------------------------------------------------------- */}
-        {/* STANDALONE VIEW: EVENT RESOURCES (MATCHING OMEGA TABLE SNIPPET) */}
+        {/* STANDALONE VIEW: EVENT RESOURCES (MATCHING VANGUARD TABLE SNIPPET) */}
         {/* ------------------------------------------------------------- */}
         {activeSection === 'event_resources' && (
           <div className="bg-white rounded border border-border shadow-sm p-4 mb-6">
@@ -1265,7 +1265,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   </div>
                 </div>
 
-                {/* Table matching Omega exact_event_resources_page.html */}
+                {/* Table matching Vanguard exact_event_resources_page.html */}
                 <div className="table-responsive border border-border rounded overflow-hidden">
                   <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
                     <thead className="bg-background text-foreground font-semibold border-b border-border">
@@ -1381,7 +1381,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         )}
 
         {/* ------------------------------------------------------------- */}
-        {/* STANDALONE VIEW: EVENT TYPES (MATCHING OMEGA EXACT TABLE)     */}
+        {/* STANDALONE VIEW: EVENT TYPES (MATCHING VANGUARD EXACT TABLE)     */}
         {/* ------------------------------------------------------------- */}
         {activeSection === 'event_types' && (
           <div className="bg-white rounded border border-border shadow-sm p-4 mb-6">
@@ -1412,7 +1412,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   </div>
                 </div>
 
-                {/* Table matching Omega exact EventTypes page */}
+                {/* Table matching Vanguard exact EventTypes page */}
                 <div className="table-responsive border border-border rounded overflow-hidden">
                   <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
                     <thead className="bg-background text-foreground font-semibold border-b border-border">
@@ -1536,7 +1536,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
         )}
 
         {/* ------------------------------------------------------------- */}
-        {/* VIEW TYPE: NEW EVENT (3 TABS MATCHING OMEGA) */}
+        {/* VIEW TYPE: NEW EVENT (3 TABS MATCHING VANGUARD) */}
         {/* ------------------------------------------------------------- */}
         {activeSection === 'events' && viewType === 'new_event' && (
           <div className="bg-white rounded border border-border shadow-sm p-4 mb-6">
@@ -1701,7 +1701,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                     </button>
                   </div>
 
-                  {/* Selected Customer Badge (matching Omega ERP exact markup) */}
+                  {/* Selected Customer Badge (matching Vanguard ERP exact markup) */}
                   {selectedCustomer && (
                     <div className="mt-2.5 p-2 bg-muted border border-border rounded text-[11px] text-foreground flex justify-between items-start">
                       <div>
@@ -1974,7 +1974,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   </div>
 
                   <div className="card-body p-4 space-y-4">
-                    {/* Row with Select Resource & Inline + Button matching Omega */}
+                    {/* Row with Select Resource & Inline + Button matching Vanguard */}
                     <div className="row g-2">
                       <div className="col-12 col-md-6">
                         <label className="block text-xs font-semibold text-foreground mb-1">
@@ -2025,7 +2025,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       </div>
                     </div>
 
-                    {/* Resources Table in Authentic Omega Style */}
+                    {/* Resources Table in Authentic Vanguard Style */}
                     <div className="table-responsive border border-border rounded overflow-hidden">
                       <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
                         <thead className="bg-background text-foreground font-semibold border-b border-border">
@@ -2109,7 +2109,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   </div>
 
                   <div className="card-body p-4 space-y-4">
-                    {/* Row with Select Employee & Inline + Button matching Omega */}
+                    {/* Row with Select Employee & Inline + Button matching Vanguard */}
                     <div className="row g-2">
                       <div className="col-12 col-md-6">
                         <label className="block text-xs font-semibold text-foreground mb-1">
@@ -2159,7 +2159,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       </div>
                     </div>
 
-                    {/* Drivers Table in Authentic Omega Style */}
+                    {/* Drivers Table in Authentic Vanguard Style */}
                     <div className="table-responsive border border-border rounded overflow-hidden">
                       <table className="table table-custom table-striped table-hover mb-0 w-full text-xs text-left">
                         <thead className="bg-background text-foreground font-semibold border-b border-border">
@@ -2749,7 +2749,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* MODAL 1: STATUS UPDATE (MATCHES OMEGA statusUpdate MODAL) */}
+      {/* MODAL 1: STATUS UPDATE (MATCHES VANGUARD statusUpdate MODAL) */}
       {/* ------------------------------------------------------------- */}
       {statusModalOpen && statusModalEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -3103,7 +3103,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       />
 
       {/* ------------------------------------------------------------- */}
-      {/* AUTHENTIC OMEGA MODAL: NEW / EDIT RESOURCE */}
+      {/* AUTHENTIC VANGUARD MODAL: NEW / EDIT RESOURCE */}
       {/* ------------------------------------------------------------- */}
       {addResourceModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in">
@@ -3235,7 +3235,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* AUTHENTIC OMEGA MODAL: NEW DRIVER */}
+      {/* AUTHENTIC VANGUARD MODAL: NEW DRIVER */}
       {/* ------------------------------------------------------------- */}
       {addDriverModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in">
@@ -3358,7 +3358,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* AUTHENTIC OMEGA MODAL: NEW / EDIT EVENT TYPE                  */}
+      {/* AUTHENTIC VANGUARD MODAL: NEW / EDIT EVENT TYPE                  */}
       {/* ------------------------------------------------------------- */}
       {eventTypeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 animate-in fade-in">

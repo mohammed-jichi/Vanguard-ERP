@@ -449,7 +449,7 @@ export default function PaymentTypesView() {
       )}
 
       <div className="content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        {/* Header & Breadcrumbs matching Omega ERP */}
+        {/* Header & Breadcrumbs matching Vanguard ERP */}
         <div className="header mb-4 pb-2 border-b border-slate-200">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
@@ -503,7 +503,7 @@ export default function PaymentTypesView() {
         {/* ========================================================================= */}
         {activeView === 'types' && (
           <div className="main-content">
-            {/* Filter Toolbar matching Omega Bootstrap 5 structure */}
+            {/* Filter Toolbar matching Vanguard Bootstrap 5 structure */}
             <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm mb-4">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 {/* Search Input */}
@@ -568,7 +568,7 @@ export default function PaymentTypesView() {
               </div>
             </div>
 
-            {/* Table Container matching Omega styling */}
+            {/* Table Container matching Vanguard styling */}
             <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm text-slate-700 divide-y divide-slate-200">
@@ -819,7 +819,7 @@ export default function PaymentTypesView() {
       </div>
 
       {/* ========================================================================= */}
-      {/* MODAL 1: NEW / EDIT PAYMENT TYPE (Exact Omega Modal Structure) */}
+      {/* MODAL 1: NEW / EDIT PAYMENT TYPE (Exact Vanguard Modal Structure) */}
       {/* ========================================================================= */}
       {showAddEditModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
@@ -1151,7 +1151,7 @@ export default function PaymentTypesView() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 2: SORTING MODAL (#sortingModal from Omega) */}
+      {/* MODAL 2: SORTING MODAL (#sortingModal from Vanguard) */}
       {/* ========================================================================= */}
       {showSortingModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">

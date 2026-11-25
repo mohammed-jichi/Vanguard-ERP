@@ -1,4 +1,4 @@
-// Master Product Request Data Structures & Seed Data (Omega ERP 1:1 Match)
+// Master Product Request Data Structures & Seed Data (Vanguard ERP 1:1 Match)
 
 export interface ProductRequestLineItem {
   ID: number;
@@ -89,7 +89,7 @@ export interface RecurringPRTemplate {
   }>;
 }
 
-// Branches matching authentic Omega setup
+// Branches matching authentic Vanguard setup
 export const OMEGA_PR_BRANCHES = [
   { BRANCHID: 1, BARANCHNAME: 'Zeit w zaytoun ljanoub', CODE: 'ZWZ-01', BRAND_ID: 9606 },
   { BRANCHID: 2, BARANCHNAME: 'Central Kitchen', CODE: 'CK-01', BRAND_ID: 9606 },
@@ -115,7 +115,7 @@ export const OMEGA_PR_LOCATIONS = [
   { LOCATIONID: 13, BRANCHID: 5, FORBRANCH: 5, LOCATIONDESCRIPTION: 'Hamra Dry Storage' }
 ];
 
-// Predefined Reject Reasons matching Omega
+// Predefined Reject Reasons matching Vanguard
 export const INITIAL_REJECT_REASONS: RejectReasonRecord[] = [
   { ID: 1, DESCRIPTION: 'Cancelled', BRAND_ID: 9606 },
   { ID: 2, DESCRIPTION: 'Out of Stock at Central Warehouse', BRAND_ID: 9606 },
@@ -636,7 +636,7 @@ export const INITIAL_PR_TEMPLATES: RecurringPRTemplate[] = [
   }
 ];
 
-// Authentic Omega Product Request Reports Taxonomy
+// Authentic Vanguard Product Request Reports Taxonomy
 export const OMEGA_PR_REPORTS_LIST = [
   {
     REPORTID: 405,
@@ -741,7 +741,7 @@ export const OMEGA_PR_REPORTS_LIST = [
   }
 ];
 
-// Authentic Item Groups for Report Filters (from Omega Live DB)
+// Authentic Item Groups for Report Filters (from Vanguard Live DB)
 export const OMEGA_REPORT_GROUPS = [
   { ID: 0, GROUPNAME: 'All Groups', DIVISIONID: 0 },
   { ID: 65, GROUPNAME: '509 مرطبان', DIVISIONID: 40 },

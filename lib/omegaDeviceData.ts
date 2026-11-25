@@ -48,7 +48,7 @@ export const INITIAL_WORKSTATIONS: OmegaWorkstation[] = [];
 export const INITIAL_PHYSICAL_PRINTERS: OmegaPhysicalPrinter[] = [];
 
 export const PRINTER_BRANDS = [
-  { id: 1, description: 'Omega' },
+  { id: 1, description: 'Vanguard' },
   { id: 2, description: 'Epson' },
   { id: 3, description: 'Star Micronics' },
   { id: 4, description: 'Bixolon' },

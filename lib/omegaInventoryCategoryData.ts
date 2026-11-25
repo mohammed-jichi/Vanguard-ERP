@@ -1,4 +1,4 @@
-// Authentic Omega ERP Inventory Category Data & Types
+// Authentic Vanguard ERP Inventory Category Data & Types
 
 export interface InventoryCategoryItem {
   ID: number;
@@ -37,7 +37,7 @@ export interface BrandOption {
   CATEGORYNAME?: string | null;
 }
 
-// 100% authentic categories cloned directly from Omega ERP (cms.omegasoftware.ca)
+// 100% authentic categories cloned directly from Vanguard ERP (cms.omegasoftware.ca)
 export const INITIAL_OMEGA_INV_CATEGORIES: InventoryCategoryItem[] = [
   {
     ID: 23,

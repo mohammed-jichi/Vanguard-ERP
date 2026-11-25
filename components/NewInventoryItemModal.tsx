@@ -186,7 +186,7 @@ export default function NewInventoryItemModal({
       icon={<Package className="w-5 h-5 text-emerald-700" />}
       title="New Inventory Item"
       badge="صنف مخزني جديد"
-      subtitle="Omega ERP Setup • Products & Services Registry"
+      subtitle="Vanguard ERP Setup • Products & Services Registry"
       contentScrollable={false}
     >
 

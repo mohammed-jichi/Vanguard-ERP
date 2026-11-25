@@ -346,7 +346,7 @@ export interface DynamicFilterRendererProps {
 /**
  * DynamicFilterRenderer
  * Inspects the selected report name, dynamically pulls matching conditional schema fields,
- * and renders dependent cascading filter inputs inside the authentic Omega light workplace.
+ * and renders dependent cascading filter inputs inside the authentic Vanguard light workplace.
  */
 export default function DynamicFilterRenderer({
   reportName,

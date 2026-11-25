@@ -255,7 +255,7 @@ export default function EventVenueModal({
     return regions.filter(r => r.name.toLowerCase().includes(q));
   }, [regions, searchStateQuery]);
 
-  // Filtered Subregions for City modal (2,790 authentic cities/towns from Omega ERP)
+  // Filtered Subregions for City modal (2,790 authentic cities/towns from Vanguard ERP)
   const filteredSubregions = useMemo(() => {
     const q = searchCityQuery.trim().toLowerCase();
     if (!q) {

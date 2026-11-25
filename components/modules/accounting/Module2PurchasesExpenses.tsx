@@ -3,7 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 2: Accounting Purchases & Expenses Console
- * 100% Parity with Omega ERP & Vanguard Modern Corporate Theme
+ * 100% Parity with Vanguard ERP & Vanguard Modern Corporate Theme
  * Featuring Advance Settlement & Reconciliation Lifecycle:
  * 1. Top Header & Voucher Controls:
  *    - Title: "Accounting Purchase & Expenses Console"

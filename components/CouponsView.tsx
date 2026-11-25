@@ -608,7 +608,7 @@ export default function CouponsView() {
       )}
 
       <div className="content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        {/* Header & Breadcrumb matching Omega ERP */}
+        {/* Header & Breadcrumb matching Vanguard ERP */}
         <div className="header mb-4 pb-2 border-b border-slate-200">
           <h1 className="page-title text-2xl font-bold text-slate-800 tracking-tight">
             {t('coupons_and_gift_certificates', 'Coupons & Gift Certificates')}
@@ -627,7 +627,7 @@ export default function CouponsView() {
         </div>
 
         {/* ========================================================================= */}
-        {/* DASHBOARD SUMMARY CARDS (Exact Omega Theme: 4 Metric Cards) */}
+        {/* DASHBOARD SUMMARY CARDS (Exact Vanguard Theme: 4 Metric Cards) */}
         {/* ========================================================================= */}
         <div className="dashboard grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           {/* Card 1: Total */}
@@ -919,7 +919,7 @@ export default function CouponsView() {
       </div>
 
       {/* ========================================================================= */}
-      {/* MODAL 1: NEW COUPON & GIFT CERTIFICATE (Exact Omega template) */}
+      {/* MODAL 1: NEW COUPON & GIFT CERTIFICATE (Exact Vanguard template) */}
       {/* ========================================================================= */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
@@ -1097,7 +1097,7 @@ export default function CouponsView() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 2: EDIT COUPON (Exact Omega template) */}
+      {/* MODAL 2: EDIT COUPON (Exact Vanguard template) */}
       {/* ========================================================================= */}
       {showEditModal && editingVoucher && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">

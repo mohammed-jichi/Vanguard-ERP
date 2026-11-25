@@ -3,7 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Accounting Shared Modals
- * Parity with Omega ERP:
+ * Parity with Vanguard ERP:
  * 1. Supporting Document URL Modal
  * 2. Search Accounts Modal (with Type filters & 'Show All' counter toggle)
  * 3. Statement Modal (Account Ledger Preview with totals & Print)

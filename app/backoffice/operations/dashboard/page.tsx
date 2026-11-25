@@ -383,7 +383,7 @@ function OperationsDashboardContent() {
     }
   ];
 
-  // Real Cost of Goods Sold (COGS) Extended Data (Matching Omega Real Cost Matrix)
+  // Real Cost of Goods Sold (COGS) Extended Data (Matching Vanguard Real Cost Matrix)
   const cogsData = [
     { category: 'Extra Virgin Olive Oil', beginning: 198000, purchase: 45000, ending: 184500, cogs: 58500, netSales: 118400, grossProfit: 59900 },
     { category: 'Virgin Olive Oil', beginning: 104000, purchase: 32500, ending: 96200, cogs: 40300, netSales: 64200, grossProfit: 23900 },
@@ -393,7 +393,7 @@ function OperationsDashboardContent() {
     { category: 'Packaging & Glass Materials', beginning: 24500, purchase: 18400, ending: 22100, cogs: 20800, netSales: 4800, grossProfit: -16000 },
   ];
 
-  // Theoretical / Ideal Profit by Category Data (Matching Omega Ideal Profit Matrix)
+  // Theoretical / Ideal Profit by Category Data (Matching Vanguard Ideal Profit Matrix)
   const idealProfitData = [
     { category: 'Extra Virgin Olive Oil', sales: 118400, cost: 58500 },
     { category: 'Virgin Olive Oil', sales: 64200, cost: 40300 },
@@ -435,7 +435,7 @@ function OperationsDashboardContent() {
     { branch: '1300-01 - Choueifat Main Facility', location: 'Southern Olive and Oil Products - Main', product: 'Castile Soap Unscented 150g Bar', minQty: 300, qtyOH: 75 },
   ];
 
-  // Quantity Not Received Records (Matching Omega getInventoryQtyNotReceived)
+  // Quantity Not Received Records (Matching Vanguard getInventoryQtyNotReceived)
   const pendingProductRequests: { reqNo: string; reqDate: string; branch: string; item: string; qty: number }[] = [];
 
   const pendingTransfers: { reqNo: string; reqDate: string; fromBranch: string; toBranch: string; item: string; qty: number }[] = [];
@@ -1340,7 +1340,7 @@ function OperationsDashboardContent() {
 
 
       {/* ========================================================================= */}
-      {/* 3. NINE AUTHENTIC PILL NAVIGATION TABS (EXACT VANGUARD & OMEGA REPLICATION) */}
+      {/* 3. NINE AUTHENTIC PILL NAVIGATION TABS (EXACT VANGUARD & VANGUARD REPLICATION) */}
       {/* ========================================================================= */}
       <div className="px-4 lg:px-6 mt-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -1772,7 +1772,7 @@ function OperationsDashboardContent() {
                       </tr>
                     </thead>
                     <tbody>
-                      {/* Top All Branches Row matching authentic Vanguard & Omega */}
+                      {/* Top All Branches Row matching authentic Vanguard & Vanguard */}
                       <tr className="bg-slate-200/90 font-black border-b-2 border-slate-300">
                         <td className="font-bold text-slate-900">{t('all_branches', 'All Branches')}</td>
                         {comparativeTotals.map((tot, i) => {

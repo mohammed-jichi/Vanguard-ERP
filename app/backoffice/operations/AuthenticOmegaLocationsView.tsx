@@ -32,7 +32,7 @@ export default function AuthenticOmegaLocationsView() {
   const [activeTab, setActiveTab] = useState<LocationTab>('locations');
 
   // ---------------------------------------------------------------------------
-  // Locations State (synced with localStorage & fallback to live Omega data)
+  // Locations State (synced with localStorage & fallback to live Vanguard data)
   // ---------------------------------------------------------------------------
   const [locations, setLocations] = useState<LocationItem[]>(() => {
     if (typeof window !== 'undefined') {

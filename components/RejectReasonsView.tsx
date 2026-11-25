@@ -196,7 +196,7 @@ export default function RejectReasonsView() {
       )}
 
       <div className="content p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-        {/* Header matching Omega */}
+        {/* Header matching Vanguard */}
         <div className="header border-b border-slate-200 pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>

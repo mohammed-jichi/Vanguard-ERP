@@ -1,5 +1,5 @@
 /**
- * Omega ERP / Vanguard ERP - Zone Setup & Currency Setup Models & Live Seed Data
+ * Vanguard ERP / Vanguard ERP - Zone Setup & Currency Setup Models & Live Seed Data
  * Section: Currency Setup (CurrSetupView) & Call Center Zone Setup (CallCenterZoneSetupView)
  * Branch: 1300-01 - Main Branch
  */
@@ -31,8 +31,8 @@ export interface OmegaCurrency {
 }
 
 export const INITIAL_CURRENCIES: OmegaCurrency[] = [
-  { ID: 1, BRAND_ID: 0, BRANCHID: 1, DESCRIPTION: 'LBP', RATE: 1, SYNBOL: 'LL', ASYNBOL: 'LL', DIGITNUMBER: 0, BACKRATE: 1, DECIMALNBRINV: 0, maincurrency: 1 },
-  { ID: 2, BRAND_ID: 0, BRANCHID: 1, DESCRIPTION: 'USD', RATE: 89500, SYNBOL: '$', ASYNBOL: '$', DIGITNUMBER: 2, BACKRATE: 89500, DECIMALNBRINV: 0, maincurrency: 2 }
+  { ID: 1, BRAND_ID: 0, BRANCHID: 1, DESCRIPTION: 'USD', RATE: 1, SYNBOL: '$', ASYNBOL: '$', DIGITNUMBER: 2, BACKRATE: 1, DECIMALNBRINV: 0, maincurrency: 1 },
+  { ID: 2, BRAND_ID: 0, BRANCHID: 1, DESCRIPTION: 'LBP', RATE: 89500, SYNBOL: 'LL', ASYNBOL: 'LL', DIGITNUMBER: 0, BACKRATE: 89500, DECIMALNBRINV: 0, maincurrency: 2 }
 ];
 
 // ==========================================

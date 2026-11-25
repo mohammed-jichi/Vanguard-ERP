@@ -1,5 +1,5 @@
 /**
- * Omega ERP / Vanguard ERP - More Setup Models & Live Seed Data
+ * Vanguard ERP / Vanguard ERP - More Setup Models & Live Seed Data
  * Section: Void Reasons, VAT Exemption Reasons, Message on Invoice
  * Branch: 22901 - Main Branch
  */

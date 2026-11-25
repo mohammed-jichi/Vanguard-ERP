@@ -3,7 +3,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 
 /**
  * Vanguard ERP - Module 1: Journal Vouchers (JV)
- * 100% Functional, Layout, and Behavioral Parity with Omega ERP:
+ * 100% Functional, Layout, and Behavioral Parity with Vanguard ERP:
  * 1. Main List View:
  *    - Top Header: + New, Recurring Vouchers, Actions Dropdown (Account Inquiry, Show Deleted Transactions, Show Lately Updated), Watch Tutorial.
  *    - 2-Row Filter Grid: Row 1 (Search, From Date, To Date, Filter Button); Row 2 (5 Distinct Dropdowns with embedded Search).
@@ -73,7 +73,7 @@ import {
 } from './SearchableFilterDropdown';
 import { useActiveUser } from '@/lib/useActiveUser';
 
-// Omega ERP Journal Voucher Types Catalog
+// Vanguard ERP Journal Voucher Types Catalog
 export const OMEGA_JV_TYPES = [
   { value: 'All Types', label: 'All Types' },
   { value: 'CN', label: 'CN - CREDIT NOTES' },
@@ -1114,7 +1114,7 @@ export function Module1JournalVouchers({
             </div>
           </div>
 
-          {/* B. 2-ROW FILTER GRID (EXACT OMEGA ERP PARITY) */}
+          {/* B. 2-ROW FILTER GRID (EXACT VANGUARD ERP PARITY) */}
           <div className="bg-card border border-border rounded-xl p-4 shadow-xs space-y-3">
             {/* ROW 1: Search, From Date, To Date, Filter Button (No dropdowns in Row 1) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 items-end">
@@ -1182,7 +1182,7 @@ export function Module1JournalVouchers({
                 searchPlaceholder="Search transaction status..."
               />
 
-              {/* 2. All Types (Omega catalog with internal search) */}
+              {/* 2. All Types (Vanguard catalog with internal search) */}
               <SearchableFilterDropdown
                 label="Type"
                 value={filterType}

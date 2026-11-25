@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Reason not found or could not be deleted' }, { status: 404 });
     }
 
-    // Omega returns 1 on success
+    // Vanguard returns 1 on success
     return new NextResponse('1', {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

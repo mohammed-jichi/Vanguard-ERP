@@ -1,7 +1,7 @@
 /**
  * Vanguard ERP - Lebanese Standard Chart of Accounts (COA) Master Catalog
  * Full Sub Class 3 (3-digit) and Sub Class 4 (5-digit) accounts hierarchy
- * Harvested from Lebanese standard accounting framework & Omega ERP.
+ * Harvested from Lebanese standard accounting framework & Vanguard ERP.
  */
 
 export interface CoaAccountHeader {

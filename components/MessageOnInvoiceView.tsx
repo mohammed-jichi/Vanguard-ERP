@@ -457,7 +457,7 @@ export default function MessageOnInvoiceView() {
                       </td>
                       <td className="py-2.5 px-4 text-end">
                         <div className="flex items-center justify-end gap-1">
-                          {/* Delete (Hidden for 1000 & 1001 system messages as in Omega ERP) */}
+                          {/* Delete (Hidden for 1000 & 1001 system messages as in Vanguard ERP) */}
                           {[1000, 1001].indexOf(row.MESSAGEID) === -1 && (
                             <button
                               type="button"
@@ -695,7 +695,7 @@ export default function MessageOnInvoiceView() {
                 </label>
               </div>
 
-              {/* Split Actions: Save and Save for all Branches (Identical to Omega ERP) */}
+              {/* Split Actions: Save and Save for all Branches (Identical to Vanguard ERP) */}
               <div className="pt-2 flex flex-wrap items-center justify-end gap-2 border-t border-slate-100">
                 <button
                   type="button"

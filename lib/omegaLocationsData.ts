@@ -1,5 +1,5 @@
 /**
- * Live Cloned Locations, Zones, and Aisles from Omega ERP
+ * Live Cloned Locations, Zones, and Aisles from Vanguard ERP
  * Sourced directly from cms.omegasoftware.ca
  */
 

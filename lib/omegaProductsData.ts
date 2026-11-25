@@ -1,5 +1,5 @@
-// Authentic Omega ERP Products & Services Master Data, Models, & Types
-// Cloned 100% authentically from Omega ERP (cms.omegasoftware.ca)
+// Authentic Vanguard ERP Products & Services Master Data, Models, & Types
+// Cloned 100% authentically from Vanguard ERP (cms.omegasoftware.ca)
 
 export interface ProductPriceVariation {
   id: number;
@@ -144,7 +144,7 @@ export interface ProductSalesTransactionRecord {
   id: number;
   date: string;
   receiptNumber: string;
-  source: 'Vanguard Supersonic Dispatch (API)' | 'Omega Walk-in POS' | 'Wholesale Route Van' | 'B2B Portal';
+  source: 'Vanguard Supersonic Dispatch (API)' | 'Vanguard Walk-in POS' | 'Wholesale Route Van' | 'B2B Portal';
   channel: string;
   qtySold: number;
   unit: string;
@@ -293,7 +293,7 @@ export interface AuthenticProductRecord {
   tax6: boolean;
   autoDiscount: number;
 
-  // Specifications & Advanced Tracking (Omega ERP More Filters)
+  // Specifications & Advanced Tracking (Vanguard ERP More Filters)
   hasSerialNumber?: boolean;
   serialNumber?: string;
   hasIngredients?: boolean;
@@ -679,7 +679,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
         id: 9002,
         date: '13-Sep-2026 10:52:14',
         receiptNumber: 'POS-REC-9402',
-        source: 'Omega Walk-in POS',
+        source: 'Vanguard Walk-in POS',
         channel: 'Branch: Zeit w zaytoun ljanoub (POS Terminal #02)',
         qtySold: 2,
         unit: 'BOX',
@@ -715,7 +715,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
         id: 9004,
         date: '11-Sep-2026 18:45:00',
         receiptNumber: 'POS-REC-9388',
-        source: 'Omega Walk-in POS',
+        source: 'Vanguard Walk-in POS',
         channel: 'POS Terminal #01 (Cashier Override: 5% Courtesy Discount)',
         qtySold: 1,
         unit: 'BOX',

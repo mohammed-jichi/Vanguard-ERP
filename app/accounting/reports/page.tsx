@@ -2,7 +2,7 @@
 
 /**
  * Vanguard ERP - Financial & Operational Reporting Engine
- * Fully authentic reports extracted from Omega Software ERP (Customer 22901 - Southern Olive Oil Products S.A.R.L)
+ * Fully authentic reports extracted from Vanguard Software ERP (Customer 22901 - Southern Olive Oil Products S.A.R.L)
  * Strictly adhering to Vanguard's Design System tokens and clean English interface.
  * 
  * Includes:
@@ -438,7 +438,7 @@ function AccountingReportsContent({ initialReport }: AccountingReportsPageProps)
             <BookOpen className="w-4 h-4 text-primary" />
             <span>Financial Statements &amp; Executive Reporting Engine</span>
             <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full border border-border">
-              Omega Parity Certified
+              Vanguard Parity Certified
             </span>
           </div>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
