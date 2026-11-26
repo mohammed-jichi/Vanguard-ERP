@@ -171,6 +171,27 @@ export default function Sidebar({
     store: false,
   });
 
+  const hrIsOn = (href: string) => !!pathname && (pathname === href || pathname.startsWith(href + '/'));
+  const renderHrLink = (href: string, icon: string, key: string, label: string) => (
+    <Link prefetch={false} key={href} href={href} className={`flex items-center gap-2 p-1.5 rounded font-medium ${hrIsOn(href) ? 'bg-slate-900 text-white' : 'hover:text-primary hover:bg-slate-50'}`}>
+      <img src={`/icons/${icon}.png`} className="w-3.5 h-3.5 object-contain opacity-70" alt="" />
+      <span>{t(key, label)}</span>
+    </Link>
+  );
+  useEffect(() => {
+    if (!pathname || !pathname.startsWith('/backoffice/hr')) return;
+    const groups: Record<string, string[]> = {
+      hr_orgsetup: ['/backoffice/hr/departments', '/backoffice/hr/designations', '/backoffice/hr/roles'],
+      hr_attendance: ['/backoffice/hr/time-off', '/backoffice/hr/schedule-templates', '/backoffice/hr/time-off-reasons', '/backoffice/hr/attendance', '/backoffice/hr/attendance-log'],
+      hr_payroll: ['/backoffice/hr/payroll', '/backoffice/hr/salary-processing', '/backoffice/hr/payment-settings', '/backoffice/hr/earnings-deductions'],
+    };
+    setExpandedGroups(prev => {
+      const next: Record<string, boolean> = { ...prev, hr: true };
+      for (const [g, hs] of Object.entries(groups)) if (hs.some(h => pathname === h || pathname.startsWith(h + '/'))) next[g] = true;
+      return next;
+    });
+  }, [pathname]);
+
 // Accordion groups stay strictly closed on initial load and navigation unless user clicks to expand
 
   const toggleGroup = (groupKey: string) => {
@@ -873,66 +894,60 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['hr'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link prefetch={false} href="/backoffice/hr/schedule-overview" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_schedule_overview', 'Schedule Overview')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/employees" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-employees.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_employees', 'Personnel - Employees')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/schedules" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_schedule_manager', 'Schedules')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/departments" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-departments.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_internal_departments', 'Internal Departments')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/designations" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-designation.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_designations', 'Designations')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/roles" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-designation.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_pos_employee_roles', 'POS Employee Roles')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/time-off" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_time_off_requests', 'Time Off Requests')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/schedule-templates" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_schedule_templates', 'Schedule Templates')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/time-off-reasons" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_time_off_reason', 'Time Off Reason')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/attendance" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-employees.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_attendance_summary', 'Attendance Summary')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/attendance-log" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-employees.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_attendance_log', 'Attendance Log')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/payroll" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-salaries.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_payroll_dashboard', 'Payroll Dashboard')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/salary-processing" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-salaries.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_salary_processing', 'Salary Processing')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/payment-settings" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-salaries.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_payment_settings', 'Payment Settings')}</span>
-              </Link>
-              <Link prefetch={false} href="/backoffice/hr/earnings-deductions" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-salaries.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('hr_nav_earnings_deductions', 'Earnings &amp; Deductions')}</span>
-              </Link>
+              {renderHrLink('/backoffice/hr/schedule-overview','payroll-schedules','hr_nav_schedule_overview','Schedule Overview')}
+              {renderHrLink('/backoffice/hr/employees','payroll-employees','hr_nav_employees','Employees')}
+              {renderHrLink('/backoffice/hr/schedules','payroll-schedules','hr_nav_schedule_manager','Schedule Manager')}
+              <div className="pt-0.5">
+                <button
+                  onClick={() => toggleGroup('hr_orgsetup')}
+                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  <span>{t('hr_nav_org_setup', 'Organization Setup')}</span>
+                  <span className="text-[9px]">{expandedGroups['hr_orgsetup'] ? '\u25BE' : '\u25B8'}</span>
+                </button>
+                {expandedGroups['hr_orgsetup'] && (
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    {renderHrLink('/backoffice/hr/departments','payroll-departments','hr_nav_internal_departments','Internal Departments')}
+                    {renderHrLink('/backoffice/hr/designations','payroll-designation','hr_nav_designations','Designations')}
+                    {renderHrLink('/backoffice/hr/roles','payroll-designation','hr_nav_pos_employee_roles','POS Employee Roles')}
+                  </div>
+                )}
+              </div>
+              <div className="pt-0.5">
+                <button
+                  onClick={() => toggleGroup('hr_attendance')}
+                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  <span>{t('hr_nav_time_attendance', 'Time & Attendance')}</span>
+                  <span className="text-[9px]">{expandedGroups['hr_attendance'] ? '\u25BE' : '\u25B8'}</span>
+                </button>
+                {expandedGroups['hr_attendance'] && (
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    {renderHrLink('/backoffice/hr/time-off','payroll-schedules','hr_nav_time_off_requests','Time Off Requests')}
+                    {renderHrLink('/backoffice/hr/schedule-templates','payroll-schedules','hr_nav_schedule_templates','Schedule Templates')}
+                    {renderHrLink('/backoffice/hr/time-off-reasons','payroll-schedules','hr_nav_time_off_reason','Time Off Reason')}
+                    {renderHrLink('/backoffice/hr/attendance','payroll-employees','hr_nav_attendance_summary','Attendance Summary')}
+                    {renderHrLink('/backoffice/hr/attendance-log','payroll-employees','hr_nav_attendance_log','Attendance Log')}
+                  </div>
+                )}
+              </div>
+              <div className="pt-0.5">
+                <button
+                  onClick={() => toggleGroup('hr_payroll')}
+                  className="w-full flex items-center justify-between p-1.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  <span>{t('hr_nav_payroll', 'Payroll')}</span>
+                  <span className="text-[9px]">{expandedGroups['hr_payroll'] ? '\u25BE' : '\u25B8'}</span>
+                </button>
+                {expandedGroups['hr_payroll'] && (
+                  <div className="ms-2 ps-2 border-s border-slate-200 space-y-0.5 mt-0.5 text-xs text-slate-700">
+                    {renderHrLink('/backoffice/hr/payroll','payroll-salaries','hr_nav_payroll_dashboard','Payroll Dashboard')}
+                    {renderHrLink('/backoffice/hr/salary-processing','payroll-salaries','hr_nav_salary_processing','Salary Processing')}
+                    {renderHrLink('/backoffice/hr/payment-settings','payroll-salaries','hr_nav_payment_settings','Payment Settings')}
+                    {renderHrLink('/backoffice/hr/earnings-deductions','payroll-salaries','hr_nav_earnings_deductions','Earnings & Deductions')}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
