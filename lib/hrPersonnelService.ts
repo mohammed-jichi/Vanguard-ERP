@@ -415,13 +415,7 @@ export class HRPersonnelService {
               e.firstName !== 'Nour' &&
               e.lastName !== 'Salameh' &&
               e.firstName !== 'Hadi' &&
-              e.lastName !== 'Saad' &&
-              e.id !== 'EMP-001' &&
-              e.id !== 'EMP-002' &&
-              e.id !== 'EMP-003' &&
-              e.id !== '650' &&
-              e.id !== '651' &&
-              e.id !== '652'
+              e.lastName !== 'Saad'
           );
           return clean;
         }
@@ -501,7 +495,7 @@ export class HRPersonnelService {
               protocol: 'ESC_POS',
             } : undefined,
             posCredentials: sanitizedEmp.posCredentials,
-            employeeRecord: employeePayload,
+            employeeRecord: { ...employeePayload, isNew: (emp as any).isNew === true },
           }),
         });
 
@@ -513,6 +507,12 @@ export class HRPersonnelService {
 
         const data = await res.json().catch(() => ({}));
         console.log('[HRPersonnelService] Sync workstation persistence success:', data);
+        if (data?.employee?.posEmployeeId) {
+          sanitizedEmp.posEmployeeId = String(data.employee.posEmployeeId);
+          sanitizedEmp.posCredentials = { ...(sanitizedEmp.posCredentials as any), employeeId: String(data.employee.posEmployeeId) } as any;
+        }
+        if (data?.employee?.employee_code) (sanitizedEmp as any).employee_code = data.employee.employee_code;
+        delete (sanitizedEmp as any).isNew;
       } catch (apiErr: any) {
         console.error('[HRPersonnelService] Employee persistence error:', apiErr);
         if (typeof navigator !== 'undefined' && !navigator.onLine) {
@@ -594,7 +594,8 @@ export class HRPersonnelService {
         for (const row of serverDbEmployees) {
           const empId = String(row.employee_code || row.id);
           const existing = mergedMap.get(empId) || mergedMap.get(String(row.id)) || ({} as HREmployeeRecord);
-          mergedMap.set(empId, {
+          const mapKey = existing.id ? String(existing.id) : empId;
+          mergedMap.set(mapKey, {
             ...existing,
             id: existing.id || empId,
             fullName: row.full_name || existing.fullName || 'Employee',

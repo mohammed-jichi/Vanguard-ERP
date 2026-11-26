@@ -745,7 +745,9 @@ export default function NewEmployeeModal({
         const mm = /^EMP-(\d+)$/.exec(String(e.id));
         return mm ? Math.max(m, parseInt(mm[1], 10)) : m;
       }, 0);
-      const nextId = target?.id || `EMP-${(maxEmpNo + 1).toString().padStart(3, '0')}`;
+      // New employees ALWAYS get a fresh uuid so they can never collide with (or overwrite) an existing record
+      const freshId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const nextId = target?.id || freshId;
 
       // Attendance MAC ID: coerce 'Pending Device Sync', 'Select...', or empty to null
       const rawMac = sanitized.attendanceMacId;
@@ -765,6 +767,7 @@ export default function NewEmployeeModal({
 
       const isEmployeeActive = formData.status === 'Active';
       const newEmp: HREmployeeRecord = {
+        ...(target ? {} : ({ isNew: true } as any)),
         id: nextId,
         active: isEmployeeActive,
         isActive: isEmployeeActive,

@@ -128,6 +128,8 @@ export async function POST(req: NextRequest) {
     );
 
     const empCode = String(employeeId);
+    let dbCode = empCode;
+    let assignedPosId = '';
     const scheduleCfg = employeeRecord?.schedule_config || employeeRecord?.schedule || null;
     const scheduleTemplate = scheduleCfg?.templateName || employeeRecord?.schedule_template || 'Backoffice Administration (08:00 - 16:30)';
     const completeScheduleConfig = scheduleCfg ? {
@@ -168,35 +170,77 @@ export async function POST(req: NextRequest) {
         persistedToSupabase = true;
       }
 
-      // 3. Persist to public.employees (tenant-scoped). Errors are surfaced to the caller, never swallowed.
+      // 3. Persist to public.employees (tenant-scoped). Create = genuine INSERT with a fresh uuid; edit = UPDATE of that exact row.
+      //    Never an upsert keyed on employee_code / pos login id, so one employee can never overwrite another.
       const isUuid = UUID_RE.test(empCode);
+      const isNewEmployee = employeeRecord?.isNew === true;
       const rowTenantId = String(employeeRecord?.tenant_id || DEFAULT_TENANT_UUID);
-      const coreRow: Record<string, any> = {
-        tenant_id: rowTenantId,
-        employee_code: empCode,
-        full_name: employeeName || employeeRecord?.fullName || `${employeeRecord?.firstName || ''} ${employeeRecord?.lastName || ''}`.trim() || 'Employee',
-        phone: employeeRecord?.phone || null,
-        is_active: isActiveVal,
-      };
-      if (isUuid) coreRow.id = empCode;
-      const extendedRow: Record<string, any> = { ...coreRow };
-      if (employeeRecord?.nationalId) extendedRow.national_id = employeeRecord.nationalId;
-      if (employeeRecord?.dateHired) extendedRow.hire_date = employeeRecord.dateHired;
 
-      const upsertEmployee = (row: Record<string, any>) =>
-        supabaseServer
-          .from('employees')
-          .upsert(row, { onConflict: isUuid ? 'id' : 'employee_code' })
-          .select()
-          .maybeSingle();
-
-      let { data: upsertData, error: empErr } = await upsertEmployee(extendedRow);
-      if (empErr && Object.keys(extendedRow).length > Object.keys(coreRow).length && /column|schema cache/i.test(empErr.message || '')) {
-        // Optional columns (national_id / hire_date) are not on the live table: keep them in tenants.feature_flags.hr_employees
-        ({ data: upsertData, error: empErr } = await upsertEmployee(coreRow));
+      // 3a. POS Login ID: unique per tenant (create auto-assigns max + 1; edit rejects duplicates)
+      const tenantFlagsRes = await supabaseServer.from('tenants').select('feature_flags').eq('id', rowTenantId).maybeSingle();
+      const flagEmployees = Object.values(((tenantFlagsRes.data?.feature_flags as any)?.hr_employees || {}) as Record<string, any>);
+      const posOf = (e: any) => parseInt(String(e?.posEmployeeId ?? e?.posCredentials?.employeeId ?? ''), 10);
+      const takenPos = new Set<number>(
+        flagEmployees.filter((e: any) => String(e?.id) !== String(employeeId)).map(posOf).filter((n) => n > 0)
+      );
+      let posNum = parseInt(String(employeeRecord?.posEmployeeId ?? posCredentials?.employeeId ?? ''), 10);
+      if (!(posNum > 0) || takenPos.has(posNum)) {
+        if (isNewEmployee || !(posNum > 0)) {
+          posNum = Math.max(0, ...Array.from(takenPos)) + 1;
+        } else {
+          throw new Error(`POS Login ID #${posNum} is already used by another employee in this tenant. Choose a different POS Login ID.`);
+        }
       }
-      if (empErr) {
-        throw new Error(`Employee was not saved to public.employees: ${empErr.message}${empErr.hint ? ` (${empErr.hint})` : ''}`);
+      assignedPosId = String(posNum);
+
+      // 3b. Find the exact existing row (by uuid, else by code within this tenant)
+      let existingRow: any = null;
+      if (isUuid) {
+        const r = await supabaseServer.from('employees').select('id, employee_code').eq('id', empCode).maybeSingle();
+        existingRow = r.data || null;
+      }
+      if (!existingRow && !isNewEmployee) {
+        const r = await supabaseServer.from('employees').select('id, employee_code').eq('tenant_id', rowTenantId).eq('employee_code', empCode).maybeSingle();
+        existingRow = r.data || null;
+      }
+      if (isNewEmployee && existingRow) {
+        throw new Error('An employee with this id already exists; refusing to overwrite it.');
+      }
+
+      const fullNameVal = employeeName || employeeRecord?.fullName || `${employeeRecord?.firstName || ''} ${employeeRecord?.lastName || ''}`.trim() || 'Employee';
+      const baseFields: Record<string, any> = { full_name: fullNameVal, phone: employeeRecord?.phone || null, is_active: isActiveVal };
+      const extendedFields: Record<string, any> = { ...baseFields };
+      if (employeeRecord?.nationalId) extendedFields.national_id = employeeRecord.nationalId;
+      if (employeeRecord?.dateHired) extendedFields.hire_date = employeeRecord.dateHired;
+      const isColumnErr = (e: any) => !!e && /column|schema cache/i.test(e.message || '');
+
+      let upsertData: any = null;
+      if (existingRow) {
+        dbCode = String(existingRow.employee_code || empCode);
+        const doUpdate = (fields: Record<string, any>) => supabaseServer.from('employees').update(fields).eq('id', existingRow.id).select().maybeSingle();
+        let r = await doUpdate(extendedFields);
+        if (r.error && isColumnErr(r.error)) r = await doUpdate(baseFields);
+        if (r.error) throw new Error(`Employee was not saved to public.employees: ${r.error.message}`);
+        upsertData = r.data;
+      } else {
+        const { data: codeRows } = await supabaseServer.from('employees').select('employee_code').eq('tenant_id', rowTenantId);
+        const maxNo = (codeRows || []).reduce((m: number, r: any) => {
+          const mm = /^EMP-(\d+)$/.exec(String(r.employee_code || ''));
+          return mm ? Math.max(m, parseInt(mm[1], 10)) : m;
+        }, 0);
+        const generatedCode = `EMP-${String(maxNo + 1).padStart(3, '0')}`;
+        dbCode = isUuid || isNewEmployee ? generatedCode : empCode;
+        const buildRow = (fields: Record<string, any>, code: string) => ({ ...(isUuid ? { id: empCode } : {}), tenant_id: rowTenantId, employee_code: code, ...fields });
+        const doInsert = (fields: Record<string, any>, code: string) => supabaseServer.from('employees').insert(buildRow(fields, code)).select().maybeSingle();
+        let r = await doInsert(extendedFields, dbCode);
+        if (r.error && isColumnErr(r.error)) r = await doInsert(baseFields, dbCode);
+        if (r.error && r.error.code === '23505') {
+          dbCode = `EMP-${String(maxNo + 2).padStart(3, '0')}`;
+          r = await doInsert(extendedFields, dbCode);
+          if (r.error && isColumnErr(r.error)) r = await doInsert(baseFields, dbCode);
+        }
+        if (r.error) throw new Error(`Employee was not saved to public.employees: ${r.error.message}${r.error.hint ? ` (${r.error.hint})` : ''}`);
+        upsertData = r.data;
       }
       if (!upsertData) {
         throw new Error('Employee was not saved to public.employees (no row returned - blocked by an RLS policy?)');
@@ -238,7 +282,10 @@ export async function POST(req: NextRequest) {
           const richEmployeeEntry = {
             ...(employeeRecord || {}),
             id: String(employeeId),
-            employee_code: empCode,
+            employee_code: dbCode,
+            isNew: undefined,
+            posEmployeeId: assignedPosId || (employeeRecord as any)?.posEmployeeId,
+            posCredentials: { ...((posCredentials || employeeRecord?.posCredentials || {}) as any), employeeId: assignedPosId || (posCredentials as any)?.employeeId },
             fullName: employeeName || employeeRecord?.fullName || 'Employee',
             is_active: isActiveVal,
             active: isActiveVal,
@@ -299,6 +346,8 @@ export async function POST(req: NextRequest) {
     const returnedEmployee = {
       ...(employeeRecord || {}),
       id: String(employeeId),
+      employee_code: dbCode,
+      posEmployeeId: assignedPosId || employeeRecord?.posEmployeeId,
       fullName: employeeName || employeeRecord?.fullName || 'Employee',
       is_active: isActiveVal,
       active: isActiveVal,
