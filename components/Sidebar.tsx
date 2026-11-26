@@ -873,25 +873,41 @@ export default function Sidebar({
 
           {isOpen && expandedGroups['hr'] && (
             <div className="ms-3 ps-2 border-s border-slate-200 space-y-0.5 mt-1 text-xs">
-              <Link prefetch={false} href="/hr-payroll?tab=departments" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-departments.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('departments', 'Departments')}</span>
-              </Link>
-              <Link prefetch={false} href="/hr-payroll?tab=roles" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-designation.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('roles_designations', 'Roles & Designations')}</span>
-              </Link>
-              <Link prefetch={false} href="/hr-payroll?tab=employees" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
-                <img src="/icons/payroll-employees.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('employees', 'Employees')}</span>
-              </Link>
-              <Link prefetch={false} href="/hr-payroll?tab=shifts" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/backoffice/hr/schedule-overview" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('shifts_schedules', 'Shifts & Schedules')}</span>
+                <span>{t('hr_nav_schedule_overview', 'Schedule Overview')}</span>
               </Link>
-              <Link prefetch={false} href="/hr-payroll?tab=deductions" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+              <Link prefetch={false} href="/backoffice/hr/employees" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-employees.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('hr_nav_employees', 'Employees')}</span>
+              </Link>
+              <Link prefetch={false} href="/backoffice/hr/schedules" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('hr_nav_schedule_manager', 'Schedule Manager')}</span>
+              </Link>
+              <Link prefetch={false} href="/backoffice/hr/departments" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-departments.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('hr_nav_internal_departments', 'Internal Departments')}</span>
+              </Link>
+              <Link prefetch={false} href="/backoffice/hr/designations" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-designation.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('hr_nav_designations', 'Designations')}</span>
+              </Link>
+              <Link prefetch={false} href="/backoffice/hr/roles" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-designation.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('hr_nav_employees_role', 'Employees Role')}</span>
+              </Link>
+              <Link prefetch={false} href="/backoffice/hr/time-off" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-schedules.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('hr_nav_time_off_requests', 'Time Off Requests')}</span>
+              </Link>
+              <Link prefetch={false} href="/backoffice/hr/attendance" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
+                <img src="/icons/payroll-employees.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
+                <span>{t('hr_nav_attendance', 'Attendance')}</span>
+              </Link>
+              <Link prefetch={false} href="/backoffice/hr/payroll" className="flex items-center gap-2 p-1.5 hover:text-primary hover:bg-slate-50 rounded font-medium">
                 <img src="/icons/payroll-salaries.png" className="w-3.5 h-3.5 object-contain opacity-70 group-hover:opacity-100" alt="" />
-                <span>{t('deductions', 'Deductions')}</span>
+                <span>{t('hr_nav_payroll', 'Payroll')}</span>
               </Link>
             </div>
           )}
