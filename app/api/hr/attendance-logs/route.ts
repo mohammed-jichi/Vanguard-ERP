@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createHash } from 'crypto';
 import { getSupabaseServerClient } from '@/lib/supabaseClient';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +10,13 @@ const FLAG_KEY = 'hr_attendance_logs';
 const MAX_FALLBACK = 20000;
 
 const tenantOf = (raw: any) => (raw && UUID_RE.test(String(raw)) ? String(raw) : DEFAULT_TENANT);
-const isMissingTable = (e: any) => !!e && (e.code === '42P01' || e.code === 'PGRST205' || /does not exist|schema cache/i.test(e.message || ''));
+const isMissingTable = (e: any) => !!e && (e.code === '42P01' || e.code === 'PGRST205' || (/does not exist|schema cache/i.test(e.message || '') && !/column/i.test(e.message || '')));
+
+/** Live table uses uuid ids: derive a stable uuid from the punch key. */
+const toUuid = (key: string) => {
+  const h = createHash('sha1').update(`vanguard-punch:${key}`).digest('hex');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
+};
 
 const toCamel = (r: any) => ({
   id: r.id,
@@ -19,7 +26,7 @@ const toCamel = (r: any) => ({
   branch: r.branch || '',
   punchIn: r.punch_in,
   punchOut: r.punch_out,
-  durationHours: Number(r.duration_hours) || 0,
+  durationHours: r.duration_minutes != null ? Math.round((Number(r.duration_minutes) / 60) * 100) / 100 : Number(r.duration_hours) || 0,
   source: r.source || ''
 });
 
@@ -70,7 +77,7 @@ export async function POST(request: Request) {
 
     const supabase = getSupabaseServerClient();
     const { error } = await supabase.from('hr_attendance_logs').upsert(
-      clean.map((c) => ({ id: c.id, tenant_id: tenantId, employee_id: c.employeeId, employee_name: c.employeeName, brand: c.brand, branch: c.branch, punch_in: c.punchIn, punch_out: c.punchOut, duration_hours: c.durationHours, source: c.source })),
+      clean.map((c) => ({ id: toUuid(c.id), tenant_id: tenantId, employee_id: c.employeeId, employee_name: c.employeeName, brand: c.brand, branch: c.branch, work_date: c.punchIn.slice(0, 10), punch_in: c.punchIn, punch_out: c.punchOut, duration_minutes: Math.round(c.durationHours * 60), source: c.source })),
       { onConflict: 'id' }
     );
     if (!error) return NextResponse.json({ success: true, imported: clean.length, storage: 'table' });
