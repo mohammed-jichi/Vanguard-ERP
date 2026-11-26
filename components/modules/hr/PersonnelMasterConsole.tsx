@@ -123,7 +123,8 @@ export default function PersonnelMasterConsole() {
 
   // Filtered employees
   const filteredEmployees = useMemo(() => {
-    return employees.filter((emp) => {
+    const posNum = (e: any) => { const n = parseInt(String(e.posEmployeeId ?? e.posCredentials?.employeeId ?? ''), 10); return isNaN(n) ? Number.MAX_SAFE_INTEGER : n; };
+    return [...employees].sort((a, b) => posNum(a) - posNum(b)).filter((emp) => {
       if (selectedBrand !== 'ALL' && emp.brand !== selectedBrand) return false;
       if (selectedBranch !== 'ALL' && emp.branch !== selectedBranch) return false;
       // 1. Search Query (name, phone, email, id)
