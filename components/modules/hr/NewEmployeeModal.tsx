@@ -2056,14 +2056,13 @@ export default function NewEmployeeModal({
                               <label className="flex items-center gap-1 text-xs font-mono font-bold text-slate-800">
                                 <span className="text-slate-500">#</span>
                                 <input
-                                  type="number"
-                                  min={1}
-                                  step={1}
+                                  type="text"
+                                  readOnly
+                                  disabled
                                   aria-label="POS Login ID"
-                                  title="POS Login ID (unique per tenant)"
+                                  title="POS Login ID (auto-generated, locked)"
                                   value={formData.posEmployeeId}
-                                  onChange={(e) => setFormData((prev) => ({ ...prev, posEmployeeId: e.target.value.replace(/[^0-9]/g, '') }))}
-                                  className="w-16 px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-mono font-bold outline-hidden focus:border-primary"
+                                  className="w-16 px-2 py-1 bg-slate-100 border border-slate-200 rounded-lg text-xs font-mono font-bold outline-hidden cursor-not-allowed select-none"
                                 />
                               </label>
                               <button
@@ -2111,7 +2110,7 @@ export default function NewEmployeeModal({
                 {formData.useBranch && formData.createBackoffice ? (
                   <div className="flex flex-wrap items-center gap-3 text-xs">
                     <span className="font-semibold text-slate-600">POS Login ID</span>
-                    <input type="number" min={1} step={1} aria-label="POS Login ID" value={formData.posEmployeeId} onChange={(e) => setFormData((prev) => ({ ...prev, posEmployeeId: e.target.value.replace(/[^0-9]/g, '') }))} className="w-20 px-2.5 py-1 bg-white border border-slate-200 rounded-lg font-mono font-bold" />
+                    <input type="text" readOnly disabled aria-label="POS Login ID" value={formData.posEmployeeId} className="w-20 px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg font-mono font-bold cursor-not-allowed select-none" />
                     <button type="button" onClick={() => setIsPosConfigOpen(true)} className="px-3.5 py-1.5 rounded-xl bg-primary text-white font-bold cursor-pointer">
                       Edit POS &amp; Access Settings
                     </button>
@@ -2349,15 +2348,14 @@ export default function NewEmployeeModal({
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
                       <span>{t('hr.pos_employee_id', 'Employee ID')}</span>
-                      <span className="text-[10px] text-slate-400 font-medium">Auto-assigned, editable &amp; unique</span>
+                      <span className="text-[10px] text-slate-400 font-medium">Auto-generated & locked</span>
                     </label>
                     <input
-                      type="number"
-                      min={1}
-                      step={1}
+                      type="text"
+                      readOnly
+                      disabled
                       value={formData.posEmployeeId}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, posEmployeeId: e.target.value.replace(/[^0-9]/g, '') }))}
-                      className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary shadow-2xs"
+                      className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 rounded-xl cursor-not-allowed select-none outline-hidden shadow-2xs"
                     />
                   </div>
                   <div className="space-y-1">

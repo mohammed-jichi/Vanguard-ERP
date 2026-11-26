@@ -130,8 +130,6 @@ export async function POST(req: NextRequest) {
     const empCode = String(employeeId);
     let dbCode = empCode;
     let assignedPosId = '';
-    let swapOther: any = null;
-    let swapToPos = 0;
     const scheduleCfg = employeeRecord?.schedule_config || employeeRecord?.schedule || null;
     const scheduleTemplate = scheduleCfg?.templateName || employeeRecord?.schedule_template || 'Backoffice Administration (08:00 - 16:30)';
     const completeScheduleConfig = scheduleCfg ? {
@@ -185,21 +183,14 @@ export async function POST(req: NextRequest) {
       const takenPos = new Set<number>(
         flagEmployees.filter((e: any) => String(e?.id) !== String(employeeId)).map(posOf).filter((n) => n > 0)
       );
-      let posNum = parseInt(String(employeeRecord?.posEmployeeId ?? posCredentials?.employeeId ?? ''), 10);
-      if (!(posNum > 0) || takenPos.has(posNum)) {
-        if (isNewEmployee || !(posNum > 0)) {
-          posNum = Math.max(0, ...Array.from(takenPos)) + 1;
-        } else {
-          // Edit onto an ID another employee holds: swap, so the two employees trade IDs cleanly.
-          const prevPos = posOf(flagEmployees.find((e: any) => String(e?.id) === String(employeeId)));
-          const other = flagEmployees.find((e: any) => String(e?.id) !== String(employeeId) && posOf(e) === posNum);
-          if (prevPos > 0 && other) {
-            swapOther = other;
-            swapToPos = prevPos;
-          } else {
-            throw new Error(`POS Login ID #${posNum} is already used by another employee in this tenant. Choose a different POS Login ID.`);
-          }
-        }
+      // Create: next free number (max + 1). Edit: keep the employee's existing ID unchanged (never swapped or reassigned).
+      const selfEntry: any = flagEmployees.find((e: any) => String(e?.id) === String(employeeId));
+      const existingPos = posOf(selfEntry);
+      let posNum: number;
+      if (!isNewEmployee && existingPos > 0 && !takenPos.has(existingPos)) {
+        posNum = existingPos;
+      } else {
+        posNum = Math.max(0, ...Array.from(takenPos)) + 1;
       }
       assignedPosId = String(posNum);
 
@@ -304,14 +295,6 @@ export async function POST(req: NextRequest) {
             schedule_config: completeScheduleConfig,
             updated_at: now,
           };
-          if (swapOther) {
-            for (const k of Object.keys(existingEmployees)) {
-              const v: any = existingEmployees[k];
-              if (v && String(v.id) === String(swapOther.id)) {
-                existingEmployees[k] = { ...v, posEmployeeId: String(swapToPos), posCredentials: { ...(v.posCredentials || {}), employeeId: String(swapToPos) }, updated_at: now };
-              }
-            }
-          }
           existingEmployees[empCode] = richEmployeeEntry;
           if (String(employeeId) !== empCode) {
             existingEmployees[String(employeeId)] = richEmployeeEntry;
