@@ -13,7 +13,7 @@ import PersonnelMasterConsole from '@/components/modules/hr/PersonnelMasterConso
 import { LayoutTemplate, X, Play } from 'lucide-react';
 
 const ALL_FACILITIES = 'All Facilities';
-const HR_BRANCH_OPTIONS = [ALL_FACILITIES, 'Southern Olive and Oil Products - Main', 'Nabatieh Distribution Branch'];
+const HR_BRANCH_OPTIONS = [ALL_FACILITIES];
 
 const HR_DEPARTMENT_OPTIONS: { value: string; labelKey: string; label: string }[] = [
   { value: 'Pressing', labelKey: 'dept_pressing', label: 'Pressing & Plant Operations' },
@@ -24,7 +24,7 @@ const HR_DEPARTMENT_OPTIONS: { value: string; labelKey: string; label: string }[
   { value: 'Management', labelKey: 'dept_management', label: 'Management' },
 ];
 
-const HR_TERMINAL_OPTIONS = ['Choueifat Bio-01', 'Choueifat Bio-02', 'Nabatieh Bio-01'];
+const HR_TERMINAL_OPTIONS: string[] = [];
 
 interface HRAppliedFilters {
   fromDate: string;

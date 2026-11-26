@@ -60,18 +60,8 @@ export interface EmployeeRecord {
 }
 
 export function hrEmployeeToUnifiedEmployee(hr: HREmployeeRecord): EmployeeRecord {
-  const salaryMap: Record<string, number> = {
-    '641': 2500, // Mohammed Jichi (General Operations Manager)
-    '642': 3500, // Hussien Jichi (Owner / Director)
-    '644': 1800, // Hussein Jichi (Accountant)
-    '649': 850,  // Hiba Aloulou (Cashier)
-  };
-  const overtimeMap: Record<string, number> = {
-    '641': 4.0,
-    '642': 0.0,
-    '644': 6.0,
-    '649': 2.5,
-  };
+  const salaryMap: Record<string, number> = {};
+  const overtimeMap: Record<string, number> = {};
   const basicSalary = salaryMap[hr.id] || 1200;
   const overtimeHours = overtimeMap[hr.id] || 0;
 
@@ -92,7 +82,7 @@ export function hrEmployeeToUnifiedEmployee(hr: HREmployeeRecord): EmployeeRecor
     iban: `LB81-0014-0000-0000-${hr.id.padStart(4, '0')}-01`,
     overtimeHours,
     transportAllowance: 120,
-    bonus: hr.id === '641' ? 200 : hr.id === '644' ? 100 : 50,
+    bonus: 0,
     absenceDays: 0,
   };
 }
@@ -106,88 +96,7 @@ export function getInitialUnifiedEmployees(): EmployeeRecord[] {
   } catch (e) {
     console.warn('[UnifiedHRConsole] Error reading HR personnel records:', e);
   }
-  return [
-    {
-      id: '641',
-      name: 'Mohammed Jichi',
-      nationalId: '1000000641',
-      title: 'General Operations Manager',
-      dept: 'Management',
-      basicSalary: 2500,
-      currency: 'USD',
-      hireDate: '2024-05-15',
-      contractStatus: 'ACTIVE',
-      shift: '08:00 - 16:30',
-      phone: '71384506',
-      terminal: 'Southern Olive and Oil Products - Main',
-      socialSecurityNo: 'CNSS-64100',
-      iban: 'LB81-0014-0000-0000-0641-01',
-      overtimeHours: 4.0,
-      transportAllowance: 120,
-      bonus: 200,
-      absenceDays: 0,
-    },
-    {
-      id: '642',
-      name: 'Hussien Jichi',
-      nationalId: '1000000642',
-      title: 'Owner / Director',
-      dept: 'Owners',
-      basicSalary: 3500,
-      currency: 'USD',
-      hireDate: '2020-01-01',
-      contractStatus: 'ACTIVE',
-      shift: '08:00 - 16:30',
-      phone: '71390241',
-      terminal: 'Southern Olive and Oil Products - Main',
-      socialSecurityNo: 'CNSS-64200',
-      iban: 'LB81-0014-0000-0000-0642-01',
-      overtimeHours: 0.0,
-      transportAllowance: 120,
-      bonus: 0,
-      absenceDays: 0,
-    },
-    {
-      id: '644',
-      name: 'Hussein Jichi',
-      nationalId: '1000000644',
-      title: 'Accountant',
-      dept: 'Accounting',
-      basicSalary: 1800,
-      currency: 'USD',
-      hireDate: '2024-06-15',
-      contractStatus: 'ACTIVE',
-      shift: '08:00 - 16:30',
-      phone: '81958823',
-      terminal: 'Southern Olive and Oil Products - Main',
-      socialSecurityNo: 'CNSS-64400',
-      iban: 'LB81-0014-0000-0000-0644-01',
-      overtimeHours: 6.0,
-      transportAllowance: 120,
-      bonus: 100,
-      absenceDays: 0,
-    },
-    {
-      id: '649',
-      name: 'Hiba Aloulou',
-      nationalId: '1000000649',
-      title: 'Cashier',
-      dept: 'Sales',
-      basicSalary: 850,
-      currency: 'USD',
-      hireDate: '2023-04-01',
-      contractStatus: 'ACTIVE',
-      shift: '07:00 - 15:30',
-      phone: '78846247',
-      terminal: 'Southern Olive and Oil Products - Main',
-      socialSecurityNo: 'CNSS-64900',
-      iban: 'LB81-0014-0000-0000-0649-01',
-      overtimeHours: 2.5,
-      transportAllowance: 120,
-      bonus: 50,
-      absenceDays: 0,
-    },
-  ];
+  return [];
 }
 
 export const INITIAL_EMPLOYEES: EmployeeRecord[] = getInitialUnifiedEmployees();
@@ -206,12 +115,7 @@ export interface AttendancePunch {
   status: 'ON_TIME' | 'LATE' | 'OVERTIME' | 'ABSENT';
 }
 
-export const INITIAL_PUNCHES: AttendancePunch[] = [
-  { id: 'PCH-641', empId: '641', name: 'Mohammed Jichi', dept: 'Management', date: '2026-09-30', clockIn: '07:50 AM', clockOut: '05:15 PM', terminal: 'Choueifat Plant Bio-01', workedHours: 9.4, overtimeHours: 1.0, status: 'OVERTIME' },
-  { id: 'PCH-642', empId: '642', name: 'Hussien Jichi', dept: 'Owners', date: '2026-09-30', clockIn: '08:25 AM', clockOut: '04:30 PM', terminal: 'Choueifat Plant Bio-01', workedHours: 8.0, overtimeHours: 0.0, status: 'ON_TIME' },
-  { id: 'PCH-644', empId: '644', name: 'Hussein Jichi', dept: 'Accounting', date: '2026-09-30', clockIn: '07:55 AM', clockOut: '05:30 PM', terminal: 'Choueifat Plant Bio-02', workedHours: 9.5, overtimeHours: 1.5, status: 'OVERTIME' },
-  { id: 'PCH-649', empId: '649', name: 'Hiba Aloulou', dept: 'Sales', date: '2026-09-30', clockIn: '06:55 AM', clockOut: '03:40 PM', terminal: 'POS Terminal 10', workedHours: 8.75, overtimeHours: 0.5, status: 'OVERTIME' },
-];
+export const INITIAL_PUNCHES: AttendancePunch[] = [];
 
 export interface HolidayItem {
   id: string;

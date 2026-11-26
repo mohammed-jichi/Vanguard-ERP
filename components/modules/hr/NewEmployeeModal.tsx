@@ -13,6 +13,8 @@ import {
   getCommercialMarkupDisplay,
 } from '@/lib/hrPersonnelService';
 import ScheduleDesigner from './ScheduleDesigner';
+import Link from 'next/link';
+import { useHrLookups } from '@/lib/hrTenantData';
 import { useLanguage } from '@/lib/LanguageContext';
 import {
   LebaneseCityEntry,
@@ -74,6 +76,7 @@ export interface EmployeeFormData {
   designation: string;
   location: string;
   attendanceMacId: string;
+  attendanceMachineId: string;
   dateHired: string;
   dateLeft: string;
   country: string;
@@ -123,6 +126,7 @@ export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
   designation: '',
   location: '',
   attendanceMacId: '',
+    attendanceMachineId: '',
   dateHired: '2024-05-15',
   dateLeft: '',
   country: 'Lebanon',
@@ -278,6 +282,7 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     attendanceMacId: '',
     dateHired: data.dateHired || data.created_at || '2024-05-15',
     dateLeft: data.dateLeft || '',
+    attendanceMachineId: (data as any).attendanceMachineId || '',
     country: data.country || 'Lebanon',
     city: (data.city || '').replace(/\s*\(معمل الشويفات\)/g, ''),
     address: data.address || '',
@@ -335,10 +340,11 @@ export default function NewEmployeeModal({
   headerActions,
 }: NewEmployeeModalProps) {
   const { t, isRtl, language } = useLanguage();
+  const hrLookups = useHrLookups();
   const activeRecord = initialData || employee || initialEmployee;
 
   // Tabs: 'personal' (Tab 1: Personal *) | 'work_location' (Tab 2: Work Location *) | 'schedule' (Tab 3: Schedule)
-  const [activeTab, setActiveTab] = useState<'personal' | 'work_location' | 'schedule'>('personal');
+  const [activeTab, setActiveTab] = useState<'personal' | 'work_location' | 'pos_access' | 'schedule'>('personal');
 
   // Custom In-Modal Schedule Configuration State
   const [modalScheduleConfig, setModalScheduleConfig] = useState<EmployeeScheduleConfig | undefined>(
@@ -777,6 +783,7 @@ export default function NewEmployeeModal({
         dateHired: sanitized.dateHired || undefined,
         dateLeft: sanitized.dateLeft || undefined,
         attendanceMacId: cleanMacId,
+        attendanceMachineId: (formData as any).attendanceMachineId || undefined,
         country: sanitized.country || 'Lebanon',
         city: finalizedCity,
         address: sanitized.address || undefined,
@@ -951,6 +958,14 @@ export default function NewEmployeeModal({
             >
               <MapPin className="w-4 h-4" />
               <span>{t('hr.tab_work_location', 'Work Location *')}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('pos_access')}
+              className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'pos_access' ? 'border-primary text-primary bg-primary/5 rounded-t-xl' : 'border-transparent text-slate-600 hover:text-slate-900'}`}
+            >
+              <Key className="w-4 h-4" />
+              <span>POS & Access Settings</span>
             </button>
             {!hideScheduleTab && (
               <button
@@ -1303,10 +1318,8 @@ export default function NewEmployeeModal({
                           {t(`departments.${formData.department}`, formData.department)}
                         </option>
                       )}
-                      {DEPARTMENTS_MASTER_KEYS.map((d) => (
-                        <option key={d} value={d} className="text-slate-800 font-medium">
-                          {t(`departments.${d}`)}
-                        </option>
+                      {(hrLookups.departments.length ? hrLookups.departments.map((n) => ({ v: n, l: n })) : DEPARTMENTS_MASTER_KEYS.map((k) => ({ v: k as string, l: t(`departments.${k}`) }))).map((o) => (
+                        <option key={o.v} value={o.v} className="text-slate-800 font-medium">{o.l}</option>
                       ))}
                     </select>
                   </div>
@@ -1328,10 +1341,8 @@ export default function NewEmployeeModal({
                           {t(`designations.${formData.designation}`, formData.designation)}
                         </option>
                       )}
-                      {DESIGNATIONS_MASTER_KEYS.map((des) => (
-                        <option key={des} value={des} className="text-slate-800 font-medium">
-                          {t(`designations.${des}`)}
-                        </option>
+                      {(hrLookups.designations.length ? hrLookups.designations.map((n) => ({ v: n, l: n })) : DESIGNATIONS_MASTER_KEYS.map((k) => ({ v: k as string, l: t(`designations.${k}`) }))).map((o) => (
+                        <option key={o.v} value={o.v} className="text-slate-800 font-medium">{o.l}</option>
                       ))}
                     </select>
                   </div>
@@ -1375,6 +1386,16 @@ export default function NewEmployeeModal({
                   </div>
                 </div>
 
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 block">Attendance Machine ID</label>
+                  <input
+                    type="text"
+                    value={(formData as any).attendanceMachineId || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, attendanceMachineId: e.target.value }))}
+                    placeholder="ID on the attendance machine"
+                    className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 placeholder:text-slate-400 placeholder:font-normal bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                  />
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700 block">{t('hr.date_hired', 'Date Hired')}</label>
@@ -1925,7 +1946,7 @@ export default function NewEmployeeModal({
               <div className="border border-slate-200 bg-slate-50/70 rounded-2xl p-4 space-y-4">
                 <div className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
                   <span>{t('hr.available_in_brands_branches', 'Available in Brands / Branches')}</span>
-                  <span className="text-[11px] font-bold text-slate-600 font-mono">1300 Choueifat Complex</span>
+                  <span className="text-[11px] font-bold text-slate-600 font-mono">{formData.branchName}</span>
                 </div>
 
                 {/* Brand Dropdown */}
@@ -1936,9 +1957,7 @@ export default function NewEmployeeModal({
                     onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
                     className="w-full px-3 py-2.5 text-xs font-bold text-slate-900 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
                   >
-                    <option value="Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)">
-                      Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)
-                    </option>
+                    <option value={formData.brand}>{formData.brand}</option>
                   </select>
                 </div>
 
@@ -2020,11 +2039,57 @@ export default function NewEmployeeModal({
             </div>
           )}
 
+          {activeTab === 'pos_access' && (
+            <div className="space-y-4">
+              <div className="border border-slate-200 bg-slate-50/70 rounded-2xl p-4 space-y-3">
+                <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  POS &amp; Access Settings <span className="normal-case font-medium text-slate-500">(optional - for POS and field staff)</span>
+                </div>
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.useBranch && formData.createBackoffice}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setFormData((prev) => ({
+                        ...prev,
+                        useBranch: checked ? true : prev.useBranch,
+                        createBackoffice: checked,
+                        posEmployeeId: checked && (!prev.posEmployeeId || prev.posEmployeeId === '0') ? getNextAvailablePosEmployeeId() : prev.posEmployeeId
+                      }));
+                    }}
+                    className="w-4 h-4 rounded border-slate-300 cursor-pointer"
+                  />
+                  <span>Create a POS / Back Office login for {formData.branchName}</span>
+                </label>
+                {formData.useBranch && formData.createBackoffice ? (
+                  <div className="flex flex-wrap items-center gap-3 text-xs">
+                    <span className="font-semibold text-slate-600">POS Login ID</span>
+                    <span className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg font-mono font-bold">#{formData.posEmployeeId}</span>
+                    <button type="button" onClick={() => setIsPosConfigOpen(true)} className="px-3.5 py-1.5 rounded-xl bg-primary text-white font-bold cursor-pointer">
+                      Edit POS &amp; Access Settings
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500">
+                    Turn the login on to set Nick Name, Language, access flags (Active, Access Back Office, Salesman, Driver, Training), Back Office Role, POS Login ID / PIN, cash drawer port and printer type.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
           {/* ================================================================= */}
           {/* TAB 3: SCHEDULE TAB (IN MODAL - SHARED SCHEDULE DESIGNER ENGINE)  */}
           {/* ================================================================= */}
           {!hideScheduleTab && activeTab === 'schedule' && (
             <div className="space-y-4">
+              {activeRecord?.id && (
+                <div className="flex justify-end">
+                  <Link prefetch={false} href={`/backoffice/hr/schedules?employeeId=${encodeURIComponent(activeRecord.id)}`} className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold">
+                    + Assign Schedule
+                  </Link>
+                </div>
+              )}
               <ScheduleDesigner
                 showTopBar={false}
                 employeeRecord={{
@@ -2223,6 +2288,11 @@ export default function NewEmployeeModal({
                       <option value="Delivery">Delivery</option>
                       <option value="Finance department manager">Finance department manager</option>
                       <option value="Sales">Sales</option>
+                        {hrLookups.roles
+                          .filter((r) => !['No Access', 'CASHIER', 'Delivery', 'Finance department manager', 'MANAGER', 'Sales'].includes(r))
+                          .map((r) => (
+                            <option key={r} value={r}>{r}</option>
+                          ))}
                       <option value="No Access">No Access</option>
                     </select>
                   </div>

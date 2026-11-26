@@ -258,6 +258,7 @@ export async function POST(req: NextRequest) {
               feature_flags: {
                 ...existingFlags,
                 employee_schedules: existingSchedules,
+                hr_schedules: existingSchedules,
                 hr_employees: existingEmployees,
                 staff_meta: {
                   ...(existingFlags.staff_meta || {}),

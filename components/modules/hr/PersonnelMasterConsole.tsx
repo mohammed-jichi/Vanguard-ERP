@@ -11,6 +11,7 @@ import { dispatchMasterHRAction } from '@/lib/hrMasterActionDispatcher';
 import NewEmployeeModal, { DEPARTMENTS_MASTER_KEYS, DESIGNATIONS_MASTER_KEYS } from './NewEmployeeModal';
 import { useLanguage } from '@/lib/LanguageContext';
 import { useTenant } from '@/lib/TenantContext';
+import { useHrLookups } from '@/lib/hrTenantData';
 import {
   Search,
   Filter,
@@ -39,13 +40,14 @@ const TEMPLATES_LIST = [
 export default function PersonnelMasterConsole() {
   const { t, isRtl } = useLanguage();
   const { currentTenant } = useTenant();
+  const hrLookups = useHrLookups();
   HRPersonnelService.setTenantId(currentTenant?.id);
   const [employees, setEmployees] = useState<HREmployeeRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Top Ribbon Controls
-  const [selectedBrand, setSelectedBrand] = useState('Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)');
-  const [selectedBranch, setSelectedBranch] = useState('Southern Olive and Oil Products - Main');
+  const [selectedBrand, setSelectedBrand] = useState('ALL');
+  const [selectedBranch, setSelectedBranch] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -114,9 +116,16 @@ export default function PersonnelMasterConsole() {
     };
   }, []);
 
+  const brandOptions = useMemo(() => Array.from(new Set(employees.map((e) => e.brand).filter(Boolean))), [employees]);
+  const branchOptions = useMemo(() => Array.from(new Set(employees.map((e) => e.branch).filter(Boolean))), [employees]);
+  const deptFilterList: readonly string[] = hrLookups.departments.length ? hrLookups.departments : ALL_DEPARTMENTS_FILTER;
+  const desFilterList: readonly string[] = hrLookups.designations.length ? hrLookups.designations : ALL_DESIGNATIONS_FILTER;
+
   // Filtered employees
   const filteredEmployees = useMemo(() => {
     return employees.filter((emp) => {
+      if (selectedBrand !== 'ALL' && emp.brand !== selectedBrand) return false;
+      if (selectedBranch !== 'ALL' && emp.branch !== selectedBranch) return false;
       // 1. Search Query (name, phone, email, id)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
@@ -163,7 +172,7 @@ export default function PersonnelMasterConsole() {
 
       return true;
     });
-  }, [employees, searchQuery, activeFilter, departmentFilter, designationFilter, templateFilter]);
+  }, [employees, searchQuery, activeFilter, departmentFilter, designationFilter, templateFilter, selectedBrand, selectedBranch]);
 
   // Total active count
   const totalActiveCount = useMemo(() => {
@@ -283,9 +292,10 @@ export default function PersonnelMasterConsole() {
               onChange={(e) => setSelectedBrand(e.target.value)}
               className="px-3 py-2 text-xs font-bold text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs max-w-xs truncate"
             >
-              <option value="Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)">
-                Southern Olive and Oil Products (منتوجات زيت وزيتون الجنوب ش.م.م.)
-              </option>
+              <option value="ALL">All Brands</option>
+              {brandOptions.map((b) => (
+                <option key={b} value={b}>{b}</option>
+              ))}
             </select>
 
             {/* Branch Dropdown */}
@@ -294,9 +304,10 @@ export default function PersonnelMasterConsole() {
               onChange={(e) => setSelectedBranch(e.target.value)}
               className="px-3 py-2 text-xs font-bold text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs"
             >
-              <option value="Southern Olive and Oil Products - Main">
-                Southern Olive and Oil Products - Main
-              </option>
+              <option value="ALL">All Branches</option>
+              {branchOptions.map((b) => (
+                <option key={b} value={b}>{b}</option>
+              ))}
             </select>
 
             {/* Search Input */}
@@ -388,7 +399,7 @@ export default function PersonnelMasterConsole() {
                 className="w-full px-3 py-1.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs truncate"
               >
                 <option value="Show All Departments">{t('hr.show_all_departments', 'Show All Departments')}</option>
-                {ALL_DEPARTMENTS_FILTER.map((dept) => (
+                {deptFilterList.map((dept) => (
                   <option key={dept} value={dept}>
                     {t(`departments.${dept}`, dept)}
                   </option>
@@ -410,7 +421,7 @@ export default function PersonnelMasterConsole() {
                 className="w-full px-3 py-1.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer shadow-2xs truncate"
               >
                 <option value="Show All Designations">{t('hr.show_all_designations', 'Show All Designations')}</option>
-                {ALL_DESIGNATIONS_FILTER.map((des) => (
+                {desFilterList.map((des) => (
                   <option key={des} value={des}>
                     {t(`designations.${des}`, des)}
                   </option>
