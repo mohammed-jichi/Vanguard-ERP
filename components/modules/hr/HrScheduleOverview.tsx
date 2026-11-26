@@ -17,6 +17,7 @@ export default function HrScheduleOverview() {
   const [branch, setBranch] = useState('ALL');
   const [dept, setDept] = useState('ALL');
   const [date, setDate] = useState(ymd(new Date()));
+  const [kpiModal, setKpiModal] = useState<null | { title: string; people: { id: string; name: string; dept: string; note: string }[] }>(null);
   const [attendance, setAttendance] = useState<{ rows: number; overtime: number; worked: number } | null>(null);
 
   useEffect(() => {
@@ -95,6 +96,20 @@ export default function HrScheduleOverview() {
   const branchShifts = tally(scheduledToday.map((x) => ({ key: `${x.e.branch || 'No branch'} | ${x.s.label}` })));
   const unscheduled = today.filter((x) => x.s.status === 'none').length;
 
+  const mtdLists = useMemo(() => {
+    const upto = d0.getDate();
+    const sched: typeof staff = [];
+    const off: { e: (typeof staff)[number]; n: number }[] = [];
+    staff.forEach((e) => {
+      let w = 0, o = 0;
+      for (let i = 1; i <= upto; i++) { const s = dayStatus(e, dateOf(i), timeOff).status; if (s === 'working') w++; else if (s === 'off' || s === 'leave') o++; }
+      if (w > 0) sched.push(e);
+      if (o > 0) off.push({ e, n: o });
+    });
+    return { sched, off };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [staff, timeOff, date]);
+
   const card = 'bg-white border border-slate-200 rounded-2xl shadow-2xs p-4';
   const sel = 'px-3 py-1.5 border border-slate-300 rounded-xl bg-white text-xs focus:outline-none focus:border-blue-600';
 
@@ -118,18 +133,29 @@ export default function HrScheduleOverview() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Scheduled Today', value: scheduledToday.length, tone: 'text-emerald-700' },
-          { label: 'Leave / Vacation (Day)', value: leaveToday.length, tone: 'text-amber-700' },
-          { label: 'MTD Scheduled Staff', value: month_.mtdScheduled, tone: 'text-blue-700' },
-          { label: 'MTD Off', value: month_.mtdOff, tone: 'text-slate-700' }
+          { label: 'Scheduled Staff (Day)', value: scheduledToday.length, tone: 'text-emerald-700', people: scheduledToday.map((x) => ({ id: x.e.id, name: x.e.fullName, dept: x.e.department || '', note: x.s.label })) },
+          { label: 'Leave / Vacation (Day)', value: leaveToday.length, tone: 'text-amber-700', people: leaveToday.map((x) => ({ id: x.e.id, name: x.e.fullName, dept: x.e.department || '', note: 'On leave' })) },
+          { label: 'MTD Scheduled Staff', value: month_.mtdScheduled, tone: 'text-blue-700', people: mtdLists.sched.map((e) => ({ id: e.id, name: e.fullName, dept: e.department || '', note: 'Scheduled this month' })) },
+          { label: 'MTD Off', value: month_.mtdOff, tone: 'text-slate-700', people: mtdLists.off.map((x) => ({ id: x.e.id, name: x.e.fullName, dept: x.e.department || '', note: `${x.n} day(s) off` })) }
         ].map((k) => (
-          <div key={k.label} className={card}>
+          <button type="button" key={k.label} onClick={() => setKpiModal({ title: k.label, people: k.people })} className={`${card} text-left cursor-pointer hover:border-slate-300`}>
             <div className="text-[11px] font-semibold text-slate-500">{k.label}</div>
             <div className={`text-2xl font-black mt-1 ${k.tone}`}>{k.value}</div>
-          </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">Click to list employees</div>
+          </button>
         ))}
       </div>
-      {staff.length === 0 && !loading && <div className={`${card} text-xs text-slate-500`}>No active employees match these filters. Add employees under Personnel and assign schedules in the Schedule Manager.</div>}
+      {kpiModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 text-xs max-h-[85vh] flex flex-col">
+            <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between"><h3 className="font-extrabold text-sm text-slate-900">{kpiModal.title} ({kpiModal.people.length})</h3><button type="button" onClick={() => setKpiModal(null)} className="text-slate-400 hover:text-slate-700 cursor-pointer">Close</button></div>
+            <div className="p-5 overflow-y-auto divide-y divide-slate-100">
+              {kpiModal.people.length === 0 && <div className="text-slate-500">No employees.</div>}
+              {kpiModal.people.map((p) => (<div key={p.id} className="py-2 flex items-center justify-between gap-3"><span className="font-bold text-slate-900">{p.name}<span className="font-normal text-slate-500"> - {p.dept}</span></span><span className="font-mono text-slate-600">{p.note}</span></div>))}
+            </div>
+          </div>
+        </div>
+      )}      {staff.length === 0 && !loading && <div className={`${card} text-xs text-slate-500`}>No active employees match these filters. Add employees under Personnel and assign schedules in the Schedule Manager.</div>}
       {unscheduled > 0 && <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-900">{unscheduled} active employee(s) have no schedule assigned yet.</div>}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

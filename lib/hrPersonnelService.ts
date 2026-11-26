@@ -199,6 +199,8 @@ export interface HREmployeeRecord {
   dateLeft?: string;
   attendanceMacId?: string | null;
   attendanceMachineId?: string;
+  baseSalary?: number;
+  salaryCurrency?: 'USD' | 'LBP';
   country: string;
   city: string;
   address?: string;

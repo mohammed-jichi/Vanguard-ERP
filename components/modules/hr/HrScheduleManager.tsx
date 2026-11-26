@@ -68,8 +68,7 @@ export default function HrScheduleManager() {
         <select value={brand} onChange={(e) => setBrand(e.target.value)} className={sel}><option value="ALL">All Brands</option>{brands.map((b) => <option key={b}>{b}</option>)}</select></div>
       <div className="space-y-1"><label className="font-semibold text-slate-600 block">Branch</label>
         <select value={branch} onChange={(e) => setBranch(e.target.value)} className={sel}><option value="ALL">All Branches</option>{branches.map((b) => <option key={b}>{b}</option>)}</select></div>
-      <div className="space-y-1"><label className="font-semibold text-slate-600 block">Year</label>
-        <select value={year} onChange={(e) => setYear(Number(e.target.value))} className={sel}>{[year - 1, year, year + 1].filter((v, i, a) => a.indexOf(v) === i).map((y) => <option key={y}>{y}</option>)}</select></div>
+      <div className="space-y-1"><label className="font-semibold text-slate-600 block">Year</label><div className="flex items-center gap-1"><button type="button" onClick={() => setYear((y) => y - 1)} className="px-2 py-1.5 border border-slate-300 rounded-lg font-bold cursor-pointer">&lt;</button><span className="px-3 py-1.5 font-mono font-bold">{year}</span><button type="button" onClick={() => setYear((y) => y + 1)} className="px-2 py-1.5 border border-slate-300 rounded-lg font-bold cursor-pointer">&gt;</button></div></div>
     </div>
   );
 

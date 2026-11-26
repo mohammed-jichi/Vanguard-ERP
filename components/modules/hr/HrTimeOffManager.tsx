@@ -4,10 +4,12 @@ import React, { useMemo, useState } from 'react';
 import { Search, Check, X as XIcon } from 'lucide-react';
 import { useTenantFlag } from '@/lib/useTenantFlag';
 import { TIME_OFF_REASONS, TimeOffRequest, daysInclusive, useHrEmployees, ymd } from '@/lib/hrTenantData';
+import { DEFAULT_TIME_OFF_REASONS, TimeOffReason } from '@/lib/hrPayrollData';
 
 export default function HrTimeOffManager() {
   const { employees, loading } = useHrEmployees();
   const [requests, setRequests, status] = useTenantFlag<TimeOffRequest[]>('hr_time_off', []);
+  const [reasonList] = useTenantFlag<TimeOffReason[]>('hr_time_off_reasons', DEFAULT_TIME_OFF_REASONS);
   const year = new Date().getFullYear();
 
   const [search, setSearch] = useState('');
@@ -124,7 +126,7 @@ export default function HrTimeOffManager() {
                   <div className="space-y-1"><label className="font-semibold text-slate-600">End Date</label><input type="date" value={form.endDate} min={form.startDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} className={input} /></div>
                   <div className="space-y-1"><label className="font-semibold text-slate-600">Nb. Of Days</label><div className="px-3 py-2 border border-slate-200 rounded-xl bg-slate-50 font-mono font-bold">{days}</div></div>
                   <div className="space-y-1"><label className="font-semibold text-slate-600">Select Reason</label>
-                    <select value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} className={input}>{TIME_OFF_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}</select>
+                    <select value={form.reason} onChange={(e) => { const r = reasonList.find((x) => x.description === e.target.value); setForm({ ...form, reason: e.target.value, paid: r ? (r.paidStatus === 'Paid' ? 'Yes' : 'No') : form.paid }); }} className={input}>{reasonList.map((r) => <option key={r.id} value={r.description}>{r.description}</option>)}</select>
                   </div>
                   <div className="space-y-1"><label className="font-semibold text-slate-600">Type</label>
                     <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as 'Full Day' | 'Partial' })} className={input}><option>Full Day</option><option>Partial</option></select>

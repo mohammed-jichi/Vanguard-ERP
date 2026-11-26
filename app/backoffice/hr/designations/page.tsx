@@ -1,7 +1,7 @@
 'use client';
 
-import HrLookupSetup from '@/components/modules/hr/HrLookupSetup';
+import { HrDesignationsPage } from '@/components/modules/hr/HrSetupPages';
 
 export default function Page() {
-  return <HrLookupSetup kind="designations" />;
+  return <HrDesignationsPage />;
 }

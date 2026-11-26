@@ -77,6 +77,8 @@ export interface EmployeeFormData {
   location: string;
   attendanceMacId: string;
   attendanceMachineId: string;
+  baseSalary: number;
+  salaryCurrency: string;
   dateHired: string;
   dateLeft: string;
   country: string;
@@ -127,6 +129,8 @@ export const DEFAULT_EMPLOYEE_FORM_DATA: EmployeeFormData = {
   location: '',
   attendanceMacId: '',
     attendanceMachineId: '',
+    baseSalary: 0,
+    salaryCurrency: 'USD',
   dateHired: '2024-05-15',
   dateLeft: '',
   country: 'Lebanon',
@@ -283,6 +287,8 @@ export function extractEmployeeFormData(data: any): EmployeeFormData {
     dateHired: data.dateHired || data.created_at || '2024-05-15',
     dateLeft: data.dateLeft || '',
     attendanceMachineId: (data as any).attendanceMachineId || '',
+    baseSalary: Number((data as any).baseSalary) || 0,
+    salaryCurrency: (data as any).salaryCurrency || 'USD',
     country: data.country || 'Lebanon',
     city: (data.city || '').replace(/\s*\(معمل الشويفات\)/g, ''),
     address: data.address || '',
@@ -784,6 +790,8 @@ export default function NewEmployeeModal({
         dateLeft: sanitized.dateLeft || undefined,
         attendanceMacId: cleanMacId,
         attendanceMachineId: (formData as any).attendanceMachineId || undefined,
+        baseSalary: Number((formData as any).baseSalary) || 0,
+        salaryCurrency: (((formData as any).salaryCurrency || 'USD') as 'USD' | 'LBP'),
         country: sanitized.country || 'Lebanon',
         city: finalizedCity,
         address: sanitized.address || undefined,
@@ -962,12 +970,13 @@ export default function NewEmployeeModal({
             <button
               type="button"
               onClick={() => setActiveTab('pos_access')}
+              style={{ display: 'none' }}
               className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${activeTab === 'pos_access' ? 'border-primary text-primary bg-primary/5 rounded-t-xl' : 'border-transparent text-slate-600 hover:text-slate-900'}`}
             >
               <Key className="w-4 h-4" />
               <span>POS & Access Settings</span>
             </button>
-            {!hideScheduleTab && (
+            {!hideScheduleTab && !!activeRecord?.id && (
               <button
                 type="button"
                 onClick={() => setActiveTab('schedule')}
@@ -1395,6 +1404,30 @@ export default function NewEmployeeModal({
                     placeholder="ID on the attendance machine"
                     className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 placeholder:text-slate-400 placeholder:font-normal bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
                   />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 block">Base Salary</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={(formData as any).baseSalary || 0}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, baseSalary: Math.max(0, Number(e.target.value) || 0) }))}
+                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 block">Salary Currency</label>
+                    <select
+                      value={(formData as any).salaryCurrency || 'USD'}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, salaryCurrency: e.target.value }))}
+                      className="h-[42px] w-full px-3.5 py-0 font-sans text-sm font-semibold text-slate-800 bg-white border border-slate-200 rounded-xl outline-hidden focus:border-primary cursor-pointer"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="LBP">LBP</option>
+                    </select>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">

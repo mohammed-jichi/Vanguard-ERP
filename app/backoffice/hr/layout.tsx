@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const GROUPS: { title: string; items: { label: string; href: string }[] }[] = [
-  { title: 'Overview', items: [{ label: 'Schedule Overview', href: '/backoffice/hr/schedule-overview' }] },
+  { title: 'Schedule Overview', items: [{ label: 'Schedule Overview', href: '/backoffice/hr/schedule-overview' }] },
   { title: 'Personnel', items: [{ label: 'Employees', href: '/backoffice/hr/employees' }] },
   { title: 'Schedules', items: [{ label: 'Schedule Manager', href: '/backoffice/hr/schedules' }] },
   {
@@ -13,19 +13,29 @@ const GROUPS: { title: string; items: { label: string; href: string }[] }[] = [
     items: [
       { label: 'Internal Departments', href: '/backoffice/hr/departments' },
       { label: 'Designations', href: '/backoffice/hr/designations' },
-      { label: 'Employees Role', href: '/backoffice/hr/roles' }
+      { label: 'POS Employee Roles', href: '/backoffice/hr/roles' }
     ]
   },
   {
     title: 'Time & Attendance',
     items: [
       { label: 'Time Off Requests', href: '/backoffice/hr/time-off' },
-      { label: 'Attendance', href: '/backoffice/hr/attendance' },
-      { label: 'Payroll', href: '/backoffice/hr/payroll' }
+      { label: 'Schedule Templates', href: '/backoffice/hr/schedule-templates' },
+      { label: 'Time Off Reason', href: '/backoffice/hr/time-off-reasons' },
+      { label: 'Attendance Summary', href: '/backoffice/hr/attendance' },
+      { label: 'Attendance Log', href: '/backoffice/hr/attendance-log' }
+    ]
+  },
+  {
+    title: 'Payroll',
+    items: [
+      { label: 'Payroll Dashboard', href: '/backoffice/hr/payroll' },
+      { label: 'Salary Processing', href: '/backoffice/hr/salary-processing' },
+      { label: 'Payment Settings', href: '/backoffice/hr/payment-settings' },
+      { label: 'Earnings & Deductions', href: '/backoffice/hr/earnings-deductions' }
     ]
   }
 ];
-
 export default function HrLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || '';
   const isOn = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
