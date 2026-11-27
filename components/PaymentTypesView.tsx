@@ -1,7 +1,7 @@
 'use client';
 import { useLanguage } from '@/lib/LanguageContext';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useRef, memo } from 'react';
 import { useTenantFlag } from '@/lib/useTenantFlag';
 import { useTenant } from '@/lib/TenantContext';
 import Link from 'next/link';
@@ -32,12 +32,20 @@ import {
   OMEGA_CREDIT_CARD_OPTIONS,
   OMEGA_TICKET_OPTIONS,
   OMEGA_PAYMENT_STATUS_OPTIONS,
-  OMEGA_BRANCHES,
   OMEGA_CURRENCIES,
-  OMEGA_INVOICE_MESSAGES,
-  OMEGA_ACCOUNTS,
   INITIAL_PAYMENT_BILLS
 } from '@/lib/omegaPaymentData';
+import {
+  useTenantBranches,
+  useChartOfAccounts,
+  useSavedInvoiceMessages,
+  usePaymentCurrencies,
+  canonicalCurrencyId,
+  normalizePaymentTypes,
+  uniqueBy,
+  fixCashTypo
+} from '@/lib/salesSetupShared';
+import SalesAccountCombobox from '@/components/SalesAccountCombobox';
 
 interface ToastState {
   show: boolean;
@@ -52,9 +60,19 @@ export default function PaymentTypesView() {
 
   // Main data state
   const { currentTenant } = useTenant();
-  const [paymentTypes, setPaymentTypes] = useTenantFlag<OmegaPaymentType[]>('payment_types', INITIAL_PAYMENT_TYPES);
-  const [currencies, setCurrencies] = useState<OmegaCurrency[]>(OMEGA_CURRENCIES);
-  const [paymentBills, setPaymentBills] = useState<OmegaPaymentBill[]>(INITIAL_PAYMENT_BILLS);
+  const [rawPaymentTypes, setPaymentTypes] = useTenantFlag<OmegaPaymentType[]>('payment_types', INITIAL_PAYMENT_TYPES);
+  const paymentTypes = useMemo(() => normalizePaymentTypes(rawPaymentTypes), [rawPaymentTypes]);
+  const baseCurrencies = usePaymentCurrencies();
+  const [extraCurrencies, setExtraCurrencies] = useState<OmegaCurrency[]>([]);
+  const currencies = useMemo(() => uniqueBy([...baseCurrencies, ...extraCurrencies], c => String(c.DESCRIPTION).toUpperCase()), [baseCurrencies, extraCurrencies]);
+  const defaultCurrencyId = currencies[0]?.ID ?? 2; // USD ($) default, LBP (LL) secondary
+  const tenantBranches = useTenantBranches();
+  const { accounts: coaAccounts } = useChartOfAccounts();
+  const savedInvoiceMessages = useSavedInvoiceMessages();
+  const [paymentBills, setPaymentBills] = useTenantFlag<OmegaPaymentBill[]>('payment_bills', INITIAL_PAYMENT_BILLS);
+  const typeOptions = useMemo(() => uniqueBy(OMEGA_PAYMENT_TYPES_OPTIONS, o => o.description.trim().toLowerCase()), []);
+  const billTypeOptions = useMemo(() => uniqueBy(paymentTypes, p => p.PAYMENTTYPE.trim().toLowerCase()), [paymentTypes]);
+  const billLiveName = (b: OmegaPaymentBill) => paymentTypes.find(p => p.PAYMENTID === b.PAYMENTID)?.PAYMENTTYPE ?? b.PAYMENTTYPE;
 
   // Filters & Sorting for Payment Types
   const [searchVal, setSearchVal] = useState<string>('');
@@ -98,7 +116,7 @@ export default function PaymentTypesView() {
 
   // Payment Type Form State
   const [formDesc, setFormDesc] = useState<string>('');
-  const [formCurrency, setFormCurrency] = useState<number>(1);
+  const [formCurrency, setFormCurrency] = useState<number>(2);
   const [formType, setFormType] = useState<number>(3); // Default Cash
   const [formCreditCardOpt, setFormCreditCardOpt] = useState<number>(1);
   const [formTicketOpt, setFormTicketOpt] = useState<number>(1);
@@ -123,7 +141,7 @@ export default function PaymentTypesView() {
   const handleOpenAdd = () => {
     setEditingItem(null);
     setFormDesc('');
-    setFormCurrency(1);
+    setFormCurrency(defaultCurrencyId);
     setFormType(3); // Cash
     setFormCreditCardOpt(0);
     setFormTicketOpt(1);
@@ -146,8 +164,8 @@ export default function PaymentTypesView() {
   // Open Edit Modal
   const handleOpenEdit = (item: OmegaPaymentType) => {
     setEditingItem(item);
-    setFormDesc(item.PAYMENTTYPE);
-    setFormCurrency(item.PAYMENTCURRENCY);
+    setFormDesc(fixCashTypo(item.PAYMENTTYPE));
+    setFormCurrency(canonicalCurrencyId(item.PAYMENTCURRENCY, [...baseCurrencies, ...extraCurrencies, ...OMEGA_CURRENCIES], currencies));
     setFormType(item.CREDIT);
     setFormCreditCardOpt(item.CREDITCARDOPTIONS ?? 0);
     setFormTicketOpt(item.PREPAIDTYPE ?? 1);
@@ -281,11 +299,8 @@ export default function PaymentTypesView() {
     const temp = newItems[index];
     newItems[index] = newItems[targetIndex];
     newItems[targetIndex] = temp;
-    // Re-assign sequential sorting values
-    newItems.forEach((item, idx) => {
-      item.SORTING = idx + 1;
-    });
-    setSortingItems(newItems);
+    // Re-assign sequential sorting values (immutably)
+    setSortingItems(newItems.map((item, idx) => ({ ...item, SORTING: idx + 1 })));
   };
 
   // Add Currency Action
@@ -308,7 +323,7 @@ export default function PaymentTypesView() {
       DECIMALNBRINV: 2,
       maincurrency: 3
     };
-    setCurrencies(prev => [...prev, newCurr]);
+    setExtraCurrencies(prev => [...prev, newCurr]);
     setFormCurrency(newCurr.ID);
     showToast(`Currency "${newCurr.DESCRIPTION}" added!`, 'success');
     setShowAddCurrencyModal(false);
@@ -408,7 +423,7 @@ export default function PaymentTypesView() {
 
   // Filtered Chart of Accounts for Search Modal
   const filteredAccounts = useMemo(() => {
-    return OMEGA_ACCOUNTS.filter(acc => {
+    return coaAccounts.filter(acc => {
       if (!accountSearchQuery.trim()) return true;
       const q = accountSearchQuery.toLowerCase();
       return (
@@ -417,7 +432,12 @@ export default function PaymentTypesView() {
         acc.account_type.toLowerCase().includes(q)
       );
     });
-  }, [accountSearchQuery]);
+  }, [accountSearchQuery, coaAccounts]);
+
+  const editRef = useRef(handleOpenEdit);
+  editRef.current = handleOpenEdit;
+  const onEditRow = useCallback((r: OmegaPaymentType) => editRef.current(r), []);
+  const onDeleteRow = useCallback((r: OmegaPaymentType) => setDeleteConfirmItem(r), []);
 
   const toggleSort = (field: keyof OmegaPaymentType) => {
     setSortConfig(prev => ({
@@ -531,7 +551,7 @@ export default function PaymentTypesView() {
                     className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-700"
                   >
                     <option value="allbranch">{t('all_branches', 'All Branches')}</option>
-                    {OMEGA_BRANCHES.map(b => (
+                    {tenantBranches.map(b => (
                       <option key={b.BRANCHID} value={String(b.BRANCHID)}>
                         {b.BARANCHNAME}
                       </option>
@@ -641,52 +661,7 @@ export default function PaymentTypesView() {
                       </tr>
                     ) : (
                       filteredPaymentTypes.map(row => (
-                        <tr key={row.ID} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="px-4 py-3 font-semibold text-slate-500">{row.PAYMENTID}</td>
-                          <td className="px-4 py-3 font-medium text-slate-900">
-                            <span>{row.PAYMENTTYPE}</span>
-                            <span className="sm:hidden block text-xs text-slate-400 mt-0.5">{row.CREDITVALUE}</span>
-                          </td>
-                          <td className="px-4 py-3 hidden sm:table-cell">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200">
-                              {row.CREDITVALUE || 'Cash'}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 hidden md:table-cell text-slate-600">{row.PAYMENTSTATUS || 'Change'}</td>
-                          <td className="px-4 py-3 hidden lg:table-cell font-mono text-xs text-blue-700">
-                            {row.ACCNO || <span className="text-slate-300">—</span>}
-                          </td>
-                          <td className="px-4 py-3 hidden sm:table-cell text-slate-600">{row.SORTING}</td>
-                          <td className="px-4 py-3 text-center">
-                            {(row.TOTALEXCEPTIONS || 0) > 0 ? (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-                                {row.TOTALEXCEPTIONS}
-                              </span>
-                            ) : (
-                              <span className="text-slate-300 text-xs">0</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-right whitespace-nowrap">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                type="button"
-                                onClick={() => handleOpenEdit(row)}
-                                className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-blue-200 hover:border-blue-600"
-                                title={t('edit_payment_type', 'Edit Payment Type')}
-                              >
-                                <Pencil className="w-4 h-4 stroke-[2.2]" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setDeleteConfirmItem(row)}
-                                className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-red-200 hover:border-red-600"
-                                title={t('delete_payment_type', 'Delete Payment Type')}
-                              >
-                                <Trash2 className="w-4 h-4 stroke-[2.2]" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                        <PaymentTypeRow key={row.ID} row={row} onEdit={onEditRow} onDelete={onDeleteRow} editTitle={t('edit_payment_type', 'Edit Payment Type')} deleteTitle={t('delete_payment_type', 'Delete Payment Type')} />
                       ))
                     )}
                   </tbody>
@@ -733,7 +708,7 @@ export default function PaymentTypesView() {
                     className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700"
                   >
                     <option value="">{t('all_payment_types', 'All Payment Types')}</option>
-                    {paymentTypes.map(pt => (
+                    {billTypeOptions.map(pt => (
                       <option key={pt.PAYMENTID} value={String(pt.PAYMENTID)}>
                         {pt.PAYMENTTYPE}
                       </option>
@@ -785,7 +760,7 @@ export default function PaymentTypesView() {
                         <td className="px-4 py-3 font-medium text-slate-900">{row.TYPES}</td>
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                            {row.PAYMENTTYPE}
+                            {billLiveName(row)}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -894,7 +869,7 @@ export default function PaymentTypesView() {
                     onChange={e => setFormType(parseInt(e.target.value))}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
                   >
-                    {OMEGA_PAYMENT_TYPES_OPTIONS.map(opt => (
+                    {typeOptions.map(opt => (
                       <option key={opt.value} value={opt.value}>
                         {opt.description}
                       </option>
@@ -1017,13 +992,9 @@ export default function PaymentTypesView() {
                     {t('account_number', 'Account Number')}
                   </label>
                   <div className="flex gap-1.5">
-                    <input
-                      type="text"
-                      value={formAccNo}
-                      onChange={e => setFormAccNo(e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm font-mono border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                      placeholder={t('eg_58100010', 'e.g. 58100010')}
-                    />
+                    <div className="flex-1">
+                      <SalesAccountCombobox value={formAccNo} onChange={setFormAccNo} accounts={coaAccounts} placeholder={t('eg_58100010', 'Search or enter account code')} />
+                    </div>
                     <button
                       type="button"
                       onClick={() => setShowAccountSearchModal(true)}
@@ -1039,13 +1010,7 @@ export default function PaymentTypesView() {
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     {t('bank_deposit_account_number', 'Bank Deposit Account Number')}
                   </label>
-                  <input
-                    type="text"
-                    value={formDepositAccNo}
-                    onChange={e => setFormDepositAccNo(e.target.value)}
-                    className="w-full px-3 py-2 text-sm font-mono border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                    placeholder={t('eg_58100010', 'e.g. 58100010')}
-                  />
+                  <SalesAccountCombobox value={formDepositAccNo} onChange={setFormDepositAccNo} accounts={coaAccounts} placeholder={t('eg_58100010', 'Search or enter account code')} />
                 </div>
               </div>
 
@@ -1061,9 +1026,9 @@ export default function PaymentTypesView() {
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     <option value={0}>{t('none', 'None')}</option>
-                    {OMEGA_INVOICE_MESSAGES.map(msg => (
+                    {savedInvoiceMessages.map(msg => (
                       <option key={msg.MESSAGEID} value={msg.MESSAGEID}>
-                        {msg.MESSAGETITLE} - {msg.MESSAGEDESC.substring(0, 35)}...
+                        {msg.MESSAGETITLE} - {String(msg.MESSAGEDESC || '').substring(0, 35)}...
                       </option>
                     ))}
                   </select>
@@ -1108,7 +1073,7 @@ export default function PaymentTypesView() {
                   {t('branches_restriction', 'Branches Restriction')}
                 </div>
                 <div className="p-3 space-y-2">
-                  {OMEGA_BRANCHES.map(b => (
+                  {tenantBranches.map(b => (
                     <label key={b.BRANCHID} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
                       <input
                         type="checkbox"
@@ -1122,7 +1087,7 @@ export default function PaymentTypesView() {
                         className="w-4 h-4 text-blue-600 rounded border-slate-300"
                       />
                       <span>
-                        {b.BARANCHNAME} ({b.CITY})
+                        {b.BARANCHNAME}
                       </span>
                     </label>
                   ))}
@@ -1295,7 +1260,7 @@ export default function PaymentTypesView() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {filteredAccounts.map(acc => (
+                    {filteredAccounts.slice(0, 200).map(acc => (
                       <tr key={acc.account_number} className="hover:bg-blue-50/50">
                         <td className="p-2 font-mono font-bold text-blue-700">{acc.account_number}</td>
                         <td className="p-2 text-slate-800 font-medium">{acc.account_name}</td>
@@ -1413,7 +1378,7 @@ export default function PaymentTypesView() {
                   onChange={e => setBillFormPaymentId(parseInt(e.target.value))}
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
                 >
-                  {paymentTypes.map(p => (
+                  {billTypeOptions.map(p => (
                     <option key={p.PAYMENTID} value={p.PAYMENTID}>
                       {p.PAYMENTTYPE}
                     </option>
@@ -1492,3 +1457,64 @@ export default function PaymentTypesView() {
     </div>
   );
 }
+
+const PaymentTypeRow = memo(function PaymentTypeRow({
+  row,
+  onEdit,
+  onDelete,
+  editTitle,
+  deleteTitle
+}: {
+  row: OmegaPaymentType;
+  onEdit: (r: OmegaPaymentType) => void;
+  onDelete: (r: OmegaPaymentType) => void;
+  editTitle: string;
+  deleteTitle: string;
+}) {
+  return (
+    <tr className="hover:bg-slate-50/80 transition-colors">
+      <td className="px-4 py-3 font-semibold text-slate-500">{row.PAYMENTID}</td>
+      <td className="px-4 py-3 font-medium text-slate-900">
+        <span>{row.PAYMENTTYPE}</span>
+        <span className="sm:hidden block text-xs text-slate-400 mt-0.5">{row.CREDITVALUE}</span>
+      </td>
+      <td className="px-4 py-3 hidden sm:table-cell">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200">
+          {row.CREDITVALUE || 'Cash'}
+        </span>
+      </td>
+      <td className="px-4 py-3 hidden md:table-cell text-slate-600">{row.PAYMENTSTATUS || 'Change'}</td>
+      <td className="px-4 py-3 hidden lg:table-cell font-mono text-xs text-blue-700">
+        {row.ACCNO || <span className="text-slate-300">—</span>}
+      </td>
+      <td className="px-4 py-3 hidden sm:table-cell text-slate-600">{row.SORTING}</td>
+      <td className="px-4 py-3 text-center">
+        {(row.TOTALEXCEPTIONS || 0) > 0 ? (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">{row.TOTALEXCEPTIONS}</span>
+        ) : (
+          <span className="text-slate-300 text-xs">0</span>
+        )}
+      </td>
+      <td className="px-4 py-3 text-right whitespace-nowrap">
+        <div className="flex items-center justify-end gap-1.5">
+          <button
+            type="button"
+            onClick={() => onEdit(row)}
+            className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-blue-200 hover:border-blue-600"
+            title={editTitle}
+          >
+            <Pencil className="w-4 h-4 stroke-[2.2]" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(row)}
+            className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-red-200 hover:border-red-600"
+            title={deleteTitle}
+          >
+            <Trash2 className="w-4 h-4 stroke-[2.2]" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+});

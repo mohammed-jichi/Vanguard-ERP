@@ -18,6 +18,7 @@ import { useTenant } from '@/lib/TenantContext';
 import { useTenantFacilities } from '@/lib/tenantFacilities';
 import { supabase } from '@/lib/supabase';
 import { fetchCatalogRows, resolveTenantUuid } from '@/lib/productCatalogService';
+import { OFFICIAL_BRANCH_LABEL, OFFICIAL_BRANCH_CODE } from '@/lib/deviceSetupShared';
 
 interface ToastState {
   show: boolean;
@@ -29,17 +30,24 @@ export default function ScreensView() {
   const { currentTenant } = useTenant();
   // Group palette comes from the live product catalog (products.record.groupName), not a hardcoded list
   const [liveGroups, setLiveGroups] = useState<OmegaGroup[]>([]);
+  const [liveItems, setLiveItems] = useState<{ id: number; name: string; group: string }[]>([]);
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const { rows } = await fetchCatalogRows(resolveTenantUuid(currentTenant));
         const names: string[] = [];
-        rows.forEach((r: any) => {
+        const items: { id: number; name: string; group: string }[] = [];
+        rows.forEach((r: any, idx: number) => {
           const g = r?.record?.groupName;
           if (g && !names.includes(g)) names.push(g);
+          const nm = r?.description || r?.name || r?.record?.description;
+          if (g && nm) items.push({ id: idx + 1, name: nm, group: g });
         });
-        if (!cancelled) setLiveGroups(names.map((n, i) => ({ GRIDBRANCHID: i + 1, GROUPNAME: n, GRPICTURE: null })));
+        if (!cancelled) {
+          setLiveGroups(names.map((n, i) => ({ GRIDBRANCHID: i + 1, GROUPNAME: n, GRPICTURE: null })));
+          setLiveItems(items);
+        }
       } catch (e) {
         console.warn('Could not load catalog groups for the screen designer:', e);
       }
@@ -116,6 +124,13 @@ export default function ScreensView() {
       return { success: false, error: err?.message || 'Database connection error' };
     }
   };
+
+  // Keep Active Screen valid once persisted screens are hydrated
+  useEffect(() => {
+    if (screensList.length > 0 && !screensList.some(s => s.SCRBRANCHID === selectedScreenId)) {
+      setSelectedScreenId(screensList[0].SCRBRANCHID);
+    }
+  }, [screensList, selectedScreenId]);
 
   // Current Screen Designer 40 Cells
   const currentShowlabels = useMemo(() => {
@@ -234,32 +249,25 @@ export default function ScreensView() {
     if (!newScreenName.trim() || newScreenName.length < 2) return [];
     const q = newScreenName.toLowerCase();
     return liveGroups.filter(g => g.GROUPNAME.toLowerCase().includes(q)).slice(0, 5);
-  }, [newScreenName]);
+  }, [newScreenName, liveGroups]);
 
   // Left Panel Items (filtered)
   const leftPanelFilteredGroups = useMemo(() => {
     if (!leftPanelSearch.trim()) return liveGroups;
     const q = leftPanelSearch.toLowerCase();
     return liveGroups.filter(g => g.GROUPNAME.toLowerCase().includes(q));
-  }, [leftPanelSearch]);
+  }, [leftPanelSearch, liveGroups]);
 
   // Derived items from the active group or screen
   const leftPanelItemsForGroup = useMemo(() => {
     if (!selectedGroupId) return [];
     const grp = liveGroups.find(g => g.GRIDBRANCHID === selectedGroupId);
-    const grpName = grp ? grp.GROUPNAME : 'Item';
-    // Generate realistic sub-items for this group
-    return [
-      { id: selectedGroupId * 100 + 1, name: `${grpName} - صنف أول`, pic: null },
-      { id: selectedGroupId * 100 + 2, name: `${grpName} - صنف ممتاز`, pic: null },
-      { id: selectedGroupId * 100 + 3, name: `${grpName} - عبوة عائلية`, pic: null },
-      { id: selectedGroupId * 100 + 4, name: `${grpName} - عبوة صغيرة`, pic: null },
-      { id: selectedGroupId * 100 + 5, name: `${grpName} - بالوزن (كيلو)`, pic: null },
-      { id: selectedGroupId * 100 + 6, name: `${grpName} - نصف كيلو`, pic: null },
-      { id: selectedGroupId * 100 + 7, name: `${grpName} - قطبة حبة كاملة`, pic: null },
-      { id: selectedGroupId * 100 + 8, name: `${grpName} - معبأ بلدي`, pic: null }
-    ].filter(it => !leftPanelSearch.trim() || it.name.toLowerCase().includes(leftPanelSearch.toLowerCase()));
-  }, [selectedGroupId, leftPanelSearch]);
+    if (!grp) return [];
+    return liveItems
+      .filter(it => it.group === grp.GROUPNAME)
+      .map(it => ({ id: it.id, name: it.name, pic: null }))
+      .filter(it => !leftPanelSearch.trim() || it.name.toLowerCase().includes(leftPanelSearch.toLowerCase()));
+  }, [selectedGroupId, leftPanelSearch, liveGroups, liveItems]);
 
   // Map 40 cells into Vanguard visual order (5 cols x 8 rows)
   const touchGridCells = useMemo(() => {
@@ -462,20 +470,22 @@ export default function ScreensView() {
   };
 
   const handleAutomaticSetup = () => {
-    // Fill first 40 items from active group or default catalog
-    const grp = liveGroups.find(g => g.GRIDBRANCHID === (selectedGroupId || 50));
-    const prefix = grp ? grp.GROUPNAME : 'Item';
+    // Fill up to 40 cells from the live catalog items of the selected group (or the whole catalog)
+    const grp = liveGroups.find(g => g.GRIDBRANCHID === selectedGroupId);
+    const pool = grp ? liveItems.filter(it => it.group === grp.GROUPNAME) : liveItems;
+    if (pool.length === 0) {
+      showToast('No catalog items available to fill this screen. Add products first.', 'warning');
+      return;
+    }
     const updated = [...currentShowlabels];
-
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 40 && i < pool.length; i++) {
       const cellNum = i + 1;
       const cellIdx = updated.findIndex(c => c.LABELNUMBER === cellNum);
-      const newLabel = `${prefix} #${i + 1}`;
       if (cellIdx !== -1) {
         updated[cellIdx] = {
           ...updated[cellIdx],
-          LABELNAME: newLabel,
-          PRODUCTID: 5000 + i,
+          LABELNAME: pool[i].name,
+          PRODUCTID: pool[i].id,
           STATUS: -1,
           VBRED: 249,
           VBGREEN: 235,
@@ -487,7 +497,7 @@ export default function ScreensView() {
       ...prev,
       [selectedScreenId]: updated
     }));
-    showToast('Automatic setup filled 40 cells from group items', 'success');
+    showToast(`Automatic setup filled ${Math.min(40, pool.length)} cells from live catalog items`, 'success');
   };
 
   const handleExecCopyScreen = () => {
@@ -514,7 +524,8 @@ export default function ScreensView() {
       showToast(`Database persistence failed: ${res.error}`, 'error');
       return;
     }
-    showToast('Screen Saved! Layout and buttons committed to database.', 'success');
+    const activeName = screensList.find(s => s.SCRBRANCHID === selectedScreenId)?.SCREENNAME || `#${selectedScreenId}`;
+    showToast(`Screen "${activeName}" saved to database (${OFFICIAL_BRANCH_CODE}).`, 'success');
   };
 
   // Modals Save Handlers
@@ -706,7 +717,7 @@ export default function ScreensView() {
                   onChange={e => setBranchFilter(e.target.value)}
                   className="w-full py-2 px-3 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 focus:bg-white text-slate-700 font-medium"
                 >
-                  <option value="1300-01">1300-01 - Choueifat Main Facility</option>
+                  <option value="all">{OFFICIAL_BRANCH_LABEL}</option>
                 </select>
               </div>
 

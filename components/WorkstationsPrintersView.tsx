@@ -29,10 +29,19 @@ import {
   SKIN_STYLES,
   DRAWER_PORTS
 } from '@/lib/omegaDeviceData';
-import { OMEGA_BRANCHES } from '@/lib/omegaDiscountData';
 import { INITIAL_PRICE_MODES } from '@/lib/omegaPriceModeData';
 import { useTenant } from '@/lib/TenantContext';
-import { supabase } from '@/lib/supabase';
+import {
+  OFFICIAL_BRANCHES,
+  useCatalogLookups,
+  loadTenantFlags,
+  saveTenantFlag
+} from '@/lib/deviceSetupShared';
+import { resolveTenantUuid } from '@/lib/productCatalogService';
+
+const OMEGA_BRANCHES = OFFICIAL_BRANCHES;
+const PRINTER_CONNECTIONS = ['Network', 'USB', 'Bluetooth'] as const;
+const PAPER_WIDTHS = ['80mm', 'A4'] as const;
 
 interface ToastState {
   show: boolean;
@@ -50,98 +59,55 @@ export default function WorkstationsPrintersView() {
   const [workstations, setWorkstations] = useState<OmegaWorkstation[]>(INITIAL_WORKSTATIONS);
   const [printers, setPrinters] = useState<OmegaPhysicalPrinter[]>(INITIAL_PHYSICAL_PRINTERS);
 
-  // Mount hydration from Supabase
+  // Mount hydration from tenants.feature_flags (new keys first, legacy keys as fallback)
+  const tenantUuid = resolveTenantUuid(currentTenant);
+  const catalog = useCatalogLookups();
+  const [liveScreens, setLiveScreens] = useState<{ id: number; name: string }[]>([]);
   React.useEffect(() => {
+    let cancelled = false;
     async function loadPersistedDevices() {
       try {
-        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
-          ? currentTenant.id
-          : '00000000-0000-0000-0000-000000000001';
-
-        const { data, error } = await supabase
-          .from('tenants')
-          .select('feature_flags')
-          .eq('id', targetId)
-          .maybeSingle();
-
-        if (data?.feature_flags?.workstations && Array.isArray(data.feature_flags.workstations) && data.feature_flags.workstations.length > 0) {
-          setWorkstations(data.feature_flags.workstations);
-        }
-        if (data?.feature_flags?.printers && Array.isArray(data.feature_flags.printers) && data.feature_flags.printers.length > 0) {
-          setPrinters(data.feature_flags.printers);
+        const flags = await loadTenantFlags(tenantUuid, ['pos_workstations', 'physical_printers', 'pos_screens']);
+        if (cancelled) return;
+        if (Array.isArray(flags.pos_workstations) && flags.pos_workstations.length > 0) setWorkstations(flags.pos_workstations);
+        if (Array.isArray(flags.physical_printers) && flags.physical_printers.length > 0) setPrinters(flags.physical_printers);
+        if (Array.isArray(flags.pos_screens)) {
+          setLiveScreens(flags.pos_screens.map((s: any) => ({ id: s.SCRBRANCHID, name: s.SCREENNAME })));
         }
       } catch (err) {
         console.warn('Notice loading workstations/printers from database:', err);
       }
     }
     loadPersistedDevices();
-  }, [currentTenant?.id]);
+    return () => {
+      cancelled = true;
+    };
+  }, [tenantUuid]);
 
-  const persistWorkstationsToDatabase = async (newWs: OmegaWorkstation[]): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
-        ? currentTenant.id
-        : '00000000-0000-0000-0000-000000000001';
+  // Memoised option lists (avoid re-building on every keystroke inside the modals)
+  const screenOptions = React.useMemo(() => {
+    const base = liveScreens.length > 0 ? liveScreens : WORKSTATION_SCREENS.map(s => ({ id: s.id, name: s.description }));
+    return base;
+  }, [liveScreens]);
+  const menuOptions = React.useMemo(() => {
+    if (catalog.groups.length > 0) return catalog.groups.map(g => ({ id: g.id, name: g.category ? `${g.category} › ${g.name}` : g.name }));
+    return WORKSTATION_MENUS.map(m => ({ id: m.id, name: m.description }));
+  }, [catalog.groups]);
+  const printerOptions = React.useMemo(
+    () =>
+      printers.map(p => ({
+        id: p.ID,
+        label: `${p.DESCRIPTION} (${p.PRINTER_TYPE === 2 ? p.PRINTER_NAME : p.PRINTER_IP})`
+      })),
+    [printers]
+  );
 
-      const { data: tenantData } = await supabase
-        .from('tenants')
-        .select('feature_flags')
-        .eq('id', targetId)
-        .maybeSingle();
+  const persistWorkstationsToDatabase = async (newWs: OmegaWorkstation[]): Promise<{ success: boolean; error?: string }> =>
+    saveTenantFlag(tenantUuid, 'pos_workstations', newWs);
 
-      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
-      const { error: dbError } = await supabase
-        .from('tenants')
-        .update({
-          feature_flags: {
-            ...existingFlags,
-            workstations: newWs
-          },
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', targetId);
+  const persistPrintersToDatabase = async (newPrinters: OmegaPhysicalPrinter[]): Promise<{ success: boolean; error?: string }> =>
+    saveTenantFlag(tenantUuid, 'physical_printers', newPrinters);
 
-      if (dbError) {
-        return { success: false, error: dbError.message };
-      }
-      return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err?.message || 'Database connection error' };
-    }
-  };
-
-  const persistPrintersToDatabase = async (newPrinters: OmegaPhysicalPrinter[]): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
-        ? currentTenant.id
-        : '00000000-0000-0000-0000-000000000001';
-
-      const { data: tenantData } = await supabase
-        .from('tenants')
-        .select('feature_flags')
-        .eq('id', targetId)
-        .maybeSingle();
-
-      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
-      const { error: dbError } = await supabase
-        .from('tenants')
-        .update({
-          feature_flags: {
-            ...existingFlags,
-            printers: newPrinters
-          },
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', targetId);
-
-      if (dbError) {
-        return { success: false, error: dbError.message };
-      }
-      return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err?.message || 'Database connection error' };
-    }
-  };
 
   // Toast Notification System
   const [toast, setToast] = useState<ToastState>({ show: false, message: '', type: 'info' });
@@ -183,6 +149,10 @@ export default function WorkstationsPrintersView() {
   const [prBrandId, setPrBrandId] = useState<number>(1);
   const [prType, setPrType] = useState<number>(1); // 1: IP, 2: Name
   const [prIp, setPrIp] = useState<string>('192.168.0.1');
+  const [prConn, setPrConn] = useState<string>('Network');
+  const [prPort, setPrPort] = useState<string>('9100');
+  const [prPaper, setPrPaper] = useState<string>('80mm');
+  const [prBranch, setPrBranch] = useState<number>(1);
   const [prName, setPrName] = useState<string>('');
   const [prSeries, setPrSeries] = useState<number>(1); // 1: Thermal, 2: Dot Matrix
 
@@ -192,9 +162,9 @@ export default function WorkstationsPrintersView() {
     const nextNbr = workstations.length > 0 ? Math.max(...workstations.map(w => w.WORKSTATION_NB)) + 1 : 1;
     setWsName(`w${nextNbr}`);
     setWsIp('192.168.1.10' + nextNbr);
-    setWsMenu(11);
+    setWsMenu(menuOptions[0]?.id ?? 11);
     setWsMode(1);
-    setWsScreen(1);
+    setWsScreen(screenOptions[0]?.id ?? 1);
     setWsDrawer('Null');
     setWsScale('-1');
     setWsTicket(1000);
@@ -203,10 +173,10 @@ export default function WorkstationsPrintersView() {
     setWsIsOmenu(false);
     setWsPrintForPda(false);
     setWsIsBitfood(false);
-    setWsCheck1(1);
-    setWsCheck2(2);
-    setWsFastFood1(1);
-    setWsFastFood2(2);
+    setWsCheck1(printers[0]?.ID ?? 0);
+    setWsCheck2(printers[1]?.ID ?? 0);
+    setWsFastFood1(printers[0]?.ID ?? 0);
+    setWsFastFood2(printers[1]?.ID ?? 0);
     setShowWorkstationModal(true);
   };
 
@@ -336,6 +306,10 @@ export default function WorkstationsPrintersView() {
     setPrBrandId(1);
     setPrType(1);
     setPrIp('192.168.0.1');
+    setPrConn('Network');
+    setPrPort('9100');
+    setPrPaper('80mm');
+    setPrBranch(1);
     setPrName('');
     setPrSeries(1);
     setShowPrinterModal(true);
@@ -348,6 +322,11 @@ export default function WorkstationsPrintersView() {
     setPrBrandId(row.TYPE_ID || 1);
     setPrType(row.PRINTER_TYPE);
     setPrIp(row.PRINTER_IP || '192.168.0.1');
+    const rx: any = row;
+    setPrConn(rx.CONNECTION || (row.PRINTER_TYPE === 2 ? 'USB' : 'Network'));
+    setPrPort(rx.PORT || '9100');
+    setPrPaper(rx.PAPER_WIDTH || '80mm');
+    setPrBranch(row.BRANCHID || 1);
     setPrName(row.PRINTER_NAME || '');
     setPrSeries(row.PRINTER_SERIES);
     setShowPrinterModal(true);
@@ -372,6 +351,7 @@ export default function WorkstationsPrintersView() {
               DESCRIPTION: prDescription.trim(),
               TYPE_ID: prBrandId,
               PRINTER_TYPE: prType,
+              ...({ CONNECTION: prConn, PORT: prConn === 'Network' ? prPort.trim() : '', PAPER_WIDTH: prPaper, BRANCH_CODE: '1300-01', BRANCHID: prBranch } as any),
               PRINTER_IP: prType === 1 ? prIp.trim() : null,
               PRINTER_NAME: prType === 2 ? prName.trim() : null,
               PRINTER_SERIES: prSeries,
@@ -388,6 +368,7 @@ export default function WorkstationsPrintersView() {
         DESCRIPTION: prDescription.trim(),
         TYPE_ID: prBrandId,
         PRINTER_TYPE: prType,
+              ...({ CONNECTION: prConn, PORT: prConn === 'Network' ? prPort.trim() : '', PAPER_WIDTH: prPaper, BRANCH_CODE: '1300-01', BRANCHID: prBranch } as any),
         PRINTER_IP: prType === 1 ? prIp.trim() : null,
         PRINTER_NAME: prType === 2 ? prName.trim() : null,
         PRINTER_SERIES: prSeries,
@@ -726,11 +707,7 @@ export default function WorkstationsPrintersView() {
                     onChange={e => setWsMenu(parseInt(e.target.value))}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
                   >
-                    {WORKSTATION_MENUS.map(m => (
-                      <option key={m.id} value={m.id}>
-                        {m.description}
-                      </option>
-                    ))}
+                    {menuOptions.map(m => (<option key={m.id} value={m.id}>{m.name}</option>))}
                   </select>
                 </div>
 
@@ -756,11 +733,7 @@ export default function WorkstationsPrintersView() {
                     onChange={e => setWsScreen(parseInt(e.target.value))}
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
                   >
-                    {WORKSTATION_SCREENS.map(s => (
-                      <option key={s.id} value={s.id}>
-                        {s.description}
-                      </option>
-                    ))}
+                    {screenOptions.map(s => (<option key={s.id} value={s.id}>{s.name}</option>))}
                   </select>
                 </div>
               </div>
@@ -875,11 +848,7 @@ export default function WorkstationsPrintersView() {
                       className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded bg-white"
                     >
                       <option value={0}>{t('none', 'None')}</option>
-                      {printers.map(p => (
-                        <option key={p.ID} value={p.ID}>
-                          {p.DESCRIPTION} ({p.PRINTER_TYPE === 2 ? p.PRINTER_NAME : p.PRINTER_IP})
-                        </option>
-                      ))}
+                      {printerOptions.map(p => (<option key={p.id} value={p.id}>{p.label}</option>))}
                     </select>
                   </div>
 
@@ -893,11 +862,7 @@ export default function WorkstationsPrintersView() {
                       className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded bg-white"
                     >
                       <option value={0}>{t('none', 'None')}</option>
-                      {printers.map(p => (
-                        <option key={p.ID} value={p.ID}>
-                          {p.DESCRIPTION} ({p.PRINTER_TYPE === 2 ? p.PRINTER_NAME : p.PRINTER_IP})
-                        </option>
-                      ))}
+                      {printerOptions.map(p => (<option key={p.id} value={p.id}>{p.label}</option>))}
                     </select>
                   </div>
 
@@ -911,11 +876,7 @@ export default function WorkstationsPrintersView() {
                       className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded bg-white"
                     >
                       <option value={0}>{t('none', 'None')}</option>
-                      {printers.map(p => (
-                        <option key={p.ID} value={p.ID}>
-                          {p.DESCRIPTION}
-                        </option>
-                      ))}
+                      {printerOptions.map(p => (<option key={p.id} value={p.id}>{p.label}</option>))}
                     </select>
                   </div>
 
@@ -929,11 +890,7 @@ export default function WorkstationsPrintersView() {
                       className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded bg-white"
                     >
                       <option value={0}>{t('none', 'None')}</option>
-                      {printers.map(p => (
-                        <option key={p.ID} value={p.ID}>
-                          {p.DESCRIPTION}
-                        </option>
-                      ))}
+                      {printerOptions.map(p => (<option key={p.id} value={p.id}>{p.label}</option>))}
                     </select>
                   </div>
                 </div>
@@ -1029,34 +986,69 @@ export default function WorkstationsPrintersView() {
               </div>
 
               {/* Printer Connection Type */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-2">
-                  {t('printer_type_connection', 'Printer Type / Connection')}
-                </label>
-                <div className="flex items-center gap-6">
-                  <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="printerConnType"
-                      checked={prType === 1}
-                      onChange={() => setPrType(1)}
-                      className="w-4 h-4 text-blue-600"
-                    />
-                    <span>{t('network_ip_address', 'Network IP Address')}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                    {t('connection_type', 'Connection Type')}
                   </label>
-
-                  <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
-                    <input
-                      type="radio"
-                      name="printerConnType"
-                      checked={prType === 2}
-                      onChange={() => setPrType(2)}
-                      className="w-4 h-4 text-blue-600"
-                    />
-                    <span>{t('windows_shared_name', 'Windows Shared Name')}</span>
+                  <select
+                    value={prConn}
+                    onChange={e => {
+                      setPrConn(e.target.value);
+                      setPrType(e.target.value === 'Network' ? 1 : 2);
+                    }}
+                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
+                  >
+                    {PRINTER_CONNECTIONS.map(c => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                    {t('paper_width', 'Paper Width')}
                   </label>
+                  <select
+                    value={prPaper}
+                    onChange={e => setPrPaper(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
+                  >
+                    {PAPER_WIDTHS.map(w => (
+                      <option key={w} value={w}>
+                        {w}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('branch', 'Branch')}</label>
+                  <select
+                    value={prBranch}
+                    onChange={e => setPrBranch(parseInt(e.target.value))}
+                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
+                  >
+                    {OMEGA_BRANCHES.map(b => (
+                      <option key={b.BRANCHID} value={b.BRANCHID}>
+                        {b.BARANCHNAME}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
+              {prConn === 'Network' && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">{t('port', 'Port')}</label>
+                  <input
+                    type="text"
+                    value={prPort}
+                    onChange={e => setPrPort(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md font-mono"
+                    placeholder="9100"
+                  />
+                </div>
+              )}
 
               {/* IP or Windows Share Name */}
               {prType === 1 ? (

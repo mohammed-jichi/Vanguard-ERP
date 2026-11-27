@@ -1,7 +1,7 @@
 'use client';
 import { useLanguage } from '@/lib/LanguageContext';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTenantFlag } from '@/lib/useTenantFlag';
 import Link from 'next/link';
 import {
@@ -16,7 +16,7 @@ import {
   OmegaPriceMode,
   INITIAL_PRICE_MODES
 } from '@/lib/omegaPriceModeData';
-import { OMEGA_BRANCHES } from '@/lib/omegaDiscountData';
+import { useTenantBranches } from '@/lib/salesSetupShared';
 
 interface ToastState {
   show: boolean;
@@ -26,7 +26,30 @@ interface ToastState {
 
 export default function PriceModesView() {
   const { t } = useLanguage();
-  const [modes, setModes] = useTenantFlag<OmegaPriceMode[]>('price_modes', INITIAL_PRICE_MODES);
+  const tenantBranches = useTenantBranches();
+  const [rawModes, setModes, flagStatus] = useTenantFlag<OmegaPriceMode[]>('price_modes', INITIAL_PRICE_MODES);
+  const statusRef = useRef(flagStatus);
+  statusRef.current = flagStatus;
+  // Collapse repeated rows (e.g. "Offers / عروض" and "عروض / Offers") - keep the first occurrence
+  const modes = useMemo(() => {
+    const seen = new Set<string>();
+    return (Array.isArray(rawModes) ? rawModes : []).filter(m => {
+      const key = String(m.MODEDESCRIPTION || '')
+        .split('/')
+        .map(s => s.trim().toLowerCase())
+        .filter(Boolean)
+        .sort()
+        .join('|');
+      const k = key || String(m.MODEID);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }, [rawModes]);
+  useEffect(() => {
+    if (!flagStatus.loading && modes.length !== (rawModes || []).length) setModes(modes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flagStatus.loading, modes.length, (rawModes || []).length]);
   const [selectedBranchId, setSelectedBranchId] = useState<number>(1);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
@@ -105,19 +128,27 @@ export default function PriceModesView() {
   // Save for Current Branch
   const handleSave = () => {
     setIsSaving(true);
+    setModes(prev => prev.map(m => ({ ...m })));
     setTimeout(() => {
       setIsSaving(false);
-      showToast('Price Modes configuration saved successfully for Zeit w zaytoun ljanoub.', 'success');
-    }, 400);
+      const err = statusRef.current.error;
+      if (err) showToast('Could not save Price Modes: ' + err, 'error');
+      else showToast('Price Modes configuration saved successfully for ' + (tenantBranches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || tenantBranches[0]?.BARANCHNAME) + '.', 'success');
+    }, 1400);
   };
 
   // Save For All Branches
   const handleSaveAllBranches = () => {
     setIsSaving(true);
+    const branchIds = tenantBranches.map(b => b.BRANCHID);
+    // Persist the current (edited) configuration to every official tenant branch in tenants.feature_flags.price_modes
+    setModes(prev => prev.map(m => ({ ...m, BRANCHID: branchIds.includes(m.BRANCHID) ? m.BRANCHID : branchIds[0] })));
     setTimeout(() => {
       setIsSaving(false);
-      showToast('Price Modes configuration successfully broadcasted and saved to ALL branches!', 'success');
-    }, 600);
+      const err = statusRef.current.error;
+      if (err) showToast('Could not save Price Modes: ' + err, 'error');
+      else showToast('Price Modes configuration saved to ALL branches (' + tenantBranches.length + ').', 'success');
+    }, 1400);
   };
 
   const days: Array<{
@@ -182,7 +213,7 @@ export default function PriceModesView() {
                 onChange={e => setSelectedBranchId(parseInt(e.target.value))}
                 className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-700 font-medium"
               >
-                {OMEGA_BRANCHES.map(b => (
+                {tenantBranches.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
                     {b.BARANCHNAME}
                   </option>

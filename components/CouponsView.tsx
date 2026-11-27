@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabaseClient';
@@ -23,10 +23,16 @@ import {
   INITIAL_VOUCHERS,
   VOUCHER_STATUS_OPTIONS,
   VOUCHER_TYPE_OPTIONS,
-  OMEGA_EMPLOYEES,
   OMEGA_CUSTOMERS
 } from '@/lib/omegaCouponData';
 import { INITIAL_PAYMENT_TYPES } from '@/lib/omegaPaymentData';
+import { useTenantFlag } from '@/lib/useTenantFlag';
+import { useHrEmployees } from '@/lib/hrTenantData';
+import { useTenantBranches, normalizePaymentTypes, uniqueBy, canonicalCurrencyId, usePaymentCurrencies } from '@/lib/salesSetupShared';
+
+/** Removes the legacy demo voucher (VLV6WA / Mazen Hajj-Ali) that may still be saved with the tenant. */
+const stripMockVouchers = (list: OmegaVoucher[]) =>
+  list.filter(v => String(v.COUPON_ID) !== 'VLV6WA' && v.customerAssigned?.NAME !== 'Mazen Hajj-Ali');
 
 interface ToastState {
   show: boolean;
@@ -37,6 +43,28 @@ interface ToastState {
 export default function CouponsView() {
   const { t, dir } = useLanguage();
   const { currentTenant } = useTenant();
+  const tenantBranches = useTenantBranches();
+  const { employees: hrEmployees } = useHrEmployees();
+  const [rawPaymentTypes] = useTenantFlag<typeof INITIAL_PAYMENT_TYPES>('payment_types', INITIAL_PAYMENT_TYPES);
+  const paymentCurrencies = usePaymentCurrencies();
+  // Live HR employees (no mock names); id = position in the live list so it stays a number in the voucher record
+  const liveEmployees = useMemo(
+    () =>
+      hrEmployees
+        .filter(e => e.active !== false && e.isActive !== false && e.is_active !== false)
+        .map((e, i) => ({ EMPLOYEEID: i + 1, NAME: e.fullName || [e.firstName, e.lastName].filter(Boolean).join(' ') })),
+    [hrEmployees]
+  );
+  // Live Payment Types (deduped, active only); USD-currency types are preferred as the default
+  const livePaymentTypes = useMemo(
+    () => uniqueBy(normalizePaymentTypes(rawPaymentTypes).filter(p => p.NOTACTIVE !== -1), p => p.PAYMENTTYPE.trim().toLowerCase()),
+    [rawPaymentTypes]
+  );
+  const defaultPaymentId = useMemo(() => {
+    const usdId = paymentCurrencies[0]?.ID;
+    const usd = livePaymentTypes.find(p => usdId !== undefined && canonicalCurrencyId(p.PAYMENTCURRENCY, paymentCurrencies, paymentCurrencies) === usdId);
+    return (usd || livePaymentTypes[0])?.PAYMENTID ?? 1;
+  }, [livePaymentTypes, paymentCurrencies]);
 
   // Main data state
   const [vouchersList, setVouchersList] = useState<OmegaVoucher[]>(INITIAL_VOUCHERS);
@@ -78,7 +106,7 @@ export default function CouponsView() {
               EMPLOYEEID: null,
               employeeAssigned: null
             }));
-            setVouchersList(mapped);
+            setVouchersList(stripMockVouchers(mapped));
             return;
           }
         } catch (pErr) {
@@ -93,7 +121,7 @@ export default function CouponsView() {
           .maybeSingle();
 
         if (tenantData?.feature_flags?.vouchers && Array.isArray(tenantData.feature_flags.vouchers) && tenantData.feature_flags.vouchers.length > 0) {
-          setVouchersList(tenantData.feature_flags.vouchers);
+          setVouchersList(stripMockVouchers(tenantData.feature_flags.vouchers));
         }
       } catch (err) {
         console.warn('Notice loading vouchers from database:', err);
@@ -207,8 +235,8 @@ export default function CouponsView() {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 90);
     setNewExpiryDate(futureDate.toISOString().split('T')[0]);
-    setNewPaymentType(1);
-    setNewEmployeeId(1);
+    setNewPaymentType(defaultPaymentId);
+    setNewEmployeeId(liveEmployees[0]?.EMPLOYEEID ?? 0);
     setNewAnyoneCanUse(1);
     setNewCustomerSearch('');
     setNewSelectedCustomer(null);
@@ -321,7 +349,7 @@ export default function CouponsView() {
     const startId = Math.max(10, ...vouchersList.map(v => v.ID)) + 1;
     const prefix = newVoucherType === 0 ? 'CPN-22901-' : 'GC-22901-';
 
-    const emp = OMEGA_EMPLOYEES.find(empItem => empItem.EMPLOYEEID === newEmployeeId);
+    const emp = liveEmployees.find(empItem => empItem.EMPLOYEEID === newEmployeeId);
 
     for (let i = 0; i < qty; i++) {
       const codeSuffix = 1000 + startId + i;
@@ -524,11 +552,12 @@ export default function CouponsView() {
   };
 
   // Filtered & Sorted Vouchers
+  const deferredSearch = useDeferredValue(searchVal);
   const filteredVouchers = useMemo(() => {
     return vouchersList
       .filter(v => {
         // Search
-        const q = searchVal.toLowerCase().trim();
+        const q = deferredSearch.toLowerCase().trim();
         const matchesSearch =
           !q ||
           v.COUPON_ID.toLowerCase().includes(q) ||
@@ -560,7 +589,7 @@ export default function CouponsView() {
         const valB = b[sorting.field];
         return sorting.dir === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
       });
-  }, [vouchersList, searchVal, statusFilter, typeFilter, dateFilter, sorting]);
+  }, [vouchersList, deferredSearch, statusFilter, typeFilter, dateFilter, sorting]);
 
   const toggleSort = (field: 'COUPON_ID' | 'COUPON_EXPIRYDATE' | 'DATE_INSERT') => {
     setSorting(prev => ({
@@ -584,6 +613,121 @@ export default function CouponsView() {
     if (opt.id === 1) return t('gift_certificate', 'Gift Certificate');
     return opt.description;
   };
+
+  const handlersRef = useRef({ handleOpenEdit, handleDeactivate, handleOpenPrint });
+  handlersRef.current = { handleOpenEdit, handleDeactivate, handleOpenPrint };
+  const voucherRows = useMemo(
+    () => filteredVouchers.map(row => {
+                        const isConsumed = row.CONSUMED === -1;
+                        const isExpired = row.CONSUMED === 0 && row.expired === 1;
+                        const isDeactivated = row.NOT_ACTIVE === 1;
+                        const isValid = !isConsumed && !isExpired && !isDeactivated;
+    
+                        return (
+                          <tr key={row.ID} className="hover:bg-slate-50/80 transition-colors">
+                            {/* ID */}
+                            <td className="px-4 py-3 font-mono text-xs font-bold text-slate-800">{row.COUPON_ID}</td>
+    
+                            {/* Expiry Date */}
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className="font-medium text-slate-700">{row.COUPON_EXPIRYDATE}</span>
+                            </td>
+    
+                            {/* Type */}
+                            <td className="px-4 py-3">
+                              <span
+                                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${
+                                  row.VOUCHER_TYPE === 0
+                                    ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                                    : 'bg-blue-50 text-blue-700 border border-blue-200'
+                                }`}
+                              >
+                                {row.VOUCHER_TYPE === 0 ? t('coupon', 'Coupon') : t('gift_certificate', 'Gift Certificate')}
+                              </span>
+                            </td>
+    
+                            {/* Value */}
+                            <td className="px-4 py-3 font-bold text-slate-900">
+                              {row.COUPON_CURRENCY || '$'} {row.COUPON_VALUE.toLocaleString()}
+                            </td>
+    
+                            {/* Status */}
+                            <td className="px-4 py-3">
+                              {isConsumed && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                                  {t('status_consumed', 'Consumed')}
+                                </span>
+                              )}
+                              {isExpired && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
+                                  {t('status_expired', 'Expired')}
+                                </span>
+                              )}
+                              {isDeactivated && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">
+                                  {t('status_deactivated', 'Deactivated')}
+                                </span>
+                              )}
+                              {isValid && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+                                  {t('status_valid', 'Valid')}
+                                </span>
+                              )}
+                            </td>
+    
+                            {/* Customer */}
+                            <td className="px-4 py-3 hidden md:table-cell text-xs text-slate-600">
+                              {row.ANYONE_CAN_USE === 1 ? (
+                                <span className="text-slate-400 italic">{t('anyone_can_use', 'Anyone can use')}</span>
+                              ) : (
+                                <span className="font-semibold text-slate-800">{row.customerAssigned?.NAME || t('assigned', 'Assigned')}</span>
+                              )}
+                            </td>
+    
+                            {/* Created At */}
+                            <td className="px-4 py-3 hidden lg:table-cell text-xs text-slate-500 font-mono">
+                              {row.DATE_INSERT ? row.DATE_INSERT.split(' ')[0] : '—'}
+                            </td>
+    
+                            {/* Actions: Edit, Deactivate, Print */}
+                            <td className="px-4 py-3 text-right whitespace-nowrap">
+                              <div className="flex items-center justify-end gap-1.5">
+                                {isValid && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => handlersRef.current.handleOpenEdit(row)}
+                                      className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-blue-200 hover:border-blue-600 cursor-pointer"
+                                      title={t('edit_voucher', 'Edit Voucher')}
+                                    >
+                                      <Pencil className="w-4 h-4 stroke-[2.2]" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handlersRef.current.handleDeactivate(row)}
+                                      className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-red-200 hover:border-red-600 cursor-pointer"
+                                      title={t('deactivate_voucher', 'Deactivate Voucher')}
+                                    >
+                                      <Ban className="w-4 h-4 stroke-[2.2]" />
+                                    </button>
+                                  </>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => handlersRef.current.handleOpenPrint(row)}
+                                  className="w-8 h-8 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-all shadow-xs border border-slate-300 hover:border-slate-700 cursor-pointer"
+                                  title={t('print_view_voucher', 'Print / View Voucher')}
+                                >
+                                  <Printer className="w-4 h-4 stroke-[2.2]" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [filteredVouchers, t]
+  );
 
   return (
     <div dir={dir} className="wspaceCont font-sans text-slate-800 bg-background min-h-screen pb-12">
@@ -796,120 +940,13 @@ export default function CouponsView() {
                     </td>
                   </tr>
                 ) : (
-                  filteredVouchers.map(row => {
-                    const isConsumed = row.CONSUMED === -1;
-                    const isExpired = row.CONSUMED === 0 && row.expired === 1;
-                    const isDeactivated = row.NOT_ACTIVE === 1;
-                    const isValid = !isConsumed && !isExpired && !isDeactivated;
-
-                    return (
-                      <tr key={row.ID} className="hover:bg-slate-50/80 transition-colors">
-                        {/* ID */}
-                        <td className="px-4 py-3 font-mono text-xs font-bold text-slate-800">{row.COUPON_ID}</td>
-
-                        {/* Expiry Date */}
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="font-medium text-slate-700">{row.COUPON_EXPIRYDATE}</span>
-                        </td>
-
-                        {/* Type */}
-                        <td className="px-4 py-3">
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${
-                              row.VOUCHER_TYPE === 0
-                                ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                                : 'bg-blue-50 text-blue-700 border border-blue-200'
-                            }`}
-                          >
-                            {row.VOUCHER_TYPE === 0 ? t('coupon', 'Coupon') : t('gift_certificate', 'Gift Certificate')}
-                          </span>
-                        </td>
-
-                        {/* Value */}
-                        <td className="px-4 py-3 font-bold text-slate-900">
-                          {row.COUPON_CURRENCY || '$'} {row.COUPON_VALUE.toLocaleString()}
-                        </td>
-
-                        {/* Status */}
-                        <td className="px-4 py-3">
-                          {isConsumed && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                              {t('status_consumed', 'Consumed')}
-                            </span>
-                          )}
-                          {isExpired && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
-                              {t('status_expired', 'Expired')}
-                            </span>
-                          )}
-                          {isDeactivated && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">
-                              {t('status_deactivated', 'Deactivated')}
-                            </span>
-                          )}
-                          {isValid && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
-                              {t('status_valid', 'Valid')}
-                            </span>
-                          )}
-                        </td>
-
-                        {/* Customer */}
-                        <td className="px-4 py-3 hidden md:table-cell text-xs text-slate-600">
-                          {row.ANYONE_CAN_USE === 1 ? (
-                            <span className="text-slate-400 italic">{t('anyone_can_use', 'Anyone can use')}</span>
-                          ) : (
-                            <span className="font-semibold text-slate-800">{row.customerAssigned?.NAME || t('assigned', 'Assigned')}</span>
-                          )}
-                        </td>
-
-                        {/* Created At */}
-                        <td className="px-4 py-3 hidden lg:table-cell text-xs text-slate-500 font-mono">
-                          {row.DATE_INSERT ? row.DATE_INSERT.split(' ')[0] : '—'}
-                        </td>
-
-                        {/* Actions: Edit, Deactivate, Print */}
-                        <td className="px-4 py-3 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1.5">
-                            {isValid && (
-                              <>
-                                <button
-                                  type="button"
-                                  onClick={() => handleOpenEdit(row)}
-                                  className="w-8 h-8 rounded-md bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-blue-200 hover:border-blue-600 cursor-pointer"
-                                  title={t('edit_voucher', 'Edit Voucher')}
-                                >
-                                  <Pencil className="w-4 h-4 stroke-[2.2]" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeactivate(row)}
-                                  className="w-8 h-8 rounded-md bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-xs border border-red-200 hover:border-red-600 cursor-pointer"
-                                  title={t('deactivate_voucher', 'Deactivate Voucher')}
-                                >
-                                  <Ban className="w-4 h-4 stroke-[2.2]" />
-                                </button>
-                              </>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => handleOpenPrint(row)}
-                              className="w-8 h-8 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-all shadow-xs border border-slate-300 hover:border-slate-700 cursor-pointer"
-                              title={t('print_view_voucher', 'Print / View Voucher')}
-                            >
-                              <Printer className="w-4 h-4 stroke-[2.2]" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
+                  voucherRows
                 )}
               </tbody>
               <tfoot className="bg-slate-50 border-t border-slate-200">
                 <tr>
                   <td colSpan={8} className="px-4 py-2.5 text-xs text-slate-500 text-center">
-                    {t('showing', 'Showing')} {filteredVouchers.length} {t('of', 'of')} {vouchersList.length} {t('vouchers', 'Vouchers')} | {t('brand', 'Brand')}: Zeit w zaytoun ljanoub S.A.R.L
+                    {t('showing', 'Showing')} {filteredVouchers.length} {t('of', 'of')} {vouchersList.length} {t('vouchers', 'Vouchers')} | {t('brand', 'Brand')}: {tenantBranches[0]?.NAME}
                   </td>
                 </tr>
               </tfoot>
@@ -1016,7 +1053,7 @@ export default function CouponsView() {
                       onChange={e => setNewPaymentType(parseInt(e.target.value))}
                       className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded bg-white cursor-pointer"
                     >
-                      {INITIAL_PAYMENT_TYPES.map(pt => (
+                      {livePaymentTypes.map(pt => (
                         <option key={pt.PAYMENTID} value={pt.PAYMENTID}>
                           {pt.PAYMENTTYPE}
                         </option>
@@ -1030,7 +1067,7 @@ export default function CouponsView() {
                       onChange={e => setNewEmployeeId(parseInt(e.target.value))}
                       className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded bg-white cursor-pointer"
                     >
-                      {OMEGA_EMPLOYEES.map(empItem => (
+                      {liveEmployees.map(empItem => (
                         <option key={empItem.EMPLOYEEID} value={empItem.EMPLOYEEID}>
                           {empItem.NAME}
                         </option>
@@ -1282,7 +1319,7 @@ export default function CouponsView() {
                 {/* Company details */}
                 <div className="text-center pb-4 border-b border-slate-200">
                   <h4 className="font-extrabold text-lg text-slate-900">
-                    Zeit w zaytoun ljanoub - Southern Olive Oil Products S.A.R.L
+                    {tenantBranches[0]?.BARANCHNAME}
                   </h4>
                   <p className="text-xs text-slate-500 mt-0.5">{t('company_address_phone', 'Old Saida Road, Kfarchima, Lebanon | Phone: 707673828')}</p>
                 </div>

@@ -16,9 +16,9 @@ import {
 } from 'lucide-react';
 import {
   OmegaVoidReason,
-  INITIAL_VOID_REASONS,
-  OMEGA_BRANCHES
+  INITIAL_VOID_REASONS
 } from '@/lib/omegaMoreSetupData';
+import { useTenantBranches } from '@/lib/salesSetupShared';
 import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabase';
 
@@ -31,6 +31,7 @@ interface ToastState {
 export default function VoidReasonsView() {
   const { t } = useLanguage();
   const { currentTenant } = useTenant();
+  const tenantBranches = useTenantBranches();
   const [voidReasons, setVoidReasons] = useState<OmegaVoidReason[]>(INITIAL_VOID_REASONS);
 
   // Mount hydration from Supabase
@@ -184,7 +185,7 @@ export default function VoidReasonsView() {
     const nextVoidId = Math.max(0, ...voidReasons.map(v => v.VOIDID)) + 1;
     const nextId = Math.max(0, ...voidReasons.map(v => v.ID)) + 1;
 
-    const restrictedBranches = OMEGA_BRANCHES.filter(
+    const restrictedBranches = tenantBranches.filter(
       b => newBranchChecks[Number(b.BRANCHID)]
     ).map(b => ({ BRANCHID: Number(b.BRANCHID), BARANCHNAME: b.BARANCHNAME }));
 
@@ -243,7 +244,7 @@ export default function VoidReasonsView() {
       return;
     }
 
-    const restrictedBranches = OMEGA_BRANCHES.filter(
+    const restrictedBranches = tenantBranches.filter(
       b => editBranchChecks[Number(b.BRANCHID)]
     ).map(b => ({ BRANCHID: Number(b.BRANCHID), BARANCHNAME: b.BARANCHNAME }));
 
@@ -354,7 +355,7 @@ export default function VoidReasonsView() {
                   className="w-full text-xs font-normal bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer"
                 >
                   <option value="all">{t('all_branches', 'All Branches')}</option>
-                  {OMEGA_BRANCHES.map(b => (
+                  {tenantBranches.map(b => (
                     <option key={b.BRANCHID} value={b.BRANCHID}>
                       {b.BARANCHNAME}
                     </option>
@@ -540,7 +541,7 @@ export default function VoidReasonsView() {
               <div className="border border-slate-200 rounded p-3 bg-slate-50/50">
                 <div className="font-semibold text-slate-800 mb-2">{t('branch_restrictions', 'Branch Restrictions')}</div>
                 <div className="space-y-1.5">
-                  {OMEGA_BRANCHES.map(branch => (
+                  {tenantBranches.map(branch => (
                     <label key={branch.BRANCHID} className="flex items-center gap-2 cursor-pointer text-slate-700">
                       <input
                         type="checkbox"
@@ -643,7 +644,7 @@ export default function VoidReasonsView() {
               <div className="border border-slate-200 rounded p-3 bg-slate-50/50">
                 <div className="font-semibold text-slate-800 mb-2">{t('branch_restrictions', 'Branch Restrictions')}</div>
                 <div className="space-y-1.5">
-                  {OMEGA_BRANCHES.map(branch => (
+                  {tenantBranches.map(branch => (
                     <label key={branch.BRANCHID} className="flex items-center gap-2 cursor-pointer text-slate-700">
                       <input
                         type="checkbox"

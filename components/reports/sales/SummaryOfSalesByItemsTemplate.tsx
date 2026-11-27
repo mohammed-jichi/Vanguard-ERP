@@ -5,6 +5,7 @@ import MasterReportDocument from '@/components/reports/MasterReportDocument';
 import { ReportMetadata, ReportColumn, GrandTotal } from '@/types/reports';
 import { applyGlobalReportFilters, resolveActiveCurrencyFromFilters, getDynamicCurrencyColumnHeader } from '@/lib/reportFilterEngine';
 import { convertCurrency, formatCurrencyAmount } from '@/lib/currencyEngine';
+import { useLivePostedInvoices, aggregateItems, LiveInvoice } from '@/lib/liveSalesReportsData';
 
 export interface SalesItemRecord {
   code: string;
@@ -28,23 +29,10 @@ export interface SummaryOfSalesByItemsTemplateProps {
   useUnitCost?: boolean;
   topN?: number;
   filterValues?: Record<string, any>;
+  /** Posted invoices already filtered to the active period/branch. Falls back to all live posted invoices. */
+  invoices?: LiveInvoice[];
 }
 
-const DEFAULT_SALES_ITEMS: (SalesItemRecord & { branch: string; category: string })[] = [
-  { code: 'Fixed Offer', desc: 'Fixed Offer', bar: '62810012', id: '1289.0', qty: '24.00', price: '10,350,000.0', total: '248,400,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Promotions' },
-  { code: 'RICEBM1KG', desc: 'Rice Basmati Rice Manas', bar: '52820019', id: '1062.0', qty: '3.50', price: '150,000.0', total: '525,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Grains & Pantry' },
-  { code: 'P Blue Gallon 10', desc: 'P Blue Gallon 10 Liters', bar: '52820025', id: '1260.0', qty: '24.00', price: '0.0', total: '0.00', branch: 'Southern Olive and Oil Products - Main', category: 'Packaging' },
-  { code: 'P Blue Gallon 20', desc: 'P Blue Gallon 20 Liters', bar: '52820026', id: '1259.0', qty: '46.00', price: '0.0', total: '0.00', branch: 'Southern Olive and Oil Products - Main', category: 'Packaging' },
-  { code: 'Rice Standard 1Kg', desc: 'Rice Standard Product 1Kg', bar: '52820030', id: '661.0', qty: '2.00', price: '90,000.0', total: '180,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Grains & Pantry' },
-  { code: 'Rice Basmati Al-Bustan', desc: 'Rice Basmati Al-Bustan 720g', bar: '52820031', id: '720.0', qty: '1.00', price: '120,000.0', total: '120,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Grains & Pantry' },
-  { code: 'EVOO1000MLDE', desc: 'Tin Olive Oil Haseer Local 1000 ml', bar: '52820040', id: '1017.0', qty: '5.00', price: '990,000.0', total: '4,950,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Olive Oils' },
-  { code: 'VOO17.5L16KGR', desc: 'Extra Virgin Olive Oil Tin 17.5L (16 Bulk Kg)', bar: '52820045', id: '11.0', qty: '45.00', price: '9,000,000.0', total: '405,000,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Olive Oils' },
-  { code: 'Special Promo Offer', desc: 'Special Promo Offer - EVO Oil', bar: '52820050', id: '793.0', qty: '32.00', price: '9,000,000.0', total: '288,000,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Promotions' },
-  { code: 'SEP1000GJAR510', desc: 'Jar Makdous 1000g', bar: '52820060', id: '24.0', qty: '1.00', price: '450,000.0', total: '450,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Preserves' },
-  { code: 'SEP650GJAR509', desc: 'Jar Makdous 650g', bar: '52820061', id: '23.0', qty: '2.00', price: '270,000.0', total: '540,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Preserves' },
-  { code: 'FVL350GJAR509', desc: 'Jar French Grape Leaves 350g', bar: '52820070', id: '33.0', qty: '2.00', price: '190,000.0', total: '380,000.00', branch: 'Southern Olive and Oil Products - Main', category: 'Preserves' },
-  { code: 'Dried Mint Bulk Kg', desc: 'Dried Mint Bulk Kg', bar: '52820080', id: '393.0', qty: '1.01', price: '450,000.0', total: '454,500.00', branch: 'Southern Olive and Oil Products - Main', category: 'Herbs & Spices' },
-];
 
 /**
  * ============================================================================
@@ -58,9 +46,28 @@ export const SummaryOfSalesByItemsTemplate: React.FC<SummaryOfSalesByItemsTempla
   branch = 'Southern Olive and Oil Products - Main',
   topN,
   filterValues = {},
+  invoices,
 }) => {
+  const live = useLivePostedInvoices();
+  const sourceInvoices = invoices ?? live.invoices;
+  const liveItems = useMemo(
+    () =>
+      aggregateItems(sourceInvoices).map((r) => ({
+        code: r.code,
+        desc: r.name,
+        bar: '',
+        id: r.code,
+        qty: r.qty.toFixed(2),
+        price: convertCurrency(r.avgUnitUsd, 'USD', 'LBP').toFixed(2),
+        total: convertCurrency(r.totalUsd, 'USD', 'LBP').toFixed(2),
+        branch: branch,
+        category: r.category,
+      })),
+    [sourceInvoices, branch]
+  );
+
   const cleanPeriod = useMemo(() => {
-    if (!dynamicPeriodText) return '01-Aug-2026 to 31-Aug-2026';
+    if (!dynamicPeriodText) return 'All posted invoices';
     return dynamicPeriodText
       .replace(/^Fiscal Cycle:\s*/i, '')
       .replace(/^Period:\s*/i, '')
@@ -84,12 +91,12 @@ export const SummaryOfSalesByItemsTemplate: React.FC<SummaryOfSalesByItemsTempla
 
   // Apply unified filter pipeline
   const filteredRows = useMemo(() => {
-    let rows = applyGlobalReportFilters(DEFAULT_SALES_ITEMS, filterValues);
+    let rows = applyGlobalReportFilters(liveItems, filterValues);
     if (topN && topN > 0) {
       rows = rows.slice(0, topN);
     }
     return rows;
-  }, [filterValues, topN]);
+  }, [liveItems, filterValues, topN]);
 
   // Dynamic totals calculation
   const { totalQty, totalLbp } = useMemo(() => {

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import UnifiedPrintableReportSheet from '../UnifiedPrintableReportSheet';
 import { resolveActiveCurrencyFromFilters, matchesSalesmanFilter } from '@/lib/reportFilterEngine';
 import { convertCurrency, formatCurrencyAmount } from '@/lib/currencyEngine';
+import { useLivePostedInvoices, aggregateToday } from '@/lib/liveSalesReportsData';
 
 interface TodaysSalesTemplateProps {
   hideToolbar?: boolean;
@@ -35,29 +36,43 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
 
   const secondaryCurrency = activeCurrency === 'LBP' ? 'USD' : 'LBP';
 
+  // Live figures: today's POSTED invoices only (all zero when nothing has been posted today).
+  const { invoices: liveInvoices } = useLivePostedInvoices();
+  const stats = useMemo(() => aggregateToday(liveInvoices), [liveInvoices]);
+
+  const paymentTotal = stats.byPayment.reduce((s, p) => s + p.amountUsd, 0);
+  const cashLike = stats.byPayment.filter((p) => /cash/i.test(p.method)).reduce((s, p) => s + p.amountUsd, 0);
+  const digitalLike = stats.byPayment
+    .filter((p) => /whish|omt|card|visa|master|online|digital|wallet/i.test(p.method))
+    .reduce((s, p) => s + p.amountUsd, 0);
+  const receivable = stats.byPayment.filter((p) => /account|credit|unpaid/i.test(p.method)).reduce((s, p) => s + p.amountUsd, 0);
+
   const statsBreakdown = [
-    { metric: 'Gross Sales Revenue', rawUsd: 4850.00, notes: '42 Total Sales Invoices' },
-    { metric: 'Discounts Given', rawUsd: -140.00, notes: 'Manager & Promotional' },
-    { metric: 'Refunds / Returns', rawUsd: -65.00, notes: '2 Return Tickets' },
-    { metric: 'Net Sales Revenue', rawUsd: 4645.00, notes: 'Taxable & Exempt Net' },
-    { metric: 'VAT Collected (11%)', rawUsd: 312.40, notes: 'Lebanese MOF Standard' },
-    { metric: 'Cash in Drawer (USD)', rawUsd: 2450.00, notes: 'Physical Cash Verified' },
-    { metric: 'Whish / OMT Digital', rawUsd: 1240.00, notes: 'Settled to Bank Vault' },
-    { metric: 'Credit / Accounts Receivable', rawUsd: 955.00, notes: 'Wholesale B2B Clients' },
+    { metric: 'Gross Sales Revenue', rawUsd: stats.grossUsd, notes: `${stats.invoiceCount} Posted Sales Invoices` },
+    { metric: 'Discounts Given', rawUsd: -stats.discountUsd, notes: 'From posted invoices' },
+    { metric: 'Refunds / Returns', rawUsd: -stats.refundsUsd, notes: `${stats.refundCount} Return Tickets` },
+    { metric: 'Net Sales Revenue', rawUsd: stats.netUsd, notes: 'Gross - discounts - refunds' },
+    { metric: 'VAT Collected', rawUsd: stats.taxUsd, notes: 'Tax recorded on posted invoices' },
+    { metric: 'Cash Receipts', rawUsd: cashLike, notes: 'Cash payment methods' },
+    { metric: 'Card / Digital Receipts', rawUsd: digitalLike, notes: 'Non-cash electronic methods' },
+    { metric: 'Credit / Accounts Receivable', rawUsd: receivable, notes: 'Unpaid or on-account balance' },
   ];
 
-  const employeeData = [
-    { empId: 'EMP-01', name: 'Ahmad Ali Kassem', invoices: 18, rawTotalUSD: 2150.00, rawNetUSD: 2150.00 },
-    { empId: 'EMP-02', name: 'Hiba Aloulou', invoices: 14, rawTotalUSD: 1640.00, rawNetUSD: 1600.00 },
-    { empId: 'EMP-03', name: 'Hussein Mahdi', invoices: 10, rawTotalUSD: 1060.00, rawNetUSD: 1035.00 },
-  ];
+  const employeeData = stats.byEmployee.map((e) => ({
+    empId: '-',
+    name: e.name,
+    invoices: e.invoices,
+    rawTotalUSD: e.grossUsd,
+    rawNetUSD: e.netUsd,
+  }));
 
-  const paymentData = [
-    { method: 'Cash (USD)', code: 'CASH', txCount: 22, rawAmountUSD: 2450.00, pct: '52.7%' },
-    { method: 'Cash (LBP)', code: 'CASH', txCount: 8, rawAmountUSD: 650.00, pct: '14.0%' },
-    { method: 'Whish Money / OMT Pay', code: 'WHISH', txCount: 7, rawAmountUSD: 590.00, pct: '12.7%' },
-    { method: 'Credit Account (B2B Invoice)', code: 'STORE CREDIT', txCount: 5, rawAmountUSD: 955.00, pct: '20.6%' },
-  ];
+  const paymentData = stats.byPayment.map((p) => ({
+    method: p.method,
+    code: p.method.toUpperCase(),
+    txCount: p.txCount,
+    rawAmountUSD: p.amountUsd,
+    pct: paymentTotal > 0 ? `${((p.amountUsd / paymentTotal) * 100).toFixed(1)}%` : '0.0%',
+  }));
 
   const filteredEmployees = useMemo(() => {
     return employeeData.filter((emp) => {
@@ -72,7 +87,7 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
       }
       return true;
     });
-  }, [filterValues.salesman, filterValues.serverCashier]);
+  }, [stats, filterValues.salesman, filterValues.serverCashier]);
 
   const filteredPayments = useMemo(() => {
     return paymentData.filter((pm) => {
@@ -90,7 +105,7 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
       }
       return true;
     });
-  }, [filterValues.paymentType, filterValues.paymentMode, filterValues.tender, filterValues.currency]);
+  }, [stats, filterValues.paymentType, filterValues.paymentMode, filterValues.tender, filterValues.currency]);
 
   const branchDisplay = branch || 'Facility: Choueifat Main Plant';
 
@@ -210,8 +225,8 @@ export const TodaysSalesTemplate: React.FC<TodaysSalesTemplateProps> = ({
       )}
 
       <div className="border-t-2 border-slate-900 mt-4 pt-2 flex justify-between items-center text-xs font-mono font-bold text-slate-800">
-        <span>Status: Live Registered Registers</span>
-        <span>Shift Supervisor: M. Harb</span>
+        <span>Status: Live posted invoices (today)</span>
+        <span>Invoices: {stats.invoiceCount}</span>
       </div>
     </UnifiedPrintableReportSheet>
   );

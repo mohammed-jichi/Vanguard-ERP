@@ -25,11 +25,13 @@ import {
 } from 'lucide-react';
 import {
   OmegaOnlineOrder,
-  INITIAL_ONLINE_ORDERS,
   ONLINE_ORDER_BRANCHES,
   ONLINE_ORDER_STATUSES
 } from '@/lib/omegaOnlineOrdersData';
 import { useLanguage } from '@/lib/LanguageContext';
+import { useTenantFlag } from '@/lib/useTenantFlag';
+import { useTenant } from '@/lib/TenantContext';
+import { resolveTenantUuid } from '@/lib/productCatalogService';
 
 interface ToastState {
   show: boolean;
@@ -39,17 +41,14 @@ interface ToastState {
 
 export default function OnlineOrdersView() {
   const { t, dir } = useLanguage();
-  const [orders, setOrders] = useState<OmegaOnlineOrder[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('vanguard_online_orders');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    return INITIAL_ONLINE_ORDERS;
-  });
+  const { currentTenant } = useTenant();
+  const tenantUuid = resolveTenantUuid(currentTenant);
+  // Live orders persisted per tenant in Supabase (tenants.feature_flags.online_orders). No mock seed data.
+  const [ordersRaw, setOrders, ordersStatus] = useTenantFlag<OmegaOnlineOrder[]>('online_orders', []);
+  const orders: OmegaOnlineOrder[] = Array.isArray(ordersRaw) ? ordersRaw : [];
+
+  // Checkbox selection (only genuine user selections)
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   // Filter States
   const [selectedBranchId, setSelectedBranchId] = useState<number>(-1);
@@ -73,14 +72,19 @@ export default function OnlineOrdersView() {
     }, 3500);
   };
 
-  // Sync to localStorage
+  // Purge legacy mock cache from earlier builds
   useEffect(() => {
     try {
-      localStorage.setItem('vanguard_online_orders', JSON.stringify(orders));
+      localStorage.removeItem('vanguard_online_orders');
     } catch (e) {
-      console.error(e);
+      /* ignore */
     }
-  }, [orders]);
+  }, []);
+
+  useEffect(() => {
+    if (ordersStatus.error) showToast(ordersStatus.error, 'error');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ordersStatus.error]);
 
   // Periodic Timer for Last Sync
   useEffect(() => {
@@ -148,13 +152,44 @@ export default function OnlineOrdersView() {
   };
 
   // Actions
-  const handleManualRefresh = () => {
+  const handleManualRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
+    try {
+      const res = await fetch(`/api/tenant-flags?id=${encodeURIComponent(tenantUuid)}&keys=online_orders`);
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Refresh failed');
+      const live = json.flags?.online_orders;
+      if (Array.isArray(live) && JSON.stringify(live) !== JSON.stringify(orders)) setOrders(live);
       setLastSyncSeconds(0);
-      showToast('Online orders data synchronized with POS', 'success');
-    }, 600);
+      showToast('Online orders reloaded from database', 'success');
+    } catch (e: any) {
+      showToast(e?.message || 'Refresh failed', 'error');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const toggleSelected = (id: number) =>
+    setSelectedIds(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
+
+  const allVisibleSelected = () => filteredOrders.length > 0 && filteredOrders.every(o => selectedIds.includes(o.id));
+
+  const toggleSelectAllVisible = () => {
+    if (allVisibleSelected()) {
+      setSelectedIds(prev => prev.filter(id => !filteredOrders.some(o => o.id === id)));
+    } else {
+      setSelectedIds(prev => Array.from(new Set([...prev, ...filteredOrders.map(o => o.id)])));
+    }
+  };
+
+  const handleRemoveSelected = () => {
+    if (selectedIds.length === 0) return;
+    if (typeof window !== 'undefined' && !window.confirm(`Remove ${selectedIds.length} selected order(s)? This cannot be undone.`)) return;
+    const removing = new Set(selectedIds);
+    setOrders(prev => (Array.isArray(prev) ? prev : []).filter(o => !removing.has(o.id)));
+    if (selectedOrder && removing.has(selectedOrder.id)) setSelectedOrder(null);
+    showToast(`${removing.size} order(s) removed`, 'success');
+    setSelectedIds([]);
   };
 
   const handleResetFilters = () => {
@@ -455,15 +490,40 @@ export default function OnlineOrdersView() {
               <h2 className="text-sm font-bold text-slate-900">{t('Online Orders List', 'Online Orders List')}</h2>
               <p className="text-[11px] text-slate-500">{t('Track receipt progress in POS for each online order.', 'Track receipt progress in POS for each online order.')}</p>
             </div>
-            <span className="text-xs font-medium text-slate-500">
-              {t('Showing', 'Showing')} {filteredOrders.length} {t('of', 'of')} {orders.filter(o => o.order_type === orderType).length} {t('orders', 'orders')}
-            </span>
+            <div className="flex items-center gap-3">
+              {selectedIds.length > 0 && (
+                <>
+                  <span className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded px-2 py-1">
+                    {t('Selected Orders', 'Selected Orders')}: {selectedIds.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveSelected}
+                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded cursor-pointer"
+                  >
+                    {t('Remove Orders', 'Remove Orders')}
+                  </button>
+                </>
+              )}
+              <span className="text-xs font-medium text-slate-500">
+                {t('Showing', 'Showing')} {filteredOrders.length} {t('of', 'of')} {orders.filter(o => o.order_type === orderType).length} {t('orders', 'orders')}
+              </span>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-700 border-collapse">
               <thead>
                 <tr className="bg-slate-50/80 border-b-2 border-slate-200 text-slate-800 font-semibold text-[11px]">
+                  <th className="py-2.5 px-3 w-8">
+                    <input
+                      type="checkbox"
+                      aria-label="Select all orders"
+                      checked={allVisibleSelected()}
+                      onChange={toggleSelectAllVisible}
+                      className="cursor-pointer"
+                    />
+                  </th>
                   <th className="py-2.5 px-3">{t('Order No.', 'Order No.')}</th>
                   <th className="py-2.5 px-3">{t('Order Date', 'Order Date')}</th>
                   <th className="py-2.5 px-3">{t('Delivery Date', 'Delivery Date')}</th>
@@ -479,8 +539,12 @@ export default function OnlineOrdersView() {
               <tbody className="divide-y divide-slate-100 font-medium">
                 {filteredOrders.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="py-10 text-center text-slate-400 font-medium">
-                      {t('No online orders found matching current criteria.', 'No online orders found matching current criteria.')}
+                    <td colSpan={11} className="py-10 text-center text-slate-400 font-medium">
+                      {ordersStatus.loading
+                        ? t('Loading online orders...', 'Loading online orders...')
+                        : orders.length === 0
+                        ? t('No online orders have been received yet.', 'No online orders have been received yet.')
+                        : t('No online orders found matching current criteria.', 'No online orders found matching current criteria.')}
                     </td>
                   </tr>
                 ) : (
@@ -491,6 +555,15 @@ export default function OnlineOrdersView() {
                         idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'
                       }`}
                     >
+                      <td className="py-2.5 px-3">
+                        <input
+                          type="checkbox"
+                          aria-label={`Select order ${order.orderid}`}
+                          checked={selectedIds.includes(order.id)}
+                          onChange={() => toggleSelected(order.id)}
+                          className="cursor-pointer"
+                        />
+                      </td>
                       {/* Order No */}
                       <td className="py-2.5 px-3 font-mono font-bold text-blue-600">
                         <button

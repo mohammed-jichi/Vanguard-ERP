@@ -21,10 +21,9 @@ import {
   INITIAL_DISCOUNTS,
   DISCOUNT_TYPE_OPTIONS,
   OPEN_FIX_OPTIONS,
-  INVOICE_MESSAGES,
-  OMEGA_BRANCHES,
   DEFAULT_PRODUCT_GROUPS
 } from '@/lib/omegaDiscountData';
+import { useTenantBranches, useSavedInvoiceMessages } from '@/lib/salesSetupShared';
 
 interface ToastState {
   show: boolean;
@@ -34,6 +33,8 @@ interface ToastState {
 
 export default function DiscountsView() {
   const { t } = useLanguage();
+  const tenantBranches = useTenantBranches();
+  const savedInvoiceMessages = useSavedInvoiceMessages();
   // Main state
   const [discountsList, setDiscountsList] = useTenantFlag<OmegaDiscount[]>('discounts', INITIAL_DISCOUNTS);
   const [searchVal, setSearchVal] = useState<string>('');
@@ -302,7 +303,7 @@ export default function DiscountsView() {
                 className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-700"
               >
                 <option value="all">{t('all_branches', 'All Branches')}</option>
-                {OMEGA_BRANCHES.map(b => (
+                {tenantBranches.map(b => (
                   <option key={b.BRANCHID} value={b.BRANCHID}>
                     {b.BARANCHNAME}
                   </option>
@@ -441,7 +442,7 @@ export default function DiscountsView() {
               <tfoot className="bg-slate-50 border-t border-slate-200">
                 <tr>
                   <td colSpan={5} className="px-4 py-2.5 text-xs text-slate-500 text-center">
-                    Showing {filteredDiscounts.length} of {discountsList.length} Discounts | Brand: Zeit w zaytoun ljanoub S.A.R.L
+                    Showing {filteredDiscounts.length} of {discountsList.length} Discounts | Brand: {tenantBranches[0]?.NAME}
                   </td>
                 </tr>
               </tfoot>
@@ -552,7 +553,7 @@ export default function DiscountsView() {
                   className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
                 >
                   <option value="">{t('select_message', 'Select message...')}</option>
-                  {INVOICE_MESSAGES.map(msg => (
+                  {savedInvoiceMessages.map(msg => (
                     <option key={msg.MESSAGEID} value={msg.MESSAGEID}>
                       {msg.MESSAGETITLE} - {msg.MESSAGEDESC}
                     </option>
@@ -591,7 +592,7 @@ export default function DiscountsView() {
                   {t('branch_restrictions', 'Branch Restrictions')}
                 </div>
                 <div className="p-3 space-y-2">
-                  {OMEGA_BRANCHES.map(b => (
+                  {tenantBranches.map(b => (
                     <label key={b.BRANCHID} className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
                       <input
                         type="checkbox"
@@ -743,7 +744,7 @@ export default function DiscountsView() {
                     className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md bg-white"
                   >
                     <option value="">{t('select_message', 'Select message...')}</option>
-                    {INVOICE_MESSAGES.map(msg => (
+                    {savedInvoiceMessages.map(msg => (
                       <option key={msg.MESSAGEID} value={msg.MESSAGEID}>
                         {msg.MESSAGETITLE} - {msg.MESSAGEDESC}
                       </option>
@@ -782,7 +783,7 @@ export default function DiscountsView() {
                     {t('branch_restrictions', 'Branch Restrictions')}
                   </div>
                   <div className="p-3 space-y-2">
-                    {OMEGA_BRANCHES.map(b => (
+                    {tenantBranches.map(b => (
                       <label key={b.BRANCHID} className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
                         <input
                           type="checkbox"

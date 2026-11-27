@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTenant } from '@/lib/TenantContext';
+import { useLivePostedInvoices, filterByRange, latestInvoiceMonthRange } from '@/lib/liveSalesReportsData';
+import { LiveSummaryOfDiscount, LiveSalesByCategory } from './reports/sales/LiveSalesReportBlocks';
 import {
   resolveDateRangeFromPreset,
   getDefaultInitialDateRange,
@@ -455,7 +457,32 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [activePeriod, setActivePeriod] = useState<string>(initialMasterRange.preset);
   const [activeFromDate, setActiveFromDate] = useState<string>(initialMasterRange.fromDate);
   const [activeToDate, setActiveToDate] = useState<string>(initialMasterRange.toDate);
+
   const [activeBranch, setActiveBranch] = useState<string>('ALL');
+  // Live posted invoices (tenants.feature_flags.sales_invoices_directory) drive the sales reports.
+  const liveInvoices = useLivePostedInvoices();
+  const rangedInvoices = React.useMemo(
+    () => filterByRange(liveInvoices.invoices, activeFromDate, activeToDate, activeBranch),
+    [liveInvoices.invoices, activeFromDate, activeToDate, activeBranch]
+  );
+
+  // Smart default range: if the current month holds no live posted invoices, open on the month that does.
+  const smartRangeApplied = React.useRef(false);
+  useEffect(() => {
+    if (smartRangeApplied.current || liveInvoices.loading) return;
+    smartRangeApplied.current = true;
+    if (liveInvoices.invoices.length === 0) return;
+    if (filterByRange(liveInvoices.invoices, activeFromDate, activeToDate).length > 0) return;
+    const r = latestInvoiceMonthRange(liveInvoices.invoices);
+    if (!r) return;
+    setPeriod('Date Range');
+    setFromDate(r.fromDate);
+    setToDate(r.toDate);
+    setActivePeriod('Date Range');
+    setActiveFromDate(r.fromDate);
+    setActiveToDate(r.toDate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveInvoices.loading, liveInvoices.invoices]);
   const [activeCurrency, setActiveCurrency] = useState<string>('LBP');
   const [activeTopN, setActiveTopN] = useState<number>(10);
   const [activeCustomer, setActiveCustomer] = useState<string>('All Customers');
@@ -470,7 +497,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
   const [activeShowZeroTax, setActiveShowZeroTax] = useState<boolean>(false);
   const [activeShowComment, setActiveShowComment] = useState<boolean>(false);
 
-  const currentDateFormatted = '06-Sep-2026';
+  const currentDateFormatted = formatDisplayDate(new Date());
 
   const formatReportDate = (dStr: string) => {
     if (!dStr) return '';
@@ -490,10 +517,10 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
     const topText = selectedReport?.toLowerCase().includes('top n') ? ` - Top: ${activeTopN} ${isCustomerTop ? 'Customers' : 'Items'}` : '';
     const branchText = activeBranch && activeBranch !== 'ALL' && activeBranch !== 'All Branches' ? ` - Facility: ${activeBranch}` : ' - Consolidated Enterprise (1300)';
 
-    if (activePeriod === 'Today') return `Date: 06-Sep-2026${branchText}${topText}`;
-    if (activePeriod === 'Yesterday') return `Date: 05-Sep-2026${branchText}${topText}`;
-    if (activePeriod === 'This Month') return `Year: 2026 - Month: 8${branchText}${topText}`;
-    if (activePeriod === 'Last Month') return `Year: 2026 - Month: 7${branchText}${topText}`;
+    if (activePeriod === 'Today') return `Date: ${currentDateFormatted}${branchText}${topText}`;
+    if (activePeriod === 'Yesterday') return `Date: ${formatDisplayDate(new Date(Date.now() - 86400000))}${branchText}${topText}`;
+    if (activePeriod === 'This Month') return `Year: ${new Date().getFullYear()} - Month: ${new Date().getMonth() + 1}${branchText}${topText}`;
+    if (activePeriod === 'Last Month') { const lm = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1); return `Year: ${lm.getFullYear()} - Month: ${lm.getMonth() + 1}${branchText}${topText}`; }
     if (activePeriod === 'First Quarter') return `First Quarter 2026${branchText}${topText}`;
     if (activePeriod === 'Second Quarter') return `Second Quarter 2026${branchText}${topText}`;
     if (activePeriod === 'Third Quarter') return `Third Quarter 2026${branchText}${topText}`;
@@ -1797,6 +1824,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                     />
                   ) : selectedReport === 'Summary of Sales By Items' || selectedReport === 'Summary of Sales by Items' ? (
                     <SummaryOfSalesByItemsTemplate
+                      invoices={rangedInvoices}
                       hideToolbar={true}
                       dynamicPeriodText={dynamicPeriodText}
                       executionDate={currentDateFormatted}
@@ -1873,6 +1901,8 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       executionDate={currentDateFormatted}
                       topN={activeTopN}
                     />
+                  ) : selectedReport === 'Sales By Category' ? (
+                    <LiveSalesByCategory invoices={rangedInvoices} loading={liveInvoices.loading} periodText={dynamicPeriodText} executionDate={currentDateFormatted} />
                   ) : selectedReport === 'Sales By Customer By Items' || selectedReport === 'Daily Sales By Items' || selectedReport === 'Sales By Categories' || selectedReport === 'Sales By Divisions' || selectedReport === 'Sales Items by Transaction' || selectedReport === 'Not Sold Items' || selectedReport === 'Sold Serial Numbers' || selectedReport === 'Sales By Category' || selectedReport === 'Sales By Division' || selectedReport === 'Sales By Groups' || selectedReport === 'Top N sold by Quantity' || selectedReport === 'Top N sold by Amount' ? (
                     <SalesByCustomerByItemsTemplate
                       hideToolbar={true}
@@ -5474,77 +5504,7 @@ export default function ReportsMasterDetail({ onBack }: ReportsMasterDetailProps
                       </div>
                     </div>
                   ) : selectedReport === 'Summary of Discount' ? (
-                    /* SUMMARY OF DISCOUNT REPORT TEMPLATE */
-                    <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">
-                      {/* Corporate Topper */}
-                      <div className="text-center mb-1">
-                        <div className="font-bold text-blue-700 text-[15px] tracking-wide uppercase font-sans">
-                          Zeit w zaytoun ljanoub
-                        </div>
-                        <div className="text-[11px] font-semibold text-slate-600 tracking-normal mt-0.5 font-sans">
-                          Southern Olive Oil Products S.A.R.L
-                        </div>
-                      </div>
-                      
-                      <div className="text-center font-bold text-[12px] mb-4">
-                        Summary of Discount
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-                        <div>{currentDateFormatted}</div>
-                        <div className="text-center">Year: 2026 - Month: 8</div>
-                        <div className="text-right">Page 1 of 1</div>
-                      </div>
-
-                      {/* Table Header with thick borders */}
-                      <div className="border-t-[2px] border-b-[2px] border-black py-1.5 mb-2">
-                        <div className="flex justify-between text-[11px] font-bold text-black">
-                          <div>Description</div>
-                          <div>Total</div>
-                        </div>
-                      </div>
-
-                      {/* Branch Title */}
-                      <div className="text-[11px] mb-2 font-bold">
-                        Branch: Main Branch
-                      </div>
-
-                      {/* Data Rows */}
-                      <div className="flex justify-between text-[11px] mb-1 font-bold uppercase">
-                        <div>AMOUNT DISCOUNT</div>
-                        <div>11,380,449.97</div>
-                      </div>
-                      <div className="flex justify-between text-[11px] mb-4 font-bold uppercase">
-                        <div>DISCOUNT</div>
-                        <div>44,700,000.00</div>
-                      </div>
-
-                      {/* Total Row */}
-                      <div className="flex justify-between text-[11px] font-bold">
-                        <div>Total By Branch</div>
-                        <div>56,080,449.97</div>
-                      </div>
-
-                      {/* Standard Corporate Footer */}
-                      <div className="border-t-2 border-slate-900 pt-2.5 mt-8 flex items-center justify-between text-[10px] text-slate-600 font-sans select-none">
-                        <div className="font-mono font-bold text-slate-800 tracking-wider">
-                          REP_S_00247
-                        </div>
-                        <div className="font-medium text-slate-500">
-                          Copyright © 2026 Vanguard ERP. All Rights Reserved.
-                        </div>
-                        <div>
-                          <a
-                            href="https://www.vanguard-erp.net"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-mono text-slate-600 hover:text-blue-600 hover:underline"
-                          >
-                            www.vanguard-erp.net
-                          </a>
-                        </div>
-                      </div>
-                    </div>
+                    <LiveSummaryOfDiscount invoices={rangedInvoices} loading={liveInvoices.loading} periodText={dynamicPeriodText} executionDate={currentDateFormatted} />
                   ) : selectedReport === 'Discount By Category by Department' ? (
                     /* DISCOUNT BY CATEGORY BY DEPARTMENT REPORT TEMPLATE */
                     <div className="w-full max-w-5xl mx-auto p-4 bg-white font-sans text-black">

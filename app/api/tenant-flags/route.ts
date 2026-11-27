@@ -8,10 +8,15 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 /** Tenant-scoped configuration keys that Sales setup screens may persist in tenants.feature_flags. */
 const ALLOWED_KEYS = new Set([
+  'sales_invoices_directory',
+  'online_orders',
   'last_end_of_day',
   'last_eod_closing',
+  'active_pos_shift',
   'end_of_day_log',
   'pos_screens',
+  'physical_printers',
+  'pos_workstations',
   'payment_types',
   'discounts',
   'vouchers',
@@ -37,7 +42,8 @@ const ALLOWED_KEYS = new Set([
   'last_month_closed',
   'eom_log',
   'pos_screen_layouts',
-  'currency_setup'
+  'currency_setup',
+  'payment_bills'
 ]);
 
 const resolveTenant = (raw: string | null) => (raw && UUID_RE.test(raw) ? raw : DEFAULT_TENANT_ID);

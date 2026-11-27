@@ -17,9 +17,20 @@ import {
 import {
   OmegaCallCenterZone,
   INITIAL_ZONES,
-  LEBANON_CITIES,
-  OMEGA_BRANCHES
+  LEBANON_CITIES
 } from '@/lib/omegaZoneAndCurrencyData';
+import {
+  OFFICIAL_BRANCHES,
+  OFFICIAL_BRANCH_LABEL,
+  SUPERSONIC_CORRIDORS,
+  normalizeBranchName,
+  useCatalogLookups,
+  loadTenantFlags,
+  saveTenantFlag
+} from '@/lib/deviceSetupShared';
+import { resolveTenantUuid } from '@/lib/productCatalogService';
+
+const OMEGA_BRANCHES = OFFICIAL_BRANCHES;
 import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabase';
 
@@ -36,63 +47,46 @@ export default function ZoneSetupView() {
 
   const isInitializedRef = useRef(false);
 
-  // Mount hydration from Supabase
+  const tenantUuid = resolveTenantUuid(currentTenant);
+  const catalog = useCatalogLookups();
+  const [physicalPrinters, setPhysicalPrinters] = useState<any[]>([]);
+
+  // Mount hydration from tenants.feature_flags (shared call_center_zones key, legacy key as fallback)
   useEffect(() => {
+    let cancelled = false;
     async function loadPersistedZones() {
       try {
-        const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
-          ? currentTenant.id
-          : '00000000-0000-0000-0000-000000000001';
-
-        const { data, error } = await supabase
-          .from('tenants')
-          .select('feature_flags')
-          .eq('id', targetId)
-          .maybeSingle();
-
-        if (data?.feature_flags?.callcenter_zones && Array.isArray(data.feature_flags.callcenter_zones) && data.feature_flags.callcenter_zones.length > 0) {
-          setZones(data.feature_flags.callcenter_zones);
+        const flags = await loadTenantFlags(tenantUuid, ['call_center_zones', 'physical_printers']);
+        if (cancelled) return;
+        if (Array.isArray(flags.physical_printers)) setPhysicalPrinters(flags.physical_printers);
+        if (Array.isArray(flags.call_center_zones) && flags.call_center_zones.length > 0) {
+          setZones(flags.call_center_zones.map((z: any) => ({ ...z, BARANCHNAME: normalizeBranchName(z.BARANCHNAME) })));
+          return;
+        }
+        // Legacy fallback (callcenter_zones) for data saved before the shared key existed
+        const { data } = await supabase.from('tenants').select('feature_flags').eq('id', tenantUuid).maybeSingle();
+        const legacy = data?.feature_flags?.callcenter_zones;
+        if (!cancelled && Array.isArray(legacy) && legacy.length > 0) {
+          setZones(legacy.map((z: any) => ({ ...z, BARANCHNAME: normalizeBranchName(z.BARANCHNAME) })));
+        } else if (!cancelled) {
+          setZones(INITIAL_ZONES.map(z => ({ ...z, BARANCHNAME: normalizeBranchName(z.BARANCHNAME) })));
         }
       } catch (err) {
         console.warn('Notice loading call center zones from database:', err);
       }
     }
     loadPersistedZones();
-  }, [currentTenant?.id]);
+    return () => {
+      cancelled = true;
+    };
+  }, [tenantUuid]);
 
-  const persistZonesToDatabase = async (newZones: OmegaCallCenterZone[]): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const targetId = (currentTenant?.id && currentTenant.id !== '1300' && !currentTenant.id.startsWith('comp-'))
-        ? currentTenant.id
-        : '00000000-0000-0000-0000-000000000001';
+  const printerNameOptions = useMemo(() => physicalPrinters.map((p: any) => p.DESCRIPTION).filter(Boolean), [physicalPrinters]);
+  const deliveryItemOptions = useMemo(() => catalog.serviceItems, [catalog.serviceItems]);
 
-      const { data: tenantData } = await supabase
-        .from('tenants')
-        .select('feature_flags')
-        .eq('id', targetId)
-        .maybeSingle();
-
-      const existingFlags = tenantData?.feature_flags || currentTenant?.feature_flags || {};
-      const { error: dbError } = await supabase
-        .from('tenants')
-        .update({
-          feature_flags: {
-            ...existingFlags,
-            callcenter_zones: newZones
-          },
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', targetId);
-
-      if (dbError) {
-        return { success: false, error: dbError.message };
-      }
-      return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err?.message || 'Database connection error' };
-    }
-  };
-
+  /** Persists to the shared call_center_zones flag (Sales + SuperSonic dispatch read the same store). */
+  const persistZonesToDatabase = async (newZones: OmegaCallCenterZone[]): Promise<{ success: boolean; error?: string }> =>
+    saveTenantFlag(tenantUuid, 'call_center_zones', newZones);
   const [searchVal, setSearchVal] = useState<string>('');
   const [selectedBranchId, setSelectedBranchId] = useState<number | 'all'>('all');
   const [sorting, setSorting] = useState<{ field: 'ID' | 'ZONE' | 'AREACODE' | 'TOBRANCH'; dir: 'asc' | 'desc' }>({
@@ -121,6 +115,7 @@ export default function ZoneSetupView() {
   const [newBranchId, setNewBranchId] = useState<number>(1);
   const [newPrinterName, setNewPrinterName] = useState<string>('');
   const [newDeliveryCharge, setNewDeliveryCharge] = useState<string>('');
+  const [newCorridor, setNewCorridor] = useState<number>(0);
 
   // Edit Zone Form State
   const [editZoneName, setEditZoneName] = useState<string>('');
@@ -128,6 +123,7 @@ export default function ZoneSetupView() {
   const [editBranchId, setEditBranchId] = useState<number>(1);
   const [editPrinterName, setEditPrinterName] = useState<string>('');
   const [editDeliveryCharge, setEditDeliveryCharge] = useState<string>('');
+  const [editCorridor, setEditCorridor] = useState<number>(0);
 
   // Link Cities Form State
   const [citySearch, setCitySearch] = useState<string>('');
@@ -180,6 +176,7 @@ export default function ZoneSetupView() {
     setNewBranchId(1);
     setNewPrinterName('');
     setNewDeliveryCharge('');
+    setNewCorridor(0);
     setShowAddModal(true);
   };
 
@@ -205,7 +202,7 @@ export default function ZoneSetupView() {
 
     const nextId = Math.max(0, ...zones.map(z => z.ID)) + 1;
     const branchName =
-      OMEGA_BRANCHES.find(b => b.BRANCHID === newBranchId)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
+      OMEGA_BRANCHES.find(b => b.BRANCHID === newBranchId)?.BARANCHNAME || OFFICIAL_BRANCH_LABEL;
 
     const newRecord: OmegaCallCenterZone = {
       ID: nextId,
@@ -215,7 +212,8 @@ export default function ZoneSetupView() {
       BARANCHNAME: branchName,
       PRINTERNAME: newPrinterName.trim() || 'Cashier Thermal',
       DELIVERYCHARGE: newDeliveryCharge.trim() || '0.00',
-      cities: []
+      cities: [],
+      ...({ CORRIDOR_ID: newCorridor || undefined } as any)
     };
 
     const updated = [...zones, newRecord];
@@ -238,6 +236,7 @@ export default function ZoneSetupView() {
     setEditBranchId(row.TOBRANCH);
     setEditPrinterName(row.PRINTERNAME);
     setEditDeliveryCharge(row.DELIVERYCHARGE);
+    setEditCorridor((row as any).CORRIDOR_ID || 0);
     setShowEditModal(true);
   };
 
@@ -262,7 +261,7 @@ export default function ZoneSetupView() {
     }
 
     const branchName =
-      OMEGA_BRANCHES.find(b => b.BRANCHID === editBranchId)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
+      OMEGA_BRANCHES.find(b => b.BRANCHID === editBranchId)?.BARANCHNAME || OFFICIAL_BRANCH_LABEL;
 
     const updated = zones.map(z => {
       if (z.ID === editingZone.ID) {
@@ -273,7 +272,8 @@ export default function ZoneSetupView() {
           TOBRANCH: editBranchId,
           BARANCHNAME: branchName,
           PRINTERNAME: editPrinterName.trim(),
-          DELIVERYCHARGE: editDeliveryCharge.trim()
+          DELIVERYCHARGE: editDeliveryCharge.trim(),
+          ...({ CORRIDOR_ID: editCorridor || undefined } as any)
         };
       }
       return z;
@@ -636,24 +636,40 @@ export default function ZoneSetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-12 md:col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">{t('branch_printer_name', 'Branch Printer Name')}</label>
-                  <input
-                    type="text"
+                  <select
                     value={newPrinterName}
                     onChange={(e) => setNewPrinterName(e.target.value)}
-                    placeholder={t('eg_cashier_thermal', 'e.g. Cashier Thermal')}
-                    className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
+                    className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                  >
+                    <option value="">{t('none', 'None')}</option>
+                    {printerNameOptions.map(p => (<option key={p} value={p}>{p}</option>))}
+                    {newPrinterName && !printerNameOptions.includes(newPrinterName) && <option value={newPrinterName}>{newPrinterName}</option>}
+                  </select>
                 </div>
                 <div className="col-span-12 md:col-span-6">
-                  <label className="block text-slate-700 font-semibold mb-1">{t('delivery_charge_item_id', 'Delivery Charge Item ID')}</label>
-                  <input
-                    type="text"
+                  <label className="block text-slate-700 font-semibold mb-1">{t('delivery_item_id', 'Delivery Item ID')}</label>
+                  <select
                     value={newDeliveryCharge}
                     onChange={(e) => setNewDeliveryCharge(e.target.value)}
-                    placeholder={t('eg_300', 'e.g. 3.00')}
-                    className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
+                    className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                  >
+                    <option value="">{t('select_delivery_item', 'Select delivery / service item')}</option>
+                    {deliveryItemOptions.map(i => (<option key={i.code} value={i.code}>{i.code} - {i.name}</option>))}
+                    {newDeliveryCharge && !deliveryItemOptions.some(i => i.code === newDeliveryCharge) && <option value={newDeliveryCharge}>{newDeliveryCharge}</option>}
+                  </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">{t('supersonic_corridor', 'SuperSonic Corridor')}</label>
+                <select
+                  value={newCorridor}
+                  onChange={(e) => setNewCorridor(Number(e.target.value))}
+                  className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                >
+                  <option value={0}>{t('not_linked', 'Not linked to a dispatch corridor')}</option>
+                  {SUPERSONIC_CORRIDORS.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
+                </select>
               </div>
 
               {/* Footer Save */}
@@ -756,22 +772,40 @@ export default function ZoneSetupView() {
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-12 md:col-span-6">
                   <label className="block text-slate-700 font-semibold mb-1">{t('branch_printer_name', 'Branch Printer Name')}</label>
-                  <input
-                    type="text"
+                  <select
                     value={editPrinterName}
                     onChange={(e) => setEditPrinterName(e.target.value)}
-                    className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
+                    className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                  >
+                    <option value="">{t('none', 'None')}</option>
+                    {printerNameOptions.map(p => (<option key={p} value={p}>{p}</option>))}
+                    {editPrinterName && !printerNameOptions.includes(editPrinterName) && <option value={editPrinterName}>{editPrinterName}</option>}
+                  </select>
                 </div>
                 <div className="col-span-12 md:col-span-6">
-                  <label className="block text-slate-700 font-semibold mb-1">{t('delivery_charge_item_id', 'Delivery Charge Item ID')}</label>
-                  <input
-                    type="text"
+                  <label className="block text-slate-700 font-semibold mb-1">{t('delivery_item_id', 'Delivery Item ID')}</label>
+                  <select
                     value={editDeliveryCharge}
                     onChange={(e) => setEditDeliveryCharge(e.target.value)}
-                    className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
+                    className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                  >
+                    <option value="">{t('select_delivery_item', 'Select delivery / service item')}</option>
+                    {deliveryItemOptions.map(i => (<option key={i.code} value={i.code}>{i.code} - {i.name}</option>))}
+                    {editDeliveryCharge && !deliveryItemOptions.some(i => i.code === editDeliveryCharge) && <option value={editDeliveryCharge}>{editDeliveryCharge}</option>}
+                  </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-700 font-semibold mb-1">{t('supersonic_corridor', 'SuperSonic Corridor')}</label>
+                <select
+                  value={editCorridor}
+                  onChange={(e) => setEditCorridor(Number(e.target.value))}
+                  className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                >
+                  <option value={0}>{t('not_linked', 'Not linked to a dispatch corridor')}</option>
+                  {SUPERSONIC_CORRIDORS.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
+                </select>
               </div>
 
               {/* Footer Save */}

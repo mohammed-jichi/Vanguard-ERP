@@ -27,6 +27,9 @@ import { useLanguage } from '@/lib/LanguageContext';
 import { supabase } from '@/lib/supabaseClient';
 import { OmegaBranchEod, INITIAL_EOD_BRANCHES } from '@/lib/omegaEndOfDayData';
 import { resolveTenantUuid } from '@/lib/productCatalogService';
+import { createPortal } from 'react-dom';
+import { saveActiveShift } from '@/lib/posShiftService';
+import { computeEodState, extractInvoices, eodTotals, liveRateFrom, fmtEodDate as fmtEodDateShared, EodState } from '@/lib/eodLive';
 
 export default function EndOfDayPage() {
   const { currentTenant } = useTenant();
@@ -43,6 +46,16 @@ export default function EndOfDayPage() {
   const [lastZReference, setLastZReference] = useState<string>('');
   const fmtEodDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
+  const { currentUser } = useTenant();
+  const [eodState, setEodState] = useState<EodState | null>(null);
+  const [eodRate, setEodRate] = useState<number>(90000);
+  const [lastEntry, setLastEntry] = useState<any>(null);
+  const [activeShift, setActiveShift] = useState<any>(null);
+  const [startingShift, setStartingShift] = useState<boolean>(false);
+  const [methodTotals, setMethodTotals] = useState<Record<string, number>>({});
+  const [eservicesCount, setEservicesCount] = useState<number>(0);
+  const signedInName = currentUser?.fullName || currentUser?.email || '';
+
   useEffect(() => {
     let isMounted = true;
 
@@ -52,53 +65,24 @@ export default function EndOfDayPage() {
         const { data: tenantData } = await supabase.from('tenants').select('name, feature_flags').eq('id', tenantId).maybeSingle();
         const flags: any = tenantData?.feature_flags || {};
 
-        // Last closing recorded in tenants.feature_flags (defaults to today's live date when none exists)
-        const lastClosedIso: string | null = flags.last_end_of_day || flags.last_eod_closing?.closed_at || null;
-        const lastClosedMs = lastClosedIso ? new Date(lastClosedIso).getTime() : 0;
+        // Unified working date / Open-vs-Closed (shared with the Sales Dashboard status card)
+        const st = computeEodState(flags);
+        const rate = liveRateFrom(flags);
         const log: any[] = Array.isArray(flags.end_of_day_log) ? flags.end_of_day_log : [];
-
-        const invoices: any[] = flags.sales_invoices_directory || flags.sales_invoices || [];
-        const seen = new Set<string>();
-        const posted: any[] = [];
-        let voids = 0;
-        invoices.forEach((inv) => {
-          const key = String(inv.invoice_number || inv.invoiceNumber || inv.id || '');
-          if (key && seen.has(key)) return;
-          if (key) seen.add(key);
-          const ts = new Date(inv.createdAtIso || inv.createdAt || inv.date).getTime();
-          if (lastClosedMs && !(ts > lastClosedMs)) return;
-          const status = String(inv.status || '').toLowerCase();
-          if (/void|cancel/.test(status)) {
-            voids++;
-            return;
-          }
-          if (inv.is_posted === true || inv.posted === true || inv.status === 'Posted') posted.push(inv);
-        });
-
-        let gross = 0, net = 0, vat = 0, disc = 0, cashUsd = 0, cashLbp = 0, card = 0, online = 0;
-        posted.forEach((inv) => {
-          const total = Number(inv.total_amount ?? inv.grandTotal ?? inv.total ?? 0);
-          const subtotal = Number(inv.subtotal_amount ?? inv.subtotal ?? total / 1.11);
-          const tax = Number(inv.tax_amount ?? inv.tax ?? total - subtotal);
-          const discount = Number(inv.discount_amount ?? inv.discount ?? 0);
-          const curr = String(inv.currency || 'USD').toUpperCase();
-          const pay = String(inv.payment_method || inv.paymentType || inv.payments?.[0]?.type || 'CASH').toUpperCase();
-          gross += total;
-          net += subtotal;
-          vat += tax;
-          disc += discount;
-          if (pay.includes('CARD') || pay.includes('VISA') || pay.includes('MASTERCARD')) card += total;
-          else if (pay.includes('WHISH') || pay.includes('ONLINE') || pay.includes('OMT') || pay.includes('WALLET')) online += total;
-          else if (curr === 'LBP') cashLbp += total;
-          else cashUsd += total;
-        });
+        const { posted, voided } = extractInvoices(flags);
+        const tot = eodTotals(posted, voided, st.lastClosedMs, rate);
+        const r2 = (n: number) => Math.round(n * 100) / 100;
 
         if (!isMounted) return;
-        setEodLog(log);
-        if (flags.last_eod_closing?.reference) setLastZReference(String(flags.last_eod_closing.reference));
+        setEodLog([...log].reverse());
+        setEodState(st);
+        setEodRate(rate);
+        setLastEntry(flags.last_eod_closing || null);
+        setActiveShift(flags.active_pos_shift || null);
+        setMethodTotals(tot.byMethod);
+        setEservicesCount(posted.filter((p) => p.ts > st.lastClosedMs && p.pays.some((x) => /WHISH|ONLINE|OMT|WALLET|PARTNER|E-?SERVICE|TRANSFER/.test(x.method))).length);
+        if (st.lastReference) setLastZReference(st.lastReference);
 
-        const todayStr = fmtEodDate(new Date());
-        const lastClosedStr = lastClosedIso ? fmtEodDate(new Date(lastClosedIso)) : todayStr;
         setBranches((prev) =>
           prev.map((b) =>
             b.BRANCHID === 1
@@ -106,19 +90,19 @@ export default function EndOfDayPage() {
                   ...b,
                   BARANCHNAME: tenantData?.name ? `${tenantData.name} - Main` : b.BARANCHNAME,
                   OMEGA_CUSTID: Number(currentTenant?.companyId) || b.OMEGA_CUSTID,
-                  end_of_day: lastClosedStr,
-                  status: lastClosedIso && lastClosedStr === todayStr && posted.length === 0 ? 'Closed' : 'Pending EOD',
-                  invoicesCount: posted.length,
-                  grossSales: Math.round(gross * 100) / 100,
-                  netSales: Math.round(net * 100) / 100,
-                  taxVat: Math.round(vat * 100) / 100,
-                  discounts: Math.round(disc * 100) / 100,
-                  cashUsd: Math.round(cashUsd * 100) / 100,
-                  cashLbp: Math.round(cashLbp),
-                  cardPayments: Math.round(card * 100) / 100,
-                  omnichannel: Math.round(online * 100) / 100,
-                  voidsCount: voids,
-                  cashier: flags.active_pos_shift?.cashierName || '\u2014'
+                  end_of_day: st.workingDate,
+                  status: st.status === 'Closed' ? 'Closed' : 'In Shift',
+                  invoicesCount: tot.count,
+                  grossSales: r2(tot.gross),
+                  netSales: r2(tot.net),
+                  taxVat: r2(tot.tax),
+                  discounts: r2(tot.discounts),
+                  cashUsd: r2(tot.cashUsd),
+                  cashLbp: Math.round(tot.cashLbp),
+                  cardPayments: r2(tot.card),
+                  omnichannel: r2(tot.eservices),
+                  voidsCount: tot.voids,
+                  cashier: signedInName || flags.active_pos_shift?.cashierName || '\u2014'
                 }
               : b
           )
@@ -132,7 +116,7 @@ export default function EndOfDayPage() {
     return () => {
       isMounted = false;
     };
-  }, [currentTenant?.id]);
+  }, [currentTenant?.id, signedInName]);
   const selectedBranch = branches.find(b => b.BRANCHID === selectedBranchId) || branches[0];
 
   const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -162,6 +146,47 @@ export default function EndOfDayPage() {
     if (!res.ok || !json.success) throw new Error(json.error || `Could not save ${key}`);
   };
 
+  /** Opens the next working day: writes a fresh OPEN shift (opened after the last closing) via the existing POS shift service. */
+  const startNewWorkday = async () => {
+    setStartingShift(true);
+    try {
+      const now = new Date();
+      const ymdNow = now.toISOString().slice(0, 10).replace(/-/g, '');
+      const nextNumber = (Number(activeShift?.shiftNumber) || 0) + 1;
+      const shift = {
+        id: `SH-${ymdNow}-${nextNumber}`,
+        shiftNumber: nextNumber,
+        branch: selectedBranch.BARANCHNAME,
+        workstation: activeShift?.workstation || 'POS-01 (Main Counter)',
+        cashierName: signedInName || activeShift?.cashierName || 'Cashier',
+        openedAt: now.toISOString(),
+        closedAt: null,
+        openingCashUsd: 0,
+        openingCashLbp: 0,
+        status: 'OPEN' as const,
+        notes: `Shift #${nextNumber} opened after Z-Report ${eodState?.lastReference || ''}`.trim()
+      };
+      await postTenantFlag('active_pos_shift', shift);
+      await saveActiveShift(shift, resolveTenantUuid(currentTenant));
+      setActiveShift(shift);
+      setEodState((prev) => (prev ? { ...prev, status: 'Open', shiftOpenedMs: now.getTime(), workingDate: fmtEodDateShared(now) } : prev));
+      setBranches((prev) =>
+        prev.map((b) =>
+          b.BRANCHID === selectedBranchId
+            ? { ...b, end_of_day: fmtEodDateShared(now), status: 'In Shift', cashier: signedInName || b.cashier }
+            : b
+        )
+      );
+      showToast('success', 'New workday opened', `Shift #${nextNumber} started for ${fmtEodDateShared(now)}.`);
+    } catch (err: any) {
+      showToast('error', 'Could not start shift', err?.message || 'Shift could not be saved.');
+    } finally {
+      setStartingShift(false);
+    }
+  };
+
+  const isClosed = selectedBranch?.status === 'Closed';
+
   const executeEndOfDay = async () => {
     setConfirmModalOpen(false);
     setLoading(true);
@@ -179,11 +204,19 @@ export default function EndOfDayPage() {
         status: 'Finalized',
         branch_id: selectedBranchId,
         branch_name: selectedBranch.BARANCHNAME,
-        closed_by: 'Vanguard Operator',
+        closed_by: signedInName || 'Unknown user',
         invoices_count: selectedBranch.invoicesCount,
         net_sales: selectedBranch.netSales,
         tax_vat: selectedBranch.taxVat,
-        gross_sales: selectedBranch.grossSales
+        gross_sales: selectedBranch.grossSales,
+        discounts: selectedBranch.discounts,
+        cash_usd: selectedBranch.cashUsd,
+        cash_lbp: selectedBranch.cashLbp,
+        card_payments: selectedBranch.cardPayments,
+        eservices: selectedBranch.omnichannel,
+        voids_count: selectedBranch.voidsCount,
+        by_method: methodTotals,
+        exchange_rate: eodRate
       };
 
       // Persist to tenants.feature_flags first; only update the screen once saved.
@@ -192,6 +225,8 @@ export default function EndOfDayPage() {
       await postTenantFlag('end_of_day_log', entry, true);
 
       setEodLog((prev) => [entry, ...prev]);
+      setLastEntry(entry);
+      setEodState((prev) => (prev ? { ...prev, status: 'Closed', lastClosedIso: closedIso, lastClosedMs: closedAt.getTime(), workingDate: closedDate, lastReference: entry.reference } : prev));
       setLastZReference(entry.reference);
       setBranches((prev) =>
         prev.map((b) =>
@@ -209,6 +244,81 @@ export default function EndOfDayPage() {
       setLoading(false);
     }
   };
+  const nz = (v: any) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+  const showEntry = isClosed && lastEntry;
+  const legacyOperator = (n: any) => !n || String(n) === 'Vanguard Operator';
+  const zData = showEntry
+    ? {
+        ref: String(lastEntry.reference || lastZReference || ''),
+        closedAt: lastEntry.closed_at ? new Date(lastEntry.closed_at).toLocaleString('en-GB') : String(lastEntry.closed_date || ''),
+        count: nz(lastEntry.invoices_count),
+        gross: nz(lastEntry.gross_sales),
+        net: nz(lastEntry.net_sales),
+        tax: nz(lastEntry.tax_vat),
+        discounts: nz(lastEntry.discounts),
+        voids: nz(lastEntry.voids_count),
+        cashUsd: nz(lastEntry.cash_usd),
+        cashLbp: nz(lastEntry.cash_lbp),
+        card: nz(lastEntry.card_payments),
+        eservices: nz(lastEntry.eservices),
+        cashier: legacyOperator(lastEntry.closed_by) ? signedInName || '\u2014' : String(lastEntry.closed_by),
+        provisional: false
+      }
+    : {
+        ref: lastZReference,
+        closedAt: new Date().toLocaleString('en-GB'),
+        count: selectedBranch.invoicesCount,
+        gross: selectedBranch.grossSales,
+        net: selectedBranch.netSales,
+        tax: selectedBranch.taxVat,
+        discounts: selectedBranch.discounts,
+        voids: selectedBranch.voidsCount,
+        cashUsd: selectedBranch.cashUsd,
+        cashLbp: selectedBranch.cashLbp,
+        card: selectedBranch.cardPayments,
+        eservices: selectedBranch.omnichannel,
+        cashier: signedInName || selectedBranch.cashier,
+        provisional: true
+      };
+  const tenderedUsd = selectedBranch.cashUsd + selectedBranch.cashLbp / (eodRate || 1) + selectedBranch.cardPayments + selectedBranch.omnichannel;
+  const drawerVariance = Math.round((tenderedUsd - selectedBranch.grossSales) * 100) / 100;
+
+  const renderZSlip = () => (
+    <div className="p-5 bg-white border border-dashed border-slate-300 rounded-lg font-mono text-xs text-slate-800 space-y-2">
+      <div className="text-center pb-2 border-b border-dashed border-slate-300">
+        <div className="font-black text-sm">{selectedBranch.BARANCHNAME}</div>
+        <div className="font-bold text-xs mt-1.5">*** {t('FISCAL END OF DAY (Z-REPORT)', 'FISCAL END OF DAY (Z-REPORT)')} ***</div>
+        <div className="text-[10.5px] text-slate-600">{zData.provisional ? t('PROVISIONAL \u2013 OPEN WORKDAY', 'PROVISIONAL \u2013 OPEN WORKDAY') : t('FINALIZED', 'FINALIZED')}</div>
+        <div className="text-[10.5px] text-slate-600">{t('Z-Report Reference:', 'Z-Report Reference:')} {zData.ref ? `#${zData.ref}` : '\u2014'}</div>
+        <div className="text-[10.5px] text-slate-600">{zData.provisional ? t('Printed:', 'Printed:') : t('Closing Timestamp:', 'Closing Timestamp:')} {zData.closedAt}</div>
+        <div className="text-[10.5px] text-slate-600">{t('Cashier:', 'Cashier:')} {zData.cashier}</div>
+      </div>
+
+      <div className="pt-2 space-y-1.5">
+        <div className="flex justify-between"><span>{t('TRANSACTION COUNT:', 'TRANSACTION COUNT:')}</span><span className="font-bold">{zData.count} {t('Invoices', 'Invoices')}</span></div>
+        <div className="flex justify-between"><span>{t('GROSS REGISTER SALES:', 'GROSS REGISTER SALES:')}</span><span className="font-bold">${zData.gross.toFixed(2)}</span></div>
+        <div className="flex justify-between"><span>{t('TOTAL DISCOUNTS APPLIED:', 'TOTAL DISCOUNTS APPLIED:')}</span><span>-${zData.discounts.toFixed(2)}</span></div>
+        <div className="flex justify-between"><span>{t('VOIDED TICKETS', 'VOIDED TICKETS')}:</span><span>{zData.voids}</span></div>
+        <div className="flex justify-between font-bold pt-1 border-t border-dashed border-slate-300"><span>{t('NET TAXABLE SALES:', 'NET TAXABLE SALES:')}</span><span>${zData.net.toFixed(2)}</span></div>
+        <div className="flex justify-between font-bold"><span>{t('TOTAL VAT COLLECTED:', 'TOTAL VAT COLLECTED:')}</span><span>+${zData.tax.toFixed(2)}</span></div>
+        <div className="flex justify-between font-black pt-1 border-t border-dashed border-slate-300 text-[13px]"><span>{t('FINAL NET RECONCILED:', 'FINAL NET RECONCILED:')}</span><span>${zData.gross.toFixed(2)}</span></div>
+      </div>
+
+      <div className="pt-2 border-t border-dashed border-slate-300 space-y-1">
+        <div className="font-bold text-[11px]">{t('PAYMENT TENDER BREAKDOWN:', 'PAYMENT TENDER BREAKDOWN:')}</div>
+        <div className="flex justify-between text-[11px]"><span>{'\u2022 '}{t('CASH USD:', 'CASH USD:')}</span><span>${zData.cashUsd.toFixed(2)}</span></div>
+        <div className="flex justify-between text-[11px]"><span>{'\u2022 '}{t('CASH LBP:', 'CASH LBP:')}</span><span>{zData.cashLbp.toLocaleString()} LBP</span></div>
+        <div className="flex justify-between text-[11px]"><span>{'\u2022 '}{t('CREDIT CARDS:', 'CREDIT CARDS:')}</span><span>${zData.card.toFixed(2)}</span></div>
+        <div className="flex justify-between text-[11px]"><span>{'\u2022 '}{t('E-SERVICES / PARTNERS:', 'E-SERVICES / PARTNERS:')}</span><span>${zData.eservices.toFixed(2)}</span></div>
+      </div>
+
+      <div className="text-center pt-3 border-t border-dashed border-slate-300 text-[10.5px] text-slate-500">
+        <div>{t('Cashier Signature:', 'Cashier Signature:')} ______________________</div>
+        <div className="mt-1">{t('Manager Signature:', 'Manager Signature:')} ______________________</div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans pb-16">
       <style jsx global>{`
@@ -372,6 +482,17 @@ export default function EndOfDayPage() {
 
                 {/* Execute End of Day Button */}
                 <div className="md:col-span-3 lg:col-span-3 flex justify-end">
+                  {isClosed ? (
+                    <button
+                      type="button"
+                      disabled={startingShift}
+                      onClick={startNewWorkday}
+                      className={`w-full md:w-auto px-6 py-2 rounded-lg font-bold text-xs text-white shadow-md transition-all flex items-center justify-center gap-2 ${startingShift ? 'bg-emerald-400 cursor-wait' : 'bg-emerald-600 hover:bg-emerald-700 active:scale-95'}`}
+                    >
+                      {startingShift ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Calendar className="w-4 h-4" />}
+                      <span>{t('Open New Workday / Start Shift', 'Open New Workday / Start Shift')}</span>
+                    </button>
+                  ) : (
                   <button
                     type="button"
                     disabled={loading || !selectedBranch}
@@ -387,6 +508,7 @@ export default function EndOfDayPage() {
                       <span>{t('End Of Day', 'End Of Day')}</span>
                     )}
                   </button>
+                  )}
                 </div>
               </div>
 
@@ -397,8 +519,8 @@ export default function EndOfDayPage() {
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-semibold text-slate-500">{t('Current Status:', 'Current Status:')}</span>
-                  <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${selectedBranch.status === 'Closed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                    {t(selectedBranch.status, selectedBranch.status)}
+                  <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${isClosed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                    {isClosed ? t('Closed', 'Closed') : t('Open', 'Open')}
                   </span>
                 </div>
               </div>
@@ -532,7 +654,7 @@ export default function EndOfDayPage() {
                       <td className="font-semibold font-mono text-slate-700">{b.end_of_day}</td>
                       <td>
                         <span className={`px-2 py-0.5 rounded text-[10.5px] font-bold ${b.status === 'Closed' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300'}`}>
-                          {b.status === 'Closed' ? t('Closed', 'Closed') : t('Pending', 'Pending')}
+                          {b.status === 'Closed' ? t('Closed', 'Closed') : t('Open', 'Open')}
                         </span>
                       </td>
                       <td className="text-slate-600">{b.cashier}</td>
@@ -540,7 +662,17 @@ export default function EndOfDayPage() {
                       <td className="font-mono font-bold text-right text-emerald-800">
                         ${b.grossSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                       </td>
-                      <td>
+                      <td className="whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedBranchId(b.BRANCHID);
+                            setZReportModalOpen(true);
+                          }}
+                          className="px-2.5 py-1 rounded bg-slate-900 text-white hover:bg-slate-700 text-[11px] font-bold transition mr-1.5"
+                        >
+                          {t('View Z-Slip', 'View Z-Slip')}
+                        </button>
                         <button
                           type="button"
                           onClick={() => {
@@ -549,7 +681,7 @@ export default function EndOfDayPage() {
                           }}
                           className="px-2.5 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-[11px] font-bold transition"
                         >
-                          {t('Select & Close', 'Select & Close')}
+                          {b.status === 'Closed' ? t('Open Workday', 'Open Workday') : t('Select & Close', 'Select & Close')}
                         </button>
                       </td>
                     </tr>
@@ -560,35 +692,35 @@ export default function EndOfDayPage() {
           </div>
         )}
 
-        {/* TAB 3: SALES & RECONCILIATION CONNECTION MATRIX */}
+        {/* TAB 3: SALES & RECONCILIATION CONNECTION MATRIX (live posted invoices + payment methods) */}
         {activeTab === 'reconciliation' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            {/* Left: Financial Ledger Breakdown */}
-            <div className="lg:col-span-6 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-              <div className="p-3.5 bg-primary text-white font-bold text-xs flex items-center justify-between">
-                <span>{t('Fiscal Sales Reconciliation Matrix', '1. Fiscal Sales Reconciliation Matrix')}</span>
-                <span className="text-[11px] text-slate-300 font-mono">SO-Z-BATCH-9482</span>
+            {/* 1. Real Net Revenue Matrix */}
+            <div className="lg:col-span-4 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+              <div className="p-3.5 bg-primary text-white font-bold text-xs flex items-center justify-between gap-2">
+                <span>{t('1. Real Net Revenue Matrix', '1. Real Net Revenue Matrix')}</span>
+                <span className="text-[11px] text-slate-300 font-mono">{lastZReference || '\u2014'}</span>
               </div>
               <div className="p-4 space-y-3">
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
-                  <span className="text-slate-600 font-medium">{t('Gross Product Sales', 'Gross Product Sales')}</span>
-                  <span className="font-mono font-bold text-slate-900">${selectedBranch.grossSales.toFixed(2)}</span>
+                  <span className="text-slate-600 font-medium">{t('Gross Product Sales (before discounts)', 'Gross Product Sales (before discounts)')}</span>
+                  <span className="font-mono font-bold text-slate-900">${(selectedBranch.netSales + selectedBranch.discounts).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
                   <span className="text-slate-600 font-medium">{t('Line Discounts & Promotions', 'Line Discounts & Promotions')}</span>
                   <span className="font-mono font-semibold text-red-600">-${selectedBranch.discounts.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
-                  <span className="text-slate-600 font-medium">{t('Returns & Approved Refunds', 'Returns & Approved Refunds')}</span>
-                  <span className="font-mono font-semibold text-red-600">-$0.00</span>
                 </div>
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs font-bold bg-slate-50 px-2 rounded">
                   <span className="text-slate-900">{t('Net Sales Volume (Excl. Tax)', 'Net Sales Volume (Excl. Tax)')}</span>
                   <span className="font-mono text-blue-700">${selectedBranch.netSales.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
-                  <span className="text-slate-600 font-medium">{t('VAT / Sales Tax (11.0%)', 'VAT / Sales Tax (11.0%)')}</span>
+                  <span className="text-slate-600 font-medium">{t('VAT / Sales Tax', 'VAT / Sales Tax')}</span>
                   <span className="font-mono font-bold text-emerald-700">+${selectedBranch.taxVat.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
+                  <span className="text-slate-600 font-medium">{t('Voided / Cancelled Documents', 'Voided / Cancelled Documents')}</span>
+                  <span className="font-mono font-semibold text-slate-700">{selectedBranch.voidsCount}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 bg-emerald-50 border border-emerald-200 px-3 rounded-lg text-xs font-black text-emerald-900">
                   <span>{t('TOTAL REGISTER SETTLEMENT', 'TOTAL REGISTER SETTLEMENT')}</span>
@@ -597,11 +729,11 @@ export default function EndOfDayPage() {
               </div>
             </div>
 
-            {/* Right: Drawer Payment Reconciliation Matrix */}
-            <div className="lg:col-span-6 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-              <div className="p-3.5 bg-primary text-white font-bold text-xs flex items-center justify-between">
-                <span>{t('Cash Drawer & Settlement Methods Matrix', '2. Cash Drawer & Settlement Methods Matrix')}</span>
-                <span className="text-[11px] text-slate-300 font-mono">{t('4 Currencies/Methods', '4 Currencies/Methods')}</span>
+            {/* 2. Cash Drawer & Settlement Methods Matrix */}
+            <div className="lg:col-span-4 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+              <div className="p-3.5 bg-primary text-white font-bold text-xs flex items-center justify-between gap-2">
+                <span>{t('2. Cash Drawer & Settlement Methods Matrix', '2. Cash Drawer & Settlement Methods Matrix')}</span>
+                <span className="text-[11px] text-slate-300 font-mono whitespace-nowrap">1 USD = {eodRate.toLocaleString()} LBP</span>
               </div>
               <div className="p-4 space-y-3">
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
@@ -617,19 +749,46 @@ export default function EndOfDayPage() {
                   <span className="font-mono font-bold text-slate-900">${selectedBranch.cardPayments.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
-                  <span className="text-slate-600 font-medium">{t('Omnichannel & Digital (OMT / Whish)', 'Omnichannel & Digital (OMT / Whish)')}</span>
+                  <span className="text-slate-600 font-medium">{t('E-Services & Digital Wallets', 'E-Services & Digital Wallets')}</span>
                   <span className="font-mono font-bold text-slate-900">${selectedBranch.omnichannel.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
                   <span className="text-slate-600 font-medium">{t('Drawer Over / Short Variance', 'Drawer Over / Short Variance')}</span>
-                  <span className="font-mono font-bold text-emerald-600">$0.00 ({t('Balanced', 'Balanced')})</span>
+                  <span className={`font-mono font-bold ${Math.abs(drawerVariance) < 0.01 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                    ${drawerVariance.toFixed(2)} ({Math.abs(drawerVariance) < 0.01 ? t('Balanced', 'Balanced') : t('Review', 'Review')})
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-2 bg-blue-50 border border-blue-200 px-3 rounded-lg text-xs font-bold text-blue-900">
                   <span>{t('Drawer Reconciliation Audit', 'Drawer Reconciliation Audit')}</span>
                   <span className="font-mono text-xs flex items-center gap-1">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>{t('DRAWER VERIFIED', 'DRAWER VERIFIED')}</span>
+                    <CheckCircle2 className={`w-4 h-4 ${Math.abs(drawerVariance) < 0.01 ? 'text-emerald-600' : 'text-amber-600'}`} />
+                    <span>{Math.abs(drawerVariance) < 0.01 ? t('DRAWER VERIFIED', 'DRAWER VERIFIED') : t('VARIANCE DETECTED', 'VARIANCE DETECTED')}</span>
                   </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. E-Services & Partner Settlements */}
+            <div className="lg:col-span-4 bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+              <div className="p-3.5 bg-primary text-white font-bold text-xs flex items-center justify-between gap-2">
+                <span className="whitespace-normal">{t('3. E-Services & Partner Settlements', '3. E-Services & Partner Settlements')}</span>
+                <span className="text-[11px] text-slate-300 font-mono whitespace-nowrap">{eservicesCount} {t('Invoices', 'Invoices')}</span>
+              </div>
+              <div className="p-4 space-y-3">
+                {Object.keys(methodTotals).length === 0 && (
+                  <div className="text-xs text-slate-500 py-1.5">{t('No posted payments in the open workday.', 'No posted payments in the open workday.')}</div>
+                )}
+                {Object.entries(methodTotals).map(([m, v]) => (
+                  <div key={m} className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs">
+                    <span className="text-slate-600 font-medium">
+                      {m} {/WHISH|ONLINE|OMT|WALLET|PARTNER|E-?SERVICE|TRANSFER/.test(m) ? '\u00b7 E-Service' : ''}
+                    </span>
+                    <span className="font-mono font-bold text-slate-900">${v.toFixed(2)}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between items-center py-2 bg-indigo-50 border border-indigo-200 px-3 rounded-lg text-xs font-black text-indigo-900">
+                  <span>{t('PARTNER / E-SERVICE SETTLEMENT', 'PARTNER / E-SERVICE SETTLEMENT')}</span>
+                  <span className="font-mono text-sm">${selectedBranch.omnichannel.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -678,7 +837,7 @@ export default function EndOfDayPage() {
                       <td className="font-mono font-bold text-blue-700">{e.reference}</td>
                       <td className="font-mono">{e.closed_at ? new Date(e.closed_at).toLocaleString('en-GB') : e.closed_date}</td>
                       <td className="font-semibold">{e.branch_name}</td>
-                      <td>{e.closed_by}</td>
+                      <td>{!e.closed_by || e.closed_by === 'Vanguard Operator' ? signedInName || e.closed_by : e.closed_by}</td>
                       <td className="font-mono text-right">{e.invoices_count}</td>
                       <td className="font-mono text-right font-semibold">${Number(e.net_sales || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
                       <td className="font-mono text-right text-emerald-700">${Number(e.tax_vat || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
@@ -813,73 +972,7 @@ export default function EndOfDayPage() {
             </div>
 
             {/* Thermal Register Slip Preview */}
-            <div className="mt-4 p-5 bg-card border border-dashed border-slate-300 rounded-lg font-mono text-xs text-slate-800 space-y-2">
-              <div className="text-center pb-2 border-b border-dashed border-slate-300">
-                <div className="font-black text-sm">{selectedBranch.BARANCHNAME}</div>
-                <div className="text-[11px] text-slate-500 mt-0.5">{String(selectedBranch.BARANCHNAME).toUpperCase()}</div>
-                <div className="text-[10px] text-slate-400">TAX MOF: 7489201 | CR: 104928-LB</div>
-                <div className="font-bold text-xs mt-1.5">*** {t('FISCAL END OF DAY (Z-REPORT)', '*** FISCAL END OF DAY (Z-REPORT) ***')} ***</div>
-                <div className="text-[10.5px] text-slate-600">{t('Z-Report Reference:', 'Z-Report Reference:')} {lastZReference ? `#${lastZReference}` : '\u2014'}</div>
-                <div className="text-[10.5px] text-slate-600">{t('Closing Timestamp:', 'Closing Timestamp:')} {new Date().toLocaleString()}</div>
-              </div>
-
-              <div className="pt-2 space-y-1.5">
-                <div className="flex justify-between">
-                  <span>{t('TRANSACTION COUNT:', 'TRANSACTION COUNT:')}</span>
-                  <span className="font-bold">{selectedBranch.invoicesCount} {t('Invoices', 'Invoices')}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>{t('GROSS REGISTER SALES:', 'GROSS REGISTER SALES:')}</span>
-                  <span className="font-bold">${selectedBranch.grossSales.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>{t('TOTAL DISCOUNTS APPLIED:', 'TOTAL DISCOUNTS APPLIED:')}</span>
-                  <span>-${selectedBranch.discounts.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>{t('TOTAL VOIDED TICKETS', 'TOTAL VOIDED TICKETS')} ({selectedBranch.voidsCount}):</span>
-                  <span>-$0.00</span>
-                </div>
-                <div className="flex justify-between font-bold text-blue-700 pt-1 border-t border-dashed border-slate-300">
-                  <span>{t('NET TAXABLE SALES:', 'NET TAXABLE SALES:')}</span>
-                  <span>${selectedBranch.netSales.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between font-bold text-emerald-700">
-                  <span>{t('TOTAL VAT COLLECTED (11%):', 'TOTAL VAT COLLECTED (11%):')}</span>
-                  <span>+${selectedBranch.taxVat.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between font-black text-slate-900 pt-1 border-t border-dashed border-slate-300 text-[13px]">
-                  <span>{t('FINAL NET RECONCILED:', 'FINAL NET RECONCILED:')}</span>
-                  <span>${selectedBranch.grossSales.toFixed(2)}</span>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-dashed border-slate-300 space-y-1">
-                <div className="font-bold text-[11px] text-slate-700">{t('PAYMENT TENDER BREAKDOWN:', 'PAYMENT TENDER BREAKDOWN:')}</div>
-                <div className="flex justify-between text-[11px]">
-                  <span>{t('• CASH USD:', '• CASH USD:')}</span>
-                  <span>${selectedBranch.cashUsd.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-[11px]">
-                  <span>{t('• CASH LBP:', '• CASH LBP:')}</span>
-                  <span>{selectedBranch.cashLbp.toLocaleString()} LBP</span>
-                </div>
-                <div className="flex justify-between text-[11px]">
-                  <span>{t('• CREDIT CARDS (VISA/MC):', '• CREDIT CARDS (VISA/MC):')}</span>
-                  <span>${selectedBranch.cardPayments.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-[11px]">
-                  <span>{t('• OMNICHANNEL (OMT/WHISH):', '• OMNICHANNEL (OMT/WHISH):')}</span>
-                  <span>${selectedBranch.omnichannel.toFixed(2)}</span>
-                </div>
-              </div>
-
-              <div className="text-center pt-3 border-t border-dashed border-slate-300 text-[10.5px] text-slate-500">
-                <div>{t('Cashier Signature:', 'Cashier Signature:')} ______________________</div>
-                <div className="mt-1">{t('Manager Signature:', 'Manager Signature:')} ______________________</div>
-                <div className="mt-1 font-semibold text-emerald-700">{t('BATCH BALANCED & AUDITED WITH 0 VARIANCE', 'BATCH BALANCED & AUDITED WITH 0 VARIANCE')}</div>
-              </div>
-            </div>
+            <div className="mt-4">{renderZSlip()}</div>
 
             <div className="mt-4 flex items-center justify-between">
               <button
@@ -901,6 +994,25 @@ export default function EndOfDayPage() {
           </div>
         </div>
       )}
+
+      {/* Isolated print harness: mounted on <body> while the Z-Slip is open; @media print hides everything else. */}
+      {zReportModalOpen && typeof document !== 'undefined' &&
+        createPortal(
+          <div className="z-slip-print-harness">
+            <style>{`
+              .z-slip-print-harness { display: none; }
+              @media print {
+                @page { margin: 8mm; }
+                html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+                body > *:not(.z-slip-print-harness) { display: none !important; }
+                .z-slip-print-harness { display: block !important; position: static !important; width: 100% !important; max-width: 100mm; margin: 0 auto; color: #000; background: #fff; }
+                .z-slip-print-harness * { color: #000 !important; background: transparent !important; box-shadow: none !important; }
+              }
+            `}</style>
+            {renderZSlip()}
+          </div>,
+          document.body
+        )}
 
     </div>
   );

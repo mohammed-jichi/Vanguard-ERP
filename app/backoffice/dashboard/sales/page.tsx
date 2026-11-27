@@ -45,6 +45,8 @@ import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabaseClient';
 import { resolveTenantUuid } from '@/lib/productCatalogService';
 import { getTenantExchangeRate } from '@/lib/currencyEngine';
+import { useHrEmployees } from '@/lib/hrTenantData';
+import { extractInvoices, toLL, ccyToLL, liveRateFrom, computeEodState, PostedInvoice, VoidedInvoice } from '@/lib/eodLive';
 
 export default function AuthenticVanguardSalesDashboard() {
   const { currentTenant, isModuleEnabled } = useTenant();
@@ -179,7 +181,9 @@ export default function AuthenticVanguardSalesDashboard() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const usdRate = getTenantExchangeRate(currentTenant);
+  const [liveFlags, setLiveFlags] = useState<any>(null);
+  // Live USD<->LBP rate from tenants.feature_flags (exchange_rate / currency_setup); falls back to tenant profile rate
+  const usdRate = liveFlags ? liveRateFrom(liveFlags, getTenantExchangeRate(currentTenant)) : getTenantExchangeRate(currentTenant);
 
   // Format Helper matching exact screenshot
   const formatVal = (lbpAmount: number, forceFormat?: 'full' | 'short') => {
@@ -254,35 +258,20 @@ export default function AuthenticVanguardSalesDashboard() {
     }))
   ];
   // ---- Live posted sales (tenants.feature_flags sales invoices, is_posted === true) ----
-  const [livePosted, setLivePosted] = useState<any[]>([]);
+  const [rawPosted, setRawPosted] = useState<PostedInvoice[]>([]);
+  const [rawVoided, setRawVoided] = useState<VoidedInvoice[]>([]);
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const { data } = await supabase.from('tenants').select('feature_flags').eq('id', resolveTenantUuid(currentTenant)).maybeSingle();
         const flags: any = data?.feature_flags || {};
-        const raw: any[] = [...(flags.sales_invoices_directory || []), ...(flags.sales_invoices || [])];
-        const seen = new Set<string>();
-        const list: any[] = [];
-        raw.forEach((inv) => {
-          const key = String(inv.id || inv.invoiceNumber || inv.invoice_number || '');
-          if (key && seen.has(key)) return;
-          if (key) seen.add(key);
-          if (!(inv.is_posted === true || inv.posted === true)) return;
-          const d = new Date(inv.createdAtIso || inv.createdAt || inv.date);
-          if (isNaN(d.getTime())) return;
-          const sign = inv.docType === 'CREDIT_NOTE' || inv.doc_type === 'CREDIT_NOTE' ? -1 : 1;
-          const rate = Number(inv.exchange_rate) || usdRate;
-          const toLL = (v: number) => (String(inv.currency || 'USD').toUpperCase() === 'USD' ? v * rate : v) * sign;
-          const total = toLL(Number(inv.total_amount ?? inv.grandTotal ?? inv.total ?? 0));
-          const cats: Record<string, number> = {};
-          (inv.items || []).forEach((l: any) => {
-            const name = l.category || l.categoryName || l.group || l.groupName;
-            if (name) cats[name] = (cats[name] || 0) + toLL(Number(l.total ?? (Number(l.qty) || 0) * (Number(l.unitPrice) || 0)));
-          });
-          list.push({ ts: d.getTime(), year: d.getFullYear(), month: d.getMonth(), hour: d.getHours(), total, cats });
-        });
-        if (!cancelled) setLivePosted(list);
+        const { posted, voided } = extractInvoices(flags);
+        if (!cancelled) {
+          setLiveFlags(flags);
+          setRawPosted(posted);
+          setRawVoided(voided);
+        }
       } catch (e) {
         console.warn('[SalesDashboard] live posted sales load failed:', e);
       }
@@ -292,6 +281,148 @@ export default function AuthenticVanguardSalesDashboard() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTenant?.id]);
+
+  // Single LBP base: every posted invoice is converted ONCE with the live rate; display converts LL -> USD once in formatVal.
+  const livePosted = useMemo(
+    () =>
+      rawPosted.map((p) => {
+        const d = new Date(p.ts);
+        const cats: Record<string, number> = {};
+        Object.entries(p.cats).forEach(([k, v]) => (cats[k] = toLL(p, v, usdRate)));
+        return { ts: p.ts, year: d.getFullYear(), month: d.getMonth(), hour: d.getHours(), total: toLL(p, p.total, usdRate), cats };
+      }),
+    [rawPosted, usdRate]
+  );
+
+  // ---- Period filter (selected year / month|quarter / day) ----
+  const inPeriod = (ts: number) => {
+    const d = new Date(ts);
+    if (d.getFullYear() !== Number(selectedYear)) return false;
+    if (/^\d+$/.test(selectedMonth) && selectedMonth !== '0' && d.getMonth() + 1 !== Number(selectedMonth)) return false;
+    if (/^Q\d$/.test(selectedMonth) && Math.floor(d.getMonth() / 3) + 1 !== Number(selectedMonth[1])) return false;
+    if (selectedDay !== 'ALL' && d.getDate() !== Number(selectedDay)) return false;
+    return true;
+  };
+  const nowD = new Date();
+  const refMonth = /^\d+$/.test(selectedMonth) && selectedMonth !== '0' ? Number(selectedMonth) : Number(selectedYear) === nowD.getFullYear() ? nowD.getMonth() + 1 : 12;
+
+  const kpi = useMemo(() => {
+    const L = (p: PostedInvoice, v: number) => toLL(p, v, usdRate);
+    const net = (p: PostedInvoice) => L(p, p.total - p.tax);
+    const receipts = (p: PostedInvoice) => p.pays.reduce((s, x) => s + ccyToLL(x.ccy, x.amount, usdRate) * p.sign, 0);
+    const Y = Number(selectedYear);
+    // "Today" = the selected day when one is chosen, otherwise the calendar day
+    const dayTarget = selectedDay !== 'ALL' ? new Date(Y, refMonth - 1, Number(selectedDay)) : new Date();
+    const isTargetDay = (ts: number) => new Date(ts).toDateString() === dayTarget.toDateString();
+    const out = {
+      todayNetSales: 0, todayReceipts: 0, todayDiscounts: 0, todayRefunds: 0,
+      grossSales: 0, discount: 0, tax: 0, netSales: 0,
+      mtdSales: 0, lymSales: 0, ytdSales: 0, lytmSales: 0, customerAged: 0, mtdReceipts: 0,
+      paidIn: 0, paidOut: 0, voids: 0, refunds: 0, avgInvoice: 0, avgByCust: 0, custCount: 0, invCount: 0
+    };
+    const custs = new Set<string>();
+    rawPosted.forEach((p) => {
+      const d = new Date(p.ts);
+      const y = d.getFullYear();
+      const m = d.getMonth() + 1;
+      if (isTargetDay(p.ts)) {
+        out.todayNetSales += net(p);
+        out.todayReceipts += receipts(p);
+        out.todayDiscounts += L(p, p.discount);
+        if (p.sign < 0) out.todayRefunds += Math.abs(L(p, p.total));
+      }
+      if (inPeriod(p.ts)) {
+        out.grossSales += L(p, p.total - p.tax + p.discount);
+        out.discount += L(p, p.discount);
+        out.tax += L(p, p.tax);
+        out.netSales += net(p);
+        out.invCount += 1;
+        if (p.customer) custs.add(p.customer);
+        if (p.sign < 0) out.refunds += Math.abs(L(p, p.total));
+      }
+      if (y === Y && m === refMonth) {
+        out.mtdSales += net(p);
+        out.mtdReceipts += receipts(p);
+      }
+      if (y === Y - 1 && m === refMonth) out.lymSales += net(p);
+      if (y === Y && m <= refMonth) out.ytdSales += net(p);
+      if (y === Y - 1 && m <= refMonth) out.lytmSales += net(p);
+    });
+    rawVoided.forEach((v) => {
+      if (inPeriod(v.ts)) out.voids += ccyToLL(v.ccy, v.total, usdRate);
+    });
+    out.custCount = custs.size;
+    out.avgInvoice = out.invCount ? out.netSales / out.invCount : 0;
+    out.avgByCust = out.custCount ? out.netSales / out.custCount : 0;
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawPosted, rawVoided, usdRate, selectedYear, selectedMonth, selectedDay]);
+
+  // ---- Live breakdowns for the selected period: category / employee / payment / discount ----
+  const PALETTE = ['#1e3a8a', '#0f766e', '#475569', '#854d0e', '#4c1d95', '#166534', '#991b1b', '#374151'];
+  const { employees: hrEmployees } = useHrEmployees();
+  const live = useMemo(() => {
+    const catTot: Record<string, number> = {};
+    const payTot: Record<string, number> = {};
+    const userTot: Record<string, { total: number; cats: Record<string, number> }> = {};
+    let discount = 0;
+    const hrName = (raw: string) => {
+      const n = raw.trim().toLowerCase();
+      if (!n) return 'Unassigned';
+      const hit = (hrEmployees || []).find((e: any) => {
+        const full = String(e.fullName || `${e.firstName || ''} ${e.lastName || ''}`).trim().toLowerCase();
+        return full === n || full.startsWith(n + ' ') || String(e.firstName || '').trim().toLowerCase() === n;
+      });
+      return hit ? String(hit.fullName || `${hit.firstName} ${hit.lastName}`).trim() : raw.trim();
+    };
+    rawPosted.forEach((p) => {
+      if (!inPeriod(p.ts)) return;
+      const total = toLL(p, p.total, usdRate);
+      let catSum = 0;
+      const user = hrName(p.salesman);
+      const u = (userTot[user] = userTot[user] || { total: 0, cats: {} });
+      u.total += total;
+      Object.entries(p.cats).forEach(([k, v]) => {
+        const ll = toLL(p, v, usdRate);
+        catTot[k] = (catTot[k] || 0) + ll;
+        u.cats[k] = (u.cats[k] || 0) + ll;
+        catSum += ll;
+      });
+      const rest = total - catSum;
+      if (Math.abs(rest) > 0.5) {
+        catTot['Uncategorized'] = (catTot['Uncategorized'] || 0) + rest;
+        u.cats['Uncategorized'] = (u.cats['Uncategorized'] || 0) + rest;
+      }
+      p.pays.forEach((x) => (payTot[x.method] = (payTot[x.method] || 0) + ccyToLL(x.ccy, x.amount, usdRate) * p.sign));
+      discount += toLL(p, p.discount, usdRate);
+    });
+    const toSlices = (m: Record<string, number>) => {
+      const entries = Object.entries(m).filter(([, v]) => v !== 0).sort((a, b) => b[1] - a[1]);
+      const sum = entries.reduce((s, [, v]) => s + Math.abs(v), 0) || 1;
+      return entries.map(([name, amount], i) => ({ label: name, name, amount, color: PALETTE[i % PALETTE.length], pct: (Math.abs(amount) / sum) * 100 }));
+    };
+    const categories = toSlices(catTot);
+    const topCats = categories.slice(0, 4).map((c) => c.name);
+    const hasOther = categories.length > 4;
+    const empRows = Object.entries(userTot)
+      .map(([name, u]) => {
+        const cols = topCats.map((c) => u.cats[c] || 0);
+        const other = u.total - cols.reduce((s, v) => s + v, 0);
+        return { name, cols, other, total: u.total };
+      })
+      .sort((a, b) => b.total - a.total);
+    return {
+      categories,
+      users: toSlices(Object.fromEntries(Object.entries(userTot).map(([k, v]) => [k, v.total]))),
+      payments: toSlices(payTot),
+      discounts: discount > 0 ? [{ label: 'DISCOUNT', name: 'DISCOUNT', amount: discount, color: PALETTE[0], pct: 100 }] : [],
+      topCats,
+      hasOther,
+      empRows
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawPosted, usdRate, selectedYear, selectedMonth, selectedDay, hrEmployees]);
+  const eodSt = useMemo(() => (liveFlags ? computeEodState(liveFlags) : null), [liveFlags]);
 
   const shortLabel = (v: number) => (v >= 1e9 ? `${(v / 1e9).toFixed(1)}B` : v >= 1e6 ? `${Math.round(v / 1e6)}M` : v > 0 ? `${Math.round(v / 1e3)}K` : '0');
   const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -585,31 +716,14 @@ export default function AuthenticVanguardSalesDashboard() {
   };
 
   // Datasets for Pie & Line modes dynamically derived from current selected branch
-  const categoryData = currentBranchData.categoryData;
+  const categoryData = live.categories;
   const divisionData = currentBranchData.divisionData;
   const groupData = currentBranchData.groupData;
   const departmentData = currentBranchData.departmentData;
-  const discountData = currentBranchData.discountSummaryData.map(d => ({
-    label: d.name,
-    name: d.name,
-    amount: d.amount,
-    color: d.color,
-    pct: d.pct
-  }));
-  const userData = currentBranchData.userSummaryData.map(u => ({
-    label: u.user,
-    name: u.user,
-    amount: u.amount,
-    color: u.color,
-    pct: u.pct
-  }));
-  const paymentData = currentBranchData.paymentSummaryData.map(p => ({
-    label: p.method,
-    name: p.method,
-    amount: p.amount,
-    color: p.color,
-    pct: p.pct
-  }));
+  const discountData = live.discounts;
+  const userData = live.users;
+  const paymentData = live.payments;
+  const sumAmt = (arr: { amount: number }[]) => arr.reduce((t, x) => t + x.amount, 0);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans pb-16 branch-dashboard-shell">
@@ -1041,19 +1155,19 @@ export default function AuthenticVanguardSalesDashboard() {
             <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs" style={{ backgroundColor: '#337718' }}>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Net Sales</span>
-                <span className="font-black text-[13.5px]">{formatVal(currentBranchData.todayNetSales)}</span>
+                <span className="font-black text-[13.5px]">{formatVal(kpi.todayNetSales)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Receipts</span>
-                <span className="font-semibold">{formatVal(currentBranchData.todayReceipts)}</span>
+                <span className="font-semibold">{formatVal(kpi.todayReceipts)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Discounts</span>
-                <span className="font-semibold">{formatVal(currentBranchData.todayDiscounts)}</span>
+                <span className="font-semibold">{formatVal(kpi.todayDiscounts)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Today&apos;s Refunds</span>
-                <span className="font-semibold">{formatVal(currentBranchData.todayRefunds)}</span>
+                <span className="font-semibold">{formatVal(kpi.todayRefunds)}</span>
               </div>
             </div>
           </div>
@@ -1066,19 +1180,19 @@ export default function AuthenticVanguardSalesDashboard() {
             <div className="flex-1 p-2 text-white flex flex-col justify-between text-xs" style={{ backgroundColor: '#003566' }}>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Gross Sales</span>
-                <span className="font-semibold">{formatVal(currentBranchData.grossSales, 'short')}</span>
+                <span className="font-semibold">{formatVal(kpi.grossSales, 'short')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Discount</span>
-                <span className="font-semibold">{formatVal(currentBranchData.discount, 'short')}</span>
+                <span className="font-semibold">{formatVal(kpi.discount, 'short')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Tax</span>
-                <span className="font-semibold">{formatVal(currentBranchData.tax)}</span>
+                <span className="font-semibold">{formatVal(kpi.tax)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Net Sales</span>
-                <span className="font-black text-[13.5px]">{formatVal(currentBranchData.netSales, 'short')}</span>
+                <span className="font-black text-[13.5px]">{formatVal(kpi.netSales, 'short')}</span>
               </div>
             </div>
           </div>
@@ -1092,30 +1206,30 @@ export default function AuthenticVanguardSalesDashboard() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">MTD:</span>
-                  <span className="font-black">{formatVal(currentBranchData.mtdSales, 'short')}</span>
+                  <span className="font-black">{formatVal(kpi.mtdSales, 'short')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">LYM:</span>
-                  <span className="font-semibold">{formatVal(currentBranchData.lymSales, 'short')}</span>
+                  <span className="font-semibold">{formatVal(kpi.lymSales, 'short')}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">YTD:</span>
-                  <span className="font-black">{formatVal(currentBranchData.ytdSales, 'short')}</span>
+                  <span className="font-black">{formatVal(kpi.ytdSales, 'short')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">LYTM:</span>
-                  <span className="font-semibold">{formatVal(currentBranchData.lytmSales, 'short')}</span>
+                  <span className="font-semibold">{formatVal(kpi.lytmSales, 'short')}</span>
                 </div>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">Customer Aged</span>
-                <span className="font-semibold">{formatVal(currentBranchData.customerAged, 'short')}</span>
+                <span className="font-semibold">{formatVal(kpi.customerAged, 'short')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="opacity-90">MTD Receipts</span>
-                <span className="font-black text-[13.5px]">{formatVal(currentBranchData.mtdReceipts, 'short')}</span>
+                <span className="font-black text-[13.5px]">{formatVal(kpi.mtdReceipts, 'short')}</span>
               </div>
             </div>
           </div>
@@ -1129,41 +1243,41 @@ export default function AuthenticVanguardSalesDashboard() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Paid In:</span>
-                  <span className="font-semibold">{formatVal(currentBranchData.paidIn)}</span>
+                  <span className="font-semibold">{formatVal(kpi.paidIn)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Paid out:</span>
-                  <span className="font-semibold">{formatVal(currentBranchData.paidOut, 'short')}</span>
+                  <span className="font-semibold">{formatVal(kpi.paidOut, 'short')}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between items-center">
                   <span className="opacity-80 text-[11px]">Voids:</span>
-                  <span className="px-1.5 py-0.2 rounded bg-destructive/10 text-destructive font-bold text-[11px]">{formatVal(currentBranchData.voids)}</span>
+                  <span className="px-1.5 py-0.2 rounded bg-destructive/10 text-destructive font-bold text-[11px]">{formatVal(kpi.voids)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="opacity-80 text-[11px]">Refunds:</span>
-                  <span className="px-1.5 py-0.2 rounded bg-destructive/10 text-destructive font-bold text-[11px]">{formatVal(currentBranchData.refunds)}</span>
+                  <span className="px-1.5 py-0.2 rounded bg-destructive/10 text-destructive font-bold text-[11px]">{formatVal(kpi.refunds)}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Avg. Invoice:</span>
-                  <span className="font-semibold">{formatVal(currentBranchData.avgInvoice, 'short')}</span>
+                  <span className="font-semibold">{formatVal(kpi.avgInvoice, 'short')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Avg. by Cust:</span>
-                  <span className="font-semibold">{formatVal(currentBranchData.avgByCust, 'short')}</span>
+                  <span className="font-semibold">{formatVal(kpi.avgByCust, 'short')}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Cust. Count:</span>
-                  <span className="font-bold">{currentBranchData.custCount}</span>
+                  <span className="font-bold">{kpi.custCount}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="opacity-80 text-[11px]">Inv. Count:</span>
-                  <span className="font-bold">{currentBranchData.invCount}</span>
+                  <span className="font-bold">{kpi.invCount}</span>
                 </div>
               </div>
             </div>
@@ -1380,18 +1494,18 @@ export default function AuthenticVanguardSalesDashboard() {
                                 <span className="w-2.5 h-2.5 bg-emerald-700 rounded-sm inline-block flex-shrink-0" />
                                 <span>{currentTenant?.name || 'Vanguard ERP'}:</span>
                                 <span className="font-bold text-white ml-auto">
-                                  {d.val > 0 ? `${d.val.toLocaleString()}.00` : '0.00'}
+                                  {formatVal(d.val)}
                                 </span>
                               </div>
                               <div className="text-[10px] text-slate-300 mt-0.5 pl-4">
-                                Change: <span className="text-emerald-400 font-semibold">{d.val > 0 ? `+${d.val.toLocaleString()}.00 (${d.pct})` : '0 (0.0%)'}</span>
+                                Change: <span className="text-emerald-400 font-semibold">{d.val > 0 ? `+${formatVal(d.val)} (${d.pct})` : '0 (0.0%)'}</span>
                               </div>
                             </div>
                           )}
 
                           {d.val > 0 && (
                             <span className="text-[10px] font-bold text-slate-700 mb-1">
-                              {d.label}
+                              {formatVal(d.val, 'short')}
                             </span>
                           )}
                           <div 
@@ -1440,28 +1554,28 @@ export default function AuthenticVanguardSalesDashboard() {
                             {m.val > 0 ? (
                               <div>
                                 <div className="monthly-revenue-current">
-                                  <span>{m.val.toLocaleString()}</span>
+                                  <span>{formatVal(m.val, 'short')}</span>
                                   <span className="text-emerald-600 text-[10px]">▲</span>
                                 </div>
                                 <div className="monthly-revenue-previous">
-                                  LY {(m.ly || 0).toLocaleString()} ({m.pct})
+                                  LY {formatVal(m.ly || 0, 'short')} ({m.pct})
                                 </div>
                               </div>
                             ) : (
                               <div>
                                 <div className="font-semibold text-slate-500">0</div>
-                                <div className="monthly-revenue-previous">LY {(m.ly || 0).toLocaleString()} (0.0%)</div>
+                                <div className="monthly-revenue-previous">LY {formatVal(m.ly || 0, 'short')} (0.0%)</div>
                               </div>
                             )}
                           </td>
                         ))}
                         <td className="monthly-revenue-cell monthly-revenue-total-col">
                           <div className="monthly-revenue-current">
-                            <span>{totalAnnualSales.toLocaleString()}</span>
+                            <span>{formatVal(totalAnnualSales, 'short')}</span>
                             <span className="text-emerald-600 text-[10px]">▲</span>
                           </div>
                           <div className="monthly-revenue-previous font-normal">
-                            LY {totalLastYear.toLocaleString()} ({totalYoyText})
+                            LY {formatVal(totalLastYear, 'short')} ({totalYoyText})
                           </div>
                         </td>
                       </tr>
@@ -1472,28 +1586,28 @@ export default function AuthenticVanguardSalesDashboard() {
                             {m.val > 0 ? (
                               <div>
                                 <div className="monthly-revenue-current font-bold">
-                                  <span>{m.val.toLocaleString()}</span>
+                                  <span>{formatVal(m.val, 'short')}</span>
                                   <span className="text-emerald-600 text-[10px]">▲</span>
                                 </div>
                                 <div className="monthly-revenue-previous">
-                                  LY {(m.ly || 0).toLocaleString()} ({m.pct})
+                                  LY {formatVal(m.ly || 0, 'short')} ({m.pct})
                                 </div>
                               </div>
                             ) : (
                               <div>
                                 <div className="font-semibold text-slate-500">0</div>
-                                <div className="monthly-revenue-previous">LY {(m.ly || 0).toLocaleString()} (0.0%)</div>
+                                <div className="monthly-revenue-previous">LY {formatVal(m.ly || 0, 'short')} (0.0%)</div>
                               </div>
                             )}
                           </td>
                         ))}
                         <td className="monthly-revenue-cell monthly-revenue-total-col font-bold">
                           <div className="monthly-revenue-current font-bold">
-                            <span>{totalAnnualSales.toLocaleString()}</span>
+                            <span>{formatVal(totalAnnualSales, 'short')}</span>
                             <span className="text-emerald-600 text-[10px]">▲</span>
                           </div>
                           <div className="monthly-revenue-previous font-normal">
-                            LY {totalLastYear.toLocaleString()} ({totalYoyText})
+                            LY {formatVal(totalLastYear, 'short')} ({totalYoyText})
                           </div>
                         </td>
                       </tr>
@@ -1544,7 +1658,7 @@ export default function AuthenticVanguardSalesDashboard() {
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Categories ↕</th>
-                        <th className="text-right">134,551,800</th>
+                        <th className="text-right">{formatVal(sumAmt(categoryData))}</th>
                         <th className="text-right"></th>
                       </tr>
                     </thead>
@@ -1552,7 +1666,7 @@ export default function AuthenticVanguardSalesDashboard() {
                       {categoryData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-medium">{s.name}</td>
-                          <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
+                          <td className="text-right font-bold">{formatVal(s.amount)}</td>
                           <td className="text-right text-slate-500">{s.pct.toFixed(2)}%</td>
                         </tr>
                       ))}
@@ -1598,7 +1712,7 @@ export default function AuthenticVanguardSalesDashboard() {
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Divisions ↕</th>
-                        <th className="text-right">134,551,800</th>
+                        <th className="text-right">{formatVal(sumAmt(divisionData))}</th>
                         <th className="text-right"></th>
                       </tr>
                     </thead>
@@ -1606,7 +1720,7 @@ export default function AuthenticVanguardSalesDashboard() {
                       {divisionData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-medium">{s.name}</td>
-                          <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
+                          <td className="text-right font-bold">{formatVal(s.amount)}</td>
                           <td className="text-right text-slate-500">{s.pct.toFixed(2)}%</td>
                         </tr>
                       ))}
@@ -1647,7 +1761,7 @@ export default function AuthenticVanguardSalesDashboard() {
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Groups ↕</th>
-                        <th className="text-right">134,551,800</th>
+                        <th className="text-right">{formatVal(sumAmt(groupData))}</th>
                         <th className="text-right"></th>
                       </tr>
                     </thead>
@@ -1655,7 +1769,7 @@ export default function AuthenticVanguardSalesDashboard() {
                       {groupData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-medium">{s.name}</td>
-                          <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
+                          <td className="text-right font-bold">{formatVal(s.amount)}</td>
                           <td className="text-right text-slate-500">{s.pct.toFixed(2)}%</td>
                         </tr>
                       ))}
@@ -1701,7 +1815,7 @@ export default function AuthenticVanguardSalesDashboard() {
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Departments ↕</th>
-                        <th className="text-right">131,851,800</th>
+                        <th className="text-right">{formatVal(sumAmt(departmentData))}</th>
                         <th className="text-right"></th>
                       </tr>
                     </thead>
@@ -1709,7 +1823,7 @@ export default function AuthenticVanguardSalesDashboard() {
                       {departmentData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-semibold">{s.name}</td>
-                          <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
+                          <td className="text-right font-bold">{formatVal(s.amount)}</td>
                           <td className="text-right text-slate-500">{s.pct.toFixed(2)}%</td>
                         </tr>
                       ))}
@@ -1754,15 +1868,15 @@ export default function AuthenticVanguardSalesDashboard() {
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Discounts ↕</th>
-                        <th className="text-right">2,700,000</th>
+                        <th className="text-right">{formatVal(sumAmt(discountData))}</th>
                         <th className="text-right"></th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td className="text-left font-medium">DISCOUNT</td>
-                        <td className="text-right font-bold">2,700,000</td>
-                        <td className="text-right text-slate-500">100.00%</td>
+                        <td className="text-right font-bold">{formatVal(sumAmt(discountData))}</td>
+                        <td className="text-right text-slate-500">{discountData.length ? '100.00%' : '0.00%'}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -1791,9 +1905,9 @@ export default function AuthenticVanguardSalesDashboard() {
                     <tbody>
                       <tr>
                         <td className="text-left font-bold">DISCOUNT</td>
-                        <td className="text-right">0.00</td>
-                        <td className="text-right font-bold">2,700,000.00</td>
-                        <td className="text-right font-black text-slate-900">2,700,000.00</td>
+                        <td className="text-right">{formatVal(0)}</td>
+                        <td className="text-right font-bold">{formatVal(sumAmt(discountData))}</td>
+                        <td className="text-right font-black text-slate-900">{formatVal(sumAmt(discountData))}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -1840,7 +1954,7 @@ export default function AuthenticVanguardSalesDashboard() {
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Users ↕</th>
-                        <th className="text-right">131,851,800</th>
+                        <th className="text-right">{formatVal(sumAmt(userData))}</th>
                         <th className="text-right"></th>
                       </tr>
                     </thead>
@@ -1848,7 +1962,7 @@ export default function AuthenticVanguardSalesDashboard() {
                       {userData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-semibold">{s.name}</td>
-                          <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
+                          <td className="text-right font-bold">{formatVal(s.amount)}</td>
                           <td className="text-right text-slate-500">{s.pct.toFixed(2)}%</td>
                         </tr>
                       ))}
@@ -1892,7 +2006,7 @@ export default function AuthenticVanguardSalesDashboard() {
                     <thead>
                       <tr className="header-row">
                         <th className="text-left">All Payments ↕</th>
-                        <th className="text-right">131,851,800</th>
+                        <th className="text-right">{formatVal(sumAmt(paymentData))}</th>
                         <th className="text-right"></th>
                       </tr>
                     </thead>
@@ -1900,7 +2014,7 @@ export default function AuthenticVanguardSalesDashboard() {
                       {paymentData.map((s, i) => (
                         <tr key={i}>
                           <td className="text-left font-semibold">{s.name}</td>
-                          <td className="text-right font-bold">{s.amount.toLocaleString()}</td>
+                          <td className="text-right font-bold">{formatVal(s.amount)}</td>
                           <td className="text-right text-slate-500">{s.pct.toFixed(2)}%</td>
                         </tr>
                       ))}
@@ -1925,38 +2039,39 @@ export default function AuthenticVanguardSalesDashboard() {
                   <thead>
                     <tr className="header-row">
                       <th className="text-left">User Name</th>
-                      <th className="text-right">Raw Materials</th>
-                      <th className="text-right">Wholesale</th>
-                      <th className="text-right">Promotions</th>
-                      <th className="text-right">Retail</th>
+                      {live.topCats.map((c) => (
+                        <th key={c} className="text-right">{c}</th>
+                      ))}
+                      <th className="text-right">{live.hasOther || live.topCats.length === 0 ? 'Other' : 'Other / Uncategorized'}</th>
                       <th className="text-right">Total</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="text-left font-bold">Hiba Aloulou</td>
-                      <td className="text-right">0</td>
-                      <td className="text-right">0</td>
-                      <td className="text-right">53,550,000</td>
-                      <td className="text-right">54,481,800</td>
-                      <td className="text-right font-extrabold text-slate-900">108,031,800</td>
-                    </tr>
-                    <tr>
-                      <td className="text-left font-bold">Mahdi</td>
-                      <td className="text-right">0</td>
-                      <td className="text-right">23,940,000</td>
-                      <td className="text-right">0</td>
-                      <td className="text-right">-120,000</td>
-                      <td className="text-right font-extrabold text-slate-900">23,820,000</td>
-                    </tr>
-                    <tr className="header-row">
-                      <th className="text-left font-black">Total</th>
-                      <td className="text-right font-black">0</td>
-                      <td className="text-right font-black">23,940,000</td>
-                      <td className="text-right font-black">53,550,000</td>
-                      <td className="text-right font-black">54,361,800</td>
-                      <td className="text-right font-black text-slate-950">131,851,800</td>
-                    </tr>
+                    {live.empRows.length === 0 && (
+                      <tr>
+                        <td colSpan={live.topCats.length + 3} className="text-center text-slate-500 py-4">No posted sales for the selected period.</td>
+                      </tr>
+                    )}
+                    {live.empRows.map((r) => (
+                      <tr key={r.name}>
+                        <td className="text-left font-bold">{r.name}</td>
+                        {r.cols.map((v, i) => (
+                          <td key={i} className="text-right">{formatVal(v)}</td>
+                        ))}
+                        <td className="text-right">{formatVal(r.other)}</td>
+                        <td className="text-right font-extrabold text-slate-900">{formatVal(r.total)}</td>
+                      </tr>
+                    ))}
+                    {live.empRows.length > 0 && (
+                      <tr className="header-row">
+                        <th className="text-left font-black">Total</th>
+                        {live.topCats.map((c, i) => (
+                          <td key={c} className="text-right font-black">{formatVal(live.empRows.reduce((t, r) => t + r.cols[i], 0))}</td>
+                        ))}
+                        <td className="text-right font-black">{formatVal(live.empRows.reduce((t, r) => t + r.other, 0))}</td>
+                        <td className="text-right font-black text-slate-950">{formatVal(live.empRows.reduce((t, r) => t + r.total, 0))}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -3809,7 +3924,7 @@ export default function AuthenticVanguardSalesDashboard() {
                         {branch.code} - {branch.name} :
                       </th>
                       <td style={{ borderTop: 0, borderBottom: '1px solid #e5e7eb', fontSize: '12px', textAlign: 'center', color: '#475569', background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', padding: '10px 12px', fontWeight: 600 }}>
-                        04 Sep, 2026
+                        {eodSt ? `${eodSt.workingDate} \u00b7 ${eodSt.status}` : '\u2014'}
                       </td>
                     </tr>
                   ))}
@@ -3823,7 +3938,7 @@ export default function AuthenticVanguardSalesDashboard() {
                 onClick={() => setEodModalOpen(false)}
                 className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1"
               >
-                <span>Execute End of Day Process →</span>
+                <span>{eodSt?.status === 'Closed' ? 'Open New Workday / Start Shift' : 'Execute End of Day Process'} →</span>
               </Link>
               <button 
                 onClick={() => setEodModalOpen(false)}

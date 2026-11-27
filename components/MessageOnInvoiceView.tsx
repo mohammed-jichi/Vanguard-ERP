@@ -15,9 +15,9 @@ import {
 } from 'lucide-react';
 import {
   OmegaInvoiceMessage,
-  INITIAL_INVOICE_MESSAGES,
-  OMEGA_BRANCHES
+  INITIAL_INVOICE_MESSAGES
 } from '@/lib/omegaMoreSetupData';
+import { useTenantBranches } from '@/lib/salesSetupShared';
 import { useTenant } from '@/lib/TenantContext';
 import { supabase } from '@/lib/supabase';
 
@@ -29,6 +29,7 @@ interface ToastState {
 
 export default function MessageOnInvoiceView() {
   const { currentTenant } = useTenant();
+  const tenantBranches = useTenantBranches();
   const [messages, setMessages] = useState<OmegaInvoiceMessage[]>(INITIAL_INVOICE_MESSAGES);
 
   // Mount hydration from Supabase
@@ -176,7 +177,7 @@ export default function MessageOnInvoiceView() {
     const branchName =
       newBranch === 'ALL'
         ? 'All Branches'
-        : OMEGA_BRANCHES.find(b => b.BRANCHID === newBranch)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
+        : tenantBranches.find(b => b.BRANCHID === newBranch)?.BARANCHNAME || tenantBranches[0]?.BARANCHNAME || '';
 
     const nextDbId = Math.max(0, ...messages.map(m => m.ID)) + 1;
 
@@ -236,7 +237,7 @@ export default function MessageOnInvoiceView() {
     const branchName =
       allBranches === 1
         ? 'All Branches'
-        : OMEGA_BRANCHES.find(b => b.BRANCHID === editBranch)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
+        : tenantBranches.find(b => b.BRANCHID === editBranch)?.BARANCHNAME || tenantBranches[0]?.BARANCHNAME || '';
 
     const updated = messages.map(m => {
       if (m.ID === editingMessage.ID) {
@@ -364,7 +365,7 @@ export default function MessageOnInvoiceView() {
                   className="w-full text-xs font-normal bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer"
                 >
                   <option value="all">All Branches</option>
-                  {OMEGA_BRANCHES.map(b => (
+                  {tenantBranches.map(b => (
                     <option key={b.BRANCHID} value={b.BRANCHID}>
                       {b.BARANCHNAME}
                     </option>
@@ -563,7 +564,7 @@ export default function MessageOnInvoiceView() {
                   className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
                 >
                   <option value="ALL">ALL</option>
-                  {OMEGA_BRANCHES.map(b => (
+                  {tenantBranches.map(b => (
                     <option key={b.BRANCHID} value={b.BRANCHID}>
                       {b.BARANCHNAME}
                     </option>
@@ -661,7 +662,7 @@ export default function MessageOnInvoiceView() {
                   onChange={(e) => setEditBranch(Number(e.target.value))}
                   className="w-full text-xs bg-white border border-slate-300 rounded py-2 px-3 text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
                 >
-                  {OMEGA_BRANCHES.map(b => (
+                  {tenantBranches.map(b => (
                     <option key={b.BRANCHID} value={b.BRANCHID}>
                       {b.BARANCHNAME}
                     </option>
