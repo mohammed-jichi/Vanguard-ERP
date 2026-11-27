@@ -50,7 +50,7 @@ export default function SalesOptionsModal({
   onSaveSuccess,
   tenantId,
   branchOptions = [
-    { id: 'zeit', name: 'Zeit w zaytoun ljanoub' },
+    { id: 'zeit', name: 'Southern Olive & Oil Products S.A.R.L' },
     { id: 'southern', name: 'Southern Olive Oil Products S.A.R.L' }
   ],
   paymentTypeOptions = [

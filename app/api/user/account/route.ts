@@ -21,7 +21,7 @@ const DEFAULT_ACCOUNT_SETTINGS = {
     renewalDate: '2026-12-02',
     landingPage: 'home_page',
     role: 'Admin / General Operations Manager',
-    defaultBrand: 'Zeit w zaytoun ljanoub',
+    defaultBrand: 'Southern Olive & Oil Products S.A.R.L',
     defaultAccountingCompany: 'Southern Olive Oil Products S.A.R.L',
   },
   security: {

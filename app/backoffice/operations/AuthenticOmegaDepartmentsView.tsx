@@ -75,7 +75,7 @@ export default function AuthenticOmegaDepartmentsView() {
   const [newAccDept, setNewAccDept] = useState<string>('');
   const [newImage, setNewImage] = useState<string>('');
   const [newBranchRestrictions, setNewBranchRestrictions] = useState<Record<string, boolean>>({
-    'Zeit w zaytoun ljanoub': false
+    'Southern Olive & Oil Products S.A.R.L': false
   });
 
   // Form States - Edit Department
@@ -87,7 +87,7 @@ export default function AuthenticOmegaDepartmentsView() {
   const [editAccDept, setEditAccDept] = useState<string>('');
   const [editImage, setEditImage] = useState<string>('');
   const [editBranchRestrictions, setEditBranchRestrictions] = useState<Record<string, boolean>>({
-    'Zeit w zaytoun ljanoub': false
+    'Southern Olive & Oil Products S.A.R.L': false
   });
 
   // Hidden File Inputs
@@ -141,7 +141,7 @@ export default function AuthenticOmegaDepartmentsView() {
     setNewAccDept('');
     setNewImage('');
     setNewBranchRestrictions({
-      'Zeit w zaytoun ljanoub': false
+      'Southern Olive & Oil Products S.A.R.L': false
     });
     setIsNewModalOpen(true);
   };
@@ -158,7 +158,7 @@ export default function AuthenticOmegaDepartmentsView() {
     setEditAccDept(d.ACCOUNTDEP !== undefined && d.ACCOUNTDEP !== null ? String(d.ACCOUNTDEP) : '0');
     setEditImage(d.PICTURE || '');
     setEditBranchRestrictions({
-      'Zeit w zaytoun ljanoub': d.BRANCH_RESTRICTIONS?.includes('Zeit w zaytoun ljanoub') || false
+      'Southern Olive & Oil Products S.A.R.L': d.BRANCH_RESTRICTIONS?.includes('Southern Olive & Oil Products S.A.R.L') || false
     });
     setIsEditModalOpen(true);
   };
@@ -591,16 +591,16 @@ export default function AuthenticOmegaDepartmentsView() {
                   <label className="inline-flex items-center gap-2 text-slate-700 cursor-pointer text-xs">
                     <input
                       type="checkbox"
-                      checked={!!newBranchRestrictions['Zeit w zaytoun ljanoub']}
+                      checked={!!newBranchRestrictions['Southern Olive & Oil Products S.A.R.L']}
                       onChange={(e) =>
                         setNewBranchRestrictions({
                           ...newBranchRestrictions,
-                          'Zeit w zaytoun ljanoub': e.target.checked
+                          'Southern Olive & Oil Products S.A.R.L': e.target.checked
                         })
                       }
                       className="rounded-xs border-border text-primary focus:ring-0 cursor-pointer"
                     />
-                    <span>Zeit w zaytoun ljanoub</span>
+                    <span>Southern Olive & Oil Products S.A.R.L</span>
                   </label>
                 </div>
               </div>
@@ -777,16 +777,16 @@ export default function AuthenticOmegaDepartmentsView() {
                   <label className="inline-flex items-center gap-2 text-slate-700 cursor-pointer text-xs">
                     <input
                       type="checkbox"
-                      checked={!!editBranchRestrictions['Zeit w zaytoun ljanoub']}
+                      checked={!!editBranchRestrictions['Southern Olive & Oil Products S.A.R.L']}
                       onChange={(e) =>
                         setEditBranchRestrictions({
                           ...editBranchRestrictions,
-                          'Zeit w zaytoun ljanoub': e.target.checked
+                          'Southern Olive & Oil Products S.A.R.L': e.target.checked
                         })
                       }
                       className="rounded-xs border-border text-primary focus:ring-0 cursor-pointer"
                     />
-                    <span>Zeit w zaytoun ljanoub</span>
+                    <span>Southern Olive & Oil Products S.A.R.L</span>
                   </label>
                 </div>
               </div>

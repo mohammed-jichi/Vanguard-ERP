@@ -599,8 +599,8 @@ Event Name: ${found.event_name}`
                     onChange={(e) => setFormData({ ...formData, branchid: Number(e.target.value) })}
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 bg-white focus:outline-none focus:border-[#007bff]"
                   >
-                    <option value={1}>Zeit w zaytoun ljanoub</option>
-                    <option value={2}>Zeit w zaytoun Beirut</option>
+                    <option value={1}>Southern Olive & Oil Products S.A.R.L</option>
+                    <option value={2}>Southern Olive & Oil Products S.A.R.L Beirut</option>
                   </select>
                 </div>
               </div>

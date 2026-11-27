@@ -8535,7 +8535,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                           <div className="p-2.5 bg-white border border-rose-200 rounded-xs space-y-1">
                             <div className="font-bold text-slate-900">What Happened (The Receiving Error)</div>
                             <p className="text-slate-700 leading-relaxed">
-                              On <strong>13-Sep-2026 09:15</strong>, user <strong>Mohammed Jichi</strong> entered <strong>Purchase Invoice #120</strong> in the <strong>Purchases Module</strong> at <strong>Zeit w zaytoun ljanoub</strong>. The total invoice amount was accidentally entered into the <code>Unit Cost</code> field (or a barcode scanner misfired). Because Vanguard automatically updates the moving average cost upon receiving goods, this invoice instantly overwrote master cost with <strong>48,956,400,000.00 LL</strong>.
+                              On <strong>13-Sep-2026 09:15</strong>, user <strong>Mohammed Jichi</strong> entered <strong>Purchase Invoice #120</strong> in the <strong>Purchases Module</strong> at <strong>Southern Olive & Oil Products S.A.R.L</strong>. The total invoice amount was accidentally entered into the <code>Unit Cost</code> field (or a barcode scanner misfired). Because Vanguard automatically updates the moving average cost upon receiving goods, this invoice instantly overwrote master cost with <strong>48,956,400,000.00 LL</strong>.
                             </p>
                           </div>
 
@@ -11984,7 +11984,7 @@ const DEFAULT_CATEGORY_TABS = ['\u0645\u0641\u0631\u0642', '\u062c\u0645\u0644\u
                 <div className="max-w-md mx-auto bg-white border-2 border-dashed border-slate-400 p-4 rounded-xs shadow-md space-y-2 text-slate-900 font-sans">
                   <div className="flex items-center justify-between border-b pb-1">
                     <span className="font-bold text-xs tracking-wider text-slate-800 uppercase">
-                      Zeit w Zaytoun Ljanoub
+                      Southern Olive & Oil Products S.A.R.L
                     </span>
                     <span className="text-[10px] font-mono font-semibold text-slate-600">
                       Choueifat Facility

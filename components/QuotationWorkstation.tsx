@@ -117,7 +117,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     customerName: 'Abou Hamzeh Nuts',
     customerId: '31',
     phone: '+961 70 123 456',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     date: formatLiveTodayDate(),
     deliveryDate: formatLiveTodayDate(),
     currency: 'USD',
@@ -158,7 +158,7 @@ export const INITIAL_QUOTATIONS: QuotationRecord[] = [
     customerName: 'Supermarket Al-Nour',
     customerId: '14',
     phone: '+961 03 987 654',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     date: formatLiveTodayDate(),
     deliveryDate: formatLiveTodayDate(),
     currency: 'USD',
@@ -200,7 +200,7 @@ export const SAMPLE_CUSTOMERS = [
 ];
 
 export const BRANCH_OPTIONS = [
-  'Zeit w zaytoun ljanoub',
+  'Southern Olive & Oil Products S.A.R.L',
   'Beirut Main Branch',
   'Sidon Regional Hub',
   'Tripoli Distribution'
@@ -844,7 +844,7 @@ export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
     title: 'طلب مقطرات ودبس أسبوعي - Abou Hamzeh Nuts',
     code: 'REC-ABOUHAMZA',
     customerName: 'Abou Hamzeh Nuts',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     currency: 'USD',
     source: 'WhatsApp / Social CRM',
     notes: 'Weekly recurring restock for retail outlet.',
@@ -878,7 +878,7 @@ export const INITIAL_RECURRING_TEMPLATES: RecurringTemplate[] = [
     title: 'شحنة زيت ومونة شهرية - سوبرماركت النور',
     code: 'REC-NOUR-MTH',
     customerName: 'Supermarket Al-Nour',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     currency: 'USD',
     source: 'Direct Walk-in',
     notes: 'Monthly bulk retail and olive oil quotation.',
@@ -937,7 +937,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
         setCustomerSearch('');
         setCustomerType('Customer');
         setLinkedEventName(evName ? decodeURIComponent(evName) : 'Chami House');
-        setSelectedBranch('Zeit w zaytoun ljanoub');
+        setSelectedBranch('Southern Olive & Oil Products S.A.R.L');
         setQuotationDate(formatLiveTodayDate());
         setDeliveryDate(formatLiveTodayDate());
       }
@@ -1048,7 +1048,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
   }, []);
 
   // Quotation From state
-  const [selectedBranch, setSelectedBranch] = useState('Zeit w zaytoun ljanoub');
+  const [selectedBranch, setSelectedBranch] = useState('Southern Olive & Oil Products S.A.R.L');
   const [quotationDate, setQuotationDate] = useState<string>(() => formatLiveTodayDate());
   const [deliveryDate, setDeliveryDate] = useState<string>(() => formatLiveTodayDate());
   const [currency, setCurrency] = useState<'USD' | 'EUR' | 'LBP'>('USD');
@@ -1200,7 +1200,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
   const [recurringTemplates, setRecurringTemplates] = useState<RecurringTemplate[]>(INITIAL_RECURRING_TEMPLATES);
 
   // Default Configuration State (Screenshots 1, 2, 3)
-  const [defaultBranch, setDefaultBranch] = useState('Zeit w zaytoun ljanoub');
+  const [defaultBranch, setDefaultBranch] = useState('Southern Olive & Oil Products S.A.R.L');
   const [defaultCurrency, setDefaultCurrency] = useState('USD');
   const [defaultPayment, setDefaultPayment] = useState('CASH USD');
   const [defaultSalesman, setDefaultSalesman] = useState('Mahdi');
@@ -4786,7 +4786,7 @@ export default function QuotationWorkstation({ withVanguardSidebar = false }: Qu
                   quotationNo: '1002601',
                   customerName: 'Abou Hamzeh Nuts',
                   phone: '+961 70 123 456',
-                  branch: 'Zeit w zaytoun ljanoub',
+                  branch: 'Southern Olive & Oil Products S.A.R.L',
                   date: formatLiveTodayDate(),
                   deliveryDate: formatLiveTodayDate(),
                   currency: 'USD',

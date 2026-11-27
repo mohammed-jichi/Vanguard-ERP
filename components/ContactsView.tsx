@@ -558,7 +558,7 @@ export default function ContactsView() {
                   <option value="Southern Olive and Oil Products S.A.R.L.">[1300-01] Main — Southern Olive and Oil Products S.A.R.L.</option>
                   <option value="Beirut Main Branch">{t('beirut_main_branch', 'Beirut Main Branch')}</option>
                   <option value="Sidon Regional Hub">{t('sidon_regional_hub', 'Sidon Regional Hub')}</option>
-                  <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub (Legacy)</option>
+                  <option value="Southern Olive & Oil Products S.A.R.L">Southern Olive & Oil Products S.A.R.L (Legacy)</option>
                 </select>
               </div>
 

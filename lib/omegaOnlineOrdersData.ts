@@ -1,7 +1,7 @@
 /**
  * Vanguard ERP / Vanguard ERP - Online Orders Models & Live Seed Data
  * Module: Online Orders Control Center (ID: 343, Parent: 1)
- * Branch: 22901 - Zeit w zaytoun ljanoub
+ * Branch: 22901 - Southern Olive & Oil Products S.A.R.L
  */
 
 export interface OmegaOnlineOrderItem {
@@ -80,7 +80,7 @@ export const INITIAL_ONLINE_ORDERS: OmegaOnlineOrder[] = [
     payment_id: 1, // Cash on Delivery
     status: 0, // Not Received Yet
     zonename: 'South Lebanon - Saida & Coastal',
-    branchname: 'Zeit w zaytoun ljanoub',
+    branchname: 'Southern Olive & Oil Products S.A.R.L',
     branchid: 1,
     order_type: 1, // External
     remark: 'Ring bell twice, customer is on terrace.',
@@ -125,7 +125,7 @@ export const INITIAL_ONLINE_ORDERS: OmegaOnlineOrder[] = [
     payment_id: 2, // Paid Online
     status: -2, // Partially Received
     zonename: 'South Lebanon - Tyre & Nabatieh',
-    branchname: 'Zeit w zaytoun ljanoub',
+    branchname: 'Southern Olive & Oil Products S.A.R.L',
     branchid: 1,
     order_type: 1, // External
     remark: 'Contactless delivery requested, please leave at door.',
@@ -165,7 +165,7 @@ export const INITIAL_ONLINE_ORDERS: OmegaOnlineOrder[] = [
     payment_id: 1,
     status: -1, // Fully Received
     zonename: 'Beirut & Suburbs',
-    branchname: 'Zeit w zaytoun ljanoub',
+    branchname: 'Southern Olive & Oil Products S.A.R.L',
     branchid: 1,
     order_type: 2, // Omenu
     items: [
@@ -205,7 +205,7 @@ export const INITIAL_ONLINE_ORDERS: OmegaOnlineOrder[] = [
     payment_id: 2,
     status: -3, // Fully Received and Accepted
     zonename: 'Mount Lebanon - South Suburbs',
-    branchname: 'Zeit w zaytoun ljanoub',
+    branchname: 'Southern Olive & Oil Products S.A.R.L',
     branchid: 1,
     order_type: 1,
     items: [
@@ -235,7 +235,7 @@ export const INITIAL_ONLINE_ORDERS: OmegaOnlineOrder[] = [
     status: 0,
     order_status: 100, // Cancelled
     zonename: 'South Lebanon - Saida & Coastal',
-    branchname: 'Zeit w zaytoun ljanoub',
+    branchname: 'Southern Olive & Oil Products S.A.R.L',
     branchid: 1,
     order_type: 1,
     remark: 'Cancelled by customer before dispatch.',

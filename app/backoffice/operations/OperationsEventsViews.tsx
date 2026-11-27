@@ -1944,7 +1944,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                       onChange={e => handleBranchChange(Number(e.target.value))}
                       className="w-full h-[34px] px-2 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white"
                     >
-                      <option value={1}>Zeit w zaytoun ljanoub</option>
+                      <option value={1}>Southern Olive & Oil Products S.A.R.L</option>
                       <option value={2}>Beirut Central Distribution Depot</option>
                     </select>
                   </div>
@@ -2104,7 +2104,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   <div className="card-header bg-background border-b border-border px-4 py-3">
                     <span className="font-semibold text-sm text-foreground">Event Drivers</span>
                     <span className="ml-2 text-xs text-slate-500 font-normal">
-                      ({newEventFormData.branchid === 2 ? 'Beirut Central Distribution Depot' : 'Zeit w zaytoun ljanoub'})
+                      ({newEventFormData.branchid === 2 ? 'Beirut Central Distribution Depot' : 'Southern Olive & Oil Products S.A.R.L'})
                     </span>
                   </div>
 
@@ -2188,7 +2188,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                                   <td className="py-2.5 px-3 font-semibold text-foreground">{emp.NAME}</td>
                                   <td className="py-2.5 px-3 font-mono text-slate-700">{emp.MOBILETEL || '—'}</td>
                                   <td className="py-2.5 px-3 text-slate-600">
-                                    {emp.branchid === 2 ? 'Beirut Central Depot' : 'Zeit w zaytoun ljanoub'}
+                                    {emp.branchid === 2 ? 'Beirut Central Depot' : 'Southern Olive & Oil Products S.A.R.L'}
                                   </td>
                                   <td className="py-2.5 px-3">
                                     <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
@@ -2239,7 +2239,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                   onChange={e => handleBranchChange(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                   className="w-full h-[35px] px-3 text-xs border border-border rounded focus:outline-none focus:border-primary bg-white text-foreground"
                 >
-                  <option value={1}>Zeit w zaytoun ljanoub</option>
+                  <option value={1}>Southern Olive & Oil Products S.A.R.L</option>
                   <option value={2}>Beirut Central Distribution Depot</option>
                   <option value="all">All Branches</option>
                 </select>
@@ -3296,7 +3296,7 @@ export default function OperationsEventsViews({ section = 'events' }: Operations
                         onChange={e => setNewDriverForm({ ...newDriverForm, branchid: Number(e.target.value) })}
                         className="w-full h-8 px-2.5 border border-border rounded focus:outline-none focus:border-primary bg-white"
                       >
-                        <option value={1}>Zeit w zaytoun ljanoub</option>
+                        <option value={1}>Southern Olive & Oil Products S.A.R.L</option>
                         <option value={2}>Beirut Central Distribution Depot</option>
                       </select>
                     </div>

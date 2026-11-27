@@ -1,5 +1,5 @@
 // Vanguard ERP - Vanguard ERP Payment Types Live Simulation Data
-// Extracted from Customer 22901 (منتوجات زيت وزيتون الجنوب ش.م.م - Zeit w zaytoun ljanoub)
+// Extracted from Customer 22901 (منتوجات زيت وزيتون الجنوب ش.م.م - Southern Olive & Oil Products S.A.R.L)
 
 export interface OmegaPaymentType {
   ID: number;
@@ -101,7 +101,7 @@ export const OMEGA_PAYMENT_STATUS_OPTIONS = [
 export const OMEGA_BRANCHES = [
   {
     BRANCHID: 1,
-    BARANCHNAME: "Zeit w zaytoun ljanoub",
+    BARANCHNAME: "Southern Olive & Oil Products S.A.R.L",
     OTHERNAME: "منتوجات زيت وزيتون الجنوب ش.م.م",
     CITY: "Kfarchima",
     STREET: "Old Saida Raod",

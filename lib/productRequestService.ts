@@ -1231,7 +1231,7 @@ export class ProductRequestService {
           {/* Corporate Topper */}
           <div style="text-align: center; margin-bottom: 6px;">
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.05em;">
-              Zeit w zaytoun ljanoub
+              Southern Olive & Oil Products S.A.R.L
             </div>
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; color: #475569; margin-top: 2px;">
               Southern Olive Oil Products S.A.R.L
@@ -1255,7 +1255,7 @@ export class ProductRequestService {
 
           {/* Branch Subtitle */}
           <div style="display: flex; justify-content: space-between; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10.5px; font-weight: 600; color: #334155; margin-bottom: 12px;">
-            <span>Branch: Zeit w zaytoun ljanoub - Central Plant</span>
+            <span>Branch: Southern Olive & Oil Products S.A.R.L - Central Plant</span>
             <span style="font-family: ui-monospace, monospace; color: #64748b;">System Source: Vanguard ERP Live Ledger</span>
           </div>
 

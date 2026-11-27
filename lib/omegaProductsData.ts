@@ -98,7 +98,7 @@ export interface ProductCostVariationRecord {
   refNo: string; // e.g. 'Purchase Invoice #120' or 'BOM Recalculation'
   oldCostLL: number;
   newCostLL: number;
-  branch: string; // e.g. 'Zeit w zaytoun ljanoub'
+  branch: string; // e.g. 'Southern Olive & Oil Products S.A.R.L'
   user: string; // e.g. 'Mohammed Jichi'
   note?: string;
   isCorrupted?: boolean;
@@ -571,7 +571,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     updatedAt: '21 Jul, 2026',
     isDiscontinued: false,
     stockRecords: [
-      { branchId: 1, branchName: 'Zeit w zaytoun ljanoub', warehouseId: 1, warehouseName: 'Main Store', locationId: 12, locationName: 'Main Store', qtyOH: 12, reorderLevel: 50, maxStock: 200, reservedQty: 2, availableQty: 10 }
+      { branchId: 1, branchName: 'Southern Olive & Oil Products S.A.R.L', warehouseId: 1, warehouseName: 'Main Store', locationId: 12, locationName: 'Main Store', qtyOH: 12, reorderLevel: 50, maxStock: 200, reservedQty: 2, availableQty: 10 }
     ],
     reorderRules: [
       { id: 1, location: 'Main Store', warehouseName: 'Main Store', minLevel: 50, maxStock: 200, alertActive: true }
@@ -605,7 +605,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
         refNo: 'BOM Recalculation',
         oldCostLL: 48956400000,
         newCostLL: 543960,
-        branch: 'Zeit w zaytoun ljanoub',
+        branch: 'Southern Olive & Oil Products S.A.R.L',
         user: 'Mohammed Jichi',
         note: 'Recalculate Production Item Cost executed. Master profile cost realigned with Choueifat production BOM.',
         isCorrupted: false
@@ -617,7 +617,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
         refNo: 'Purchase Invoice #120',
         oldCostLL: 543960,
         newCostLL: 48956400000,
-        branch: 'Zeit w zaytoun ljanoub',
+        branch: 'Southern Olive & Oil Products S.A.R.L',
         user: 'Mohammed Jichi',
         note: 'Receiving Error: Total invoice amount entered into unit cost field during goods receipt. Corrupted moving average cost.',
         isCorrupted: true
@@ -629,7 +629,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
         refNo: 'SYSTEM-INIT',
         oldCostLL: 0,
         newCostLL: 543960,
-        branch: 'Zeit w zaytoun ljanoub',
+        branch: 'Southern Olive & Oil Products S.A.R.L',
         user: 'Admin',
         note: 'Initial master item profile creation.',
         isCorrupted: false
@@ -680,7 +680,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
         date: '13-Sep-2026 10:52:14',
         receiptNumber: 'POS-REC-9402',
         source: 'Vanguard Walk-in POS',
-        channel: 'Branch: Zeit w zaytoun ljanoub (POS Terminal #02)',
+        channel: 'Branch: Southern Olive & Oil Products S.A.R.L (POS Terminal #02)',
         qtySold: 2,
         unit: 'BOX',
         priceType: 'Selling Price 1 (Standard)',
@@ -825,7 +825,7 @@ export const INITIAL_OMEGA_PRODUCTS: AuthenticProductRecord[] = [
     updatedAt: '21 Jul, 2026',
     isDiscontinued: false,
     stockRecords: [
-      { branchId: 1, branchName: 'Zeit w zaytoun ljanoub', warehouseId: 1, warehouseName: 'Main Store', locationId: 12, locationName: 'Showroom', qtyOH: 0, reorderLevel: 24, maxStock: 120, reservedQty: 0, availableQty: 0 }
+      { branchId: 1, branchName: 'Southern Olive & Oil Products S.A.R.L', warehouseId: 1, warehouseName: 'Main Store', locationId: 12, locationName: 'Showroom', qtyOH: 0, reorderLevel: 24, maxStock: 120, reservedQty: 0, availableQty: 0 }
     ],
     imageUrl: '',
     videoUrl: '',

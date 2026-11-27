@@ -65,7 +65,7 @@ export interface LostGoodsVoucher {
 }
 
 const AUTHENTIC_BRANCHES = [
-  { id: 1, name: 'Zeit w zaytoun ljanoub' },
+  { id: 1, name: 'Southern Olive & Oil Products S.A.R.L' },
   { id: 2, name: 'Southern Olive and Oil Products - Main' }
 ];
 
@@ -90,7 +90,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 132,
     waistId: 11,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2026-07-06',
     locationId: 2,
     locationDescription: 'Showroom',
@@ -116,7 +116,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 120,
     waistId: 10,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2026-07-03',
     locationId: 2,
     locationDescription: 'Showroom',
@@ -142,7 +142,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 118,
     waistId: 9,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2026-06-22',
     locationId: 2,
     locationDescription: 'Showroom',
@@ -168,7 +168,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 116,
     waistId: 8,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2026-06-22',
     locationId: 1,
     locationDescription: 'Main Store',
@@ -194,7 +194,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 109,
     waistId: 7,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2026-06-18',
     locationId: 1,
     locationDescription: 'Main Store',
@@ -220,7 +220,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 87,
     waistId: 6,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2026-04-03',
     locationId: 2,
     locationDescription: 'Showroom',
@@ -246,7 +246,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 86,
     waistId: 5,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2026-03-24',
     locationId: 2,
     locationDescription: 'Showroom',
@@ -272,7 +272,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 44,
     waistId: 4,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2025-12-29',
     locationId: 2,
     locationDescription: 'Showroom',
@@ -298,7 +298,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 34,
     waistId: 3,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2025-12-21',
     locationId: 2,
     locationDescription: 'Showroom',
@@ -324,7 +324,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 2,
     waistId: 2,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2025-12-21',
     locationId: 1,
     locationDescription: 'Main Store',
@@ -350,7 +350,7 @@ const INITIAL_OMEGA_VOUCHERS: LostGoodsVoucher[] = [
     ser: 1,
     waistId: 1,
     branchId: 1,
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     date: '2025-12-19',
     locationId: 2,
     locationDescription: 'Showroom',
@@ -804,7 +804,7 @@ export default function LostGoodsView() {
       return;
     }
 
-    const branch = branches.find((b) => b.id === selectedBranchId)?.name || 'Zeit w zaytoun ljanoub';
+    const branch = branches.find((b) => b.id === selectedBranchId)?.name || 'Southern Olive & Oil Products S.A.R.L';
     const location = locations.find((l) => l.id === selectedLocationId)?.name || 'Showroom';
     const reason = reasons.find((r) => r.id === selectedReasonId)?.name || 'Product Expiry';
 
@@ -1515,7 +1515,7 @@ export default function LostGoodsView() {
         <PrintVoucherModal
           isOpen={isPrintModalOpen}
           onClose={() => setIsPrintModalOpen(false)}
-          branch={branches.find((b) => b.id === selectedBranchId)?.name || 'Zeit w zaytoun ljanoub'}
+          branch={branches.find((b) => b.id === selectedBranchId)?.name || 'Southern Olive & Oil Products S.A.R.L'}
           location={locations.find((l) => l.id === selectedLocationId)?.name || 'Showroom'}
           reason={reasons.find((r) => r.id === selectedReasonId)?.name || 'Product Expiry'}
           date={dateValue}
@@ -1647,7 +1647,7 @@ function PreviewLostGoodsModal({
                 className="w-full h-8 px-2 text-xs bg-white border border-slate-300 rounded focus:outline-none focus:border-blue-400"
               >
                 <option value="ALL">Select branch (All)</option>
-                <option value="Zeit w zaytoun ljanoub">{t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}</option>
+                <option value="Southern Olive & Oil Products S.A.R.L">{t('zeit_w_zaytoun_ljanoub', 'Southern Olive & Oil Products S.A.R.L')}</option>
                 <option value="Southern Olive and Oil Products - Main">{t('choueifat_main_facility', 'Southern Olive and Oil Products - Main')}</option>
               </select>
             </div>

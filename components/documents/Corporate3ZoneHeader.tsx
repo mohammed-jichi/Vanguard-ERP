@@ -31,8 +31,8 @@ export function sanitizeFacilityName(branch?: string): string {
     .trim();
 
   // Purge legacy distortions
-  cleaned = cleaned.replace(/\s*\(\s*Zeit w zaytoun ljanoub\s*\)/gi, '');
-  cleaned = cleaned.replace(/Zeit w zaytoun ljanoub/gi, 'Main');
+  cleaned = cleaned.replace(/\s*\(\s*Southern Olive & Oil Products S.A.R.L\s*\)/gi, '');
+  cleaned = cleaned.replace(/Southern Olive & Oil Products S.A.R.L/gi, 'Main');
   cleaned = cleaned.replace(/\s*\(\s*Choueifat Main Facility\s*\)/gi, '');
   cleaned = cleaned.replace(/Choueifat Main Plant/gi, 'Main');
   cleaned = cleaned.replace(/1300-01 - Choueifat Main Facility/gi, '[1300-01] Main');

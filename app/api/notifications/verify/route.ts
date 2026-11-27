@@ -266,7 +266,7 @@ export async function GET(req: NextRequest) {
           <div class="container">
             <div class="badge-facility">
               <span>🏢</span>
-              <span>Zeit w zaytoun ljanoub (Facility ID: #1300)</span>
+              <span>Southern Olive & Oil Products S.A.R.L (Facility ID: #1300)</span>
             </div>
 
             <div class="check-circle">

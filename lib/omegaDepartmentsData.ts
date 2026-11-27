@@ -18,7 +18,7 @@ export interface BranchOption {
 
 export const OMEGA_BRANCHES: BranchOption[] = [
   { BRANCHID: 'allbranch', BARANCHNAME: 'All Branches' },
-  { BRANCHID: '1', BARANCHNAME: 'Zeit w zaytoun ljanoub' }
+  { BRANCHID: '1', BARANCHNAME: 'Southern Olive & Oil Products S.A.R.L' }
 ];
 
 export const INITIAL_OMEGA_DEPARTMENTS: DepartmentItem[] = [

@@ -31,7 +31,7 @@ export const SAVED_GOOGLE_ACCOUNTS = [
     avatarBg: 'bg-[#5c3d2e]'
   },
   {
-    name: 'Zeit w Zaytoun Ljanoub',
+    name: 'Southern Olive & Oil Products S.A.R.L',
     email: 'zeit.zaytoun.ljanoub@gmail.com',
     avatarLetter: 'Z',
     avatarBg: 'bg-[#1e5c3d]'

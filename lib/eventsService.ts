@@ -274,7 +274,7 @@ export class EventsService {
     const employeeIds = eventDriversForm?.employee_ids || [];
     const assignedDrivers = employeesStore.filter(emp => employeeIds.includes(emp.id) || employeeIds.includes(emp.EMPLOYEEID));
 
-    const branchName = eventForm.branchid === 2 ? 'Beirut Central Distribution Depot' : 'Zeit w zaytoun ljanoub';
+    const branchName = eventForm.branchid === 2 ? 'Beirut Central Distribution Depot' : 'Southern Olive & Oil Products S.A.R.L';
 
     if (eventForm.evnt_id) {
       const evntId = Number(eventForm.evnt_id);

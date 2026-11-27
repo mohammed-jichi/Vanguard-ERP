@@ -142,7 +142,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
   // -------------------------------------------------------------
   // 1. BRANCH INFO STATE (Authentic Vanguard Screenshot 1)
   // -------------------------------------------------------------
-  const [branchName] = useState('Zeit w zaytoun ljanoub');
+  const [branchName] = useState('Southern Olive & Oil Products S.A.R.L');
   const [street, setStreet] = useState('Old Saida Raod');
   const [stateName, setStateName] = useState('Lebanon');
   const [cityName, setCityName] = useState('Kfarchima');
@@ -2780,7 +2780,7 @@ export default function AuthenticOmegaQuickSetupWizard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
               <span className="font-bold text-slate-800 block text-sm">Active System Operator</span>
-              <span className="text-slate-600 mt-1 block">Mohammed (Super Administrator) - Branch Zeit w zaytoun ljanoub</span>
+              <span className="text-slate-600 mt-1 block">Mohammed (Super Administrator) - Branch Southern Olive & Oil Products S.A.R.L</span>
             </div>
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
               <span className="font-bold text-slate-800 block text-sm">Security Matrix</span>

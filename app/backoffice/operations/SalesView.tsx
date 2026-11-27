@@ -512,7 +512,7 @@ export const GROUPS_MAP: Record<string, string[]> = {
 
 export const BRANCH_OPTIONS = [
   { id: 'southern', name: 'Southern Olive Oil Products S.A.R.L' },
-  { id: 'zeit', name: 'Zeit w zaytoun ljanoub' }
+  { id: 'zeit', name: 'Southern Olive & Oil Products S.A.R.L' }
 ];
 
 export const CUSTOMER_PRESETS = [
@@ -541,7 +541,7 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     refCode: '3SO538A0D9',
     date: '04 Sep, 2026',
     deliveryDate: '04 Sep, 2026',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     customerName: 'Abou Hamza',
     customerId: '31',
     company: 'Abou Hamzeh Nuts',
@@ -595,7 +595,7 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     refCode: '3SO538B12F',
     date: '05 Sep, 2026',
     deliveryDate: '06 Sep, 2026',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     customerName: 'Beirut Gourmet Market',
     customerId: 'CUST-002',
     company: 'Beirut Gourmet S.A.L',
@@ -626,7 +626,7 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     refCode: '3SO538C44A',
     date: '06 Sep, 2026',
     deliveryDate: '07 Sep, 2026',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     customerName: 'Cedar Valley Organics',
     customerId: 'CUST-005',
     company: 'Cedar Organics SARL',
@@ -657,7 +657,7 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     refCode: '3SO538D98C',
     date: '07 Sep, 2026',
     deliveryDate: '07 Sep, 2026',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     customerName: 'Al-Janoub Mart Supermarket',
     customerId: 'CUST-003',
     company: 'Al Janoub Group',
@@ -688,7 +688,7 @@ export const INITIAL_INVOICES_DIRECTORY: InvoiceRecord[] = [
     refCode: '3SO538E55B',
     date: '07 Sep, 2026',
     deliveryDate: '08 Sep, 2026',
-    branch: 'Zeit w zaytoun ljanoub',
+    branch: 'Southern Olive & Oil Products S.A.R.L',
     customerName: 'Tyre Regional Co-op',
     customerId: 'CUST-004',
     company: 'Tyre Farmers Co-op',
@@ -835,7 +835,7 @@ export default function AuthenticVanguardSalesWorkstation({
   ]);
   const [salesSelectedSerials, setSalesSelectedSerials] = useState<string[]>(['SN-VNG-9901']);
   const [isQuotationsModalOpen, setIsQuotationsModalOpen] = useState(false);
-  const [quotationBranchFilter, setQuotationBranchFilter] = useState('Zeit w zaytoun ljanoub');
+  const [quotationBranchFilter, setQuotationBranchFilter] = useState('Southern Olive & Oil Products S.A.R.L');
   const [quotationCustomerSearch, setQuotationCustomerSearch] = useState('');
   const [quotationCustomerGroup, setQuotationCustomerGroup] = useState('All Customer Groups');
   const [quotationSearchQuery, setQuotationSearchQuery] = useState('');
@@ -1373,7 +1373,7 @@ export default function AuthenticVanguardSalesWorkstation({
   };
 
   // --- Preview Sales Filter States ---
-  const [previewBranchFilter, setPreviewBranchFilter] = useState('Zeit w zaytoun ljanoub');
+  const [previewBranchFilter, setPreviewBranchFilter] = useState('Southern Olive & Oil Products S.A.R.L');
   const [previewCustomerSearch, setPreviewCustomerSearch] = useState('');
   const [previewInvoiceSearch, setPreviewInvoiceSearch] = useState('');
   const [previewTransactionType, setPreviewTransactionType] = useState('Show All');
@@ -2805,7 +2805,7 @@ export default function AuthenticVanguardSalesWorkstation({
   const filteredPreviewInvoices = useMemo(() => {
     return invoicesDirectory.filter((inv) => {
       // Branch filter
-      if (previewBranchFilter !== 'All Branches' && previewBranchFilter !== 'Zeit w zaytoun ljanoub' && inv.branch !== previewBranchFilter) {
+      if (previewBranchFilter !== 'All Branches' && previewBranchFilter !== 'Southern Olive & Oil Products S.A.R.L' && inv.branch !== previewBranchFilter) {
         return false;
       }
       // Customer search
@@ -5341,7 +5341,7 @@ export default function AuthenticVanguardSalesWorkstation({
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   <tr>
-                    <td className="p-2 font-medium">Zeit w zaytoun ljanoub</td>
+                    <td className="p-2 font-medium">Southern Olive & Oil Products S.A.R.L</td>
                     <td className="p-2 text-slate-500">Southern Olive and Oil Products - Main</td>
                     <td className="p-2 text-right font-mono font-semibold">134.50</td>
                     <td className="p-2 text-right font-mono text-amber-700">12.00</td>
@@ -5489,7 +5489,7 @@ export default function AuthenticVanguardSalesWorkstation({
                     onChange={(e) => setPreviewBranchFilter(e.target.value)}
                     className="w-full border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-700 bg-white shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-blue-500"
                   >
-                    <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub</option>
+                    <option value="Southern Olive & Oil Products S.A.R.L">Southern Olive & Oil Products S.A.R.L</option>
                     <option value="Beirut Main Branch">Beirut Main Branch</option>
                     <option value="All Branches">All Branches</option>
                   </select>
@@ -6455,7 +6455,7 @@ export default function AuthenticVanguardSalesWorkstation({
                     onChange={(e) => setQuotationBranchFilter(e.target.value)}
                     className="w-full bg-white border border-border rounded px-3 py-1.5 text-slate-800 text-xs shadow-2xs appearance-none pr-8 cursor-pointer focus:outline-none focus:border-slate-400"
                   >
-                    <option value="Zeit w zaytoun ljanoub">Zeit w zaytoun ljanoub</option>
+                    <option value="Southern Olive & Oil Products S.A.R.L">Southern Olive & Oil Products S.A.R.L</option>
                     <option value="Southern Olive Oil S.A.R.L">Southern Olive Oil S.A.R.L</option>
                     <option value="All Branches">All Branches</option>
                   </select>

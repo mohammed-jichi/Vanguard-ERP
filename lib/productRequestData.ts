@@ -91,7 +91,7 @@ export interface RecurringPRTemplate {
 
 // Branches matching authentic Vanguard setup
 export const OMEGA_PR_BRANCHES = [
-  { BRANCHID: 1, BARANCHNAME: 'Zeit w zaytoun ljanoub', CODE: 'ZWZ-01', BRAND_ID: 9606 },
+  { BRANCHID: 1, BARANCHNAME: 'Southern Olive & Oil Products S.A.R.L', CODE: 'ZWZ-01', BRAND_ID: 9606 },
   { BRANCHID: 2, BARANCHNAME: 'Central Kitchen', CODE: 'CK-01', BRAND_ID: 9606 },
   { BRANCHID: 3, BARANCHNAME: 'Warehouse Beirut', CODE: 'WH-01', BRAND_ID: 9606 },
   { BRANCHID: 4, BARANCHNAME: 'Downtown Express', CODE: 'DT-02', BRAND_ID: 9606 },
@@ -156,7 +156,7 @@ export const INITIAL_PRODUCT_REQUESTS: ProductRequestHeader[] = [
     ID: 1001,
     REQUESTNB: 'PR-1001',
     BRANCHID: 1,
-    TOBRANCH: 'Zeit w zaytoun ljanoub',
+    TOBRANCH: 'Southern Olive & Oil Products S.A.R.L',
     FROMBRANCHID: 2,
     FROMBRANCHNAME: 'Central Kitchen',
     FROMBRAND: 9606,
@@ -412,7 +412,7 @@ export const INITIAL_PRODUCT_REQUESTS: ProductRequestHeader[] = [
     ID: 1004,
     REQUESTNB: 'PR-1004',
     BRANCHID: 1,
-    TOBRANCH: 'Zeit w zaytoun ljanoub',
+    TOBRANCH: 'Southern Olive & Oil Products S.A.R.L',
     FROMBRANCHID: 3,
     FROMBRANCHNAME: 'Warehouse Beirut',
     FROMBRAND: 9606,

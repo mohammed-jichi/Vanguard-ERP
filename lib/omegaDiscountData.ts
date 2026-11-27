@@ -80,7 +80,7 @@ export const INVOICE_MESSAGES: InvoiceMessage[] = [
 export const OMEGA_BRANCHES = [
   {
     BRANCHID: 1,
-    BARANCHNAME: '1300 - Main Branch',
+    BARANCHNAME: 'Southern Olive & Oil Products S.A.R.L',
     CITY: 'Kfarchima',
     MAINCURRENCY: '$',
     SECONDCURRENCY: 'LL'

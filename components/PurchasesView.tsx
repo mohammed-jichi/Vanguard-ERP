@@ -662,7 +662,7 @@ export default function PurchasesView() {
   const handleOpenNewForm = () => {
     setActiveEditingInvoiceId(null);
     setSelectedSupplierName('');
-    setFormBranch('Zeit w zaytoun ljanoub');
+    setFormBranch('Southern Olive & Oil Products S.A.R.L');
     setFormLocation('Southern Olive and Oil Products - Main');
     setFormDate(new Date().toISOString().split('T')[0]);
     setFormDeliveryDate(new Date().toISOString().split('T')[0]);

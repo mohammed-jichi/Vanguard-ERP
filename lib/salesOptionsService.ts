@@ -79,7 +79,7 @@ export const DEFAULT_SALES_OPTIONS: SalesOptionsState = {
   layaway: false,
 
   // Tab 1: Default Values
-  default_branch: 'Zeit w zaytoun ljanoub',
+  default_branch: 'Southern Olive & Oil Products S.A.R.L',
   default_currency: 'USD',
   default_payment: 'cash_usd',
   default_salesman: 'Direct Counter',

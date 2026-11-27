@@ -64,7 +64,7 @@ export default function MyAccountPage() {
   const [renewalDate, setRenewalDate] = useState('2026-12-02');
   const [landingPage, setLandingPage] = useState('home_page');
   const [role, setRole] = useState('Admin / General Operations Manager');
-  const [defaultBrand, setDefaultBrand] = useState('Zeit w zaytoun ljanoub');
+  const [defaultBrand, setDefaultBrand] = useState('Southern Olive & Oil Products S.A.R.L');
   const [defaultAccountingCompany, setDefaultAccountingCompany] = useState('Southern Olive Oil Products S.A.R.L');
 
   // Tab 2: Change Password State
@@ -142,7 +142,7 @@ export default function MyAccountPage() {
             setRenewalDate(profile.renewalDate || '2026-12-02');
             setLandingPage(profile.landingPage || 'home_page');
             setRole(profile.role || 'Admin / General Operations Manager');
-            setDefaultBrand(profile.defaultBrand || 'Zeit w zaytoun ljanoub');
+            setDefaultBrand(profile.defaultBrand || 'Southern Olive & Oil Products S.A.R.L');
             setDefaultAccountingCompany(profile.defaultAccountingCompany || 'Southern Olive Oil Products S.A.R.L');
           }
           if (security) {
@@ -678,7 +678,7 @@ export default function MyAccountPage() {
                   onChange={(e) => setDefaultBrand(e.target.value)}
                   className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:border-blue-500 focus:outline-none transition-all cursor-pointer"
                 >
-                  <option value="Zeit w zaytoun ljanoub">{t('brand_zeit_w_zaytoun', 'Zeit w zaytoun ljanoub')}</option>
+                  <option value="Southern Olive & Oil Products S.A.R.L">{t('brand_zeit_w_zaytoun', 'Southern Olive & Oil Products S.A.R.L')}</option>
                   <option value="Southern Olive Pressing Mill">{t('brand_southern_olive', 'Southern Olive Pressing Mill')}</option>
                   <option value="Vanguard Distribution Hub">{t('brand_vanguard_hub', 'Vanguard Distribution Hub')}</option>
                 </select>

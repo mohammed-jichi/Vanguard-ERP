@@ -41,11 +41,11 @@ export async function POST(req: NextRequest) {
     const verificationUrl = `${baseUrl}/verify/alerts?token=${encodeURIComponent(token)}`;
 
     // WhatsApp Message Body Specification
-    const whatsAppMessage = `Hello ${name || 'Employee'}, your address/phone has been added by Zeit w zaytoun ljanoub (Facility ID: #1300) to receive ERP notifications. Please verify by clicking the link below: ${verificationUrl}`;
+    const whatsAppMessage = `Hello ${name || 'Employee'}, your address/phone has been added by Southern Olive & Oil Products S.A.R.L (Facility ID: #1300) to receive ERP notifications. Please verify by clicking the link below: ${verificationUrl}`;
 
     // Email Body Specification
-    const emailSubject = `Verify your email for Vanguard ERP Notifications - Zeit w zaytoun ljanoub (Facility ID: #1300)`;
-    const emailBody = `Hello ${name || 'Employee'},\n\nYour address has been added by Zeit w zaytoun ljanoub (Facility ID: #1300) to receive ERP notifications. Please verify by clicking the link below:\n\n${verificationUrl}\n\nThank you,\nZeit w zaytoun ljanoub Management`;
+    const emailSubject = `Verify your email for Vanguard ERP Notifications - Southern Olive & Oil Products S.A.R.L (Facility ID: #1300)`;
+    const emailBody = `Hello ${name || 'Employee'},\n\nYour address has been added by Southern Olive & Oil Products S.A.R.L (Facility ID: #1300) to receive ERP notifications. Please verify by clicking the link below:\n\n${verificationUrl}\n\nThank you,\nSouthern Olive & Oil Products S.A.R.L Management`;
 
     let dispatchStatus = 'dispatched';
     let dispatchDetails: any = { verificationUrl };
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
                   <h2 style="color: #0f172a; margin-top: 0;">Vanguard ERP Notification Verification</h2>
                   <p style="color: #334155; font-size: 14px; line-height: 1.6;">
                     Hello <strong>${name}</strong>,<br/><br/>
-                    Your address has been added by <strong>Zeit w zaytoun ljanoub</strong> (Facility ID: #1300) to receive ERP notifications.
+                    Your address has been added by <strong>Southern Olive & Oil Products S.A.R.L</strong> (Facility ID: #1300) to receive ERP notifications.
                   </p>
                   <div style="margin: 24px 0;">
                     <a href="${verificationUrl}" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
         const result = await sendWhatsAppTemplate(
           recipient,
           'vanguard_employee_verification',
-          [name || 'Employee', 'Zeit w zaytoun ljanoub', '1300'],
+          [name || 'Employee', 'Southern Olive & Oil Products S.A.R.L', '1300'],
           verificationUrl // buttonUrlParam (though template button might just use the token in real life, but for now we pass the full URL or parameter as requested)
         );
         dispatchDetails.provider = result.simulated ? 'simulated' : 'whatsapp_cloud';

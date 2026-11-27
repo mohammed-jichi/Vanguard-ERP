@@ -1,5 +1,5 @@
 // Vanguard ERP - Vanguard ERP Coupons & Gift Certificates Live Simulation Data
-// Extracted from Customer 22901 (منتوجات زيت وزيتون الجنوب ش.م.م - Zeit w zaytoun ljanoub)
+// Extracted from Customer 22901 (منتوجات زيت وزيتون الجنوب ش.م.م - Southern Olive & Oil Products S.A.R.L)
 
 export interface OmegaVoucherCustomer {
   ID: number;

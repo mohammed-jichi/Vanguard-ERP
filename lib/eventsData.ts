@@ -228,7 +228,7 @@ export const SEED_EVENT_TYPES: OmegaEventTypeItem[] = [
 export const SEED_EVENT_VENUES: OmegaEventVenueItem[] = [
   {
     venue_id: 1,
-    venue_name: 'Zeit w Zaytoun Heritage Courtyard (South)',
+    venue_name: 'Southern Olive & Oil Products S.A.R.L Heritage Courtyard (South)',
     contact_name: 'Ahmad Moussawi',
     contact_email: 'events@zeitwzaytoun.lb',
     country: 115,
@@ -433,7 +433,7 @@ export const INITIAL_OMEGA_EVENTS: OmegaEventRecord[] = [
     customerName: 'Hassan Jichi',
     customer: SEED_CUSTOMERS[1],
     venue_id: 1,
-    venue_name: 'Zeit w Zaytoun Heritage Courtyard (South)',
+    venue_name: 'Southern Olive & Oil Products S.A.R.L Heritage Courtyard (South)',
     resource_ids: [1, 2, 4],
     resources: [SEED_EVENT_RESOURCES[0], SEED_EVENT_RESOURCES[1], SEED_EVENT_RESOURCES[3]],
     employee_ids: [1, 4],

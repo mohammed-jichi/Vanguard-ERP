@@ -76,7 +76,7 @@ const SEED_SUPPLIERS = [
 ];
 
 const SEED_BRANCHES = [
-  { id: 1, name: 'Zeit w zaytoun ljanoub' },
+  { id: 1, name: 'Southern Olive & Oil Products S.A.R.L' },
   { id: 2, name: 'Southern Olive and Oil Products - Main' },
   { id: 0, name: 'All Branches' }
 ];
@@ -451,7 +451,7 @@ const INITIAL_SAVED_REORDERS: SavedReorder[] = [
     id: 72,
     reorderId: 24,
     date: '10-Jul-2026',
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     branchId: 1,
     supplierName: 'SOOL',
     quotationStatus: 0,
@@ -464,7 +464,7 @@ const INITIAL_SAVED_REORDERS: SavedReorder[] = [
     id: 71,
     reorderId: 23,
     date: '08-Jul-2026',
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     branchId: 1,
     supplierName: 'SOOL',
     quotationStatus: 0,
@@ -477,7 +477,7 @@ const INITIAL_SAVED_REORDERS: SavedReorder[] = [
     id: 70,
     reorderId: 22,
     date: '25-Jun-2026',
-    branchName: 'Zeit w zaytoun ljanoub',
+    branchName: 'Southern Olive & Oil Products S.A.R.L',
     branchId: 1,
     supplierName: 'Zahwe',
     quotationStatus: 1,
@@ -991,7 +991,7 @@ export default function ReorderGuideView() {
       id: 70 + newId,
       reorderId: newId,
       date: '10-Sep-2026',
-      branchName: 'Zeit w zaytoun ljanoub',
+      branchName: 'Southern Olive & Oil Products S.A.R.L',
       supplierName: Object.values(cartGroupedBySupplier)[0]?.supplierName || 'Multiple Suppliers',
       quotationStatus: 0,
       quotationDate: null,
@@ -1383,7 +1383,7 @@ export default function ReorderGuideView() {
             {/* Header */}
             <div className="bg-muted px-3 py-2 flex items-center justify-between border-b border-border">
               <span className="text-xs font-bold text-slate-800">
-                Recommandation for branch: {SEED_BRANCHES.find(b => b.id === appliedBranchId)?.name || 'Zeit w zaytoun ljanoub'}
+                Recommandation for branch: {SEED_BRANCHES.find(b => b.id === appliedBranchId)?.name || 'Southern Olive & Oil Products S.A.R.L'}
               </span>
               <div className="flex items-center gap-3">
                 <button
@@ -2034,7 +2034,7 @@ export default function ReorderGuideView() {
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-slate-600">{t('branch', 'Branch:')}</span>
                   <span className="font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                    {t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}
+                    {t('zeit_w_zaytoun_ljanoub', 'Southern Olive & Oil Products S.A.R.L')}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -2188,7 +2188,7 @@ export default function ReorderGuideView() {
               <div>
                 <label className="block font-bold text-slate-700 mb-1">{t('receiving_branch', 'Receiving Branch')}</label>
                 <select className="w-full h-8 px-2 border border-slate-300 rounded text-xs">
-                  <option>{t('zeit_w_zaytoun_ljanoub', 'Zeit w zaytoun ljanoub')}</option>
+                  <option>{t('zeit_w_zaytoun_ljanoub', 'Southern Olive & Oil Products S.A.R.L')}</option>
                   <option>{t('choueifat_main_facility', 'Southern Olive and Oil Products - Main')}</option>
                 </select>
               </div>
@@ -2348,7 +2348,7 @@ export default function ReorderGuideView() {
             </div>
             <div className="p-4 space-y-3 text-xs">
               <p className="text-slate-600 text-xs">
-                {t('adjust_the_maximum_stock_thresholds_for', 'Adjust the Maximum Stock Thresholds for items in Zeit w zaytoun ljanoub to fine-tune automatic reorder calculation:')}
+                {t('adjust_the_maximum_stock_thresholds_for', 'Adjust the Maximum Stock Thresholds for items in Southern Olive & Oil Products S.A.R.L to fine-tune automatic reorder calculation:')}
               </p>
               <div className="overflow-x-auto max-h-64 border border-slate-200 rounded">
                 <table className="w-full text-left text-xs border-collapse">

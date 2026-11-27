@@ -63,7 +63,7 @@ export interface LocationRecord {
 export const OMEGA_BRANCHES: BranchRecord[] = [
   {
     BRANCHID: 1,
-    BARANCHNAME: 'Zeit w zaytoun ljanoub',
+    BARANCHNAME: 'Southern Olive & Oil Products S.A.R.L',
     CITY: 'Kfarchima',
     PHONE1: '707673828',
     EMAIL: 'jawadlb999@gmail.com'
@@ -489,7 +489,7 @@ export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
     ID: 8002604,
     ADATE: '2026-09-11',
     BRANCHID: 1,
-    BARANCHNAME: 'Zeit w zaytoun ljanoub',
+    BARANCHNAME: 'Southern Olive & Oil Products S.A.R.L',
     LOCID: 1,
     LOCATIONDESCRIPTION: 'Main Store',
     POSTED: 0, // Unposted Draft
@@ -532,7 +532,7 @@ export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
     ID: 8002603,
     ADATE: '2026-08-01',
     BRANCHID: 1,
-    BARANCHNAME: 'Zeit w zaytoun ljanoub',
+    BARANCHNAME: 'Southern Olive & Oil Products S.A.R.L',
     LOCID: 2,
     LOCATIONDESCRIPTION: 'Showroom',
     POSTED: -1, // Posted
@@ -562,7 +562,7 @@ export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
     ID: 8002602,
     ADATE: '2026-08-01',
     BRANCHID: 1,
-    BARANCHNAME: 'Zeit w zaytoun ljanoub',
+    BARANCHNAME: 'Southern Olive & Oil Products S.A.R.L',
     LOCID: 1,
     LOCATIONDESCRIPTION: 'Main Store',
     POSTED: -1,
@@ -592,7 +592,7 @@ export const INITIAL_SAVED_ADJUSTMENTS: AdjustmentHeaderRecord[] = [
     ID: 8002601,
     ADATE: '2026-07-15',
     BRANCHID: 1,
-    BARANCHNAME: 'Zeit w zaytoun ljanoub',
+    BARANCHNAME: 'Southern Olive & Oil Products S.A.R.L',
     LOCID: 2,
     LOCATIONDESCRIPTION: 'Showroom',
     POSTED: -1,

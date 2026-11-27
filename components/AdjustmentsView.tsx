@@ -54,7 +54,7 @@ export default function AdjustmentsView() {
   // STATE MANAGEMENT
   // --------------------------------------------------------------------------
   const [branches, setBranches] = useState<BranchRecord[]>(OMEGA_BRANCHES);
-  const [selectedBranchId, setSelectedBranchId] = useState<number>(1); // 1 = Zeit w zaytoun ljanoub
+  const [selectedBranchId, setSelectedBranchId] = useState<number>(1); // 1 = Southern Olive & Oil Products S.A.R.L
   const [locations, setLocations] = useState<LocationRecord[]>(OMEGA_LOCATIONS.filter(l => l.BRANCHID === 1));
   const [selectedLocationId, setSelectedLocationId] = useState<number>(1); // 1 = Main Store
 
@@ -354,7 +354,7 @@ export default function AdjustmentsView() {
   const handleSaveAdjustment = () => {
     const newId = adjustmentId || parseInt(peekNextDocNumber('INVENTORY_ADJUSTMENT', savedList), 10);
     commitNextDocNumber('INVENTORY_ADJUSTMENT', String(newId));
-    const branchName = branches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
+    const branchName = branches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || 'Southern Olive & Oil Products S.A.R.L';
     const locName = locations.find(l => l.LOCATIONID === selectedLocationId)?.LOCATIONDESCRIPTION || 'Main Store';
 
     const savedRecord: AdjustmentHeaderRecord = {
@@ -385,7 +385,7 @@ export default function AdjustmentsView() {
   const handleSaveAndPostAdjustment = () => {
     const newId = adjustmentId || parseInt(peekNextDocNumber('INVENTORY_ADJUSTMENT', savedList), 10);
     commitNextDocNumber('INVENTORY_ADJUSTMENT', String(newId));
-    const branchName = branches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
+    const branchName = branches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || 'Southern Olive & Oil Products S.A.R.L';
     const locName = locations.find(l => l.LOCATIONID === selectedLocationId)?.LOCATIONDESCRIPTION || 'Main Store';
     const vId = `JV-2026-${String(newId).padStart(3, '0')}`;
 
@@ -558,7 +558,7 @@ export default function AdjustmentsView() {
   // RENDER: REPORT SCREEN (report === true)
   // --------------------------------------------------------------------------
   if (reportView) {
-    const branchName = branches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || 'Zeit w zaytoun ljanoub';
+    const branchName = branches.find(b => b.BRANCHID === selectedBranchId)?.BARANCHNAME || 'Southern Olive & Oil Products S.A.R.L';
     const locName = locations.find(l => l.LOCATIONID === selectedLocationId)?.LOCATIONDESCRIPTION || 'Main Store';
 
     return (
